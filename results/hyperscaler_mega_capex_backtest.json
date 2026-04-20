@@ -1,0 +1,1140 @@
+{
+  "pattern_id": "hyperscaler_mega_capex",
+  "pattern_name": "Hyperscaler Mega Capex Deal",
+  "run_at": "2026-04-20T15:08:27.129591",
+  "n_instances": 6,
+  "aggregate": {
+    "tier_1": {
+      "t1": {
+        "n": 15,
+        "win_rate": 0.4666666666666667,
+        "avg_alpha": -0.003956352998456401,
+        "median_alpha": -0.004439129325514721,
+        "best": 0.013016692690891049,
+        "worst": -0.03256744639896752
+      },
+      "t5": {
+        "n": 15,
+        "win_rate": 0.4,
+        "avg_alpha": -0.005195967711505144,
+        "median_alpha": -0.006549799157543299,
+        "best": 0.09143709513301647,
+        "worst": -0.0957886545351814
+      },
+      "t30": {
+        "n": 15,
+        "win_rate": 0.4666666666666667,
+        "avg_alpha": 0.021158461524504617,
+        "median_alpha": -0.04859814972788234,
+        "best": 0.5359318004812067,
+        "worst": -0.18787415981079233
+      }
+    },
+    "tier_2": {
+      "t1": {
+        "n": 0
+      },
+      "t5": {
+        "n": 0
+      },
+      "t30": {
+        "n": 0
+      }
+    }
+  },
+  "verdict": "FAIL: tier_1 T+5 win rate 40.0% < 60%",
+  "raw_instance_results": [
+    {
+      "event_id": "stargate_announce",
+      "event_date": "2025-01-21",
+      "event_name": "Stargate Project Announcement ($500B)",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": 0.012021589793915594,
+            "t5": -0.06632319267255479,
+            "t30": -0.16854759568204122
+          },
+          "AMZN": {
+            "t1": 0.01863811711672655,
+            "t5": 0.03224827705777815,
+            "t30": -0.09687486454856743
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": 0.011420043474029074,
+            "t5": 0.09387470395483892,
+            "t30": 0.06490283230055476
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": 0.005621424425835503,
+        "t5": 0.002437608821822448,
+        "t30": -0.03314816350219718
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": 0.006400165368080091,
+            "t5": -0.06876080149437724,
+            "t30": -0.13539943217984404
+          },
+          "AMZN": {
+            "t1": 0.013016692690891049,
+            "t5": 0.0298106682359557,
+            "t30": -0.06372670104637025
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": 0.005798619048193571,
+            "t5": 0.09143709513301647,
+            "t30": 0.09805099580275194
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    },
+    {
+      "event_id": "oracle_openai_300b",
+      "event_date": "2025-09-10",
+      "event_name": "Oracle-OpenAI $300B five-year compute deal",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.0242572395637458,
+            "t5": -0.0023818478124607964,
+            "t30": 0.4430863733233045
+          },
+          "AMZN": {
+            "t1": -0.001649806798940754,
+            "t5": 0.005600659922719541,
+            "t30": -0.053748968870750764
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.0014362084097981874,
+            "t5": 0.031569988563525636,
+            "t30": -0.02469480571291796
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": 0.00831020683522172,
+        "t5": 0.010686742000275851,
+        "t30": 0.023903344014964377
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.03256744639896752,
+            "t5": -0.013068589812736647,
+            "t30": 0.41918302930834017
+          },
+          "AMZN": {
+            "t1": -0.009960013634162474,
+            "t5": -0.00508608207755631,
+            "t30": -0.07765231288571514
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.009746415245019908,
+            "t5": 0.020883246563249785,
+            "t30": -0.04859814972788234
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    },
+    {
+      "event_id": "stargate_5_sites",
+      "event_date": "2025-09-23",
+      "event_name": "Stargate 5 new US data center sites (7GW total)",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.0001243008079553153,
+            "t5": 0.005531385954008616,
+            "t30": 0.5540708514605345
+          },
+          "AMZN": {
+            "t1": -0.002265416156948031,
+            "t5": -0.005165148837841578,
+            "t30": 0.12962711250056627
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": 0.006963198305533481,
+            "t5": -0.02782631718294941,
+            "t30": -0.1695525549377812
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": -0.003181496057055855,
+        "t5": 0.004478219568462348,
+        "t30": 0.018139050979327772
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": 0.0030571952491005396,
+            "t5": 0.001053166385546268,
+            "t30": 0.5359318004812067
+          },
+          "AMZN": {
+            "t1": 0.000916079900107824,
+            "t5": -0.009643368406303926,
+            "t30": 0.1114880615212385
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": 0.010144694362589336,
+            "t5": -0.032304536751411754,
+            "t30": -0.18769160591710898
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    },
+    {
+      "event_id": "amazon_openai_38b",
+      "event_date": "2025-11-03",
+      "event_name": "Amazon-OpenAI $38B compute deal + Project Rainier $11B",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.03697284806470236,
+            "t5": -0.06035047178894662,
+            "t30": -0.19441555940689387
+          },
+          "AMZN": {
+            "t1": -0.01842519685039373,
+            "t5": -0.022047244094488168,
+            "t30": -0.12377952755905511
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.01629267221777922,
+            "t5": -0.009330259835975671,
+            "t30": 0.030484075833842876
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": -0.011853542892264498,
+        "t5": -0.002780460678432372,
+        "t30": -0.006541399596101541
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.025119305172437857,
+            "t5": -0.05757001111051425,
+            "t30": -0.18787415981079233
+          },
+          "AMZN": {
+            "t1": -0.006571653958129231,
+            "t5": -0.019266783416055797,
+            "t30": -0.11723812796295356
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.004439129325514721,
+            "t5": -0.006549799157543299,
+            "t30": 0.037025475429944416
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    },
+    {
+      "event_id": "meta_hyperion_louisiana",
+      "event_date": "2024-12-04",
+      "event_name": "Meta Hyperion Louisiana $50B DC announcement",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.018265157302590426,
+            "t5": -0.09611778595735816,
+            "t30": -0.15077435933050912
+          },
+          "AMZN": {
+            "t1": 0.010955262192886023,
+            "t5": 0.05546387972130544,
+            "t30": 0.05752658599193258
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.007901854084525437,
+            "t5": 0.030792792205676264,
+            "t30": 0.004366385349799706
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": -0.0016456571108843761,
+        "t5": -0.000329131422176763,
+        "t30": -0.007586479281176997
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": -0.01661950019170605,
+            "t5": -0.0957886545351814,
+            "t30": -0.1431878800493321
+          },
+          "AMZN": {
+            "t1": 0.0126009193037704,
+            "t5": 0.0557930111434822,
+            "t30": 0.06511306527310957
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": -0.0062561969736410605,
+            "t5": 0.031121923627853026,
+            "t30": 0.011952864630976702
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    },
+    {
+      "event_id": "openai_amd_6gw",
+      "event_date": "2025-10-06",
+      "event_name": "OpenAI-AMD $6GW GPU deal + 10% stake option",
+      "returns": {
+        "tier_1": {
+          "AMD": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AMZN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      },
+      "spy_returns": {
+        "t1": null,
+        "t5": null,
+        "t30": null
+      },
+      "alphas": {
+        "tier_1": {
+          "AMD": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AMZN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "CLS": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "COHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ETN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "LITE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "META": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ORCL": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        },
+        "tier_2": {
+          "AEHR": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "ANET": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "AXTI": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "FN": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "MU": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "NEE": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          },
+          "VRT": {
+            "t1": null,
+            "t5": null,
+            "t30": null
+          }
+        }
+      }
+    }
+  ]
+}
