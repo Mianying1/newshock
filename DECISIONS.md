@@ -96,3 +96,23 @@
 - Seed script: scripts/seed.ts (幂等, 可重复跑)
 - 中文引号问题已在 pattern_03 和 pattern_05 修复 (全角 → 角括号)
 - 下一步: Step 8 · 新闻摄入 pipeline
+
+---
+
+## 2026-04-20 · 模型选型决策
+
+### 情况
+账号 Tier 1, 无法调用 Opus 4.7 (需要 Tier 2 / $40+ 充值 / 7 天等待期)
+
+### 决策
+Newshock pipeline 用 Sonnet 4.5 为主, Haiku 4.5 做初筛。
+
+### 理由
+- Newshock 分类任务是结构化输出场景, Sonnet 4.5 准确率和 Opus 接近
+- 成本差 5 倍: Sonnet 月 $15-25 vs Opus 月 $75-120
+- $30 credits 用 Sonnet 可跑 3-4 个月, 用 Opus 2-3 周烧完
+- 两阶段架构 (Haiku 初筛 + Sonnet 精细) 再降本 60%+
+
+### 何时切 Opus
+只有在 "Sonnet 分类错误率 >20%" 时才评估升级。
+届时账号自动到 Tier 2, 切换无成本。
