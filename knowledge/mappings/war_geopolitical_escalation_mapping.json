@@ -1,0 +1,15 @@
+[
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "LNG",  "tier": 1, "reasoning": "LNG 出口龙头，能源供给受限时欧洲需求激增"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "CVX",  "tier": 1, "reasoning": "大型综合能源，oil/gas 价格 spike 直接受益"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "XOM",  "tier": 1, "reasoning": "大型综合能源，全球供给担忧时市值重估"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "OXY",  "tier": 1, "reasoning": "原油敞口集中，Buffett 持仓背书，冲突时 beta 更高"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "NEXT", "tier": 1, "reasoning": "LNG 终端开发商，欧洲能源独立叙事受益"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "LMT",  "tier": 1, "reasoning": "国防龙头，冲突升级直接拉升 backlog 预期"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "RTX",  "tier": 1, "reasoning": "导弹/防空系统，战时消耗补库需求最直接"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "GD",   "tier": 1, "reasoning": "装甲/海军系统，地面/海洋冲突直接受益"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "NOC",  "tier": 1, "reasoning": "战略轰炸机/卫星系统，大国博弈预算上调受益"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "HII",  "tier": 1, "reasoning": "美国最大核潜艇/航母造船商，海军建设受益"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "GLD",  "tier": 1, "reasoning": "黄金 ETF，地缘 risk-off 最快速的 safe-haven 资产"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "MP",   "tier": 2, "reasoning": "稀土是战略材料，冲突升级强化供应链脱钩预期"},
+  {"pattern_id": "war_geopolitical_escalation", "ticker_symbol": "UUUU", "tier": 2, "reasoning": "铀/稀土储备受益于战略资源价格上涨"}
+]

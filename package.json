@@ -1,0 +1,26 @@
+{
+  "name": "newshock",
+  "version": "1.0.0",
+  "description": "本地跑这些文件，验证你的 7 个 event pattern 是否真的有 alpha。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mianying1/newshock.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Mianying1/newshock/issues"
+  },
+  "homepage": "https://github.com/Mianying1/newshock#readme",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.104.0",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.21.0"
+  }
+}

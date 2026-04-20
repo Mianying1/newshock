@@ -1,0 +1,9 @@
+{
+  "id": "mega_cap_strategic_investment",
+  "name": "NVDA/AVGO 等大厂对上游战略投资或 JV",
+  "description": "大型科技/半导体公司对上游供应商进行战略股权投资或签署多年供应协议",
+  "trigger_keywords": ["strategic investment", "joint venture", "equity stake", "multi-year supply agreement", "designed-in", "$X billion investment in"],
+  "min_deal_size_usd_b": 0.5,
+  "causal_chain": "NVDA 级公司投资 = 锁产能信号 → category 重新定价 → alpha 在被投公司的同业竞对 (补涨) 和被投公司的上游 (next chokepoint)",
+  "is_active": true
+}

@@ -1,0 +1,9 @@
+[
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "LITE",  "tier": 1, "reasoning": "光模块主要被投候选，NVDA/AVGO 投资首选对象"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "COHR",  "tier": 1, "reasoning": "已获 NVDA 战略投资，同类事件直接受益"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "AAOI",  "tier": 1, "reasoning": "小盘光模块标的，被投后 multiple 重打幅度最大"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "AXTI",  "tier": 2, "reasoning": "上游衬底 chokepoint，战略投资锁产能信号传导至此"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "ARM",   "tier": 2, "reasoning": "IP 层补涨，多 hyperscaler 同时依赖 ARM 架构"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "MRVL",  "tier": 2, "reasoning": "光子学整合方向，与 NVDA/AVGO 有协同关系"},
+  {"pattern_id": "mega_cap_strategic_investment", "ticker_symbol": "MU",    "tier": 3, "reasoning": "存储受益但传导路径较长"}
+]

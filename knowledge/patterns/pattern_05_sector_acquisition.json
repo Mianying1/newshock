@@ -1,0 +1,9 @@
+{
+  "id": "strategic_acquisition_in_sector",
+  "name": "大厂收购细分赛道公司",
+  "description": "大型科技/工业公司以 ≥$1B 全现金或溢价收购某细分赛道头部公司",
+  "trigger_keywords": ["to acquire", "definitive agreement", "all-cash deal", "vertical integration", "tuck-in acquisition"],
+  "min_deal_size_usd_b": 1,
+  "causal_chain": "大厂出手 = 板块估值 floor 被设定 → 市场找「下一个被收购的」 → 同赛道小盘 multiple 被重打 → alpha 在 target candidate list",
+  "is_active": true
+}

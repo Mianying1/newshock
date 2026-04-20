@@ -1,0 +1,3 @@
+[
+  {"pattern_id": "smallcap_earnings_beat_guide_up", "ticker_symbol": "__SELF__", "tier": 1, "reasoning": "The reporting company itself (dynamic — resolved at event time)"}
+]

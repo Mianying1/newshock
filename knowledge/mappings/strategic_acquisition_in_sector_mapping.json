@@ -1,0 +1,3 @@
+[
+  {"pattern_id": "strategic_acquisition_in_sector", "ticker_symbol": "__SELF__", "tier": 1, "reasoning": "The acquisition target and same-sector peers (dynamic — resolved at event time)"}
+]

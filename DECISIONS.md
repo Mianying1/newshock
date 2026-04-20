@@ -39,3 +39,60 @@
 - 不做社交 / leaderboard / 晒单
 - 不对接券商 / 一键下单
 - 每条推荐显著位置显示失败案例
+
+---
+
+## 2026-04-20 · 推荐架构决策 · Hybrid Model
+
+### 问题
+是否限定在封闭 ticker 库做推荐。
+
+### 决策
+采用 Hybrid 推荐架构:
+
+1. VERIFIED 路径 (核心竞争力)
+   - 基于 knowledge/patterns + knowledge/mappings
+   - 每条推荐带 Score + 历史回测胜率
+   - 手工 curate, 有责任有依据
+   - v1 覆盖 7 个 pattern, 30-40 只 ticker
+
+2. EXPLORATORY 路径 (补充覆盖)
+   - 新闻未匹配任何 pattern 时, LLM 实时分析
+   - 不显示 Score, 只给候选标的
+   - 明确标记 "Speculative, not backtested"
+   - 用户可以 "提议加入 knowledge base", 形成反馈 loop
+
+### 产品优势
+- Moat: VERIFIED 区的 pattern/ticker 库不可抄
+- Coverage: EXPLORATORY 区保证任何新闻都有内容
+- Flywheel: 用户使用 → 新 pattern 被发现 → curate → 进入 VERIFIED
+
+### schema 影响
+无需改表结构。events.pattern_id 为 null 时走 EXPLORATORY 路径。
+
+### 竞品防御
+- vs ChatGPT/Perplexity: 通用 LLM 无法产出 VERIFIED 推荐 (缺历史回测数据 + 缺手工 curate 的 mapping)
+- vs Benzinga/SA: 传统工具无 event-driven 结构化推荐
+
+### 新方向识别机制 (Pattern Discovery Loop)
+
+产品运行中系统自动识别"可能需要新 pattern / 新 ticker"的信号,
+供 curator 决策是否加入 VERIFIED 区:
+
+1. 新 pattern 候选: 7 天内有 3+ 条新闻走 EXPLORATORY 路径且主题相似 → 标红提示
+2. 新 ticker 候选: 某未入库股票在 EXPLORATORY 推荐中被 LLM 提到 3+ 次 → 提示加入
+3. 已有 pattern 的 ticker 扩展: 用户反馈"相关但不在列表"的 ticker → 提示扩展
+
+决策原则: 系统发现信号, 人决策。每次新增必须同时录入历史实例 + 跑回测才能进 VERIFIED。
+
+---
+
+## 2026-04-20 · Step 7 完成 · Knowledge Base Seeded
+
+- patterns 表: 7 行
+- tickers 表: 46 行
+- pattern_ticker_map 表: 54 行
+- historical_instances 表: 6 行 (全部为 pattern_01 的历史事件)
+- Seed script: scripts/seed.ts (幂等, 可重复跑)
+- 中文引号问题已在 pattern_03 和 pattern_05 修复 (全角 → 角括号)
+- 下一步: Step 8 · 新闻摄入 pipeline

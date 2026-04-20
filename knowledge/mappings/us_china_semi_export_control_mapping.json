@@ -1,0 +1,10 @@
+[
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "MP",    "tier": 1, "reasoning": "美国唯一稀土矿山+加工企业，管制升级直接定价权受益"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "AXTI",  "tier": 1, "reasoning": "InP/GaAs 衬底，中国是主要竞争方，管制减少竞争压力"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "INTC",  "tier": 1, "reasoning": "美本土 fab 受益于国产化需求，CHIPS Act 资金加速"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "UUUU",  "tier": 2, "reasoning": "稀土/铀替代来源，受益于中国供应减少的预期"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "GFS",   "tier": 2, "reasoning": "美本土 foundry，客户转移美国产能直接受益"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "AMAT",  "tier": 2, "reasoning": "设备对华出口受限但本土建厂需求增，净效果偏正"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "LRCX",  "tier": 3, "reasoning": "对华出口占比高，管制升级有双向影响，净效果不确定"},
+  {"pattern_id": "us_china_semi_export_control", "ticker_symbol": "ASML",  "tier": 3, "reasoning": "EUV 已禁，DUV 限制复杂，影响方向需结合具体公告判断"}
+]

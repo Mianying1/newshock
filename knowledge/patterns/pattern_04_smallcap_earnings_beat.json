@@ -1,0 +1,9 @@
+{
+  "id": "smallcap_earnings_beat_guide_up",
+  "name": "小盘股财报超预期 + 指引显著上修",
+  "description": "市值 <$5B 的公司财报大幅超 consensus 并上调全年指引",
+  "trigger_keywords": ["beat estimates", "raises guidance", "record revenue", "above consensus", "accelerating growth"],
+  "min_deal_size_usd_b": null,
+  "causal_chain": "小盘股 analyst coverage 少 → consensus 容易失真 → 一次 big beat 触发模型重估 → institutional 跟进周期 5-30 天 → 同行业小盘连锁涨 (read-across)",
+  "is_active": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "us_china_semi_export_control",
+  "name": "美国对华半导体/关键材料出口管制升级",
+  "description": "美国 BIS 新增实体清单、扩大芯片禁令范围或限制关键材料出口至中国",
+  "trigger_keywords": ["export control", "BIS entity list", "chip ban", "licensing requirement", "rare earth restriction", "gallium", "indium"],
+  "min_deal_size_usd_b": null,
+  "causal_chain": "管制升级 → 被管制品价格预期上涨 → 上游原材料需求 + 国产替代需求双升 → alpha 在「被美国必需、中国没有、定价权集中」的上游",
+  "is_active": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "war_geopolitical_escalation",
+  "name": "战争爆发或地缘冲突显著升级",
+  "description": "主要地区爆发军事冲突或现有冲突显著升级，波及能源、航运或国防供应链",
+  "trigger_keywords": ["military strike", "missile launch", "invasion", "troops deployed", "airspace closed", "sanctions imposed", "strait closure", "blockade", "declared war"],
+  "min_deal_size_usd_b": null,
+  "causal_chain": "冲突升级 → 三条独立 alpha 线: (1) 能源供给担忧 → oil/gas spike → 能源股重估 (2) 国防预算预期上调 → 国防股 backlog 扩张 (3) Risk-off → VIX 飙升 + 黄金/长债受益",
+  "is_active": true
+}

@@ -1,0 +1,13 @@
+[
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "GNRC", "tier": 1, "reasoning": "备用发电机龙头，飓风/停电事件前后需求激增，有 forecast 窗口"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "HD",   "tier": 1, "reasoning": "建材零售龙头，灾后重建采购首选，同店销售直接受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "LOW",  "tier": 1, "reasoning": "建材零售次席，灾后重建与 HD 同步受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "BLDR", "tier": 1, "reasoning": "建筑材料分销，大规模重建项目直接受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "VLO",  "tier": 1, "reasoning": "炼油商，竞争对手炼厂停产时价差扩大直接受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "MPC",  "tier": 1, "reasoning": "炼油商，区域供给中断时 crack spread 扩大"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "PSX",  "tier": 1, "reasoning": "炼油+中游，管道/炼厂事故导致竞品减产受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "ZIM",  "tier": 1, "reasoning": "集装箱航运，港口关闭/航线中断时运价 spike"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "DAC",  "tier": 1, "reasoning": "集装箱船东，运价上涨直接提升现货收益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "INTC", "tier": 2, "reasoning": "亚洲 fab 事故时美本土产能替代需求受益"},
+  {"pattern_id": "natural_disaster_catastrophe", "ticker_symbol": "GFS",  "tier": 2, "reasoning": "美/欧 foundry，亚洲供应中断时客户转移订单"}
+]

@@ -1,0 +1,17 @@
+[
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "LITE",  "tier": 1, "reasoning": "光模块龙头，AI DC 光互联直接受益，hyperscaler 订单可见度最高"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "COHR",  "tier": 1, "reasoning": "光模块双寡头，NVDA 战略投资方，AI DC 光连接直接受益"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "VRT",   "tier": 1, "reasoning": "DC 电力与液冷系统，每 GW 数据中心必采"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "ANET",  "tier": 1, "reasoning": "高速以太网交换机，hyperscaler DC 网络核心供应商"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "ETN",   "tier": 1, "reasoning": "电气设备龙头，DC 配电系统，Meta Hyperion 等大型 DC 直接受益"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "AXTI",  "tier": 2, "reasoning": "InP 衬底唯一美国本土供应商，光模块原材料 chokepoint"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "AEHR",  "tier": 2, "reasoning": "光模块晶圆级测试设备，产能瓶颈时测试设备先涨"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "CLS",   "tier": 2, "reasoning": "服务器代工 ODM，hyperscaler 是主要客户，订单跟随"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "FN",    "tier": 2, "reasoning": "Fabrinet，光模块 EMS 龙头，产量直接与 DC buildout 挂钩"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "AMZN",  "tier": 2, "reasoning": "作为 hyperscaler 自身，参与大 deal 时被市场重新定价"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "MU",    "tier": 3, "reasoning": "HBM 内存需求上升，但 NVDA 已 priced in 大部分"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "AVGO",  "tier": 3, "reasoning": "自研 ASIC 替代方向，多 hyperscaler 客户，但主题较宽"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "AMD",   "tier": 3, "reasoning": "GPU 供应商，openai-amd 变体中为 tier_1，常规 hyperscaler deal 中为 tier_3"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "META",  "tier": 3, "reasoning": "作为 hyperscaler 发起方自身，muted reaction (mega-cap)，通常不是 alpha 来源"},
+  {"pattern_id": "hyperscaler_mega_capex", "ticker_symbol": "NEE",   "tier": 3, "reasoning": "数据中心电力供应，地理相关 utility (Meta Louisiana 等)"}
+]

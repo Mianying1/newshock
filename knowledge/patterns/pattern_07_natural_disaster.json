@@ -1,0 +1,9 @@
+{
+  "id": "natural_disaster_catastrophe",
+  "name": "自然灾害或重大工业事故",
+  "description": "飓风、地震、火灾或工厂事故导致关键供应链中断或重建需求激增",
+  "trigger_keywords": ["hurricane", "earthquake", "wildfire", "flood", "winter storm", "fab shutdown", "plant fire", "pipeline rupture", "port closure", "refinery outage"],
+  "min_deal_size_usd_b": null,
+  "causal_chain": "灾害/事故 → 供给瞬间减少或需求瞬间增加 → 直接受影响资产类别价格 spike → 类型决定受益股 → alpha 窗口短 (T+1 到 T+30)。飓风有 3-7 天 forecast 窗口可提前布局",
+  "is_active": true
+}

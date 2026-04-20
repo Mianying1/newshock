@@ -1,0 +1,9 @@
+{
+  "id": "hyperscaler_mega_capex",
+  "name": "超大规模 AI 数据中心 capex 公告",
+  "description": "Hyperscaler 或 neocloud 宣布 GW 级 AI 数据中心建设，金额 ≥$5B",
+  "trigger_keywords": ["gigawatt", "GW", "data center buildout", "multi-year compute", "capex expansion", "Stargate", "AI infrastructure investment"],
+  "min_deal_size_usd_b": 5,
+  "causal_chain": "Hyperscaler 或 neocloud 宣布 GW 级 AI DC → 需要百万量级 GPU → 每台服务器 8-16 个光模块 → 光模块需要激光器和衬底 → DC 需要电力和冷却 → NVDA 已 priced in, alpha 在 2-3 阶上游",
+  "is_active": true
+}

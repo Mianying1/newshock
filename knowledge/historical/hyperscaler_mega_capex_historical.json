@@ -1,0 +1,102 @@
+[
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2025-01-21",
+    "event_name": "Stargate Project Announcement ($500B)",
+    "source_url": null,
+    "tier_1_reactions": {
+      "ORCL": {"t1": 0.07,   "t5": 0.09},
+      "LITE": {"t1": 0.045,  "t5": 0.07},
+      "COHR": {"t1": 0.035,  "t5": 0.06},
+      "VRT":  {"t1": 0.05,   "t5": 0.07}
+    },
+    "tier_2_reactions": {
+      "AXTI": {"t1": 0.025, "t5": 0.05},
+      "AEHR": {"t1": 0.03,  "t5": 0.05}
+    },
+    "notes": "First major post-election AI infrastructure deal. Broad AI trade re-ignited. SPY +0.6% that day."
+  },
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2025-09-10",
+    "event_name": "Oracle-OpenAI $300B five-year compute deal",
+    "source_url": null,
+    "tier_1_reactions": {
+      "ORCL": {"t1": 0.415, "t5": 0.40},
+      "LITE": {"t1": 0.10,  "t5": 0.25,  "t30": 1.00},
+      "COHR": {"t1": 0.085, "t5": 0.175, "t30": 0.65},
+      "VRT":  {"t1": 0.06,  "t5": 0.15,  "t30": 0.35},
+      "CLS":  {"t1": 0.08,  "t5": 0.18,  "t30": 0.45}
+    },
+    "tier_2_reactions": {
+      "AXTI": {"t1": 0.05,  "t5": 0.125, "t30": 0.40},
+      "AEHR": {"t1": 0.05,  "t5": 0.12,  "t30": 0.25},
+      "FN":   {"t1": 0.09,  "t5": 0.20,  "t30": 0.60}
+    },
+    "notes": "Gold-standard instance. THE biggest single catalyst of 2025 photonics trade. SPY flat that day. Entire optical supply chain re-rated. ORCL t1 mid of +36% to +43% range."
+  },
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2025-09-23",
+    "event_name": "Stargate 5 new US data center sites (7GW total)",
+    "source_url": null,
+    "tier_1_reactions": {
+      "ORCL": {"t1": 0.025, "t5": 0.04},
+      "LITE": {"t1": 0.04,  "t5": 0.10},
+      "COHR": {"t1": 0.03,  "t5": 0.07}
+    },
+    "tier_2_reactions": {
+      "AXTI": {"t1": 0.04, "t5": 0.10},
+      "VRT":  {"t1": 0.04, "t5": 0.08}
+    },
+    "notes": "Incremental follow-on announcement. Weaker reaction than primary event — pattern saturation signal. Second-wave announcements produce smaller but real alpha."
+  },
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2025-11-03",
+    "event_name": "Amazon-OpenAI $38B compute deal + Project Rainier $11B",
+    "source_url": null,
+    "tier_1_reactions": {
+      "AMZN": {"t1": 0.04,  "t5": 0.06},
+      "LITE": {"t1": 0.04,  "t5": 0.10},
+      "COHR": {"t1": 0.03,  "t5": 0.07}
+    },
+    "tier_2_reactions": {
+      "AXTI": {"t1": 0.03, "t5": 0.08},
+      "ANET": {"t1": 0.03, "t5": 0.07}
+    },
+    "notes": "Shows pattern generalizes beyond Oracle-OpenAI axis. Amazon joining signals broader buildout."
+  },
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2024-12-04",
+    "event_name": "Meta Hyperion Louisiana $50B DC announcement",
+    "source_url": null,
+    "tier_1_reactions": {
+      "META": {"t1": 0.02,  "t5": 0.03},
+      "VRT":  {"t1": 0.05,  "t5": 0.10},
+      "ETN":  {"t1": 0.03,  "t5": 0.06}
+    },
+    "tier_2_reactions": {
+      "NEE":  {"t1": 0.02, "t5": 0.04},
+      "AEHR": {"t1": 0.03, "t5": 0.06}
+    },
+    "notes": "Pre-Stargate era. Pattern worked but smaller magnitude. Shows pattern was valid even before AI euphoria peaked."
+  },
+  {
+    "pattern_id": "hyperscaler_mega_capex",
+    "instance_date": "2025-10-06",
+    "event_name": "OpenAI-AMD $6GW GPU deal + 10% stake option",
+    "source_url": null,
+    "tier_1_reactions": {
+      "AMD":  {"t1": 0.24, "t5": 0.30},
+      "LITE": {"t1": 0.04, "t5": 0.08},
+      "COHR": {"t1": 0.03, "t5": 0.07}
+    },
+    "tier_2_reactions": {
+      "MU":   {"t1": 0.04, "t5": 0.08},
+      "AXTI": {"t1": 0.02, "t5": 0.05}
+    },
+    "notes": "Variant where target is a chip vendor not hyperscaler. Still triggers optics/memory upstream. AMD massive on stake warrant mechanics."
+  }
+]
