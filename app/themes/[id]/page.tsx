@@ -82,6 +82,107 @@ export default function ThemeDetailPage() {
                 <p className="text-sm text-zinc-400">暂无推荐股票</p>
               )}
             </div>
+
+            {/* Playbook section */}
+            {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (
+              <section className="mt-8 pt-6 border-t">
+                <h2 className="text-lg font-semibold mb-2">━━ 历史 Playbook ━━</h2>
+
+                <p className="text-xs text-zinc-500 mb-4">
+                  基于 Claude AI 训练数据估算, 非精确市场测量.
+                  后续版本将基于实际股价数据校准.
+                </p>
+
+                <div className="mb-4 space-y-1">
+                  <div className="text-sm">
+                    <span className="text-zinc-600">典型持续: </span>
+                    <span className="font-medium">
+                      {theme.archetype_playbook!.typical_duration_label} (估算)
+                    </span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-zinc-600">当前进行: </span>
+                    <span className="font-medium">第 {theme.days_active} 天</span>
+                    {theme.playbook_stage === 'late' && (
+                      <span className="text-amber-600 ml-2">(接近典型上限)</span>
+                    )}
+                    {theme.playbook_stage === 'beyond' && (
+                      <span className="text-red-600 ml-2">(超出典型范围)</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium mb-2">历史可比:</h3>
+                  <ul className="space-y-1 text-sm">
+                    {theme.archetype_playbook!.historical_cases.map((c, i) => (
+                      <li key={i}>
+                        · <span className="font-medium">{c.name}</span>
+                        {' · '}{c.approximate_duration}
+                        {' · '}{c.peak_move}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {(theme.archetype_playbook!.this_time_different?.differences?.length ?? 0) > 0 && (
+                  <div className="mb-6 p-4 bg-blue-50 rounded border border-blue-100">
+                    <h3 className="text-sm font-semibold mb-3">━━ 这次可能不同? ━━</h3>
+
+                    <div className="mb-3">
+                      <div className="text-sm font-medium mb-2">结构性差异:</div>
+                      <ul className="space-y-1 text-sm">
+                        {theme.archetype_playbook!.this_time_different.differences.map((d, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="flex-shrink-0">
+                              {d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '?'}
+                            </span>
+                            <span>
+                              <span className="text-zinc-600">{d.dimension}:</span> {d.description}
+                              <span className="text-xs text-zinc-500 ml-1">[{d.confidence}]</span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {(theme.archetype_playbook!.this_time_different.similarities?.length ?? 0) > 0 && (
+                      <div className="mb-3">
+                        <div className="text-sm font-medium mb-2">与历史类似的:</div>
+                        <ul className="space-y-1 text-sm">
+                          {theme.archetype_playbook!.this_time_different.similarities.map((s, i) => (
+                            <li key={i}>
+                              = <span className="text-zinc-600">{s.dimension}:</span> {s.description}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {theme.archetype_playbook!.this_time_different.observation && (
+                      <div className="text-sm italic mt-3 text-zinc-700">
+                        观察: {theme.archetype_playbook!.this_time_different.observation}
+                      </div>
+                    )}
+
+                    <div className="text-xs text-zinc-500 mt-3">
+                      ⚠️ 以上为观察分析, 非预测或投资建议.
+                    </div>
+                  </div>
+                )}
+
+                {(theme.archetype_playbook!.exit_signals?.length ?? 0) > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">退出信号:</h3>
+                    <ul className="space-y-1 text-sm text-zinc-600">
+                      {theme.archetype_playbook!.exit_signals.map((s, i) => (
+                        <li key={i}>· {s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </section>
+            )}
           </div>
         )}
       </main>

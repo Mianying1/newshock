@@ -383,3 +383,31 @@ v2: 考虑加 quality score 维度, 让高质量 exploratory recs 也进默认
 ### 下一阶段
 B 阶段 · 前端 UI (Next.js + Tailwind, 主题雷达 + 详情页)
 预计 2-3 周
+
+## 2026-04-21 Playbook v1 数据来源决策
+
+**决策**: Layer A v1 使用 Sonnet 训练数据估算, 不等 FMP 校准.
+
+**依据**:
+- 用户价值在时间维度本身, 不在数字精度
+- 明确 UI 声明 "AI 估算", 诚实度保持
+- 1-2 周后 v1.5 升级精确数据
+
+## 2026-04-21 "This Time Different" 纳入 v1
+
+**决策**: v1 即加入结构性差异分析.
+
+**依据**:
+- 用户明确要求 "分析的, 不只是历史复述"
+- 符合产品理念 "让用户自己判断"
+- 措辞严格: observed/may, 不用 will/predict
+- Sonnet 自声明 confidence, 低置信度 omit
+
+## 2026-04-21 Playbook 存储: 文件 vs DB
+
+**决策**: v1 存储在 knowledge/playbooks/*.json, 不存 DB.
+
+**依据**:
+- 无 exec_sql RPC, 无 pg 直连, 无法做 ALTER TABLE via JS client
+- 文件存储 git-tracked, 易 review, 易 migrate
+- v1.5 升级时可一次性 UPDATE theme_archetypes SET playbook = '...'::jsonb

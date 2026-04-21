@@ -17,6 +17,40 @@ export interface CatalystEvent {
   days_ago: number
 }
 
+export interface PlaybookHistoricalCase {
+  name: string
+  approximate_duration: string
+  peak_move: string
+  exit_trigger: string
+  confidence: 'high' | 'medium'
+}
+
+export interface PlaybookDifference {
+  dimension: 'demand_side' | 'supply_side' | 'macro' | 'policy' | 'technology'
+  description: string
+  direction: 'may_extend' | 'may_shorten' | 'uncertain'
+  confidence: 'high' | 'medium'
+}
+
+export interface PlaybookSimilarity {
+  dimension: string
+  description: string
+}
+
+export interface ArchetypePlaybook {
+  typical_duration_label: string
+  typical_duration_days_approx: [number, number]
+  historical_cases: PlaybookHistoricalCase[]
+  this_time_different: {
+    differences: PlaybookDifference[]
+    similarities: PlaybookSimilarity[]
+    observation: string
+  }
+  exit_signals: string[]
+}
+
+export type PlaybookStage = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
+
 export interface ThemeRadarItem {
   id: string
   name: string
@@ -34,6 +68,8 @@ export interface ThemeRadarItem {
   event_count: number
   recommendations: ThemeRecommendation[]
   catalysts: CatalystEvent[]
+  archetype_playbook: ArchetypePlaybook | null
+  playbook_stage: PlaybookStage
 }
 
 export interface ThemeRadarSummary {

@@ -51,3 +51,32 @@ B 路径 (15-20h/周): 10-13 周, 目标 7 月底 - 8 月初发布
 
 达到 → 继续 v2 (技术指标 + setup 标签)
 达不到 → Pivot 或停止, 不是"再坚持一下"
+
+## Playbook Feature Evolution (M1.5.6+)
+
+### v1.0 (2026-04-21 完成)
+- Sonnet 训练数据估算
+- 模糊时间范围 + 置信度
+- "This time different" 静态分析
+- UI: 详情页 section + 主页简版
+- 存储: knowledge/playbooks/*.json (文件)
+
+### v1.5 (1-2 周后)
+- FMP 历史股价校准 historical_cases
+- 精确 peak duration / move 数字
+- 工作量: 1-2 天
+
+### v2.0 (1 月后)
+- Web search 增强 "This time different"
+- Sonnet 看最近新闻补充训练数据外的变化
+- 工作量: 3-5 天
+
+### v2.5 (2-3 月后)
+- 产品内部数据接入 playbook
+- 公开历史 + 站内主题 lifecycle 双重数据
+- 工作量: 1-2 周
+
+### v3.0 (半年后)
+- Embedding-based 跨 archetype 相似度
+- 动态查询最相似历史主题
+- 工作量: 2-3 周

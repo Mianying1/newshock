@@ -1,3 +1,5 @@
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import { supabaseAdmin } from './supabase-admin'
 import { calculateDaysAgo } from './theme-formatter'
 import type {
@@ -5,7 +7,32 @@ import type {
   ThemeRadarSummary,
   ThemeRecommendation,
   CatalystEvent,
+  ArchetypePlaybook,
+  PlaybookStage,
 } from '@/types/recommendations'
+
+const PLAYBOOKS_DIR = path.join(process.cwd(), 'knowledge', 'playbooks')
+
+function loadPlaybook(archetypeId: string | null): ArchetypePlaybook | null {
+  if (!archetypeId) return null
+  try {
+    const filePath = path.join(PLAYBOOKS_DIR, `${archetypeId}.json`)
+    if (!fs.existsSync(filePath)) return null
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ArchetypePlaybook
+  } catch {
+    return null
+  }
+}
+
+function computePlaybookStage(daysActive: number, playbook: ArchetypePlaybook | null): PlaybookStage {
+  const max = playbook?.typical_duration_days_approx?.[1] ?? 0
+  if (!max || max === 0) return 'unknown'
+  const pct = daysActive / max
+  if (pct < 0.3) return 'early'
+  if (pct < 0.7) return 'mid'
+  if (pct <= 1.0) return 'late'
+  return 'beyond'
+}
 
 // ─── DB row shapes ────────────────────────────────────────────────────────────
 
@@ -72,6 +99,17 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
   })
 }
 
+async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
+  const { data } = await supabaseAdmin
+    .from('events')
+    .select('event_date')
+    .eq('trigger_theme_id', themeId)
+    .order('event_date', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+  return data?.event_date ?? null
+}
+
 async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent[]> {
   const { data, error } = await supabaseAdmin
     .from('events')
@@ -92,7 +130,20 @@ async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent
   }))
 }
 
-function buildItem(row: ThemeRow, recs: ThemeRecommendation[], catalysts: CatalystEvent[]): ThemeRadarItem {
+function buildItem(
+  row: ThemeRow,
+  recs: ThemeRecommendation[],
+  catalysts: CatalystEvent[],
+  earliestEventDate: string | null
+): ThemeRadarItem {
+  const startDate = earliestEventDate
+    ? new Date(earliestEventDate)
+    : new Date(row.first_seen_at)
+  const daysActive = Math.max(1, Math.floor((Date.now() - startDate.getTime()) / 86400000))
+
+  const archetype_playbook = loadPlaybook(row.archetype_id)
+  const playbook_stage = computePlaybookStage(daysActive, archetype_playbook)
+
   return {
     id: row.id,
     name: row.name,
@@ -106,10 +157,12 @@ function buildItem(row: ThemeRow, recs: ThemeRecommendation[], catalysts: Cataly
     summary: row.summary ?? '',
     first_seen_at: row.first_seen_at,
     last_active_at: row.last_active_at,
-    days_active: Math.max(1, calculateDaysAgo(row.first_seen_at)),
+    days_active: daysActive,
     event_count: row.event_count,
     recommendations: recs,
     catalysts,
+    archetype_playbook,
+    playbook_stage,
   }
 }
 
@@ -180,14 +233,15 @@ export async function buildThemeRadar(options: {
     )
   }
 
-  // Fetch recs + catalysts for each theme (in parallel)
+  // Fetch recs + catalysts + earliest event date for each theme (in parallel)
   const items = await Promise.all(
     themeRows.map(async (row) => {
-      const [recs, catalysts] = await Promise.all([
+      const [recs, catalysts, earliestEventDate] = await Promise.all([
         fetchRecommendations(row.id),
         fetchCatalysts(row.id, 5),
+        fetchEarliestEventDate(row.id),
       ])
-      return buildItem(row, recs, catalysts)
+      return buildItem(row, recs, catalysts, earliestEventDate)
     })
   )
 
@@ -235,10 +289,11 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   if (error || !row) throw new Error(`theme not found: ${themeId}`)
 
   const themeRow = row as unknown as ThemeRow
-  const [recs, catalysts] = await Promise.all([
+  const [recs, catalysts, earliestEventDate] = await Promise.all([
     fetchRecommendations(themeId),
     fetchCatalysts(themeId, 50),
+    fetchEarliestEventDate(themeId),
   ])
 
-  return buildItem(themeRow, recs, catalysts)
+  return buildItem(themeRow, recs, catalysts, earliestEventDate)
 }

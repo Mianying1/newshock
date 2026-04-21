@@ -1,0 +1,78 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    180,
+    730
+  ],
+  "historical_cases": [
+    {
+      "name": "Humira / TNF Inhibitor Biologics Supercycle (early 2000s)",
+      "approximate_duration": "约 3–5 年持续主题，核心爆发期约 12–18 个月",
+      "peak_move": "AbbVie前身Abbott及同类生物制药股在获批后数年内累计涨幅数倍，带动整个生物制药板块估值重构",
+      "exit_trigger": "竞品生物仿制药出现预期、专利悬崖讨论升温，以及市场对定价可持续性的质疑导致板块轮动",
+      "confidence": "medium"
+    },
+    {
+      "name": "Sovaldi / 丙肝治愈药物浪潮 (2013–2015)",
+      "approximate_duration": "约 18–24 个月主题持续期",
+      "peak_move": "吉利德科学(Gilead)股价在获批后约18个月内翻倍以上，带动生物技术指数(IBB)创历史新高",
+      "exit_trigger": "国会就药物定价举行听证、医保覆盖受限消息落地、竞品(AbbVie Viekira Pak)获批瓜分市场份额",
+      "confidence": "high"
+    },
+    {
+      "name": "PCSK9抑制剂(Evolocumab/Alirocumab)获批浪潮 (2015–2016)",
+      "approximate_duration": "约 6–12 个月核心炒作期",
+      "peak_move": "安进、再生元相关股票在获批前后出现显著超额收益，板块情绪高度亢奋",
+      "exit_trigger": "保险公司大规模拒绝报销、实际处方量远低于预期，市场从「科学突破」叙事切换至「商业落地」现实检验",
+      "confidence": "high"
+    },
+    {
+      "name": "诺和诺德Ozempic / Wegovy系列早期获批与适应症扩展 (2021–2023)",
+      "approximate_duration": "约 24 个月持续上涨主题，中间伴随多次回调",
+      "peak_move": "诺和诺德市值一度超越欧洲所有上市公司，在约两年内股价累计涨幅超过200%；礼来同期亦创历史新高",
+      "exit_trigger": "供应短缺引发处方可及性担忧、竞品管线密集披露、部分试验数据不及预期(如心衰亚组)以及GLP-1减重药医保覆盖政策不确定性",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "肥胖症被WHO及主要国家卫生系统正式重新分类为慢性病，潜在可寻址市场(TAM)远超历史任何单一药物品类。全球约10亿人达到临床肥胖标准，而历史上类似慢性病药物(如他汀类)的真实渗透率花费10年以上才趋于饱和，意味着需求端扩张周期可能显著长于传统药物周期。",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "GLP-1机制正从单纯「减重」扩展至心血管保护(SELECT试验)、肾病、非酒精性脂肪肝(NASH)、阿尔茨海默病探索等多适应症，形成「平台型药物」叙事。历史上类似多适应症扩展(如阿司匹林、他汀)往往支撑更长的主题存续期，但也带来更高的临床失败风险。",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "美国Medicare药物价格谈判(IRA法案)框架下，GLP-1药物面临比历史同类药物更早的定价压制压力；同时多国政府正积极讨论是否将减重适应症纳入公共保险，政策不确定性双向存在，可能阶段性压缩估值溢价。",
+        "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "注射剂型GLP-1的规模化生产涉及高度复杂的生物发酵与无菌灌装工艺，产能扩张周期(3–5年)远长于小分子药物。这一供给刚性在历史药物浪潮中较为罕见，可能延长主题持续时间，但也构成竞品口服制剂一旦获批后的结构性颠覆风险。",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "药物定价与医保覆盖争议几乎在每次重磅新药浪潮中都成为最终压制估值的核心因素，GLP-1亦观察到类似轨迹正在形成。",
+      "竞品管线密集涌入(如口服小分子GLP-1、GIP/GLP-1双靶点)与历史上PCSK9、丙肝等赛道竞争格局演变路径高度相似，往往在主题高峰后12–18个月开始实质性分流市场份额预期。",
+      "主题早期由科学突破驱动估值扩张，中后期切换为商业落地(处方量、净价折扣、患者依从性)验证，这一叙事转换节奏与Sovaldi、Humira历史案例观察到的规律基本一致。"
+    ],
+    "observation": "GLP-1主题在需求规模与平台药物潜力上呈现出历史罕见的结构性支撑，但政策定价压力与口服竞品技术突破的时间窗口，可能是决定本轮主题是复制他汀类十年慢牛还是重蹈PCSK9快速幻灭的关键分叉变量。"
+  },
+  "exit_signals": [
+    "主要支付方(美国PBM、欧洲国家医保)公布GLP-1减重适应症大规模限制覆盖或严苛阶梯治疗要求，导致实际处方增速数据显著低于华尔街预期。",
+    "口服小分子GLP-1或新机制减重药物披露关键三期临床阳性数据，市场开始对现有注射剂型的长期市场份额进行结构性折价。",
+    "诺和诺德或礼来连续季度净价折扣(net price discount)扩大趋势确认，毛利率压缩信号出现，商业模式可持续性受到分析师集体质疑。",
+    "FDA或EMA就GLP-1长期安全性(如肌肉质量丢失、胃轻瘫、甲状腺风险)启动正式安全性审查或要求黑框警告更新。",
+    "板块内部出现明显分化与资金轮动——龙头股(诺和诺德、礼来)相对大盘持续跑输超过3个月，而资金转向早期管线或非GLP-1减重标的，通常观察到这是主题动能衰竭的先行信号。"
+  ]
+}

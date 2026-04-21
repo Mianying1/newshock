@@ -9,6 +9,7 @@ export async function GET(
     return Response.json(theme)
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
-    return Response.json({ error: msg }, { status: 404 })
+    const status = msg.includes('not found') ? 404 : 500
+    return Response.json({ error: msg }, { status })
   }
 }

@@ -1,0 +1,78 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    900
+  ],
+  "historical_cases": [
+    {
+      "name": "2008-2010 Post-GFC K-Shape Consumer Split",
+      "approximate_duration": "约 18-24 个月",
+      "peak_move": "高端零售商（如 Nordstrom、LVMH）股价显著跑赢大盘，同期 Dollar Tree、Dollar General 等折扣零售商亦创历史新高，而中端百货（Sears、JCPenney）持续承压",
+      "exit_trigger": "2010-2011 年就业市场广泛复苏、中产阶级消费信心回升，中端零售逐步企稳，两极分化收窄",
+      "confidence": "high"
+    },
+    {
+      "name": "2001-2003 科网泡沫破裂后消费分化",
+      "approximate_duration": "约 18-30 个月",
+      "peak_move": "奢侈品板块（LVMH、历峰集团）受高净值人群财富效应支撑相对稳健，Walmart 等大众折扣零售商客流与营收明显提升，中端消费品牌承压",
+      "exit_trigger": "2003 年减税刺激及经济复苏带动中产消费回暖，分化格局趋于缓和",
+      "confidence": "medium"
+    },
+    {
+      "name": "2022-2023 高通胀时期消费极化",
+      "approximate_duration": "约 12-18 个月",
+      "peak_move": "LVMH、爱马仕等奢侈品股价于 2023 年初创历史新高，同期 Dollar General、Five Below 等折扣零售商营收加速增长，Target、Kohl's 等中端零售商库存积压、毛利率下滑",
+      "exit_trigger": "2023 年下半年奢侈品需求（尤其中国市场）开始降温，部分折扣零售商因成本上升盈利预警，分化强度边际减弱",
+      "confidence": "high"
+    },
+    {
+      "name": "1990-1991 衰退期美国消费两极化",
+      "approximate_duration": "约 12-18 个月",
+      "peak_move": "高端品牌与折扣连锁（Walmart 快速扩张期）同步跑赢，传统中端百货市场份额持续流失",
+      "exit_trigger": "1992-1993 年经济复苏驱动中产就业与薪资改善，中端消费需求回流",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "财富效应结构性固化：2020 年代资产价格（股票、房产）持续上涨令高净值群体财富积累速度远超历史均值，叠加财富不平等指标（基尼系数、前 1% 财富占比）处于数十年高位，高端消费需求基础较历次周期更为稳固，并非单纯周期性现象",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "macro",
+        "description": "2025-2026 年关税冲击与贸易保护主义抬头可能同时压缩中端消费者可支配收入（进口商品涨价）并推升奢侈品进口成本，形成双向挤压；与历史上单纯利率或就业驱动的分化不同，此次供给端价格冲击或放大中低收入群体向折扣渠道迁移的速度",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "technology",
+        "description": "电商与算法个性化推荐使折扣零售的触达效率大幅提升（如 Temu、Shein 等超级折扣平台崛起），同时奢侈品数字化稀缺性叙事（限量发售、NFT 联名）强化高端消费的身份认同溢价，技术层面同时加速两端极化，历史上无此结构性催化剂",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "当前财政政策在多个主要经济体呈现分化：针对高收入群体的资本利得税潜在调整、针对低收入群体的转移支付政策不确定性，均可能阶段性干扰消费极化路径，政策变量的不可预测性高于历史可比时期",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "消费极化历史上均发生于信贷周期收紧与实际工资增速放缓并存的宏观背景下，当前环境具有相似特征",
+      "折扣零售的客流提升模式与历史案例高度一致：中产消费者在压力期向下迁移消费层级，属于可观测的周期性规律",
+      "奢侈品需求对高净值人群资产价格的正相关性在历次案例中均有体现，当前逻辑延续历史范式"
+    ],
+    "observation": "当前消费极化周期在结构性财富不平等固化与技术平台双端加速的共同作用下，持续时间可能较历史均值更长，但关税政策冲击与潜在资产价格回调构成主要的周期截断风险，需持续观察。"
+  },
+  "exit_signals": [
+    "中端零售商（如 Target、Kohl's 等）连续两个季度出现可比店面销售增速转正且库存水位正常化，表明中产消费信心实质性修复",
+    "折扣零售龙头（Dollar General、Dollar Tree 等）发布盈利预警或下调全年指引，暗示低收入消费者压力达到临界点或客流增长见顶",
+    "奢侈品集团（LVMH、开云、历峰）有机收入增速连续两季环比下滑并明显低于市场预期，高端需求降温信号确认",
+    "核心通胀持续回落至央行目标区间附近且实际工资增速转为正值，中低收入群体购买力压力边际缓解",
+    "消费者信心调查中中等收入分位群体信心指数出现持续性回升，或信贷利差收窄带动消费信贷可得性改善"
+  ]
+}
