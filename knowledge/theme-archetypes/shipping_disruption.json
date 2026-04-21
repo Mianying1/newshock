@@ -1,0 +1,20 @@
+{
+  "id": "shipping_disruption",
+  "name": "港口/航运中断 · 运价 + 重建",
+  "category": "supply_chain",
+  "description": "主要港口关闭、航运主干道被封锁或遭受攻击, 触发航运运价飙升和航运股重估",
+  "trigger_keywords": ["port closure", "Suez blockage", "Red Sea attack", "shipping disruption", "container shortage", "Panama Canal", "strait closure", "shipping route"],
+  "typical_tickers": { "tier1": ["ZIM", "DAC"], "tier2": ["LNG"], "tier3": [] },
+  "typical_duration_days_min": 30,
+  "typical_duration_days_max": 90,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需有实际港口关闭或主要航线强制绕行确认",
+    "劳资谈判威胁不触发, 需实际罢工或关闭",
+    "单一船只事故不触发, 需影响大量货运流量",
+    "干旱导致的运河水位低、非战争因素的短期限流不触发"
+  ],
+  "notes": null
+}

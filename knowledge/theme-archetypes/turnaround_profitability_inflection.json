@@ -1,0 +1,26 @@
+{
+  "id": "turnaround_profitability_inflection",
+  "name": "困境反转 · 多季度盈利拐点",
+  "category": "earnings",
+  "description": "长期亏损或盈利萎缩的公司经过多季度运营改善后首次出现明确盈利拐点(持续正 FCF、EBITDA 转正、指引上修), 触发估值重构从负溢价到正常化.",
+  "trigger_keywords": ["first profit", "EBITDA positive", "free cash flow positive", "profitability milestone", "cost restructuring complete", "margin inflection", "raised guidance", "operational turnaround", "breakeven"],
+  "typical_tickers": {
+    "tier1": [],
+    "tier2": [],
+    "tier3": [],
+    "dynamic": true
+  },
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 270,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "low",
+  "exclusion_rules": [
+    "需多季度(≥2 季度)持续改善趋势, 单季度超预期不触发",
+    "需同时有未来指引上修, 仅历史数据改善不够",
+    "盈利拐点需来自核心业务改善, 非一次性资产出售或会计调整",
+    "亏损收窄但仍大幅亏损不触发, 需接近或达到盈亏平衡",
+    "管理层预期但尚未体现在财报数据中的'转型计划'不触发"
+  ],
+  "notes": "Ticker 完全动态. 此类主题需 AI 在分类时识别公司名称并查找对应 ticker. confidence_level=low 反映个股特定性强."
+}

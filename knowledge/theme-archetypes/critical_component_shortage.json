@@ -1,0 +1,20 @@
+{
+  "id": "critical_component_shortage",
+  "name": "关键组件短缺 · 上游定价权",
+  "category": "supply_chain",
+  "description": "特定关键组件(芯片、光模块、电容、基板等)出现行业级短缺, 触发上游供应商定价权重估",
+  "trigger_keywords": ["shortage", "allocation", "price hike", "supply constraint", "backlog surge", "lead time extended", "component scarcity"],
+  "typical_tickers": { "tier1": [], "tier2": [], "tier3": [], "dynamic": true },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 270,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需有具体组件短缺确认: 公司公告、行业报告或多方印证",
+    "预测性文章或'可能短缺'不触发",
+    "需影响多家下游厂商, 单一客户供应问题不触发",
+    "季节性需求波动导致的短暂紧张不触发"
+  ],
+  "notes": "tier 结构由触发事件动态决定, 见 Theme Generator 逻辑. 关键: 识别短缺组件的定价权集中者."
+}

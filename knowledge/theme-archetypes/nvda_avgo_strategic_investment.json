@@ -1,0 +1,20 @@
+{
+  "id": "nvda_avgo_strategic_investment",
+  "name": "NVDA/AVGO 战略投资 · 锁产能信号",
+  "category": "ai_semi",
+  "description": "NVDA/AVGO 等大型半导体公司对上游供应商进行战略股权投资或签署多年供应协议, 锁产能信号触发同赛道重新定价",
+  "trigger_keywords": ["NVIDIA invests", "Broadcom partnership", "strategic equity", "strategic investment", "multi-year supply agreement", "equity stake semiconductor"],
+  "typical_tickers": { "tier1": [], "tier2": [], "tier3": [], "dynamic": true },
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "投资方必须是 NVDA/AVGO 或同级别大厂 (市值 >$100B)",
+    "需明确股权投资或多年供应协议, 普通合作备忘录不触发",
+    "金额 <$500M 的投资不触发",
+    "被投方是初创公司且无明确上市计划不触发"
+  ],
+  "notes": "tier 结构由触发事件动态决定, 见 Theme Generator 逻辑. alpha 在被投公司同业竞对(补涨)和被投公司上游."
+}

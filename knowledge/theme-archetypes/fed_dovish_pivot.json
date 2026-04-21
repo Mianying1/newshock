@@ -1,0 +1,20 @@
+{
+  "id": "fed_dovish_pivot",
+  "name": "Fed 鸽派转向 · 小盘 biotech / REITs",
+  "category": "macro_monetary",
+  "description": "美联储明确转向降息周期, 受益于低利率的小盘股、biotech、REITs 开始重新定价",
+  "trigger_keywords": ["Fed cut", "dovish", "dot plot shift", "rate pivot", "Federal Reserve lower rates", "FOMC dovish", "rate reduction"],
+  "typical_tickers": { "tier1": ["NEE"], "tier2": ["DHI", "LEN", "PHM", "LOW", "HD"], "tier3": ["GLD"], "dynamic": true },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "Fed 官员个人表态不够, 需要 FOMC 会议声明或点阵图官方下移",
+    "通胀仍处高位时的'降息预期'炒作不触发",
+    "需明确信号: 超预期降息或官方前瞻指引转向",
+    "一次降息预期不触发, 需明确进入降息周期"
+  ],
+  "notes": "tier 结构动态决定. 典型受益: 小盘 biotech (IBB/XBI), REITs (O/VICI). 目前 ticker 库覆盖有限, tier 以 NEE/GLD 为代表."
+}

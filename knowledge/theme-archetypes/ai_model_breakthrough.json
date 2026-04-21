@@ -1,0 +1,22 @@
+{
+  "id": "ai_model_breakthrough",
+  "name": "新 AI 模型突破 · 算力跳变",
+  "category": "ai_semi",
+  "description": "范式级 AI 模型发布(架构革命或能力断层式跃升), 引发市场对算力需求跳增的预期, 触发上游芯片和光互联重估. 仅限真正的范式转换事件, 不包含常规模型迭代.",
+  "trigger_keywords": ["new model release", "compute demand", "GPU shortage", "AI breakthrough", "model launch", "foundation model", "reasoning model", "AGI milestone"],
+  "typical_tickers": { "tier1": ["NVDA", "AVGO", "MU"], "tier2": ["LITE", "COHR", "ANET"], "tier3": ["AMD", "AXTI"] },
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需范式级突破: 架构革命(非 Transformer)或跨越式能力跃升, 不包含同架构参数扩大",
+    "GPT-4o mini / Claude Haiku 类效率模型发布不触发",
+    "API 降价或效率提升本身不触发(反而是算力需求下行信号)",
+    "测试版、研究论文、Demo 不触发, 需商业正式发布",
+    "开源小模型发布不触发, 需具有商业规模影响力的模型",
+    "常规版本迭代(如 GPT-4 → GPT-4.5)不触发, 需有明确的市场共识认定为代际突破"
+  ],
+  "notes": null
+}

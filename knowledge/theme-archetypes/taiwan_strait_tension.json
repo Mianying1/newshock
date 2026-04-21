@@ -1,0 +1,20 @@
+{
+  "id": "taiwan_strait_tension",
+  "name": "台海局势 · 半导体供应链重估",
+  "category": "geopolitical",
+  "description": "台湾海峡军事紧张升级时, 全球半导体供应链面临重大中断风险, 触发 INTC/GFS 等替代产能重新定价",
+  "trigger_keywords": ["Taiwan", "TSMC", "PLA exercise", "blockade", "Taiwan Strait", "People's Liberation Army", "Taiwan invasion", "Chinese military drill"],
+  "typical_tickers": { "tier1": ["INTC", "GFS"], "tier2": ["AMAT", "LRCX", "LMT", "RTX"], "tier3": ["ASML", "ANET"] },
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "不包括台湾大选、两岸外交表态或一般政治摩擦",
+    "需有明确军事行动迹象: PLA 大规模演习、导弹测试、实弹演练",
+    "外交部抗议声明不触发",
+    "需涉及台海海峡或台湾本岛, 南海一般紧张不触发"
+  ],
+  "notes": null
+}

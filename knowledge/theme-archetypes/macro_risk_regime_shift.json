@@ -1,0 +1,24 @@
+{
+  "id": "macro_risk_regime_shift",
+  "name": "宏观风险政权切换 · VIX 飙升 / 避险轮动",
+  "category": "macro_monetary",
+  "description": "系统性宏观冲击(衰退预期、信用危机、地缘政治升级)触发 VIX 急速飙升, 资金大规模撤出风险资产, 流向黄金、国债、防御性消费. 此为防御/避险主题.",
+  "trigger_keywords": ["VIX spike", "market crash", "risk-off", "flight to safety", "credit crisis", "recession fears", "yield curve inversion", "systemic risk", "bank stress", "financial contagion"],
+  "typical_tickers": {
+    "tier1": ["GLD", "TLT"],
+    "tier2": ["WMT", "PG", "JNJ"],
+    "tier3": []
+  },
+  "typical_duration_days_min": 14,
+  "typical_duration_days_max": 90,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需 VIX 单日 >5 点或触及 30 以上, 普通市场回调不触发",
+    "单一股票暴跌或行业调整不触发, 需系统性跨资产联动",
+    "技术性调整(纳指 -3%)不触发, 需有明确宏观叙事驱动",
+    "此主题下推荐方向为防御/避险资产, 不推荐做多成长股"
+  ],
+  "notes": "避险主题: tier1 为黄金+长债. 受负面影响的成长股标记 negative_impact 而非作为买入推荐."
+}

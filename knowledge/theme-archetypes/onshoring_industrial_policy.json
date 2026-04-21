@@ -1,0 +1,24 @@
+{
+  "id": "onshoring_industrial_policy",
+  "name": "回岸制造 · CHIPS Act / IRA 产业政策",
+  "category": "tech_breakthrough",
+  "description": "美国 CHIPS Act、IRA 清洁能源补贴、友岸外包政策落地执行, 触发半导体制造、清洁能源制造、国防供应链回岸的资本支出浪潮.",
+  "trigger_keywords": ["CHIPS Act funding", "IRA tax credit", "onshoring", "reshoring", "domestic manufacturing", "fab construction", "friend-shoring", "supply chain localization", "DoD contract", "semiconductor factory"],
+  "typical_tickers": {
+    "tier1": ["AMAT", "LRCX", "KLAC"],
+    "tier2": ["EMR", "ETN", "PWR"],
+    "tier3": ["URI", "VMC", "MLM"]
+  },
+  "typical_duration_days_min": 180,
+  "typical_duration_days_max": 730,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需具体项目落地或补贴分配公告, 政策讨论或立法进展不触发",
+    "外国企业在美建厂公告需达到一定规模($1B+)才触发",
+    "纯国防承包商合同(非制造回岸)归入地缘政治主题",
+    "已广泛预期的补贴续期或程序性拨款不触发"
+  ],
+  "notes": "设备商(AMAT/LRCX/KLAC)是最直接受益方. 工程建设(PWR/EMR)是次级受益. 周期较长, 需用 180-730 天窗口."
+}

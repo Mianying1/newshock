@@ -1,0 +1,24 @@
+{
+  "id": "china_stimulus",
+  "name": "中国刺激政策 · 大宗商品 / 工业金属需求",
+  "category": "geopolitical",
+  "description": "中国 PBoC 大幅降准降息或财政部宣布超预期基建/消费刺激, 触发大宗商品(铜、铁矿、油)需求预期上修, 受益于中国需求的矿业/能源/工业股重估.",
+  "trigger_keywords": ["China stimulus", "PBOC rate cut", "China infrastructure", "China consumption boost", "China fiscal stimulus", "China property rescue", "RRR cut", "China economic package"],
+  "typical_tickers": {
+    "tier1": ["FCX", "BHP", "RIO"],
+    "tier2": ["CLF", "AA", "NUE"],
+    "tier3": ["CAT", "DE"]
+  },
+  "typical_duration_days_min": 30,
+  "typical_duration_days_max": 120,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需具体政策宣布(金额、时间表), 政策预期或传言不触发",
+    "定向小规模刺激(农村补贴、特定行业补贴)不触发全大宗商品主题",
+    "中国政府工作报告中的年度目标重申不触发",
+    "需超预期幅度: 低于市场预期的小幅降息不触发"
+  ],
+  "notes": "铜是核心受益(FCX/BHP). 如刺激明确针对房地产, 加入 iron ore 相关. 需关注政策落地执行风险."
+}

@@ -1,0 +1,20 @@
+{
+  "id": "middle_east_energy_shock",
+  "name": "中东冲突 · 油价战争溢价",
+  "category": "geopolitical",
+  "description": "中东地区(涉及伊朗、以色列、红海/霍尔木兹海峡)发生军事冲突或制裁升级时, 原油供应受威胁, 油价出现战争溢价, 能源股领涨",
+  "trigger_keywords": ["Iran", "Israel", "Strait of Hormuz", "oil embargo", "Middle East attack", "Houthi", "Red Sea", "Gulf of Oman", "Persian Gulf strike"],
+  "typical_tickers": { "tier1": ["CVX", "XOM", "OXY", "LNG"], "tier2": ["NEXT", "MPC", "VLO", "PSX"], "tier3": [] },
+  "typical_duration_days_min": 30,
+  "typical_duration_days_max": 90,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "不包括普通外交摩擦或口头制裁表态",
+    "必须是实际军事冲突、空袭、或油气设施受直接威胁",
+    "短期和谈进展新闻不触发",
+    "以色列-哈马斯加沙冲突本身不触发, 除非明确扩散至伊朗或霍尔木兹"
+  ],
+  "notes": null
+}

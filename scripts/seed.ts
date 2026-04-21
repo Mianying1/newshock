@@ -55,41 +55,55 @@ function isFkError(msg: string): string | null {
 }
 
 const counts = {
-  patterns: 0,
+  theme_archetypes: 0,
   tickers: 0,
+  // v1 不使用以下, 保留供 v2 复活
+  patterns: 0,
   pattern_ticker_map: 0,
   pattern_ticker_map_skipped: 0,
   historical_instances: 0,
 };
 
-// ── Step 1: patterns ──────────────────────────────────────────────────────────
+// ── Step 1: theme_archetypes (v1 primary) ────────────────────────────────────
+
+async function seedThemeArchetypes() {
+  const records = readJsonFiles<Record<string, unknown>>(
+    path.join(KNOWLEDGE, "theme-archetypes")
+  ).filter((r) => !("_draft" in r)); // skip any _draft files
+
+  console.log(`\n[1/5] theme_archetypes — read ${records.length} files`);
+
+  const { error } = await supabase
+    .from("theme_archetypes")
+    .upsert(records, { onConflict: "id" });
+
+  if (error) {
+    console.error("❌ theme_archetypes upsert failed:", error.message);
+    process.exit(1);
+  }
+
+  counts.theme_archetypes = records.length;
+  console.log(`     ✓ upserted ${records.length} theme_archetypes`);
+}
+
+// ── Step 1-legacy: patterns (v1 不使用, v2 可能复活) ─────────────────────────
 
 async function seedPatterns() {
   const records = readJsonFiles<Record<string, unknown>>(
     path.join(KNOWLEDGE, "patterns")
   );
-  console.log(`\n[1/4] patterns — read ${records.length} files`);
-
-  const { error } = await supabase
-    .from("patterns")
-    .upsert(records, { onConflict: "id" });
-
-  if (error) {
-    console.error("❌ patterns upsert failed:", error.message);
-    process.exit(1);
-  }
-
+  console.log(`\n[legacy] patterns — read ${records.length} files (v1 skip)`);
   counts.patterns = records.length;
-  console.log(`     ✓ upserted ${records.length} patterns`);
+  // v1 不写入数据库, 仅统计文件数
 }
 
-// ── Step 2: tickers ───────────────────────────────────────────────────────────
+// ── Step 2: tickers (v1 active) ──────────────────────────────────────────────
 
 async function seedTickers() {
   const records = readJsonFiles<Record<string, unknown>>(
     path.join(KNOWLEDGE, "tickers")
   );
-  console.log(`\n[2/4] tickers — read ${records.length} files`);
+  console.log(`\n[2/5] tickers — read ${records.length} files`);
 
   const { error } = await supabase
     .from("tickers")
@@ -104,14 +118,18 @@ async function seedTickers() {
   console.log(`     ✓ upserted ${records.length} tickers`);
 }
 
-// ── Step 3: pattern_ticker_map ────────────────────────────────────────────────
+// ── Step 3: pattern_ticker_map (v1 不使用, v2 可能复活) ──────────────────────
 
 async function seedMappings() {
   const files = readJsonArrayFiles<Record<string, unknown>>(
     path.join(KNOWLEDGE, "mappings")
   );
-  console.log(`\n[3/4] pattern_ticker_map — read ${files.length} mapping files`);
+  console.log(`\n[legacy] pattern_ticker_map — read ${files.length} files (v1 skip)`);
+  counts.pattern_ticker_map = 0; // v1 不写入
+  counts.pattern_ticker_map_skipped = 0;
+  return; // early return for v1 — v2: remove this return to re-enable below
 
+  // eslint-disable-next-line no-unreachable
   let inserted = 0;
   let skipped = 0;
 
@@ -161,13 +179,16 @@ async function seedMappings() {
   counts.pattern_ticker_map_skipped = skipped;
 }
 
-// ── Step 4: historical_instances ─────────────────────────────────────────────
+// ── Step 4: historical_instances (v1 不使用, v2 可能复活) ────────────────────
 
 async function seedHistorical() {
   const files = readJsonArrayFiles<Record<string, unknown>>(
     path.join(KNOWLEDGE, "historical")
   );
-  console.log(`\n[4/4] historical_instances — read ${files.length} files`);
+  console.log(`\n[legacy] historical_instances — read ${files.length} files (v1 skip)`);
+  counts.historical_instances = 0;
+  return; // early return for v1
+  void files;
 
   let inserted = 0;
 
@@ -218,21 +239,23 @@ async function main() {
   console.log("  Newshock · Knowledge Base Seed");
   console.log("════════════════════════════════════════");
 
-  await seedPatterns();
+  await seedThemeArchetypes();
   await seedTickers();
-  await seedMappings();
-  await seedHistorical();
+  await seedPatterns();      // legacy, no DB write
+  await seedMappings();      // legacy, no DB write
+  await seedHistorical();    // legacy, no DB write
 
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
 
   console.log(`
 ════════════════════════════════════════
-  Seed Summary
+  Seed Summary (v1)
 ════════════════════════════════════════
-  patterns:              ${String(counts.patterns).padStart(2)} upserted
-  tickers:               ${String(counts.tickers).padStart(2)} upserted
-  pattern_ticker_map:    ${String(counts.pattern_ticker_map).padStart(2)} inserted  (skipped ${counts.pattern_ticker_map_skipped} __SELF__ placeholders)
-  historical_instances:  ${String(counts.historical_instances).padStart(2)} inserted
+  theme_archetypes:      ${String(counts.theme_archetypes).padStart(2)} upserted  ← v1 active
+  tickers:               ${String(counts.tickers).padStart(2)} upserted          ← v1 active
+  patterns (legacy):     ${String(counts.patterns).padStart(2)} files (not written to DB)
+  pattern_ticker_map:     0 (legacy, not written)
+  historical_instances:   0 (legacy, not written)
 ────────────────────────────────────────
   Total time: ${elapsed}s
 ════════════════════════════════════════`);

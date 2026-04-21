@@ -1,0 +1,20 @@
+{
+  "id": "semi_fab_disruption",
+  "name": "Fab 事故/中断 · 替代产能重估",
+  "category": "supply_chain",
+  "description": "关键半导体晶圆厂因地震、火灾、事故或自然灾害生产中断, 触发替代产能供应商和内存市场重估",
+  "trigger_keywords": ["fab shutdown", "earthquake Taiwan", "semiconductor shortage", "wafer fab fire", "production halt", "fab disruption", "chip shortage"],
+  "typical_tickers": { "tier1": ["INTC", "GFS", "MU"], "tier2": ["AMAT", "LRCX"], "tier3": ["AMD"] },
+  "typical_duration_days_min": 30,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需有生产中断确认: 地震/火灾/事故等实际事件公告",
+    "计划内停产维护、正常生产切换不触发",
+    "需影响全球供应链的关键 fab (非小型区域 fab)",
+    "供应链紧张的一般性分析文章不触发"
+  ],
+  "notes": null
+}

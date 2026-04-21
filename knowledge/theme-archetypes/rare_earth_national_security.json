@@ -1,0 +1,20 @@
+{
+  "id": "rare_earth_national_security",
+  "name": "稀土国安 · 矿业机会",
+  "category": "geopolitical",
+  "description": "美国或西方国家对稀土、镓、锗等关键战略矿产实施供应安全政策, 或中国限制出口, 触发美国稀土矿业公司重估",
+  "trigger_keywords": ["rare earth", "gallium restriction", "critical minerals", "REE", "germanium", "neodymium", "rare earth export ban", "strategic minerals"],
+  "typical_tickers": { "tier1": ["MP", "UUUU"], "tier2": ["AXTI"], "tier3": [] },
+  "typical_duration_days_min": 180,
+  "typical_duration_days_max": 730,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需有具体限制/禁止出口政策或采购安全法规",
+    "稀土矿产的一般市场分析、价格走势文章不触发",
+    "需涉及镓、锗、稀土磁铁等具体关键材料, 泛泛'关键矿产'讨论不触发",
+    "需有政府级别的政策动作, 企业层面的合同不触发"
+  ],
+  "notes": null
+}

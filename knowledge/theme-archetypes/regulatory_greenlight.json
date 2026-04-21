@@ -1,0 +1,25 @@
+{
+  "id": "regulatory_greenlight",
+  "name": "监管开绿灯 · FDA/SEC/FTC 重大审批",
+  "category": "macro_monetary",
+  "description": "FDA 重磅新药/器械审批、SEC 重要金融产品批准(ETF/加密)、FTC 大型并购放行, 为相关行业打开增长空间, 触发赛道重估.",
+  "trigger_keywords": ["FDA approval", "FDA cleared", "SEC approves", "FTC clears", "merger approved", "drug approval", "breakthrough therapy designation", "NDA approved", "510k cleared", "crypto ETF approved"],
+  "typical_tickers": {
+    "tier1": [],
+    "tier2": [],
+    "tier3": [],
+    "dynamic": true
+  },
+  "typical_duration_days_min": 30,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需最终批准决定, 临床试验结果或 PDUFA 日期临近不触发",
+    "Fast Track / Breakthrough Therapy 指定本身不触发, 需正式批准",
+    "并购需监管最终放行, 仅提交申请不触发",
+    "单个小型 biotech 药物批准仅触发该公司, 不触发整个赛道(除非开创全新治疗类别)"
+  ],
+  "notes": "Ticker 由触发事件动态决定. FDA 重磅批准可触发竞品/受益供应链. 需判断是否为 platform-level 事件."
+}

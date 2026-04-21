@@ -1,0 +1,24 @@
+{
+  "id": "hyperscaler_mega_capex",
+  "name": "Hyperscaler 超大 capex · 光子学/电力上游",
+  "category": "ai_semi",
+  "description": "超大规模云厂商或 neocloud 宣布 GW 级 AI 数据中心建设承诺(≥$5B), 触发光模块、激光器、衬底、电力设备等上游供应链重估",
+  "trigger_keywords": ["gigawatt", "data center buildout", "multi-year compute", "capex increase", "AI infrastructure", "data center investment", "Stargate", "billion data center"],
+  "typical_tickers": {
+    "tier1": ["LITE", "COHR", "VRT", "ANET", "ETN"],
+    "tier2": ["AXTI", "AEHR", "FN", "CLS", "AMZN"],
+    "tier3": ["MU", "AVGO", "NEE"]
+  },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 365,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需 ≥$5B 的数据中心或算力基础设施明确承诺, 不包括泛泛 AI 投资计划",
+    "普通年度 IT/capex 预算增加报道不触发",
+    "来自小型 neocloud 的小额投资不触发",
+    "已被市场充分 price-in 的已知项目更新不触发 (第二次公告反应弱)"
+  ],
+  "notes": null
+}

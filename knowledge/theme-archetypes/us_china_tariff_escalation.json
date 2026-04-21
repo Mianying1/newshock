@@ -1,0 +1,20 @@
+{
+  "id": "us_china_tariff_escalation",
+  "name": "美中关税升级 · 国产替代",
+  "category": "geopolitical",
+  "description": "美国对中国半导体、关键技术或战略物资加征关税或扩大出口管制, 触发国产替代需求和关键材料上游重估",
+  "trigger_keywords": ["tariff increase", "trade war", "entity list", "export restriction", "chip ban", "BIS", "technology restriction", "decoupling"],
+  "typical_tickers": { "tier1": ["MP", "AXTI"], "tier2": ["UUUU", "INTC", "AMAT"], "tier3": ["GFS"] },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 365,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需有具体关税税率变更或实体清单更新公告, 不包括谈判表态",
+    "贸易谈判进展本身不触发",
+    "需涉及半导体、AI 芯片、关键材料等科技领域, 农业贸易摩擦不触发",
+    "单一企业制裁不触发, 需为行业级政策变化"
+  ],
+  "notes": null
+}

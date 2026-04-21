@@ -1,0 +1,20 @@
+{
+  "id": "inflation_surprise_upside",
+  "name": "通胀超预期 · 抗通胀资产",
+  "category": "macro_monetary",
+  "description": "CPI/PCE 数据显著超预期或通胀预期再度走高, 黄金、能源等抗通胀资产受益",
+  "trigger_keywords": ["CPI above", "inflation accelerating", "price surge", "CPI beats", "inflation hotter", "PCE surprise", "core inflation"],
+  "typical_tickers": { "tier1": ["GLD", "CVX", "XOM"], "tier2": ["OXY", "LNG", "MPC"], "tier3": [] },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 270,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需具体 CPI/PCE 数据超预期, 不包括通胀预期调查或分析师预测",
+    "单一商品(如油价、食品)涨价不触发, 需为综合通胀数据",
+    "已被市场充分定价的通胀预期不触发",
+    "通胀下行趋势中的单月小幅反弹不触发"
+  ],
+  "notes": null
+}

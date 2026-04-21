@@ -1,0 +1,26 @@
+{
+  "id": "cpo_photonics_rotation",
+  "name": "CPO 光子学轮动 · 下一代互联",
+  "category": "ai_semi",
+  "description": "Co-Packaged Optics 和硅光子学技术商业化进程加速, 400G/800G/1.6T 光互联需求爆发, 触发光子学供应链大规模重估",
+  "trigger_keywords": ["co-packaged optics", "silicon photonics", "1.6T photonics", "CPO", "optical interconnect", "datacom transceiver", "800G optical"],
+  "typical_tickers": {
+    "tier1": ["LITE", "COHR", "AAOI"],
+    "tier2": ["AXTI", "FN", "AEHR"],
+    "tier3": []
+  },
+  "typical_duration_days_min": 180,
+  "typical_duration_days_max": 540,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high",
+  "exclusion_rules": [
+    "需明确 CPO 或硅光子学商业化里程碑: 量产公告、大客户验证、首批出货",
+    "一般光学技术进步、论文发表不触发",
+    "需有具体量产/客户验证/出货公告",
+    "光纤电缆或传统光模块升级不触发, 需明确 CPO 技术路线",
+    "单家公司季报超预期不触发, 需行业层面的商业化里程碑",
+    "LITE/COHR 单季度财报(即使超预期)不触发整个光子学主题, 需有更广泛的行业信号"
+  ],
+  "notes": null
+}

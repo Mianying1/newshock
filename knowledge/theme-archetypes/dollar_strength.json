@@ -1,0 +1,19 @@
+{
+  "id": "dollar_strength",
+  "name": "美元走强 · 海外业务承压",
+  "category": "macro_monetary",
+  "description": "美元指数显著走强, 海外营收占比高的科技/工业公司面临汇率逆风, 作为风险观察主题",
+  "trigger_keywords": ["DXY surge", "Fed hawkish", "dollar rally", "strong dollar", "dollar index", "USD strength", "currency headwind"],
+  "typical_tickers": { "tier1": [], "tier2": [], "tier3": [], "dynamic": true },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "low",
+  "exclusion_rules": [
+    "需 DXY 显著突破关键技术位或 Fed 超预期鹰派政策变化",
+    "一般美元走强讨论或短期波动不触发",
+    "需持续趋势而非单日反弹"
+  ],
+  "notes": "此主题仅作为观察/上下文, 不推荐做空. 受负面影响的股票显示时明确标记 'negative_impact'. 受益方向: GLD 作为避险资产."
+}

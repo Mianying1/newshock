@@ -1,0 +1,24 @@
+{
+  "id": "energy_transition_acceleration",
+  "name": "能源转型加速 · AI 电力需求 / 核电复兴",
+  "category": "tech_breakthrough",
+  "description": "AI 数据中心电力需求爆发、核电技术突破(SMR 商业化)、大规模储能部署, 触发清洁能源/电网基础设施/核电供应链重估.",
+  "trigger_keywords": ["nuclear power deal", "SMR contract", "data center power", "grid capacity", "clean energy demand", "nuclear revival", "power purchase agreement", "AI power consumption", "energy storage deployment", "transmission investment"],
+  "typical_tickers": {
+    "tier1": ["CEG", "VST", "NEE"],
+    "tier2": ["GEV", "FLNC", "ITRI"],
+    "tier3": ["CCJ", "NLR", "UUUU"]
+  },
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 365,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "medium",
+  "exclusion_rules": [
+    "需具体 PPA 签署或数据中心选址公告, 泛泛的电力需求预测不触发",
+    "核电: 需具体 SMR 合同或现有核电站重启公告, 政策表态不触发",
+    "可再生能源一般扩张(常规风光项目)不触发, 需与 AI/数据中心需求明确挂钩",
+    "监管审批通过但无商业合同的 SMR 新技术不触发"
+  ],
+  "notes": "CEG/VST 是 AI 电力需求最直接受益方(现有核电站). CCJ 是铀矿受益. GEV 是电网设备受益."
+}
