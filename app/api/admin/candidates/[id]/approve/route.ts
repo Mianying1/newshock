@@ -37,7 +37,7 @@ export async function POST(
     })
   }
 
-  // Create archetype
+  // Create archetype — trigger_keywords is NOT NULL, seed with empty array
   const nameFirstPart = (cand.title as string).split(' · ')[0] || cand.title
   const { error: archErr } = await supabaseAdmin.from('theme_archetypes').insert({
     id: cand.proposed_archetype_id,
@@ -45,6 +45,11 @@ export async function POST(
     category: cand.category,
     description: cand.description,
     is_active: true,
+    trigger_keywords: [],
+    typical_duration_days_min: 90,
+    typical_duration_days_max: 180,
+    confidence_level: 'medium',
+    created_by: 'admin_approve',
   })
 
   if (archErr) {
