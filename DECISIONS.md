@@ -99,6 +99,46 @@
 
 ---
 
+## 2026-04-20 · Step 8c 完成 + 产品洞察
+
+### 分类结果 (25 条非 SEC 样本)
+- Classified 8/25 = 32% (100% 准确)
+- Exploratory 11/25 = 44%
+- Irrelevant 6/25 = 24%
+- 成本 $0.012/条, 月 ~$35
+
+### 关键洞察 1: Pattern #08 候选 · Strategic Partnership
+Sivers-Jabil 合作被拒分类, 理由"缺 deal size"。
+但这种"光子学供应链战略合作"(无 deal size) 是 Serenity 式 alpha 信号。
+
+TODO (不在 v1, 在 v1.1): 增加 Pattern #08:
+- id: strategic_partnership_design_in
+- 无 min_deal_size 要求
+- 关键词: "designed-in", "strategic partnership", "supply agreement"
+- 上游光子学 (LITE/COHR/AXTI/SIVE) 为 tier 1
+
+### 关键洞察 2: Google News 关键词不均衡
+"chip export" 关键词过强, 导致 Pattern #03 占 75% 命中。
+Step 8e cron 部署前要把单个 Google News 源
+拆成 7 个 pattern 专属源。
+
+每个 pattern 的 Google News URL 关键词:
+- #01: "gigawatt" OR "data center buildout" OR "$X billion capex"
+- #02: NVIDIA OR Broadcom "invests" OR "partners with"
+- #03: "chip export" OR "entity list" OR "sanctions semiconductor"
+- #04: "beats estimates" OR "raises guidance" small cap
+- #05: "to acquire" OR "definitive agreement" semiconductor OR energy
+- #06: "military strike" OR "sanctions" OR Iran OR Taiwan
+- #07: hurricane OR earthquake OR "fab shutdown"
+
+### 关键洞察 3: Exploratory 的产品价值
+11 条 exploratory 是诚实过滤的体现,
+Step 10 UI 要明确分层: 今日 N 条 classified (首屏)
++ M 条 exploratory (二级页面),
+让用户感受到 Newshock 的"信息密度控制"价值。
+
+---
+
 ## 2026-04-20 · Step 8c 完成 · Classifier 部署
 
 ### 结果 (25 条非 SEC events 样本)
