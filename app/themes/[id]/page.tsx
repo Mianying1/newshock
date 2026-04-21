@@ -7,6 +7,7 @@ import RecommendationTier from '@/components/RecommendationTier'
 import CatalystList from '@/components/CatalystList'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
+import { STAGE_COLORS } from '@/lib/utils'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
 
@@ -16,6 +17,7 @@ export default function ThemeDetailPage() {
   const [theme, setTheme] = useState<ThemeRadarItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [showAllDiffs, setShowAllDiffs] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -77,7 +79,7 @@ export default function ThemeDetailPage() {
               <CatalystList catalysts={theme.catalysts} />
             </div>
 
-            {/* Exposure Mapping (formerly recommendations) */}
+            {/* Exposure Mapping */}
             <div>
               <p className="font-semibold text-zinc-800 mb-4">━━ {t('theme_detail.exposure_mapping')} ━━</p>
               <RecommendationTier tier={1} recommendations={tier1} />
@@ -89,68 +91,90 @@ export default function ThemeDetailPage() {
             </div>
 
             {/* Playbook section */}
-            {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (
-              <section className="mt-8 pt-6 border-t">
-                <h2 className="text-lg font-semibold mb-2">━━ {t('theme_detail.historical_playbook')} ━━</h2>
+            {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (() => {
+              const pb = theme.archetype_playbook!
+              const daysMax = pb.typical_duration_days_approx?.[1] || 90
+              const progressPercent = Math.min(100, Math.round((theme.days_active / daysMax) * 100))
+              const stageColor = STAGE_COLORS[theme.playbook_stage] ?? 'bg-zinc-300'
+              const stageDescKey = `theme_detail.stage_desc_${theme.playbook_stage}`
 
-                <p className="text-xs text-zinc-500 mb-4">
-                  {t('theme_detail.disclaimer_playbook')}
-                </p>
+              const ttd = pb.this_time_different
+              const allValidDiffs = (ttd?.differences ?? []).filter(
+                (d) => d.dimension && d.description
+              )
+              const highConfDiffs = allValidDiffs.filter((d) => d.confidence === 'high')
+              const visibleDiffs = showAllDiffs ? allValidDiffs : highConfDiffs
+              const hiddenCount = allValidDiffs.length - highConfDiffs.length
 
-                <div className="mb-4 space-y-1">
-                  <div className="text-sm">
-                    <span className="text-zinc-600">{t('theme_detail.typical_duration')}: </span>
-                    <span className="font-medium">
-                      {theme.archetype_playbook!.typical_duration_label}
-                    </span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
-                    <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
-                    {theme.playbook_stage === 'late' && (
-                      <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>
+              const validSims = (ttd?.similarities ?? []).filter(
+                (s) => typeof s === 'object' && s !== null && (s as { dimension?: string }).dimension && (s as { description?: string }).description
+              ) as { dimension: string; description: string }[]
+
+              return (
+                <section className="mt-8 pt-6 border-t">
+                  <h2 className="text-lg font-semibold mb-2">━━ {t('theme_detail.historical_playbook')} ━━</h2>
+
+                  <p className="text-xs text-zinc-500 mb-3">
+                    {t('theme_detail.disclaimer_playbook')}
+                  </p>
+
+                  {/* Progress bar */}
+                  <div className="mt-3 mb-6">
+                    <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                      <span>0 {t('theme_detail.days')}</span>
+                      <span>{progressPercent}% {t('theme_detail.elapsed')}</span>
+                      <span>{daysMax} {t('theme_detail.days')} ({t('theme_detail.typical_ceiling')})</span>
+                    </div>
+                    <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${stageColor} transition-all`}
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                    {t(stageDescKey) && (
+                      <p className="text-xs mt-2 text-zinc-600">{t(stageDescKey)}</p>
                     )}
-                    {theme.playbook_stage === 'beyond' && (
-                      <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>
-                    )}
                   </div>
-                </div>
 
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium mb-2">{t('theme_detail.historical_cases')}:</h3>
-                  <ul className="space-y-1 text-sm">
-                    {theme.archetype_playbook!.historical_cases.map((c, i) => (
-                      <li key={i}>
-                        · <span className="font-medium">{c.name}</span>
-                        {' · '}{c.approximate_duration}
-                        {' · '}{c.peak_move}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  <div className="mb-4 space-y-1">
+                    <div className="text-sm">
+                      <span className="text-zinc-600">{t('theme_detail.typical_duration')}: </span>
+                      <span className="font-medium">{pb.typical_duration_label}</span>
+                    </div>
+                    <div className="text-sm">
+                      <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
+                      <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                      {theme.playbook_stage === 'late' && (
+                        <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>
+                      )}
+                      {theme.playbook_stage === 'beyond' && (
+                        <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>
+                      )}
+                    </div>
+                  </div>
 
-                {(() => {
-                  const ttd = theme.archetype_playbook!.this_time_different
-                  const validDiffs = (ttd?.differences ?? []).filter(
-                    (d) => d.dimension && d.description
-                  )
-                  const validSims = (ttd?.similarities ?? []).filter(
-                    (s) => s.dimension && s.description
-                  )
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium mb-2">{t('theme_detail.historical_cases')}:</h3>
+                    <ul className="space-y-1 text-sm">
+                      {pb.historical_cases.map((c, i) => (
+                        <li key={i}>
+                          · <span className="font-medium">{c.name}</span>
+                          {' · '}{c.approximate_duration}
+                          {' · '}{c.peak_move}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                  if (validDiffs.length === 0 && validSims.length === 0 && !ttd?.observation) {
-                    return null
-                  }
-
-                  return (
+                  {(visibleDiffs.length > 0 || validSims.length > 0 || ttd?.observation) && (
                     <div className="mb-6 p-4 bg-blue-50 rounded border border-blue-100">
                       <h3 className="text-sm font-semibold mb-3">━━ {t('theme_detail.this_time_different')} ━━</h3>
 
-                      {validDiffs.length > 0 && (
+                      {visibleDiffs.length > 0 && (
                         <div className="mb-3">
                           <div className="text-sm font-medium mb-2">{t('theme_detail.structural_differences')}:</div>
                           <ul className="space-y-1 text-sm">
-                            {validDiffs.map((d, i) => (
+                            {visibleDiffs.map((d, i) => (
                               <li key={i} className="flex gap-2">
                                 <span className="flex-shrink-0">
                                   {d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '?'}
@@ -162,6 +186,14 @@ export default function ThemeDetailPage() {
                               </li>
                             ))}
                           </ul>
+                          {!showAllDiffs && hiddenCount > 0 && (
+                            <button
+                              onClick={() => setShowAllDiffs(true)}
+                              className="text-xs text-zinc-500 hover:text-zinc-900 mt-2 underline-offset-2 hover:underline"
+                            >
+                              {t('theme_detail.show_all_diffs')} ({hiddenCount} {t('theme_detail.more_medium_conf')})
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -188,21 +220,21 @@ export default function ThemeDetailPage() {
                         ⚠️ {t('theme_detail.disclaimer_observation')}
                       </div>
                     </div>
-                  )
-                })()}
+                  )}
 
-                {(theme.archetype_playbook!.exit_signals?.length ?? 0) > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">{t('theme_detail.exit_signals')}:</h3>
-                    <ul className="space-y-1 text-sm text-zinc-600">
-                      {theme.archetype_playbook!.exit_signals.map((s, i) => (
-                        <li key={i}>· {s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </section>
-            )}
+                  {(pb.exit_signals?.length ?? 0) > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">{t('theme_detail.exit_signals')}:</h3>
+                      <ul className="space-y-1 text-sm text-zinc-600">
+                        {pb.exit_signals.map((s, i) => (
+                          <li key={i}>· {s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </section>
+              )
+            })()}
           </div>
         )}
       </main>

@@ -31,8 +31,10 @@ export default function RecommendationTier({
             {r.company_name && r.company_name !== r.ticker_symbol && (
               <span className="text-zinc-700 ml-2">{r.company_name}</span>
             )}
-            {r.role_reasoning && (
+            {r.role_reasoning && r.role_reasoning.trim().length > 0 ? (
               <p className="text-sm text-zinc-500 mt-0.5">{r.role_reasoning}</p>
+            ) : (
+              <p className="text-xs text-zinc-400 italic mt-0.5">{t('theme_detail.exposure_fallback')}</p>
             )}
           </div>
         ))}
