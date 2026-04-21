@@ -5,6 +5,14 @@ import useSWR from 'swr'
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 interface Ticker { symbol: string; reasoning?: string }
+interface SimilarityWarning {
+  type: 'vs_existing' | 'vs_candidate'
+  target_id: string
+  target_name: string
+  similarity_score: number
+  reason: string
+  recommendation: string
+}
 interface Candidate {
   id: string
   proposed_archetype_id: string
@@ -18,6 +26,8 @@ interface Candidate {
   scan_date: string
   status: 'pending' | 'approved' | 'rejected'
   reviewed_at: string | null
+  theme_group: string | null
+  similarity_warnings: SimilarityWarning[] | null
 }
 
 export default function CandidatesPage() {
@@ -33,6 +43,13 @@ export default function CandidatesPage() {
     rejected: candidates.filter((c) => c.status === 'rejected'),
   }
   const filtered = byStatus[filter]
+
+  const grouped = filtered.reduce<Record<string, Candidate[]>>((acc, c) => {
+    const group = c.theme_group || 'Other'
+    if (!acc[group]) acc[group] = []
+    acc[group].push(c)
+    return acc
+  }, {})
 
   async function approve(id: string) {
     setActioningId(id)
@@ -65,6 +82,38 @@ export default function CandidatesPage() {
     }
   }
 
+  async function bulkApprove(importance: string) {
+    if (!confirm(`Approve all ${importance.toUpperCase()} candidates without duplicate warnings?`)) return
+    const targets = candidates.filter(
+      (c) =>
+        c.status === 'pending' &&
+        c.estimated_importance === importance &&
+        (!c.similarity_warnings || c.similarity_warnings.length === 0)
+    )
+    for (const c of targets) {
+      await fetch(`/api/admin/candidates/${c.id}/approve`, { method: 'POST' })
+    }
+    mutate()
+    setMessage(`✅ Approved ${targets.length} ${importance} candidate(s)`)
+    setTimeout(() => setMessage(null), 8000)
+  }
+
+  async function bulkReject(importance: string) {
+    if (!confirm(`Reject all ${importance.toUpperCase()} pending candidates?`)) return
+    const targets = candidates.filter(
+      (c) => c.status === 'pending' && c.estimated_importance === importance
+    )
+    for (const c of targets) {
+      await fetch(`/api/admin/candidates/${c.id}/reject`, { method: 'POST' })
+    }
+    mutate()
+    setMessage(`Rejected ${targets.length} ${importance} candidate(s)`)
+    setTimeout(() => setMessage(null), 5000)
+  }
+
+  const pendingHigh = byStatus.pending.filter((c) => c.estimated_importance === 'high' && (!c.similarity_warnings || c.similarity_warnings.length === 0)).length
+  const pendingMedium = byStatus.pending.filter((c) => c.estimated_importance === 'medium').length
+
   if (isLoading) return <div className="p-8 text-zinc-500 text-sm">Loading...</div>
 
   return (
@@ -82,36 +131,66 @@ export default function CandidatesPage() {
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="flex gap-6 mb-6 border-b border-zinc-200">
-        {(['pending', 'approved', 'rejected'] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`pb-3 text-sm capitalize transition-colors ${
-              filter === s
-                ? 'border-b-2 border-zinc-900 font-medium text-zinc-900'
-                : 'text-zinc-500 hover:text-zinc-700'
-            }`}
-          >
-            {s} ({byStatus[s].length})
-          </button>
-        ))}
+      {/* Filter tabs + batch actions */}
+      <div className="flex items-end justify-between mb-6 border-b border-zinc-200">
+        <div className="flex gap-6">
+          {(['pending', 'approved', 'rejected'] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setFilter(s)}
+              className={`pb-3 text-sm capitalize transition-colors ${
+                filter === s
+                  ? 'border-b-2 border-zinc-900 font-medium text-zinc-900'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              }`}
+            >
+              {s} ({byStatus[s].length})
+            </button>
+          ))}
+        </div>
+
+        {filter === 'pending' && (
+          <div className="flex gap-2 pb-3">
+            <button
+              onClick={() => bulkReject('medium')}
+              disabled={pendingMedium === 0}
+              className="px-3 py-1.5 text-xs border border-zinc-300 rounded hover:bg-zinc-50 disabled:opacity-40 transition-colors"
+            >
+              Reject all MEDIUM ({pendingMedium})
+            </button>
+            <button
+              onClick={() => bulkApprove('high')}
+              disabled={pendingHigh === 0}
+              className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-40 transition-colors"
+            >
+              Approve all HIGH ({pendingHigh})
+            </button>
+          </div>
+        )}
       </div>
 
       {filtered.length === 0 ? (
         <p className="text-center text-zinc-400 py-16 text-sm">No {filter} candidates</p>
       ) : (
-        <div className="space-y-3">
-          {filtered.map((c) => (
-            <CandidateCard
-              key={c.id}
-              candidate={c}
-              onApprove={() => approve(c.id)}
-              onReject={() => reject(c.id)}
-              isActioning={actioningId === c.id}
-              showActions={filter === 'pending'}
-            />
+        <div>
+          {Object.entries(grouped).map(([group, items]) => (
+            <div key={group}>
+              <h2 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mt-8 mb-3">
+                {group} ({items.length})
+              </h2>
+              <div className="space-y-3">
+                {items.map((c) => (
+                  <CandidateCard
+                    key={c.id}
+                    candidate={c}
+                    onApprove={() => approve(c.id)}
+                    onReject={() => reject(c.id)}
+                    isActioning={actioningId === c.id}
+                    showActions={filter === 'pending'}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -184,6 +263,28 @@ function CandidateCard({
           </div>
         )}
       </div>
+
+      {c.similarity_warnings && c.similarity_warnings.length > 0 && (
+        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded">
+          <div className="text-xs font-medium text-amber-900 mb-1.5">
+            ⚠️ Similar to {c.similarity_warnings.length} existing theme(s)
+          </div>
+          <ul className="space-y-2">
+            {c.similarity_warnings.map((w, i) => (
+              <li key={i} className="text-xs text-amber-800">
+                <span className="font-medium">{w.target_name}</span>
+                <span className="text-amber-600 ml-1">
+                  ({(w.similarity_score * 100).toFixed(0)}% match)
+                </span>
+                <div className="text-amber-700 mt-0.5">{w.reason}</div>
+                <div className="text-amber-500 mt-0.5 italic">
+                  Suggestion: {w.recommendation.replace(/_/g, ' ')}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <p className="text-sm text-zinc-700 mt-3 leading-relaxed">{c.description}</p>
 
