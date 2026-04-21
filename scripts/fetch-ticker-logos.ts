@@ -30,7 +30,7 @@ async function main() {
   for (const t of tickers) {
     try {
       const res = await fetch(
-        `https://financialmodelingprep.com/api/v3/profile/${t.symbol}?apikey=${FMP_API_KEY}`
+        `https://financialmodelingprep.com/stable/profile?symbol=${t.symbol}&apikey=${FMP_API_KEY}`
       )
       const logoUrl: string | null = res.ok ? ((await res.json())[0]?.image ?? null) : null
 
