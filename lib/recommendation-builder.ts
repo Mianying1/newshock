@@ -106,7 +106,7 @@ function buildItem(row: ThemeRow, recs: ThemeRecommendation[], catalysts: Cataly
     summary: row.summary ?? '',
     first_seen_at: row.first_seen_at,
     last_active_at: row.last_active_at,
-    days_active: calculateDaysAgo(row.first_seen_at),
+    days_active: Math.max(1, calculateDaysAgo(row.first_seen_at)),
     event_count: row.event_count,
     recommendations: recs,
     catalysts,
