@@ -1,11 +1,13 @@
 import { supabaseAdmin } from './supabase-admin'
-import { fetchAllSources, SourceResult } from './news-fetcher'
+import { fetchAllSources, FetchedNews, SourceResult } from './news-fetcher'
 import { filterDuplicates, filterOldDuplicates } from './news-dedupe'
+import { classifyPendingEvents, ClassifySummary } from './classifier'
 import { NewsSlot } from './news-sources'
 
 export interface IngestOptions {
   slot?: NewsSlot
-  limit?: number
+  per_source_limit?: number
+  classify?: boolean  // default true
 }
 
 export interface IngestResult {
@@ -15,33 +17,47 @@ export interface IngestResult {
   skipped_duplicates: number
   sources: SourceResult[]
   duration_ms: number
+  classification?: ClassifySummary
 }
 
 export async function runIngest(options: IngestOptions = {}): Promise<IngestResult> {
-  const { slot, limit } = options
+  const { slot, per_source_limit, classify = true } = options
   const start = Date.now()
 
-  console.log(`[ingest] Starting ingest slot=${slot ?? 'all'} limit=${limit ?? 'none'}`)
+  console.log(`[ingest] Starting ingest slot=${slot ?? 'all'} per_source_limit=${per_source_limit ?? 'none'}`)
 
   // 1. Fetch
   const { items: fetched, sourceResults } = await fetchAllSources(slot)
   console.log(`[ingest] Fetched ${fetched.length} items across ${sourceResults.length} sources`)
 
-  // 2. URL dedupe
-  let deduped = await filterDuplicates(fetched, supabaseAdmin)
-  console.log(`[ingest] After URL dedupe: ${deduped.length} items (removed ${fetched.length - deduped.length})`)
+  // 2. Per-source cap: group by source_id, truncate each, then flatten
+  let capped: FetchedNews[]
+  if (per_source_limit) {
+    const bySource = new Map<string, FetchedNews[]>()
+    for (const item of fetched) {
+      const list = bySource.get(item.source_id) ?? []
+      list.push(item)
+      bySource.set(item.source_id, list)
+    }
+    capped = []
+    for (const [sid, items] of bySource) {
+      const kept = items.slice(0, per_source_limit)
+      console.log(`[ingest] ${sid}: keeping ${kept.length}/${items.length}`)
+      capped.push(...kept)
+    }
+  } else {
+    capped = fetched
+  }
 
-  // 3. Headline dedupe (handles same story, different URL)
+  // 3. URL dedupe
+  let deduped = await filterDuplicates(capped, supabaseAdmin)
+  console.log(`[ingest] After URL dedupe: ${deduped.length} items (removed ${capped.length - deduped.length})`)
+
+  // 4. Headline dedupe (handles same story, different URL)
   deduped = await filterOldDuplicates(deduped, supabaseAdmin)
   console.log(`[ingest] After headline dedupe: ${deduped.length} items`)
 
   const skipped_duplicates = fetched.length - deduped.length
-
-  // 4. Apply limit
-  if (limit && deduped.length > limit) {
-    deduped = deduped.slice(0, limit)
-    console.log(`[ingest] Limited to ${limit} items`)
-  }
 
   // 5. Insert
   let new_inserted = 0
@@ -69,6 +85,14 @@ export async function runIngest(options: IngestOptions = {}): Promise<IngestResu
     console.log('[ingest] Nothing new to insert')
   }
 
+  // 6. Classify newly inserted events
+  let classification: ClassifySummary | undefined
+  if (classify && new_inserted > 0) {
+    console.log(`[ingest] Running classifier on ${new_inserted} new events`)
+    classification = await classifyPendingEvents({ limit: new_inserted, rate_limit: 5 })
+    console.log(`[ingest] Classification done: ${JSON.stringify(classification)}`)
+  }
+
   const duration_ms = Date.now() - start
 
   return {
@@ -78,5 +102,6 @@ export async function runIngest(options: IngestOptions = {}): Promise<IngestResu
     skipped_duplicates,
     sources: sourceResults,
     duration_ms,
+    classification,
   }
 }

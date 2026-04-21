@@ -99,6 +99,41 @@
 
 ---
 
+## 2026-04-20 · Step 8c 完成 · Classifier 部署
+
+### 结果 (25 条非 SEC events 样本)
+- Classified (匹配 pattern): 8/25 = 32%
+- Exploratory (相关但无 pattern): 11/25 = 44%
+- Irrelevant (被 Haiku 过滤): 6/25 = 24%
+- 成本: $0.012/条, 预计 $30-40/月
+
+### Pattern 分布不均
+- us_china_semi_export_control: 6/8
+- war_geopolitical_escalation: 1/8
+- hyperscaler_mega_capex: 1/8
+- 其他 4 个 pattern: 0/8
+
+原因: Google News 关键词偏向 "chip export", 需要在 Step 8e cron 部署前
+按 pattern 配置差异化 RSS 搜索源。
+
+### 新增概念
+- tickers.is_recommendation_candidate 字段
+- Mega cap (NVDA/GOOGL/MSFT 等) 作为"参考 ticker"存库但不推荐
+- tickers 表现 52 行 (46 推荐候选 + 8 参考 mega cap / TSEM 不推荐)
+
+### 分类质量观察
+- hyperscaler_mega_capex 命中: Anthropic+Amazon $100B deal (confidence: 0.95) ✓
+- us_china_semi_export_control 6 条命中均准确, 无误报
+- war_geopolitical_escalation: Iran crisis (confidence: 0.85) ✓
+- Exploratory 合理: $21M seed round 被正确拒绝 (未达 pattern 阈值), TSEM +31% 扩产未触发 pattern ✓
+- Irrelevant 合理: FT 政治新闻 (Trump cabinet, Fed) 全被 Haiku 过滤 ✓
+
+### 下一步
+- Step 8d: Score 算法
+- Step 8e: 差异化 RSS 源 + Vercel Cron 部署
+
+---
+
 ## 2026-04-20 · 模型选型决策
 
 ### 情况
