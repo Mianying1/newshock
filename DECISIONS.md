@@ -256,3 +256,40 @@ Publisher/Information tool.
 - theme_archetypes 表 (20 原型起步, 持续扩张)
 - theme_recommendations 表
 - events.trigger_theme_id 字段
+
+---
+
+## 2026-04-20 · Pattern Discovery Loop 第一批 exploratory (待审)
+
+A4.5 首次运转发现 7 个 exploratory theme, 其中前 3 个值得认真评估
+是否升级为新 archetype:
+
+### 优先评估 (可能成为新 archetype)
+1. **Blue Origin Grounding · Space Launch Delay** (conf=72)
+   - 逻辑: 商业航天事故 → 竞对优势
+   - 可能 archetype: commercial_space_disruption
+   - 潜在受益: SpaceX-related (未上市), RKLB (Rocket Lab)
+   - 决策: 样本太少, 观察 3 个月
+
+2. **Arm AI Data Center CPU · 架构竞争** (conf=72)
+   - 逻辑: ARM 挑战 x86, CPU 架构范式级转移
+   - 可能 archetype: cpu_architecture_shift
+   - 潜在受益: ARM, NVDA (Grace), AMPR
+   - 受压: INTC, AMD
+   - 决策: 是重要趋势, 6 个月内评估入库
+
+3. **Tower Semi AI Chip Expansion · Foundry Rotation** (conf=65)
+   - 逻辑: 特种 foundry 在 TSMC 压力下分羹
+   - 可能 archetype: specialty_foundry_rotation
+   - 潜在受益: TSEM, UMC, GFS
+   - 决策: 观察更多触发案例
+
+### 事件级信号 (不需新 archetype)
+4. Fed Leadership Transition (政策不确定性)
+5. AI Deflation Thesis (分析师宏观观点)
+6. Jabil AI Data Center (待观察 conf=45)
+7. AI DC Boom · Semiconductor Equipment (分析师升级)
+
+### 下一步
+进 A5 前不急于扩 archetype, 先让系统跑 2-3 周积累更多 exploratory
+数据, 再基于多个信号决定升级.
