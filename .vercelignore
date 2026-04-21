@@ -1,0 +1,12 @@
+# Local-only scripts and docs — not needed at runtime
+scripts/
+docs/
+tmp/
+
+# Markdown files (except README if it exists)
+*.md
+!README.md
+
+# Knowledge base JSON — seed runs locally, not on Vercel
+# Comment this out if a future build step needs these files
+knowledge/

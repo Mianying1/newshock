@@ -145,7 +145,7 @@ async function seedMappings() {
     if (valid.length === 0) continue;
 
     // Get the pattern_id for this file's rows and delete existing rows first
-    const patternIds = [...new Set(valid.map((r) => r["pattern_id"] as string))];
+    const patternIds = Array.from(new Set(valid.map((r) => r["pattern_id"] as string)));
     for (const pid of patternIds) {
       const { error: delErr } = await supabase
         .from("pattern_ticker_map")

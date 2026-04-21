@@ -18,7 +18,7 @@ export async function filterDuplicates(
 ): Promise<FetchedNews[]> {
   if (fetched.length === 0) return []
 
-  const urls = [...new Set(fetched.map((f) => f.source_url).filter(Boolean))]
+  const urls = Array.from(new Set(fetched.map((f) => f.source_url).filter(Boolean)))
   const existingUrls = new Set<string>()
 
   // Batch to avoid PostgREST GET URL length limits

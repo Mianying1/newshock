@@ -25,7 +25,7 @@ function extractTickers(text: string): string[] {
   while ((m = TICKER_RE.exec(text)) !== null) {
     found.add(m[1] ?? m[2])
   }
-  return [...found]
+  return Array.from(found)
 }
 
 function stripHtml(html: string): string {

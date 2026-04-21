@@ -11,7 +11,7 @@ async function main() {
     .limit(10)
 
   // Fetch headlines for those events
-  const eventIds = [...new Set((top10 ?? []).map(r => r.event_id))]
+  const eventIds = Array.from(new Set((top10 ?? []).map(r => r.event_id)))
   const { data: eventsData } = await supabaseAdmin
     .from('events')
     .select('id, headline, pattern_id')

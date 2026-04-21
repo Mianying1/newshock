@@ -40,7 +40,7 @@ export async function runIngest(options: IngestOptions = {}): Promise<IngestResu
       bySource.set(item.source_id, list)
     }
     capped = []
-    for (const [sid, items] of bySource) {
+    for (const [sid, items] of Array.from(bySource.entries())) {
       const kept = items.slice(0, per_source_limit)
       console.log(`[ingest] ${sid}: keeping ${kept.length}/${items.length}`)
       capped.push(...kept)

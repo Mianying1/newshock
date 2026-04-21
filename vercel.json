@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/ingest?slot=asia_eu",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/ingest?slot=eu_us_mid",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron/ingest?slot=us_close",
+      "schedule": "0 1 * * *"
+    }
+  ]
+}
