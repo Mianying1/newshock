@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-config({ path: '.env.localc' })
+config({ path: '.env.local' })
 
 import * as fs from 'node:fs'
 import * as path from 'node:path'

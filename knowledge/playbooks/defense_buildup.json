@@ -8,29 +8,29 @@
     {
       "name": "Post-9/11 U.S. Defense Buildup (2001–2003)",
       "approximate_duration": "约 18–24 个月",
-      "peak_move": "Defense sector (ITA/LMT/RTN/GD) outperformed S&P 500 by an estimated 30–50% cumulatively over the buildup phase; individual prime contractors saw multi-year contract backlogs expand significantly",
-      "exit_trigger": "Initial Iraq invasion phase concluded, 'major combat operations' declared over; market rotated as near-term contract award pace normalized and broader equity recovery drew capital elsewhere",
+      "peak_move": "Defense contractors (Lockheed, Raytheon, General Dynamics) observed cumulative gains of 30–60% over the buildup phase as Pentagon budgets surged and major platform contracts were awarded",
+      "exit_trigger": "Initial Iraqi campaign declared complete (May 2003); defense stocks plateaued as investor focus shifted from contract-award anticipation to execution risk and budget sustainability debates",
+      "confidence": "high"
+    },
+    {
+      "name": "Post-Crimea NATO Rearmament Wave (2014–2016)",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "European and U.S. defense equities saw modest but sustained re-rating; NATO members began announcing multi-year spending pledges toward the 2% GDP target, supporting sector outperformance",
+      "exit_trigger": "Immediate geopolitical tension stabilized into frozen conflict; European fiscal constraints dampened follow-through spending, and investor attention rotated to other themes",
+      "confidence": "high"
+    },
+    {
+      "name": "Russia-Ukraine War Defense Surge (2022–2023)",
+      "approximate_duration": "约 12–20 个月",
+      "peak_move": "Global defense indices observed 30–50% sector outperformance in the 12 months following February 2022; European defense names (Rheinmetall, BAE Systems, Saab) saw particularly sharp re-ratings as continental rearmament became policy consensus",
+      "exit_trigger": "War transitioned to attritional phase; near-term contract-award news flow moderated; broader market rotation into AI/tech absorbed investor capital; some producers flagged production bottlenecks limiting near-term revenue conversion",
       "confidence": "high"
     },
     {
       "name": "Reagan Defense Buildup (1981–1985)",
-      "approximate_duration": "约 3–4 年",
-      "peak_move": "Defense primes including General Dynamics, Lockheed, and Northrop saw sustained revenue and earnings expansion; sector re-rated meaningfully relative to industrials as Pentagon budgets rose from ~$158B to over $250B in nominal terms",
-      "exit_trigger": "Gramm-Rudman deficit reduction legislation (1985) and subsequent budget sequestration pressure signaled a ceiling on spending growth; procurement scandals (parts pricing controversies) added negative sentiment",
-      "confidence": "high"
-    },
-    {
-      "name": "Post-2022 European NATO Rearmament Wave",
-      "approximate_duration": "约 24–36 个月（持续进行中）",
-      "peak_move": "European defense equities (Rheinmetall, BAE Systems, Leonardo, Saab) observed 100–300% cumulative gains from early 2022 lows through 2024; U.S. primes also re-rated on NATO resupply and FMS order flows",
-      "exit_trigger": "Theme has not fully resolved; partial cooling observed when ceasefire negotiations were discussed in late 2024/early 2025, but structural rearmament thesis remained intact as NATO spending pledges extended forward",
-      "confidence": "high"
-    },
-    {
-      "name": "Gulf War Defense Cycle (1990–1991)",
-      "approximate_duration": "约 6–12 个月",
-      "peak_move": "Ordnance, missile, and munitions-related names observed near-term contract acceleration; however, the cycle was relatively short as the conflict concluded rapidly and post-Cold War 'peace dividend' pressures reasserted quickly",
-      "exit_trigger": "Swift coalition victory removed the acute demand shock; bipartisan pressure for defense budget reductions post-USSR collapse accelerated, inverting the thesis within months of conflict end",
+      "approximate_duration": "约 36–48 个月",
+      "peak_move": "Defense sector sustained multi-year outperformance as Pentagon budgets nearly doubled in real terms; major platform programs (B-1B, MX missile, SDI) generated long-duration contract backlogs",
+      "exit_trigger": "Gramm-Rudman deficit reduction legislation (1985–1986) introduced mandatory spending caps; the Iran-Contra affair created political headwinds; sector valuations had meaningfully re-rated, reducing further upside optionality",
       "confidence": "medium"
     }
   ],
@@ -38,41 +38,48 @@
     "differences": [
       {
         "dimension": "demand_side",
-        "description": "Demand is now structurally multi-polar rather than U.S.-centric. European nations are legislating minimum GDP-percentage defense floors (2% rising toward 3%), Indo-Pacific partners (Japan, South Korea, Australia) are simultaneously expanding budgets, and Taiwan Strait tension adds a second independent demand vector. Historical buildups were typically dominated by a single sovereign buyer cycle.",
+        "factor": "Simultaneous multi-theater demand across NATO eastern flank, Indo-Pacific deterrence, and Middle East replenishment creates a demand stack with no close post-WWII analog; historically, major buildups were concentrated in one primary theater",
         "direction": "may_extend",
         "confidence": "high"
       },
       {
-        "dimension": "technology",
-        "description": "The current cycle is layered with autonomous systems, drone warfare, electronic warfare, space-based ISR, and AI-enabled C2 — categories that did not exist meaningfully in prior buildups. These domains require continuous software and hardware refresh cycles rather than one-time platform procurement, potentially creating more durable recurring revenue streams for defense technology companies beyond traditional primes.",
-        "direction": "may_extend",
-        "confidence": "medium"
-      },
-      {
         "dimension": "supply_side",
-        "description": "Defense industrial base capacity constraints are more acute than in prior cycles. Decades of consolidation reduced the supplier ecosystem; key bottlenecks in artillery shells, solid rocket motors, semiconductors for guidance systems, and shipbuilding yards mean that even committed budget increases face multi-year production ramp delays. Supply inelasticity may dampen near-term revenue translation but extend the duration of elevated contract award activity.",
+        "factor": "Defense industrial base faces structural production-rate ceilings — artillery shell capacity, shipyard throughput, and munitions supply chains were allowed to atrophy for decades; supply elasticity is materially lower than in prior buildups, meaning backlogs persist longer before revenue fully converts",
         "direction": "may_extend",
         "confidence": "high"
       },
       {
         "dimension": "policy",
-        "description": "NATO's collective commitment to sustained higher spending is now treaty-reinforced and politically entrenched in a way not observed since the Cold War peak. Germany's constitutional debt-brake amendment, Poland's ~4% GDP defense target, and the EU's ReArm Europe fiscal instrument represent structural policy architecture rather than crisis-reactive supplemental appropriations — suggesting a longer baseline than typical geopolitical spike cycles.",
+        "factor": "European sovereign governments have made legally binding multi-year NATO spending commitments and in some cases (Germany's Sondervermögen €100B+ fund) created dedicated off-balance-sheet vehicles, reducing the political-cycle reversal risk that curtailed prior European rearmament waves",
         "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "factor": "Drone warfare, electronic warfare, AI-assisted targeting, and hypersonic development represent a technology generational shift requiring entirely new platform categories and procurement programs — not merely more of existing systems — potentially sustaining a longer R&D-to-contract pipeline than historical analog buildups",
+        "direction": "uncertain",
         "confidence": "medium"
       }
     ],
     "similarities": [
-      "As observed in the Reagan and post-9/11 cycles, initial contract award acceleration tends to front-run actual deliveries and earnings by 12–18 months, creating periods of valuation expansion that subsequently require fundamental earnings catch-up.",
-      "Political budget fatigue and deficit pressure have historically asserted themselves within 3–5 years of major buildup initiations, suggesting that even structurally durable cycles face periodic re-rating risk when fiscal constraints tighten.",
-      "Procurement scandals, cost overruns, and program delays have accompanied every major buildup cycle and may be observed again as capacity-constrained suppliers struggle to meet accelerated delivery schedules."
+      "As observed in all historical cases, initial sentiment-driven equity re-rating tends to outpace actual contract revenue realization by 12–24 months, creating vulnerability to 'show me the backlog conversion' corrections",
+      "Political consensus that initiates buildups has historically proven fragile over 3–5 year horizons as fiscal costs accumulate and domestic spending priorities compete — this dynamic may reassert itself in the current cycle",
+      "Supply chain and labor constraints delayed production ramp in prior buildups (notably post-9/11), and similar friction appears to be emerging in current munitions and shipbuilding capacity"
     ],
-    "observation": "The current defense buildup may be distinguished from most historical analogs by its simultaneous multi-sovereign demand structure and technology-layer complexity, which together suggest a cycle duration and breadth that is more reminiscent of Cold War-era sustained rearmament than the event-driven spikes of the post-Cold War period — though supply-side bottlenecks and eventual fiscal consolidation pressures remain the primary observable risk factors to monitor."
+    "observation": "The current defense buildup cycle may structurally resemble a compressed version of the Reagan-era multi-year expansion more than the sharper post-9/11 or post-Crimea episodes, given the breadth of committed sovereign demand, but supply-side production ceilings and technology transition complexity introduce meaningful uncertainty about the pace at which backlog converts to earnings."
   },
   "exit_signals": [
-    "Formal ceasefire or peace framework in the Russia-Ukraine conflict accompanied by credible demilitarization commitments, which historically has been the most direct trigger for reversal of European rearmament spending urgency.",
-    "Announced reductions or multi-year caps in U.S. Pentagon topline budgets — particularly if accompanied by sequestration mechanisms or continuing resolutions that freeze new program starts — as observed following Gramm-Rudman (1985) and the post-Gulf War drawdown.",
-    "Meaningful backlog-to-book deterioration reported by two or more large-cap defense primes in consecutive earnings cycles, signaling that contract award momentum has peaked even if existing programs continue.",
-    "Significant multiple compression in defense sector P/E relative to broader industrials, particularly if driven by cost-overrun disclosures or program cancellations that call into question margin sustainability on fixed-price contracts.",
-    "A sustained period of NATO member nations publicly revising defense spending pledges downward — particularly Germany, Poland, or other high-profile rearmers — which would signal that the political consensus underpinning the structural demand thesis is weakening."
-  ]
+    "Major ceasefire or durable peace framework in the Russia-Ukraine conflict, materially reducing the urgency narrative driving European rearmament pledges and near-term procurement acceleration",
+    "Congressional or European parliamentary budget actions that introduce multi-year caps or rescissions to defense appropriations, signaling political appetite for spending has peaked",
+    "Defense sector forward P/E multiples expanding to historically extreme levels (observed in prior cycles as a precursor to mean reversion), reflecting full pricing of the backlog narrative without incremental contract catalysts",
+    "Key prime contractors (Lockheed, Rheinmetall, RTX, BAE) begin issuing production guidance downgrades or delivery schedule slippage warnings, indicating supply-side bottlenecks are constraining revenue conversion from record backlogs",
+    "Rotation of major institutional flows out of defense into competing structural themes (e.g., AI infrastructure, energy transition) as measured by sustained sector relative underperformance despite continued macro tailwinds"
+  ],
+  "duration_type": "dependent",
+  "duration_type_reasoning": "Defense spending surges are fundamentally dependent on the persistence of the geopolitical threat environment that justified them — historically, when the triggering conflict stabilizes or political consensus fractures, spending growth decelerates regardless of industrial base momentum.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q1",
+    "description": "The current defense buildup cycle originated with Russia's full-scale invasion of Ukraine in February 2022, which catalyzed a step-change in NATO member spending commitments, European rearmament programs, and U.S. supplemental defense appropriations that have continued through 2025–2026.",
+    "current_maturity_estimate": "mid"
+  }
 }

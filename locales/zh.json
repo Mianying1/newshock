@@ -80,6 +80,21 @@
     "tickers": "{n} 只股票",
     "themes": "{n} 个主题"
   },
+  "duration_type": {
+    "bounded": "有限周期",
+    "extended": "长期结构性",
+    "dependent": "依附主事件"
+  },
+  "timeline": {
+    "heading": "时间线",
+    "tracked": "Newshock 追踪",
+    "real_world": "主题真实时长",
+    "maturity": "阶段",
+    "this_cycle": "本轮",
+    "dependent_note": "随主触发事件消退, 关注 cooling signals",
+    "extended_note": "长期结构性主题, 阶段判断基于现实时长",
+    "since": "since"
+  },
   "categories": {
     "geopolitics": "地缘政治",
     "geopolitical": "地缘政治",

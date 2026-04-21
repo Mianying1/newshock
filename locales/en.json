@@ -80,6 +80,21 @@
     "tickers": "{n} tickers",
     "themes": "{n} themes"
   },
+  "duration_type": {
+    "bounded": "Bounded cycle",
+    "extended": "Multi-year structural",
+    "dependent": "Dependent on parent event"
+  },
+  "timeline": {
+    "heading": "Timeline",
+    "tracked": "Tracked by Newshock",
+    "real_world": "Real-world duration",
+    "maturity": "Stage",
+    "this_cycle": "This cycle",
+    "dependent_note": "Fades with parent event — watch cooling signals",
+    "extended_note": "Multi-year structural theme — stage based on real-world timeline",
+    "since": "since"
+  },
   "categories": {
     "geopolitics": "Geopolitics",
     "geopolitical": "Geopolitics",

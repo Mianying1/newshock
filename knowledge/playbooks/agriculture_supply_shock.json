@@ -2,35 +2,35 @@
   "typical_duration_label": "12+ months",
   "typical_duration_days_approx": [
     180,
-    540
+    730
   ],
   "historical_cases": [
     {
-      "name": "2010-2011 Global Food Price Crisis (Russia Drought + La Niña)",
-      "approximate_duration": "约 12-18 个月",
-      "peak_move": "FAO Food Price Index rose approximately 40% peak-to-trough; wheat futures roughly doubled from mid-2010 lows; fertilizer stocks and agri-input names saw sustained multi-quarter outperformance",
-      "exit_trigger": "Northern Hemisphere 2011 harvest reports showed recovery in wheat and corn output; Russia lifted its grain export ban; La Niña conditions dissipated allowing Southern Hemisphere crop normalization",
-      "confidence": "high"
-    },
-    {
-      "name": "2007-2008 Global Agricultural Supply Shock",
+      "name": "2022 Russia-Ukraine Fertilizer & Grain Shock",
       "approximate_duration": "约 18-24 个月",
-      "peak_move": "Wheat futures rose roughly 130% peak over 2007-2008; rice prices roughly tripled in early 2008; fertilizer producers (e.g., Mosaic, Potash Corp) saw equity prices multiply several times from cycle lows",
-      "exit_trigger": "Demand destruction from high prices, coordinated export bans unwound, 2008 global financial crisis crushed commodity demand broadly, and the subsequent dollar rally compressed all commodity prices",
+      "peak_move": "Wheat futures surged approximately 70-80% peak-to-trough from pre-war levels; nitrogen fertilizer (urea) prices roughly doubled; Mosaic, Nutrien, and CF Industries saw equity gains of 40-100% from early 2022 levels before retracing",
+      "exit_trigger": "Black Sea Grain Initiative corridor opened mid-2022 partially restoring Ukrainian exports; global fertilizer demand destruction as farmers cut application rates; China eased some export restrictions on phosphate; energy prices (key fertilizer input cost) declined through H2 2022",
       "confidence": "high"
     },
     {
-      "name": "2021-2022 Fertilizer and Grain Supply Shock (Russia-Ukraine + Post-COVID Input Crunch)",
+      "name": "2010-2011 Global Food Price Crisis",
       "approximate_duration": "约 12-18 个月",
-      "peak_move": "European natural gas (key fertilizer feedstock) rose several hundred percent; urea and DAP fertilizer prices roughly tripled from 2020 lows; wheat futures peaked near 14-year highs in March 2022; agri-input equities (Nutrien, Mosaic, CF Industries) saw 50-150% moves from pre-shock levels",
-      "exit_trigger": "Ukraine grain corridor deal (July 2022) partially restored Black Sea exports; European gas prices fell from extreme peaks; India and China released domestic fertilizer stockpiles; new crop planting surges in 2022 signaled forward supply recovery",
+      "peak_move": "FAO Food Price Index reached all-time highs in early 2011; corn and wheat each approximately doubled from mid-2010 trough; agricultural input producers and soft commodity ETFs posted 30-60% gains",
+      "exit_trigger": "Northern Hemisphere 2011 harvests came in above expectations; La Niña weather pattern abated; demand destruction in importing nations as food inflation became politically destabilizing (Arab Spring context); speculative positioning unwound sharply",
       "confidence": "high"
     },
     {
-      "name": "1972-1974 Soviet Grain Purchase Shock",
-      "approximate_duration": "约 18-30 个月",
-      "peak_move": "U.S. grain export prices roughly doubled within 12 months; combined with oil shock, global food inflation became severe; farmland values and agri-commodity producer equities were significant outperformers relative to broader market",
-      "exit_trigger": "1974 bumper harvests in North America and Australia; Soviet Union diversified import sources; Nixon administration imposed short-lived export controls that signaled government intent to cap upside",
+      "name": "2007-2008 Commodity Super-Spike (Agricultural Leg)",
+      "approximate_duration": "约 12-15 个月",
+      "peak_move": "Rice prices tripled in roughly six months; wheat and corn each more than doubled; potash and phosphate fertilizer prices rose 300-400% peak-to-trough; Potash Corp and Mosaic were among the best-performing large-cap equities globally in 2007-2008",
+      "exit_trigger": "Global financial crisis collapsed demand and credit conditions; record 2008 US corn and soybean plantings signaled supply response; biofuel policy enthusiasm cooled; commodity index deleveraging accelerated the unwind",
+      "confidence": "high"
+    },
+    {
+      "name": "2021 Global Fertilizer Supply Squeeze (Pre-Ukraine)",
+      "approximate_duration": "约 9-12 个月",
+      "peak_move": "European natural gas prices caused ammonia plant curtailments; US nitrogen fertilizer prices rose 150-200% year-over-year; CF Industries and Nutrien shares gained 50-80% through 2021",
+      "exit_trigger": "European energy crisis temporarily eased in early 2022 before re-intensifying; Chinese export restrictions on phosphates partially lifted; Russian invasion then extended and deepened the cycle rather than ending it",
       "confidence": "medium"
     }
   ],
@@ -38,45 +38,48 @@
     "differences": [
       {
         "dimension": "supply_side",
-        "factor": "Structural fertilizer supply concentration has intensified post-2022 sanctions regime",
-        "detail": "Russia and Belarus historically supplied approximately 40% of global potash and significant shares of nitrogen fertilizer. Post-2022 sanctions have not been fully reversed as of 2025-2026, meaning the supply elasticity response to any new shock is more constrained than in prior cycles where Russian exports could be redirected or rapidly restored. Alternative capacity (Canadian potash, new nitrogen plants) requires multi-year lead times.",
+        "description": "Structural concentration of fertilizer supply has deepened: Russia and Belarus together historically accounted for roughly 40% of global potash exports. Sanctions regimes as of 2025-2026 remain more durable than earlier geopolitical disruptions, limiting the typical 'supply normalization' exit pathway that historically ended prior cycles within 12-18 months.",
         "direction": "may_extend",
         "confidence": "high"
       },
       {
         "dimension": "demand_side",
-        "factor": "Biofuel and energy transition mandates create a structurally elevated floor for crop demand",
-        "detail": "Expanded ethanol (corn, sugarcane) and biodiesel (soy, palm) mandates across the U.S., EU, Brazil, and Southeast Asia as of 2025-2026 mean a larger share of grain and oilseed production is competing with food uses. Unlike prior cycles, demand destruction through food-price mechanisms is partially insulated by energy-policy-driven floors, making the demand response to high prices slower and less elastic than observed historically.",
+        "description": "Emerging-market food security policy has shifted materially post-2022: governments in South Asia, Southeast Asia, and the Middle East are building larger strategic grain and fertilizer reserves, creating a structurally elevated demand floor that was not present in prior cycles and may dampen the demand-destruction exit signal.",
         "direction": "may_extend",
         "confidence": "medium"
       },
       {
-        "dimension": "macro",
-        "factor": "Higher baseline input cost environment and tighter global food security policy attention",
-        "detail": "Following the 2022 shock, many governments have maintained strategic grain and fertilizer reserves and food security frameworks that did not exist in prior cycles. This may dampen the sharpest spike phases but also means governments intervene earlier with export restrictions, potentially redistributing rather than resolving shortages and extending the duration of regional dislocations.",
+        "dimension": "policy",
+        "description": "Retaliatory tariff regimes under the 2025 US trade policy escalation (including tariffs on Canadian potash and potential secondary effects on Brazilian agricultural inputs) introduce a policy overlay not present in prior supply shocks, potentially fragmenting global fertilizer trade flows and creating regional price dislocations.",
         "direction": "uncertain",
         "confidence": "medium"
       },
       {
-        "dimension": "technology",
-        "factor": "Precision agriculture and AI-driven crop monitoring improve supply-side visibility but not short-run elasticity",
-        "detail": "Satellite crop monitoring and AI yield forecasting adopted broadly by 2025-2026 allow markets to price supply shocks faster and with less uncertainty, potentially compressing the discovery phase of the cycle. However, actual physical supply elasticity (planting decisions, fertilizer availability, logistics) remains as slow as ever, meaning the market may front-run but the fundamental shock duration is structurally unchanged.",
-        "direction": "may_shorten",
+        "dimension": "macro",
+        "description": "Unlike 2007-2008 where the financial crisis provided a clean demand-destruction exit, and unlike 2022 where aggressive rate hikes slowed the economy, the 2025-2026 macro regime features stagflationary pressures with central banks constrained in their ability to tighten, potentially allowing commodity price elevation to persist longer before self-correcting.",
+        "direction": "may_extend",
         "confidence": "medium"
       }
     ],
     "similarities": [
-      "Weather-driven supply shocks (La Niña, drought cycles) remain the primary trigger mechanism, consistent across all observed historical cases regardless of geopolitical context",
-      "Government export restriction responses — observed in 2008, 2010, and 2022 — are likely to recur in 2025-2026 episodes, historically extending rather than resolving supply dislocations",
-      "Fertilizer and grain price cycles remain highly correlated through the natural gas feedstock linkage, a structural relationship that has persisted across multiple decades of observed history"
+      "The underlying mechanism remains consistent with all historical analogs: supply concentration combined with geopolitical disruption creates acute price spikes that take 12-24 months to resolve via demand destruction and supply-side investment response.",
+      "Speculative positioning and commodity index flows amplify initial supply shock moves, as observed in 2007-2008 and 2010-2011, and this dynamic appears similarly active in the current cycle.",
+      "Agricultural supply shocks historically exhibit a self-limiting property as high prices incentivize planting expansion (particularly in Brazil, Argentina, and the US) that eventually rebuilds supply buffers, a pattern that remains structurally intact."
     ],
-    "observation": "The 2025-2026 environment may exhibit a structurally longer plateau phase in agricultural supply shocks relative to historical analogs, as sanctions-constrained fertilizer supply and biofuel demand floors reduce the speed of mean reversion, even as improved market information technology compresses the initial price discovery spike."
+    "observation": "The 2025-2026 agricultural supply shock cycle may observe a longer plateau phase than historical analogs suggest, as durable sanctions architecture and sovereign stockpiling behavior reduce the speed of the typical supply normalization and demand destruction exit pathways."
   },
   "exit_signals": [
-    "Major producing-region harvest surveys (USDA WASDE, IGC reports) begin revising ending stocks estimates meaningfully upward for two or more consecutive monthly reports — historically observed to mark the inflection point in commodity price momentum",
-    "Fertilizer benchmark prices (urea FOB Middle East, DAP FOB Tampa) sustain a 20-30% decline from cycle peak for more than 6-8 consecutive weeks, suggesting genuine input cost normalization is underway rather than a transient pullback",
-    "Key exporting nations that imposed restrictions (wheat, rice, palm oil) formally lift or substantially ease export controls, as observed with Russia in 2011 and India in various rice and wheat episodes — signals government confidence in domestic supply adequacy",
-    "Freight rates on major agricultural shipping routes (Panamax bulk, Black Sea corridors) begin declining materially, indicating physical supply is moving more freely and logistical bottlenecks are resolving",
-    "Agri-input equity sector (fertilizer producers, crop chemical companies) begins underperforming the broader materials sector on a rolling 4-week basis even as spot commodity prices remain elevated — historically observed as an early leading indicator that the market is discounting forward supply normalization before it appears in spot data"
-  ]
+    "FAO Food Price Index or equivalent benchmark returns to and sustains levels at or below its 5-year pre-shock average for two or more consecutive months, signaling broad commodity normalization",
+    "Major fertilizer exporters (Russia, Belarus, or China) announce material easing of export restrictions or sanctions carve-outs that restore meaningful volume to global trade flows",
+    "USDA or equivalent global crop production estimates show back-to-back seasons of above-trend yields in key producing regions (US, Brazil, Ukraine), indicating supply recovery has materialized",
+    "Fertilizer producer equity valuations (e.g., Nutrien, Mosaic, CF Industries) revert to historical P/E multiples as forward earnings estimates decline, reflecting margin compression from normalized input-output price spreads",
+    "Speculative net-long positioning in agricultural futures (CFTC Commitment of Traders data) unwinds sharply, historically a coincident-to-leading indicator that institutional momentum has reversed"
+  ],
+  "duration_type": "dependent",
+  "duration_type_reasoning": "Agricultural supply shock cycles are derivative themes whose persistence depends directly on the underlying geopolitical trigger (conflict duration, sanctions regimes) and weather catalyst remaining unresolved; once the parent disruption abates or supply routes normalize, the commodity price elevation and producer equity premium fade accordingly.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q1",
+    "description": "The current cycle's foundational shock originated with Russia's February 2022 invasion of Ukraine, which simultaneously disrupted Black Sea grain exports and triggered Western sanctions that curtailed Russian and Belarusian fertilizer trade flows; the cycle has subsequently been sustained and periodically re-intensified by ongoing conflict, energy price volatility affecting nitrogen production, and retaliatory trade policy measures through 2025.",
+    "current_maturity_estimate": "late"
+  }
 }

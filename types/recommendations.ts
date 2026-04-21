@@ -41,6 +41,14 @@ export interface PlaybookSimilarity {
   description: string
 }
 
+export type DurationType = 'bounded' | 'extended' | 'dependent'
+
+export interface RealWorldTimeline {
+  approximate_start: string
+  description: string
+  current_maturity_estimate: 'early' | 'mid' | 'late' | 'beyond_typical'
+}
+
 export interface ArchetypePlaybook {
   typical_duration_label: string
   typical_duration_days_approx: [number, number]
@@ -51,6 +59,9 @@ export interface ArchetypePlaybook {
     observation: string
   }
   exit_signals: string[]
+  duration_type?: DurationType
+  duration_type_reasoning?: string
+  real_world_timeline?: RealWorldTimeline
 }
 
 export type PlaybookStage = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'

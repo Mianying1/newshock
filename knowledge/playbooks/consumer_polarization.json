@@ -6,31 +6,31 @@
   ],
   "historical_cases": [
     {
-      "name": "2008-2010 Post-GFC K-Shape Consumer Split",
-      "approximate_duration": "约 18-24 个月",
-      "peak_move": "高端零售商（如 Nordstrom、LVMH）股价显著跑赢大盘，同期 Dollar Tree、Dollar General 等折扣零售商亦创历史新高，而中端百货（Sears、JCPenney）持续承压",
-      "exit_trigger": "2010-2011 年就业市场广泛复苏、中产阶级消费信心回升，中端零售逐步企稳，两极分化收窄",
+      "name": "2008–2010 Post-GFC K-Shape Consumer Split",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Luxury names (LVMH, Tiffany) recovered sharply by mid-2010 while mid-tier department stores continued to struggle; dollar stores (Family Dollar, Dollar Tree) posted multi-year outperformance against general retail benchmarks",
+      "exit_trigger": "Broad labor market recovery and rising median wages between 2011–2012 began compressing the divergence as middle-income consumers regained purchasing power",
       "confidence": "high"
     },
     {
-      "name": "2001-2003 科网泡沫破裂后消费分化",
-      "approximate_duration": "约 18-30 个月",
-      "peak_move": "奢侈品板块（LVMH、历峰集团）受高净值人群财富效应支撑相对稳健，Walmart 等大众折扣零售商客流与营收明显提升，中端消费品牌承压",
-      "exit_trigger": "2003 年减税刺激及经济复苏带动中产消费回暖，分化格局趋于缓和",
+      "name": "2001–2003 Post-Dot-Com / 9-11 Consumer Polarization",
+      "approximate_duration": "约 18–30 个月",
+      "peak_move": "High-end jewelry and experiential luxury held relatively firm among wealth-effect beneficiaries of still-elevated asset prices, while discount and off-price retail (Costco, TJX) gained sustained market share from squeezed middle-income households",
+      "exit_trigger": "Housing-led wealth expansion after 2003 and the associated consumer credit boom re-inflated middle-income spending, narrowing the divergence",
       "confidence": "medium"
     },
     {
-      "name": "2022-2023 高通胀时期消费极化",
-      "approximate_duration": "约 12-18 个月",
-      "peak_move": "LVMH、爱马仕等奢侈品股价于 2023 年初创历史新高，同期 Dollar General、Five Below 等折扣零售商营收加速增长，Target、Kohl's 等中端零售商库存积压、毛利率下滑",
-      "exit_trigger": "2023 年下半年奢侈品需求（尤其中国市场）开始降温，部分折扣零售商因成本上升盈利预警，分化强度边际减弱",
+      "name": "2022–2023 Post-Pandemic Inflation Squeeze",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "LVMH, Hermès, and Ferrari reported record revenues through 2022 and into early 2023 while Walmart and Dollar General flagged a distinct shift of formerly middle-income shoppers into their stores; off-price apparel (TJX, Ross) also outperformed department store peers",
+      "exit_trigger": "Luxury demand began softening visibly by late 2023 as aspirational luxury buyers (upper-middle income) pulled back under cumulative inflation and rate pressure, while some goods-price disinflation partially relieved discount-tier pressure",
       "confidence": "high"
     },
     {
-      "name": "1990-1991 衰退期美国消费两极化",
-      "approximate_duration": "约 12-18 个月",
-      "peak_move": "高端品牌与折扣连锁（Walmart 快速扩张期）同步跑赢，传统中端百货市场份额持续流失",
-      "exit_trigger": "1992-1993 年经济复苏驱动中产就业与薪资改善，中端消费需求回流",
+      "name": "1990–1992 Recession-Era Consumer Bifurcation",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Neiman Marcus and high-end specialty retail maintained relatively stable revenues anchored by top-decile income households, while Wal-Mart's explosive expansion and warehouse club formats captured accelerating trade-down from squeezed middle-income consumers",
+      "exit_trigger": "The 1993–1994 employment recovery and real wage stabilization restored middle-income discretionary capacity, compressing the polarization",
       "confidence": "medium"
     }
   ],
@@ -38,41 +38,48 @@
     "differences": [
       {
         "dimension": "demand_side",
-        "description": "财富效应结构性固化：2020 年代资产价格（股票、房产）持续上涨令高净值群体财富积累速度远超历史均值，叠加财富不平等指标（基尼系数、前 1% 财富占比）处于数十年高位，高端消费需求基础较历次周期更为稳固，并非单纯周期性现象",
-        "direction": "may_extend",
-        "confidence": "high"
-      },
-      {
-        "dimension": "macro",
-        "description": "2025-2026 年关税冲击与贸易保护主义抬头可能同时压缩中端消费者可支配收入（进口商品涨价）并推升奢侈品进口成本，形成双向挤压；与历史上单纯利率或就业驱动的分化不同，此次供给端价格冲击或放大中低收入群体向折扣渠道迁移的速度",
+        "factor": "Wealth-effect concentration via financial asset and real estate appreciation has become structurally more persistent due to index-driven passive investing and prolonged housing supply shortfalls, meaning the top quintile's balance sheet resilience may be more durable than in prior cycles",
         "direction": "may_extend",
         "confidence": "medium"
       },
       {
-        "dimension": "technology",
-        "description": "电商与算法个性化推荐使折扣零售的触达效率大幅提升（如 Temu、Shein 等超级折扣平台崛起），同时奢侈品数字化稀缺性叙事（限量发售、NFT 联名）强化高端消费的身份认同溢价，技术层面同时加速两端极化，历史上无此结构性催化剂",
+        "dimension": "macro",
+        "factor": "Elevated and sticky interest rates into 2025–2026 are compressing middle-income households through mortgage lock-in effects and high consumer credit costs simultaneously, a dual squeeze with fewer historical precedents in both magnitude and duration",
         "direction": "may_extend",
         "confidence": "medium"
       },
       {
         "dimension": "policy",
-        "description": "当前财政政策在多个主要经济体呈现分化：针对高收入群体的资本利得税潜在调整、针对低收入群体的转移支付政策不确定性，均可能阶段性干扰消费极化路径，政策变量的不可预测性高于历史可比时期",
-        "direction": "uncertain",
+        "factor": "Tariff escalation under the 2025 trade policy environment is introducing asymmetric cost pressures: luxury goods with pricing power and domestic-leaning supply chains may absorb tariff costs more easily than mass-market discretionary goods, potentially deepening the divergence through a cost-side channel rather than just an income channel",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "technology",
+        "factor": "E-commerce price transparency and AI-driven deal-finding tools are accelerating the behavioral trade-down among middle-income consumers more efficiently than in prior cycles, structurally strengthening discount and off-price channel share gains beyond cyclical norms",
+        "direction": "may_extend",
         "confidence": "medium"
       }
     ],
     "similarities": [
-      "消费极化历史上均发生于信贷周期收紧与实际工资增速放缓并存的宏观背景下，当前环境具有相似特征",
-      "折扣零售的客流提升模式与历史案例高度一致：中产消费者在压力期向下迁移消费层级，属于可观测的周期性规律",
-      "奢侈品需求对高净值人群资产价格的正相关性在历次案例中均有体现，当前逻辑延续历史范式"
+      "The fundamental driver — income and wealth inequality widening during or after a macro stress event — is consistent with every prior historical episode, suggesting the polarization mechanism itself is not novel",
+      "Aspirational luxury (the upper-middle income cohort that bridges the two poles) has historically been the first segment to crack when macro pressure intensifies, consistent with observed softness in accessible luxury categories observed entering 2024–2025",
+      "Discount retailers historically gain sticky market share during polarization episodes, with a portion of trade-down behavior persisting even after the macro trigger eases, as observed in post-GFC Costco and Aldi penetration gains"
     ],
-    "observation": "当前消费极化周期在结构性财富不平等固化与技术平台双端加速的共同作用下，持续时间可能较历史均值更长，但关税政策冲击与潜在资产价格回调构成主要的周期截断风险，需持续观察。"
+    "observation": "The current episode may be observed as unusually durable relative to historical analogs because wealth concentration, rate-driven middle-income squeeze, and tariff cost asymmetry are reinforcing the polarization from multiple structural directions simultaneously rather than through a single cyclical shock."
   },
   "exit_signals": [
-    "中端零售商（如 Target、Kohl's 等）连续两个季度出现可比店面销售增速转正且库存水位正常化，表明中产消费信心实质性修复",
-    "折扣零售龙头（Dollar General、Dollar Tree 等）发布盈利预警或下调全年指引，暗示低收入消费者压力达到临界点或客流增长见顶",
-    "奢侈品集团（LVMH、开云、历峰）有机收入增速连续两季环比下滑并明显低于市场预期，高端需求降温信号确认",
-    "核心通胀持续回落至央行目标区间附近且实际工资增速转为正值，中低收入群体购买力压力边际缓解",
-    "消费者信心调查中中等收入分位群体信心指数出现持续性回升，或信贷利差收窄带动消费信贷可得性改善"
-  ]
+    "Sustained real wage growth at or above inflation for median and below-median income households for two or more consecutive quarters, observed in BLS and Atlanta Fed wage tracker data, which historically has preceded middle-income spending normalization",
+    "Meaningful deceleration in same-store sales or organic revenue growth at bellwether discount and off-price retailers (e.g., Walmart U.S., Dollar General, TJX), suggesting trade-down flows are plateauing rather than accelerating",
+    "Renewed volume growth (not just price) at mid-tier department stores and mass-market apparel chains, signaling that aspirational consumers are returning to mid-market channels",
+    "Luxury conglomerates reporting broad-based volume deceleration across geographies including the Americas and Europe (not solely China-driven softness), indicating even top-quintile discretionary budgets are being curtailed",
+    "A meaningful compression in the spread between consumer confidence readings for high-income versus low-income cohorts (e.g., Conference Board or University of Michigan sub-indices), historically a leading indicator that the K-shape is closing"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Consumer spending polarization is a structural macro trend rooted in persistent wealth and income inequality dynamics rather than a single bounded event, and historically has required a multi-year labor market or credit cycle recovery to meaningfully compress.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q1",
+    "description": "The current episode of K-shaped consumer divergence became observable in early 2022 as post-pandemic inflation disproportionately squeezed middle- and lower-income households while asset-price-inflated top-quintile balance sheets remained resilient, driving simultaneous luxury strength and discount retail share gains.",
+    "current_maturity_estimate": "mid"
+  }
 }

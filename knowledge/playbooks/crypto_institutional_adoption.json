@@ -1,78 +1,85 @@
 {
   "typical_duration_label": "12+ months",
   "typical_duration_days_approx": [
-    180,
-    540
+    365,
+    1095
   ],
   "historical_cases": [
     {
-      "name": "2020-2021 MicroStrategy / Corporate BTC Treasury Wave",
+      "name": "2013 Bitcoin First Institutional Awareness Wave",
       "approximate_duration": "约 12-18 个月",
-      "peak_move": "BTC 从约 $10,000 升至约 $69,000，相关矿业股与灰度 GBTC 溢价显著扩大；企业资产负债表持币从 MicroStrategy 蔓延至 Tesla、Square 等多家上市公司",
-      "exit_trigger": "美联储政策转向预期收紧、Terra/LUNA 生态崩溃前兆、机构杠杆过度积累导致市场结构脆弱；GBTC 溢价转为折价标志机构需求边际减弱",
+      "peak_move": "Bitcoin observed rising from roughly $100 to over $1,000 as hedge funds and family offices began exploratory allocations; narrative shifted from cypherpunk novelty to speculative asset class",
+      "exit_trigger": "Mt. Gox exchange collapse in early 2014 destroyed custody confidence and regulatory scrutiny intensified globally, ending the institutional on-ramp narrative for several years",
       "confidence": "high"
     },
     {
-      "name": "2024 年 1 月 美国比特币现货 ETF 获批上市（BlackRock iShares、Fidelity 等）",
-      "approximate_duration": "约 6-12 个月（首波资金流入周期）",
-      "peak_move": "ETF 获批前后 BTC 从约 $42,000 升至约 $73,000 历史新高；前三个月累计净流入超过 120 亿美元，超越黄金 ETF 同期历史记录；传统资管渠道首次获得合规配置通道",
-      "exit_trigger": "宏观利率预期反复、地缘风险避险情绪、ETF 流入速度边际放缓、散户情绪过热后的获利了结潮",
+      "name": "2017 ICO Boom and Early Institutional Derivatives Entry",
+      "approximate_duration": "约 12-15 个月",
+      "peak_move": "Bitcoin and broader crypto markets observed reaching peak valuations; CME and CBOE launched BTC futures in December 2017, marking first regulated institutional product",
+      "exit_trigger": "SEC crackdown on ICOs as unregistered securities, combined with futures-enabled shorting pressure and retail exhaustion, ended the cycle through 2018",
       "confidence": "high"
     },
     {
-      "name": "2017 年 芝加哥期货交易所（CME）与 CBOE 比特币期货上市",
-      "approximate_duration": "约 2-3 个月（情绪高潮阶段）",
-      "peak_move": "BTC 在期货上市前后从约 $6,000 冲至约 $20,000，机构参与叙事主导市场情绪；传统金融基础设施首次为加密资产提供对冲工具",
-      "exit_trigger": "期货上市后空头力量首次可规模化做空现货溢价、散户杠杆清算链式反应、监管警告密集出现",
+      "name": "2020-2021 Corporate Treasury and PayPal/Square Adoption Wave",
+      "approximate_duration": "约 15-18 个月",
+      "peak_move": "MicroStrategy, Tesla, and Square added BTC to corporate treasuries; PayPal enabled crypto purchases for 300M+ users; institutional custodians (Fidelity Digital, BNY Mellon) announced crypto services",
+      "exit_trigger": "Fed tightening signals in late 2021, combined with China mining ban, Luna/UST collapse foreshadowing, and regulatory pressure on Coinbase and stablecoins cooled institutional momentum through 2022",
       "confidence": "high"
     },
     {
-      "name": "2021 年 萨尔瓦多比特币法定货币化 + 拉美主权采纳叙事",
-      "approximate_duration": "约 3-6 个月",
-      "peak_move": "短期内 BTC 反弹约 30%-40%，主权级采纳叙事带动新兴市场加密基础设施概念股上涨；闪电网络相关项目融资加速",
-      "exit_trigger": "IMF 施压萨尔瓦多、实际支付使用率远低于预期、主权债务评级风险上升，叙事与基本面分化",
-      "confidence": "medium"
+      "name": "2024 U.S. Spot Bitcoin ETF Launch",
+      "approximate_duration": "约 12-24 个月（进行中）",
+      "peak_move": "SEC approval of spot BTC ETFs in January 2024 enabled BlackRock IBIT, Fidelity FBTC, and others to accumulate tens of billions in AUM within months; marked first time TradFi distribution rails carried crypto natively",
+      "exit_trigger": "Cycle had not fully concluded as of early 2026; partial moderation observed as macro rate concerns and regulatory stablecoin uncertainty created episodic pauses",
+      "confidence": "high"
     }
   ],
   "this_time_different": {
     "differences": [
       {
         "dimension": "demand_side",
-        "description": "2026 年前后，传统资管机构（养老金、主权财富基金、保险公司）已通过合规 ETF 渠道完成首轮配置教育，需求结构从投机性散户主导转变为具有资产配置逻辑的长期持有者；同时企业财资管理层面 MicroStrategy 模式的可复制性已被多国会计准则（如 FASB 公允价值会计准则更新）制度化背书，降低了财务处理障碍",
+        "description": "Spot ETF infrastructure now provides a regulated, familiar wrapper that allows pension funds, RIAs, and insurance allocators to access BTC without custody risk — a structurally new demand channel absent in all prior cycles. BlackRock and Fidelity acting as distribution agents represents qualitatively different institutional reach than prior OTC or futures-only access.",
         "direction": "may_extend",
         "confidence": "high"
       },
       {
         "dimension": "policy",
-        "description": "美国 2025-2026 年出现明确的稳定币立法框架（如 GENIUS Act 或类似法案推进）及加密市场结构法案讨论，监管不确定性从历史上的主要压制因素转变为部分可预期的制度化进程；SEC 对加密资产的分类立场边际软化，与此同时多国央行数字货币（CBDC）竞争压力也使各国政府对私营稳定币采取更务实的监管态度",
+        "description": "U.S. regulatory posture shifted materially post-2024 election cycle, with a more crypto-friendly SEC leadership and active Congressional stablecoin legislation (GENIUS Act and related bills) in progress as of 2025-2026. Prior cycles operated under persistent regulatory hostility or ambiguity; current environment may provide a more durable institutional permission structure.",
         "direction": "may_extend",
         "confidence": "high"
       },
       {
-        "dimension": "macro",
-        "description": "当前宏观环境中美元信用体系的长期可持续性受到更广泛质疑（美国财政赤字货币化担忧、去美元化叙事），BTC 的数字黄金定位在机构资产配置框架中获得更强的结构性支撑，与 2017-2020 年主要由风险偏好驱动的投机属性存在质的差异；然而高利率环境若持续也可能压制无息资产的相对吸引力",
-        "direction": "uncertain",
+        "dimension": "supply_side",
+        "description": "The April 2024 Bitcoin halving reduced new supply issuance to approximately 3.125 BTC per block, the most restrictive supply environment in Bitcoin's history, coinciding with the ETF demand surge — a supply-demand dynamic with no precise prior analog at this institutional scale.",
+        "direction": "may_extend",
         "confidence": "medium"
       },
       {
-        "dimension": "technology",
-        "description": "比特币第四次减半（2024 年 4 月）已完成，供应端通胀率降至约 0.85%，从结构上低于黄金年供给增速；Layer2 网络（闪电网络、RGB 协议等）及比特币生态应用扩展使其从单纯价值存储叙事向更广泛效用叙事演进，可能吸引不同类型的机构参与者",
-        "direction": "may_extend",
+        "dimension": "macro",
+        "description": "Current macro environment involves elevated but declining rate uncertainty and dollar questions tied to U.S. fiscal trajectory, which may sustain a 'digital gold' narrative differently than the near-zero rate environment of 2020-2021 that drove pure risk-on behavior. The macro motivation may be more structural (reserve diversification) rather than purely speculative.",
+        "direction": "uncertain",
         "confidence": "medium"
       }
     ],
     "similarities": [
-      "历史上每轮机构采纳叙事均伴随杠杆积累与市场结构脆弱性同步上升，当前周期观察到衍生品未平仓合约与现货 ETF 溢价/折价指标仍可能重演过热后的急速去杠杆模式",
-      "监管清晰度提升往往在短期刺激价格后，伴随合规成本与限制条款落地而产生预期差修正，与 2017 年 CME 期货上市后的模式存在结构相似性",
-      "企业财资采纳比特币的叙事扩散路径与历史上黄金 ETF 初期机构化进程类似，均经历从先行者溢价到跟随者均值回归的过程"
+      "Each prior cycle still ultimately faced a sentiment-driven correction phase regardless of institutional participation, suggesting structural demand does not eliminate volatility or cyclical drawdowns",
+      "Regulatory risk remains a persistent similarity — stablecoin legislation, SEC classification of altcoins, and global coordination on crypto taxation continue to introduce policy uncertainty analogous to prior cycles",
+      "Retail enthusiasm tends to follow institutional entry with a lag, creating similar late-cycle dynamics where retail inflows peak near cyclical tops, a pattern observed consistently across 2013, 2017, and 2021"
     ],
-    "observation": "当前周期的结构性差异主要在于合规基础设施已实质性就位（ETF、会计准则、稳定币立法），使得机构采纳从叙事阶段进入执行阶段，这可能延长主题持续时间，但同时也意味着边际催化剂稀缺性下降、价格对单一政策事件的敏感度可能逐步衰减。"
+    "observation": "The 2024-2026 institutional crypto cycle may be structurally more durable than prior analogs due to regulated ETF infrastructure and shifting regulatory posture, but historical patterns suggest sentiment cyclicality and policy event risk remain capable of producing significant interruptions even within a multi-year adoption trend."
   },
   "exit_signals": [
-    "比特币现货 ETF 连续出现显著净流出（如连续 10 个交易日以上净赎回），且与价格下行形成相互强化的反馈循环，可能观察到机构配置层面的再平衡或风险敞口削减",
-    "主要稳定币监管立法遭遇重大立法阻碍或出现比预期更严格的储备金/发行限制条款，导致链上流动性基础设施预期收缩",
-    "宏观环境发生重大转变——例如美联储重启加息周期或美元流动性急剧收紧——使得风险资产与避险资产同步遭受抛售，BTC 的数字黄金叙事与风险资产属性之间的矛盾集中暴露",
-    "企业比特币财资采纳速度出现明显停滞信号，如主要持仓企业（MicroStrategy 等）股价相对 NAV 折价扩大、新增采纳公告频率下降，或会计损失导致财报压力引发模仿效应逆转",
-    "链上数据显示长期持有者（LTH）开始大规模转移至交易所（UTXO 年龄分布中 1 年以上持币比例快速下降），结合衍生品资金费率持续高位，历史上这一组合曾多次标志阶段性顶部区域"
-  ]
+    "Spot Bitcoin ETF net outflow streaks extending beyond 10-15 consecutive trading days, particularly from BlackRock or Fidelity products, suggesting institutional repositioning rather than retail redemption",
+    "U.S. Congressional stablecoin or crypto market structure legislation stalling, being vetoed, or passing with provisions that restrict institutional participation (e.g., bank custody prohibitions)",
+    "A major custodian, exchange, or stablecoin issuer experiencing a solvency or de-peg event that triggers contagion and renewed custody risk aversion among fiduciaries",
+    "Federal Reserve re-acceleration of rate hikes or sustained dollar strengthening that compresses risk appetite across alternative assets including crypto, observable in BTC correlation with risk-off equity behavior",
+    "Corporate BTC treasury adoption reversals — e.g., a major S&P 500 company selling or writing down Bitcoin holdings — signaling fiduciary retrenchment and triggering peer pressure to exit similar positions"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Crypto institutional adoption is a multi-year structural transition in financial infrastructure — spanning custody, regulation, distribution, and allocation frameworks — without a discrete endpoint, making it analogous to prior extended cycles like energy transition or semiconductor supercycle buildout.",
+  "real_world_timeline": {
+    "approximate_start": "2024 Q1",
+    "description": "The current institutional adoption wave traces its structural origin to the January 2024 SEC approval of U.S. spot Bitcoin ETFs, which for the first time created a regulated, liquid, TradFi-native vehicle for institutional Bitcoin exposure at scale.",
+    "current_maturity_estimate": "mid"
+  }
 }

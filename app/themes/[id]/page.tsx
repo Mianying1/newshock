@@ -118,40 +118,96 @@ export default function ThemeDetailPage() {
                     {t('theme_detail.disclaimer_playbook')}
                   </p>
 
-                  {/* Progress bar */}
-                  <div className="mt-3 mb-6">
-                    <div className="flex justify-between text-xs text-zinc-500 mb-1">
-                      <span>0 {t('theme_detail.days')}</span>
-                      <span>{progressPercent}% {t('theme_detail.elapsed')}</span>
-                      <span>{daysMax} {t('theme_detail.days')} ({t('theme_detail.typical_ceiling')})</span>
-                    </div>
-                    <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${stageColor} transition-all`}
-                        style={{ width: `${progressPercent}%` }}
-                      />
-                    </div>
-                    {t(stageDescKey) && (
-                      <p className="text-xs mt-2 text-zinc-600">{t(stageDescKey)}</p>
-                    )}
-                  </div>
+                  {/* Timeline — 3 modes by duration_type */}
+                  {(() => {
+                    const dtype = pb.duration_type ?? 'bounded'
+                    const rwt = pb.real_world_timeline
 
-                  <div className="mb-4 space-y-1">
-                    <div className="text-sm">
-                      <span className="text-zinc-600">{t('theme_detail.typical_duration')}: </span>
-                      <span className="font-medium">{pb.typical_duration_label}</span>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
-                      <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
-                      {theme.playbook_stage === 'late' && (
-                        <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>
-                      )}
-                      {theme.playbook_stage === 'beyond' && (
-                        <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>
-                      )}
-                    </div>
-                  </div>
+                    if (dtype === 'bounded') {
+                      return (
+                        <div className="mt-3 mb-6">
+                          <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                            <span>0 {t('theme_detail.days')}</span>
+                            <span>{progressPercent}% {t('theme_detail.elapsed')}</span>
+                            <span>{daysMax} {t('theme_detail.days')} ({t('theme_detail.typical_ceiling')})</span>
+                          </div>
+                          <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
+                            <div className={`h-full ${stageColor} transition-all`} style={{ width: `${progressPercent}%` }} />
+                          </div>
+                          {t(stageDescKey) && (
+                            <p className="text-xs mt-2 text-zinc-600">{t(stageDescKey)}</p>
+                          )}
+                          <div className="mt-3 space-y-1 text-sm">
+                            <div>
+                              <span className="text-zinc-600">{t('theme_detail.typical_duration')}: </span>
+                              <span className="font-medium">{pb.typical_duration_label}</span>
+                            </div>
+                            <div>
+                              <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
+                              <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                              {theme.playbook_stage === 'late' && <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>}
+                              {theme.playbook_stage === 'beyond' && <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                    if (dtype === 'extended') {
+                      const maturityLabel: Record<string, string> = {
+                        early: t('theme_card.stage_early'),
+                        mid: t('theme_card.stage_mid'),
+                        late: t('theme_card.stage_late'),
+                        beyond_typical: t('theme_card.stage_beyond'),
+                      }
+                      return (
+                        <div className="mt-3 mb-6 p-3 bg-zinc-50 rounded border border-zinc-200 text-sm space-y-2">
+                          <div className="font-medium text-zinc-700">━━ {t('timeline.heading')} ━━</div>
+                          <div>
+                            <span className="text-zinc-500">⏱ {t('timeline.tracked')}: </span>
+                            <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                            <span className="text-zinc-400 ml-1">({t('timeline.since')} {theme.first_seen_at?.slice(0, 10)})</span>
+                          </div>
+                          {rwt && (
+                            <>
+                              <div>
+                                <span className="text-zinc-500">⏳ {t('timeline.real_world')}: </span>
+                                <span className="font-medium">~{rwt.approximate_start}</span>
+                                {rwt.description && (
+                                  <span className="text-zinc-500 ml-1">· {rwt.description}</span>
+                                )}
+                              </div>
+                              <div>
+                                <span className="text-zinc-500">📊 {t('timeline.maturity')}: </span>
+                                <span className="font-medium">{maturityLabel[rwt.current_maturity_estimate] ?? rwt.current_maturity_estimate}</span>
+                                <span className="text-zinc-400 ml-2 text-xs">(based on real-world timeline)</span>
+                              </div>
+                            </>
+                          )}
+                          <p className="text-xs text-zinc-400 italic">{t('timeline.extended_note')}</p>
+                        </div>
+                      )
+                    }
+
+                    // dependent
+                    return (
+                      <div className="mt-3 mb-6 p-3 bg-amber-50 rounded border border-amber-100 text-sm space-y-2">
+                        <div className="font-medium text-zinc-700">━━ {t('timeline.heading')} ━━</div>
+                        <div>
+                          <span className="text-zinc-500">⏱ {t('timeline.this_cycle')}: </span>
+                          <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-amber-600">🔗</span>
+                          <span className="font-medium text-amber-700">{t('duration_type.dependent')}</span>
+                        </div>
+                        <p className="text-xs text-amber-700">{t('timeline.dependent_note')}</p>
+                        {pb.duration_type_reasoning && (
+                          <p className="text-xs text-zinc-500 italic">{pb.duration_type_reasoning}</p>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   <div className="mb-6">
                     <h3 className="text-sm font-medium mb-2">{t('theme_detail.historical_cases')}:</h3>

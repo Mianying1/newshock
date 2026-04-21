@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-config({ path: '.env.localc' })
+config({ path: '.env.local' })
 
 import * as fs from 'node:fs'
 import * as path from 'node:path'
@@ -28,6 +28,13 @@ interface Playbook {
     observation: string
   }
   exit_signals: string[]
+  duration_type: 'bounded' | 'extended' | 'dependent'
+  duration_type_reasoning: string
+  real_world_timeline: {
+    approximate_start: string
+    description: string
+    current_maturity_estimate: 'early' | 'mid' | 'late' | 'beyond_typical'
+  }
 }
 
 const PLAYBOOK_PROMPT = `You are a financial market historian and structural analyst.
@@ -90,17 +97,53 @@ Return JSON only matching this schema:
     "similarities": [...],
     "observation": "..."
   },
-  "exit_signals": [...]
+  "exit_signals": [...],
+  "duration_type": "bounded" | "extended" | "dependent",
+  "duration_type_reasoning": "...",
+  "real_world_timeline": {
+    "approximate_start": "...",
+    "description": "...",
+    "current_maturity_estimate": "early" | "mid" | "late" | "beyond_typical"
+  }
 }
 
-If this archetype has no clear historical analogs (e.g., genuinely new phenomena), return:
-{
-  "typical_duration_label": "unknown",
-  "typical_duration_days_approx": [0, 0],
-  "historical_cases": [],
-  "this_time_different": {...},
-  "exit_signals": [...]
-}`
+---
+
+## Part 4: Duration Type Classification
+
+Classify this archetype into ONE of 3 types:
+
+1. 'bounded' — Clear start and end, finite typical duration.
+   Examples: Iran Crisis (1-3m), FDA drug approval, M&A deal close, earnings surprise,
+   single policy announcement, geopolitical flare-up.
+
+2. 'extended' — Multi-year structural trend without clear endpoint.
+   Examples: AI infrastructure capex wave, GLP-1 obesity cycle,
+   energy transition, deglobalization/onshoring, semiconductor supercycle.
+
+3. 'dependent' — Derivative theme that fades as its parent trigger fades.
+   Examples: Fertilizer supply disruption (depends on geopolitical/war trigger),
+   defense spending surge (depends on conflict event),
+   oil equipment demand (depends on oil price cycle).
+
+Provide:
+- duration_type: one of 'bounded' | 'extended' | 'dependent'
+- duration_type_reasoning: 1 sentence why
+
+## Part 5: Real-World Timeline
+
+Based on your training knowledge of current markets (as of Apr 2026),
+estimate WHEN this theme archetype began in the real world
+(NOT when any product started tracking it).
+
+- approximate_start: e.g. '2023 Q2', '2020', 'recently emerging', 'recurring'
+  Use 'recurring' for themes that repeat episodically (e.g. geopolitical flare-ups).
+- description: 1 sentence describing real-world origin
+- current_maturity_estimate: 'early' | 'mid' | 'late' | 'beyond_typical'
+  based on real-world timeline, not product tracking days.
+
+For genuinely new / no-analog archetypes, still provide duration_type and real_world_timeline
+with best-effort estimates. Use 'recently emerging' for approximate_start if unknown.`
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generatePlaybook(archetype: any, anthropic: any): Promise<Playbook | null> {

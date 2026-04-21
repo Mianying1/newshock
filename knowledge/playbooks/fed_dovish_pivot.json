@@ -6,31 +6,31 @@
   ],
   "historical_cases": [
     {
-      "name": "2001-2003 Fed 大幅降息周期 · 小盘 biotech 反弹",
-      "approximate_duration": "约 12-18 个月（自 2001 年初降息启动至 2002 年中）",
-      "peak_move": "Russell 2000 biotech 分类指数在降息预期确立后的 6 个月内累计反弹幅度显著超过大盘，部分早期阶段 REIT 板块亦录得两位数涨幅；但最终因科网泡沫余震与企业盈利恶化而分化",
-      "exit_trigger": "经济衰退深化、企业盈利大幅下修，市场意识到降息无法对冲需求端收缩，风险偏好再度回落；同期 biotech 临床数据失败潮加速资金撤出",
+      "name": "2019 Fed Pivot — Small Cap / REIT Re-rating",
+      "approximate_duration": "约 9-12 个月",
+      "peak_move": "Russell 2000 自2018年12月低点反弹约30%；REIT指数（VNQ）上涨约28%；XBI biotech ETF累计涨幅超40%",
+      "exit_trigger": "2020年3月新冠疫情引发流动性危机，强制中断利率敏感资产重定价周期",
+      "confidence": "high"
+    },
+    {
+      "name": "2003-2004 Fed 低利率周期 — 小盘股与REIT牛市",
+      "approximate_duration": "约 12-18 个月",
+      "peak_move": "Russell 2000较2002年底低点涨幅超60%；REIT板块连续两年年化回报超30%；小盘biotech跟随大幅重估",
+      "exit_trigger": "美联储2004年6月开始加息周期，利率敏感资产估值扩张逻辑逆转",
+      "confidence": "high"
+    },
+    {
+      "name": "2016年 'Fed Pause' — 小盘成长股反弹",
+      "approximate_duration": "约 6-9 个月",
+      "peak_move": "Russell 2000自2016年2月低点至年末涨约35%；XBI biotech在2月低点后6个月反弹约40%",
+      "exit_trigger": "特朗普当选后市场预期财政扩张推升通胀，美联储重启加息预期，利率上行压缩成长股估值",
       "confidence": "medium"
     },
     {
-      "name": "2008-2009 金融危机后 Fed 零利率 · REITs 与小盘股重新定价",
-      "approximate_duration": "约 9-12 个月（自 2009 年 3 月市场底部至 2010 年初）",
-      "peak_move": "MSCI US REIT 指数自 2009 年低点反弹幅度远超标普 500，小盘成长股（Russell 2000 Growth）同期表现亦领先大盘；低利率直接压缩折现率推动高久期资产重新定价",
-      "exit_trigger": "美联储开始讨论退出量化宽松路径（2010 年初），信用利差收窄至正常区间，市场对利率见底时间表产生分歧，板块轮动转向周期性价值股",
-      "confidence": "high"
-    },
-    {
-      "name": "2019 年 Fed 预防性降息 · 小盘 biotech / REITs 阶段性修复",
-      "approximate_duration": "约 3-6 个月（2019 年 7 月首次降息后至年末）",
-      "peak_move": "FTSE Nareit All Equity REITs 全年涨幅约 28%，显著跑赢标普 500；XBI（小盘 biotech ETF）在降息预期确立阶段出现明显修复，但全年表现相对分化",
-      "exit_trigger": "2019 年末美联储明确暂停降息并释放政策观望信号，叠加中美贸易谈判阶段性缓和提振周期股，资金从防御性高息板块向顺周期板块再平衡",
-      "confidence": "high"
-    },
-    {
-      "name": "2022 年末至 2023 年 Fed 转鸽预期升温 · 小盘 / biotech 脉冲式反弹",
-      "approximate_duration": "约 1-3 个月（2022 年 11 月 CPI 数据超预期降温后）",
-      "peak_move": "Russell 2000 在 2022 年 11 月单月反弹幅度为近年罕见，XBI 同期亦录得双位数短期涨幅；但行情持续性不足，属于预期博弈而非降息落地驱动",
-      "exit_trigger": "美联储官员持续强硬表态（higher for longer），2023 年初通胀数据反复，市场降息预期大幅后移，短期脉冲行情迅速回吐",
+      "name": "2023 Q4 — 'Fed Pivot' 预期交易",
+      "approximate_duration": "约 2-4 个月",
+      "peak_move": "Russell 2000在10月底至2024年1月涨约27%；VNQ同期涨约18%；XBI涨约35%",
+      "exit_trigger": "2024年初通胀数据反复，市场降息预期大幅推迟，'higher for longer'叙事重新主导",
       "confidence": "high"
     }
   ],
@@ -38,41 +38,48 @@
     "differences": [
       {
         "dimension": "macro",
-        "description": "当前（2025-2026 年）降息周期叠加结构性高债务环境：美国联邦债务占 GDP 比率已远超历史先例周期（2001 年约 55%、2008 年约 68%，当前已超 120%），利率下行空间受财政可持续性约束，长端利率可能维持相对高位，压缩 REITs 估值修复的天花板",
+        "description": "当前（2025-2026年）美联储降息周期叠加'关税通胀'不确定性：特朗普政府2025年大规模加征关税推升进口通胀压力，使本轮降息周期呈现'滞胀式宽松'特征，而非历史上典型的'衰退驱动'或'软着陆'降息，美联储行动空间受到双重约束",
         "direction": "may_shorten",
-        "confidence": "medium"
+        "confidence": "high"
       },
       {
         "dimension": "demand_side",
-        "description": "AI 驱动的数据中心 REITs（Data Center REITs）形成新需求极：与传统降息周期中零售、办公、住宅 REITs 为主要受益者不同，当前 REITs 板块内部出现结构分化，数据中心与工业物流 REITs 受 AI 基础设施资本开支驱动，其重新定价逻辑部分独立于利率周期，可能延长整体板块的行情持续性",
-        "direction": "may_extend",
-        "confidence": "medium"
-      },
-      {
-        "dimension": "policy",
-        "description": "生物技术监管环境存在不确定性：FDA 审批节奏、药品定价政策（IRA 药价谈判条款持续演化）以及潜在的医保政策调整，使 biotech 的基本面驱动因素较纯粹利率周期更为复杂，政策尾风与逆风并存，历史上单纯降息驱动的 biotech 修复逻辑可能受到干扰",
+        "description": "Biotech板块面临AI辅助药物研发浪潮（AI-driven drug discovery）带来的估值逻辑双重性：一方面AI工具降低临床前研发成本，可能提升小盘biotech的管线价值；另一方面市场资金持续向AI基础设施倾斜，压缩传统biotech的资金吸引力，两种力量方向相反",
         "direction": "uncertain",
         "confidence": "medium"
       },
       {
         "dimension": "supply_side",
-        "description": "小盘 biotech 融资生态已发生结构变化：2021-2022 年 SPAC 与零利率时期的过度融资遗留了大量现金消耗型公司（cash burn entities），其资产负债表脆弱性意味着降息带来的融资成本下降效益传导滞后，部分公司在利率正常化之前已面临生存压力，板块内部分化可能远大于历史周期",
+        "description": "REITs板块面临结构性供给变局：远程办公常态化持续压制办公类REIT，而数据中心REIT、工业物流REIT需求旺盛，板块内部分化程度远超历史降息周期，导致'降息利好REIT'的整体性叙事可能被板块内分化所稀释",
         "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "美国药品定价政策（Medicare药价谈判、IRA法案执行深化）在2025-2026年进入实质落地阶段，对小盘biotech的商业化预期形成政策层面的估值压制，与历史降息周期中相对宽松的医药政策环境明显不同",
+        "direction": "may_shorten",
         "confidence": "medium"
       }
     ],
     "similarities": [
-      "利率下行周期对高久期资产（长久期 DCF 估值的 biotech 管线、依赖资本市场再融资的 REITs）的折现率压缩逻辑与历史周期一致，属于可观察的机制性相似",
-      "小盘股在降息初期往往出现流动性溢价收窄驱动的修复，这一模式在 2001 年、2009 年、2019 年均有观察到，当前资金从货币市场基金向风险资产再配置的预期路径与历史类似",
-      "市场情绪从 'higher for longer' 转向降息预期确认的拐点阶段，往往伴随小盘/成长板块相对大盘的短期超额表现，这一行为模式在历史案例中具有一定重复性"
+      "利率下行对长久期资产（高增长biotech、REIT）的折现率压缩逻辑在本轮周期中仍然有效，属于历史一贯的定价机制",
+      "美联储明确转向信号出现后，机构资金从大盘防御/成长向小盘价值/利率敏感板块轮动的历史规律依然可观察到",
+      "小盘股流动性溢价在降息初期收窄的历史模式，在当前市场中同样有所体现"
     ],
-    "observation": "当前降息周期的受益逻辑在机制层面与历史高度吻合，但财政约束下的长端利率粘性、biotech 监管政策的不确定性以及 REITs 内部的 AI 需求结构分化，可能使本轮行情的板块内部分散度显著高于历史先例，观察整体指数层面的持续性时需同步关注子板块的异质性演化。"
+    "observation": "本轮'鸽派转向'交易在折现率逻辑上与历史高度一致，但关税通胀约束、板块内部结构分化及政策干预深化，可能使主题持续时间较历史均值偏短、内部个股分化程度显著放大。"
   },
   "exit_signals": [
-    "美联储官员公开表述暂停降息或释放'数据依赖'观望信号，联邦基金期货隐含的未来 6 个月降息次数预期出现明显回落",
-    "10 年期美国国债收益率在降息周期中出现'熊市陡峭化'（bear steepening），即长端利率不跟随短端下行甚至反向上升，直接削弱 REITs 净资产价值修复的基础",
-    "小盘 biotech 板块 IPO 与 Follow-on 发行窗口重新开启且大量承接，融资供给放量往往标志着估值修复进入尾声阶段，历史上可观察到此类信号",
-    "投资级信用利差收窄至历史低位区间后开始走阔，信用市场率先释放再融资成本上升信号，对依赖债务滚动的 REITs 构成压力",
-    "宏观数据显示经济'软着陆'确认转变为通胀再加速或经济过热迹象，市场重新定价'再加息'尾部风险，高久期资产普遍承压"
-  ]
+    "美联储官员公开表态暂停降息或重新讨论加息可能性，或点阵图中位数显示降息路径明显收窄",
+    "核心PCE或CPI数据连续2-3个月超预期反弹，市场降息预期（如CME FedWatch）大幅推迟至12个月以上",
+    "10年期美国国债收益率在降息周期中出现'熊市陡峭化'反弹（即长端利率逆势上行），直接压缩REIT与长久期biotech估值",
+    "小盘biotech板块出现集中性重大临床失败事件或FDA审批收紧信号，触发板块系统性抛售（情绪出清信号）",
+    "Russell 2000 / S&P 500相对强弱比率（RS ratio）在触及历史阶段高位后持续回落超过4-6周，显示小盘溢价交易拥挤度消化"
+  ],
+  "duration_type": "dependent",
+  "duration_type_reasoning": "本主题的核心驱动力是美联储鸽派立场的持续性，一旦降息预期逆转或通胀重燃迫使Fed转鹰，主题逻辑即告瓦解，属于典型的'依赖母触发因素'的衍生主题。",
+  "real_world_timeline": {
+    "approximate_start": "2024 Q4",
+    "description": "美联储于2024年9月启动本轮降息周期，2024年四季度市场开始较为系统性地交易小盘股、biotech与REIT的利率敏感重定价逻辑，但2025年初关税通胀扰动使主题出现明显波折与反复。",
+    "current_maturity_estimate": "mid"
+  }
 }

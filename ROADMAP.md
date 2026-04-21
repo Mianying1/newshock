@@ -81,6 +81,28 @@ B 路径 (15-20h/周): 10-13 周, 目标 7 月底 - 8 月初发布
 - 动态查询最相似历史主题
 - 工作量: 2-3 周
 
+## v1.2+ · Theme Dependency Graph (待做)
+
+问题: `dependent` 类型主题本质依附其他主题 (如 Fertilizer 依附 Iran Crisis).
+当前视为独立主题, 但热度实际跟随 parent 消退.
+
+要实现:
+- Archetype 加 `parent_archetype_id` 字段
+- 主题生成时 Sonnet 识别 parent 关系
+- UI 显示 "触发源: [parent theme name]"
+- Parent 进入 cooling → children 显示警告
+
+优先级: v1.2 之后.
+数据依赖: 需要跨主题数据验证关系图准确性.
+
+Parent-child 示例:
+```
+Iran Crisis (parent)
+  ├─ Fertilizer Supply Disruption
+  ├─ Oil War Premium
+  └─ Patriot Missile Replenishment
+```
+
 ## v1.5 · Auto-discovery for Ticker Universe (deferred)
 
 每周 cron 跑 ticker-expansion:
