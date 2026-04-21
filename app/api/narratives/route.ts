@@ -3,9 +3,9 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 interface ThemeRow {
   id: string
   name: string
-  category: string
   event_count: number
   theme_strength_score: number
+  theme_archetypes: { category: string }[] | null
 }
 
 export async function GET() {
@@ -21,7 +21,7 @@ export async function GET() {
   const allThemeIds = narratives.flatMap((n) => n.related_theme_ids as string[])
   const { data: themes } = await supabaseAdmin
     .from('themes')
-    .select('id, name, category, event_count, theme_strength_score')
+    .select('id, name, event_count, theme_strength_score, theme_archetypes(category)')
     .in('id', allThemeIds)
 
   const themeMap: Record<string, ThemeRow> = {}
@@ -30,7 +30,16 @@ export async function GET() {
   const hydrated = narratives.map((n) => ({
     ...n,
     related_themes: (n.related_theme_ids as string[])
-      .map((id) => themeMap[id])
+      .map((id) => {
+        const t = themeMap[id]
+        if (!t) return null
+        return {
+          id,
+          name: t.name,
+          category: t.theme_archetypes?.[0]?.category ?? 'unknown',
+          event_count: t.event_count,
+        }
+      })
       .filter(Boolean),
   }))
 

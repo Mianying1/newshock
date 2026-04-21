@@ -63,7 +63,7 @@ Return JSON only:
       .select('ticker_symbol, theme_id')
       .in('theme_id', validIds)
 
-    const uniqueTickers = [...new Set((recs ?? []).map((r) => r.ticker_symbol))]
+    const uniqueTickers = Array.from(new Set((recs ?? []).map((r) => r.ticker_symbol)))
     const tickerThemes: Record<string, Set<string>> = {}
     for (const r of recs ?? []) {
       if (!tickerThemes[r.ticker_symbol]) tickerThemes[r.ticker_symbol] = new Set()
