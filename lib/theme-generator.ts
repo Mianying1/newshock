@@ -18,9 +18,11 @@ interface EventRow {
 type ThemeAction = 'strengthen_existing' | 'new_from_archetype' | 'new_exploratory' | 'irrelevant' | 'deferred_sec' | 'error'
 
 interface DecisionTrace {
-  step1_investable: 'yes' | 'no'
+  step0_relevant?: 'yes' | 'no'
+  step0_reason?: string
+  step1_investable: 'yes' | 'no' | 'n/a'
   step1_reason: string
-  step2_archetype_match: 'exact' | 'partial' | 'none'
+  step2_archetype_match: 'exact' | 'partial' | 'none' | 'n/a'
   step2_archetype_id: string | null
   step3_existing_theme: 'found' | 'not_found' | 'n/a'
   step3_theme_id: string | null
@@ -37,6 +39,7 @@ interface SonnetThemeResult {
   suggested_tickers: { tier1: string[]; tier2: string[]; tier3: string[] }
   ticker_reasoning: Record<string, string>
   reasoning: string
+  why_exploratory_not_strengthen: string | null
 }
 
 interface GenerationResult {
@@ -76,23 +79,73 @@ export interface GenerateSummary {
 
 const SYSTEM_PROMPT = `You are a Theme Identification engine for Newshock, a thematic investing intelligence tool.
 
-Follow this 3-step decision process in order. Record your reasoning in decision_trace.
+Follow this decision process in order. Record your reasoning in decision_trace.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 1 — INVESTABLE RELEVANCE (be PERMISSIVE)
+STEP 0 — RELEVANCE FILTER (before all other steps)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Ask: "Could this news move stock prices for at least 2 companies?"
+Before classification, decide if this news is market-relevant.
 
-YES — anything touching: geopolitics, macro policy (Fed/rates/inflation/dollar),
-technology breakthroughs, supply chain disruptions, regulatory decisions (FDA/FTC/SEC),
-earnings inflections, commodity demand, M&A, industrial policy, corporate strategy shifts,
-export controls, energy, semiconductors, AI infrastructure.
+Mark RELEVANT if news could move stock prices in ANY sector:
+- AI / semiconductors / data center / cloud
+- Macroeconomic shifts (Fed, inflation, FX, VIX, credit)
+- Geopolitical events (wars, tariffs, sanctions, China, Taiwan,
+  Middle East, elections with market impact)
+- Supply chain disruptions
+- Industrial policy / onshoring / energy transition
+- Regulatory decisions (FDA, FTC, SEC, FAA, BIS, CFIUS)
+- Commodity shocks (oil, gas, rare earth, copper, power, agricultural)
+- Agriculture / fertilizer / food supply
+- Pharma / biotech / GLP-1 / clinical trials / drug approvals
+- Defense / aerospace / military contracts
+- EV / battery / lithium / automotive
+- Crypto / stablecoins / BTC ETF / digital assets regulation
+- Consumer shifts / retail / restaurant / travel / housing
+- Corporate catalysts (major M&A, strategic investments)
+- Single-company catalysts (large company or sector ripple effect)
 
-NO (only mark irrelevant here if clearly) — pure political gossip with zero market angle,
-entertainment, sports, non-C-suite personnel changes, lifestyle/health articles,
-routine company press releases with no financial significance.
+Mark IRRELEVANT only if clearly:
+- Pure politics / elections without direct market mechanism
+- Sports / entertainment / celebrity / lifestyle
+- Small-cap earnings with no sector read-across
+- Routine corporate filings without financial substance
+- Personnel changes below C-suite
 
-If Step 1 = NO → action = "irrelevant". STOP.
+Default: when unsure, mark RELEVANT and proceed to STEP 1.
+
+IF IRRELEVANT → skip STEP 1-3 entirely. Return ONLY:
+{
+  "decision_trace": { "step0_relevant": "no", "step0_reason": "one sentence", "step1_investable": "n/a", "step1_reason": "", "step2_archetype_match": "n/a", "step2_archetype_id": null, "step3_existing_theme": "n/a", "step3_theme_id": null },
+  "action": "irrelevant",
+  "target_theme_id": null, "archetype_id": null, "theme_name": null, "theme_summary": null,
+  "classification_confidence": 0,
+  "suggested_tickers": { "tier1": [], "tier2": [], "tier3": [] },
+  "ticker_reasoning": {},
+  "reasoning": "not market-relevant",
+  "why_exploratory_not_strengthen": null
+}
+
+IF RELEVANT → set step0_relevant = "yes" and proceed to STEP 1.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — INVESTABLE RELEVANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+A news event is INVESTABLE if ANY of these are true:
+- Can plausibly move the stock price of at least 1 company by 3%+ in the next week
+- Creates a new narrative that could emerge as a theme
+- Is a measurable catalyst with concrete dollar amounts, dates, or parties
+- Changes the competitive positioning or supply chain of a sector
+
+A news event is NOT INVESTABLE if:
+- Purely political commentary without market mechanism
+- Pre-announced / widely expected events (routine calendar items)
+- Personnel changes below C-suite
+- Minor corporate filings (10-Q routine updates, small dividend adjustments)
+- Entertainment, sports, lifestyle
+
+Default: when unsure, lean INVESTABLE. False positives go to exploratory (low cost); false negatives lose a theme opportunity (high cost).
+
+If Step 1 = NOT INVESTABLE → action = "irrelevant". STOP.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 2 — ARCHETYPE MATCHING
@@ -104,6 +157,36 @@ Result: "exact" (clear keyword + context match), "partial" (related but imperfec
 If Step 2 = "none" → action = "new_exploratory". MANDATORY. Do NOT fall back to irrelevant.
   Exploratory themes are reviewed by humans — false positives here are acceptable.
   Write a theme_name and theme_summary. Suggest tickers from the TICKERS DATABASE.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHEN TO FORCE NEW_EXPLORATORY (critical)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You MUST choose action = "new_exploratory" when:
+1. The news is clearly investable (passed Step 1)
+2. But NO archetype matches with confidence >= 60
+3. Do NOT force-fit into partially-matching archetypes
+4. Do NOT choose strengthen_existing just because an active theme is tangentially related
+
+Examples of when exploratory is REQUIRED:
+
+- News: "Mosaic opens new potash facility in Saskatchewan"
+  - No archetype matches (no agriculture archetype exists)
+  - Action: new_exploratory, theme_name: "Fertilizer Capacity Expansion · Potash Supply", suggested tickers: MOS/NTR/CF
+  - Do NOT: strengthen "onshoring_industrial_policy" (too tangential)
+
+- News: "Eli Lilly Phase 3 trial shows 25% weight loss for Zepbound in adolescents"
+  - No archetype matches (no obesity/GLP-1 archetype)
+  - Action: new_exploratory, theme_name: "GLP-1 Pediatric Indication Expansion", suggested tickers: LLY/NVO
+  - Do NOT: mark irrelevant
+
+- News: "Lockheed Martin wins $2.8B Poland air defense contract"
+  - No archetype matches (no defense archetype)
+  - Action: new_exploratory, theme_name: "NATO Frontier Defense Buildup", suggested tickers: LMT/RTX/NOC
+  - Do NOT: strengthen geopolitical themes generically
+
+Rationale: The system's long-term value depends on discovering new themes outside preset archetypes. Exploratory is CHEAP to create and gets reviewed weekly. Forcing events into wrong archetypes pollutes existing themes.
+
+Bias: When archetype confidence is 55-70, prefer new_exploratory over strengthen_existing.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 3 — EXISTING THEME CONSOLIDATION
@@ -129,9 +212,30 @@ Otherwise → action = "new_from_archetype".
 TIER ASSIGNMENT (for new_from_archetype and new_exploratory)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Start with archetype.typical_tickers as baseline.
-ENHANCE with 1-3 situational tickers from TICKERS DATABASE specific to this event.
-For [DYNAMIC] archetypes: build all tiers from situational analysis using TICKERS DATABASE.
-ONLY use tickers present in the provided TICKERS DATABASE list — no others.
+ENHANCE with 1-3 situational tickers specific to this event.
+For [DYNAMIC] archetypes: build all tiers from situational analysis.
+
+TICKER SELECTION POLICY:
+
+Primary: Prefer tickers from the TICKERS DATABASE provided.
+These are vetted tickers with known metadata.
+
+Secondary (discovery): If the DATABASE lacks obvious beneficiary tickers
+for this theme, you MAY suggest tickers outside the database. These are
+exploratory suggestions and will be logged for weekly review.
+
+Rules for out-of-DB suggestions:
+- Must be a real, actively-traded US-listed ticker (NYSE or NASDAQ)
+- Must be a ticker you are highly confident exists (not fabricated)
+- Mark them in ticker_reasoning with a [OUT_OF_DB] prefix
+  Example: "NTR": "[OUT_OF_DB] Nutrien is world's largest potash producer,
+  direct beneficiary of fertilizer supply tightening"
+- Do NOT suggest delisted / bankrupt / OTC pink sheet tickers
+- Do NOT suggest foreign listings without US ADR
+- When in doubt about whether a ticker exists, omit it
+
+Rule of thumb: DB-first. Only use out-of-DB when the theme is clearly in
+a sector the DB doesn't cover (e.g., satellite IoT, specialty REITs, etc.).
 
 MEGA CAP INVESTOR EXCLUSION RULE:
 When the news describes a mega cap company (NVDA, AMD, INTC, AMZN, GOOGL, MSFT, META,
@@ -212,17 +316,33 @@ async function haikusFilter(
 ): Promise<{ relevant: boolean; reason: string }> {
   const prompt = `You are a financial news relevance filter for a thematic investing tool.
 
-Mark as relevant if this news relates to ANY of:
-- AI/semiconductors/data center infrastructure
-- Macroeconomic shifts (Fed policy, inflation, dollar, VIX spikes, credit stress)
-- Geopolitical events affecting markets (wars, tariffs, sanctions, China policy, Taiwan)
-- Supply chain disruptions (shipping, fab outages, critical component shortages)
-- Industrial policy / onshoring / energy transition
-- Major regulatory decisions (FDA, FTC, SEC)
-- Commodity demand shocks (oil, rare earth, copper, power)
-- Corporate turnarounds with multi-quarter profitability inflection
+Mark as RELEVANT if the news could move stock prices in ANY sector. Broad inclusion — when in doubt, mark relevant. Specifically include:
 
-Mark as irrelevant: pure politics with no market angle, sports, entertainment, lifestyle, earnings releases for small companies with no read-across.
+- AI / semiconductors / data center / cloud infrastructure
+- Macroeconomic shifts (Fed, inflation, FX, VIX, credit, yield curve)
+- Geopolitical events (wars, tariffs, sanctions, China, Taiwan, Middle East, elections with market impact)
+- Supply chain disruptions (shipping, fab, critical components, ports, logistics)
+- Industrial policy / onshoring / reshoring / energy transition / grid
+- Regulatory decisions (FDA, FTC, SEC, FAA, BIS, CFIUS)
+- Commodity shocks (oil, gas, rare earth, copper, power, agricultural)
+
+- 【扩展】Agriculture / fertilizer / food supply (wheat, corn, potash, phosphate)
+- 【扩展】Pharma / biotech / GLP-1 / clinical trials / drug approvals
+- 【扩展】Defense / aerospace / military contracts / weapons systems
+- 【扩展】EV / battery / lithium / automotive supply chain
+- 【扩展】Crypto / stablecoins / BTC ETF / digital assets regulation
+- 【扩展】Consumer shifts / retail / restaurant / travel / housing
+
+- Corporate catalysts (major M&A, strategic investments, partnerships, restructuring, turnarounds)
+- Single-company catalysts if the company is large enough to move sector ETFs or has supply chain ripple effects
+
+Mark as IRRELEVANT only if clearly:
+- Pure politics / elections without direct market mechanism
+- Sports / entertainment / celebrity / lifestyle
+- Small-cap earnings with no sector read-across (under $500M market cap solo news)
+- Internal corporate news (personnel below C-suite, office moves, routine filings without financial substance)
+
+Default: when unsure, mark RELEVANT and let downstream analysis decide.
 
 Return JSON only: {"relevant": boolean, "reason": "one sentence"}
 
@@ -266,9 +386,11 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     `Return JSON matching this schema exactly:\n` +
     `{\n` +
     `  "decision_trace": {\n` +
-    `    "step1_investable": "yes" | "no",\n` +
+    `    "step0_relevant": "yes" | "no",\n` +
+    `    "step0_reason": "one sentence",\n` +
+    `    "step1_investable": "yes" | "no" | "n/a",\n` +
     `    "step1_reason": "one phrase",\n` +
-    `    "step2_archetype_match": "exact" | "partial" | "none",\n` +
+    `    "step2_archetype_match": "exact" | "partial" | "none" | "n/a",\n` +
     `    "step2_archetype_id": string | null,\n` +
     `    "step3_existing_theme": "found" | "not_found" | "n/a",\n` +
     `    "step3_theme_id": uuid | null\n` +
@@ -281,12 +403,13 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     `  "classification_confidence": integer 0-100,\n` +
     `  "suggested_tickers": { "tier1": [], "tier2": [], "tier3": [] },\n` +
     `  "ticker_reasoning": { "TICKER": "causal role one-liner" },\n` +
-    `  "reasoning": "one sentence why this action"\n` +
+    `  "reasoning": "one sentence why this action",\n` +
+    `  "why_exploratory_not_strengthen": "If action is strengthen_existing but archetype match was partial, explain why not exploratory. Otherwise null."\n` +
     `}`
 
   const msg = await anthropic.messages.create({
     model: MODEL_SONNET,
-    max_tokens: 800,
+    max_tokens: 1500,
     temperature: 0,
     system: [
       {
@@ -315,6 +438,8 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     const json = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim()) as SonnetThemeResult
     return {
       decision_trace: json.decision_trace ?? {
+        step0_relevant: 'yes',
+        step0_reason: '',
         step1_investable: 'yes',
         step1_reason: '',
         step2_archetype_match: 'none',
@@ -335,10 +460,13 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       },
       ticker_reasoning: typeof json.ticker_reasoning === 'object' ? json.ticker_reasoning : {},
       reasoning: String(json.reasoning ?? ''),
+      why_exploratory_not_strengthen: json.why_exploratory_not_strengthen ?? null,
     }
   } catch {
     return {
       decision_trace: {
+        step0_relevant: 'yes' as const,
+        step0_reason: 'parse error',
         step1_investable: 'yes' as const,
         step1_reason: 'parse error',
         step2_archetype_match: 'none' as const,
@@ -355,6 +483,7 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       suggested_tickers: { tier1: [], tier2: [], tier3: [] },
       ticker_reasoning: {},
       reasoning: 'json parse error',
+      why_exploratory_not_strengthen: null,
     }
   }
 }
@@ -380,6 +509,7 @@ async function logTickerCandidate(
     suggested_tier: number
     role_reasoning: string
     confidence: number
+    is_out_of_db?: boolean
   }
 ): Promise<void> {
   const cleanSymbol = symbol.toUpperCase().trim()
@@ -389,7 +519,13 @@ async function logTickerCandidate(
     .eq('symbol', cleanSymbol)
     .maybeSingle()
 
-  const newContext = { ...context, suggested_at: new Date().toISOString() }
+  // Strip [OUT_OF_DB] prefix from stored reasoning
+  const cleanedReasoning = context.role_reasoning.replace(/^\[OUT_OF_DB\]\s*/i, '')
+  const newContext = {
+    ...context,
+    role_reasoning: cleanedReasoning,
+    suggested_at: new Date().toISOString(),
+  }
 
   if (existing) {
     await supabaseAdmin
@@ -543,12 +679,15 @@ async function handleNewTheme(
 
   // Log unknown tickers to candidates table for human review
   for (const { symbol, tier } of skippedRows) {
+    const rawReasoning = sonnet.ticker_reasoning[symbol] ?? ''
+    const isOutOfDb = /^\[OUT_OF_DB\]/i.test(rawReasoning)
     await logTickerCandidate(symbol, {
       event_id: eventId,
       theme_id: themeId,
       suggested_tier: tier,
-      role_reasoning: sonnet.ticker_reasoning[symbol] ?? '',
+      role_reasoning: rawReasoning,
       confidence: sonnet.classification_confidence,
+      is_out_of_db: isOutOfDb,
     })
   }
 
@@ -586,29 +725,8 @@ export async function generateTheme(event: EventRow): Promise<GenerationResult> 
     }
   }
 
-  const headline = event.headline
-  const snippet = event.raw_content ?? ''
-
   try {
-    // Stage 1: Haiku pre-filter
-    const { relevant, reason } = await haikusFilter(headline, snippet)
-
-    if (!relevant) {
-      await supabaseAdmin
-        .from('events')
-        .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${reason}` })
-        .eq('id', event.id)
-      return {
-        event_id: event.id,
-        action: 'irrelevant',
-        reasoning: reason,
-        confidence: 0,
-        tickers_created: 0,
-        novel_tickers_skipped: [],
-      }
-    }
-
-    // Stage 2: Sonnet theme identification
+    // Single Sonnet call — STEP 0 relevance filter is embedded in the prompt
     const sonnet = await sonnetIdentifyTheme(event)
 
     if (sonnet.action === 'irrelevant') {
@@ -733,43 +851,20 @@ export async function generateThemesForPendingEvents(options: {
 
   console.log(`[theme-generator] Processing ${events.length} pending events (rate_limit=${rate_limit})`)
 
-  // Stage 1: Haiku filter — concurrency 10
-  const haikuLimiter = pLimit(10)
-  const haikuResults = await Promise.all(
-    events.map((event) =>
-      haikuLimiter(async () => {
-        if (isSecFiling(event)) return { event, relevant: false, reason: 'SEC filing' }
-        const { relevant, reason } = await haikusFilter(
-          event.headline,
-          event.raw_content ?? ''
-        )
-        console.log(`[haiku] ${event.id.slice(0, 8)} → ${relevant ? 'relevant' : 'irrelevant'}: ${reason.slice(0, 60)}`)
-        return { event, relevant, reason }
-      })
-    )
-  )
-
-  // Mark irrelevant events in DB (batch)
-  const irrelevantEvents = haikuResults.filter((r) => !r.relevant)
-  for (const { event, reason } of irrelevantEvents) {
-    await supabaseAdmin
-      .from('events')
-      .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${reason}` })
-      .eq('id', event.id)
-  }
-
-  // Stage 2: Sonnet — only relevant events, concurrency 3
-  const relevantEvents = haikuResults.filter((r) => r.relevant)
-  console.log(`[theme-generator] ${relevantEvents.length} events passed Haiku, running Sonnet...`)
-
-  const sonnetLimiter = pLimit(3)
+  // Single-stage Sonnet — STEP 0 relevance filter merged into Sonnet prompt
+  // Concurrency 3 to respect Sonnet rate limits
+  const sonnetLimiter = pLimit(rate_limit)
   const sonnetResults = await Promise.all(
-    relevantEvents.map(({ event }) =>
+    events.map((event) =>
       sonnetLimiter(async () => {
+        if (isSecFiling(event)) {
+          return { event: event as EventRow, sonnet: null, secDeferred: true }
+        }
         const sonnet = await sonnetIdentifyTheme(event as EventRow)
         const dt = sonnet.decision_trace
-        console.log(`[sonnet] ${event.id.slice(0, 8)} → ${sonnet.action} (conf=${sonnet.classification_confidence}) archetype=${sonnet.archetype_id ?? dt.step2_archetype_id ?? '-'} s1=${dt.step1_investable} s2=${dt.step2_archetype_match} s3=${dt.step3_existing_theme}`)
-        return { event: event as EventRow, sonnet }
+        const s0 = dt.step0_relevant ?? 'yes'
+        console.log(`[sonnet] ${event.id.slice(0, 8)} → ${sonnet.action} (conf=${sonnet.classification_confidence}) s0=${s0} s1=${dt.step1_investable} s2=${dt.step2_archetype_match} s3=${dt.step3_existing_theme}`)
+        return { event: event as EventRow, sonnet, secDeferred: false }
       })
     )
   )
@@ -791,7 +886,14 @@ export async function generateThemesForPendingEvents(options: {
   }
   const exploratoryDetails: GenerateSummary['exploratory_details'] = []
 
-  for (const { event, sonnet } of sonnetResults) {
+  for (const { event, sonnet, secDeferred } of sonnetResults) {
+    if (secDeferred || !sonnet) {
+      await supabaseAdmin
+        .from('events')
+        .update({ classifier_reasoning: SEC_DEFER_REASONING })
+        .eq('id', event.id)
+      continue
+    }
     try {
       if (sonnet.action === 'irrelevant') {
         console.log(`  [IRRELEVANT] "${event.headline.slice(0, 60)}" reason="${sonnet.reasoning.slice(0, 80)}"`)
@@ -856,19 +958,16 @@ export async function generateThemesForPendingEvents(options: {
     .select('id', { count: 'exact', head: true })
     .eq('status', 'active')
 
-  const sonnetCallCount = relevantEvents.length
-  const haikuOnlyCount = irrelevantEvents.length
+  const sonnetCallCount = events.length
   const cost_estimate_usd =
-    Math.round(
-      (sonnetCallCount * COST_SONNET_CACHE_HIT + haikuOnlyCount * COST_HAIKU) * 10000
-    ) / 10000
+    Math.round(sonnetCallCount * COST_SONNET_CACHE_HIT * 10000) / 10000
 
   return {
     processed: events.length,
     strengthen_existing: counts.strengthen_existing,
     new_from_archetype: counts.new_from_archetype,
     new_exploratory: counts.new_exploratory,
-    irrelevant: irrelevantEvents.length + counts.irrelevant,
+    irrelevant: counts.irrelevant,
     deferred_sec: 0,
     errors: counts.errors,
     themes_created: counts.themes_created,
