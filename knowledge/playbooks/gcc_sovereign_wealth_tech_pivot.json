@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1460
+  ],
+  "historical_cases": [
+    {
+      "name": "Abu Dhabi Investment Authority / Mubadala Tech Deployment Wave (2017–2020)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Sustained premium valuations for SoftBank Vision Fund portfolio companies receiving GCC co-investment; select Western tech firms with ADNOC or Mubadala supply agreements observed multi-quarter revenue visibility uplift",
+      "exit_trigger": "COVID-19 disrupted Gulf oil revenues and froze new commitment cycles; Vision Fund markdowns eroded confidence in sovereign co-investment thesis",
+      "confidence": "medium"
+    },
+    {
+      "name": "Qatar Investment Authority / Glencore-Shell LNG Infrastructure Buildout (2011–2014)",
+      "approximate_duration": "约 2–4 年",
+      "peak_move": "Western engineering and energy services firms with direct QIA supply agreements sustained elevated order backlogs; thematic premium persisted until oil price correction",
+      "exit_trigger": "Oil price collapse in 2014–2015 forced GCC sovereigns to slow discretionary deployment and repatriate capital for domestic budget support",
+      "confidence": "medium"
+    },
+    {
+      "name": "Saudi Aramco IPO / Vision 2030 Infrastructure Mandate (2016–2019)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "NEOM, giga-project, and downstream petrochemical supply agreements drove sustained contracted revenue visibility for select Western industrial and technology partners; thematic narrative remained intact for multiple years",
+      "exit_trigger": "Execution delays, geopolitical friction (Khashoggi affair dampening Western partner appetite), and oil revenue pressure compressed new commitment pace",
+      "confidence": "high"
+    },
+    {
+      "name": "UAE Telecommunications / Huawei 5G Displacement and Western Vendor Re-engagement (2020–2023)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "U.S. pressure to displace Huawei from UAE networks created multi-year contracted revenue opportunities for Ericsson, Nokia, and U.S. cloud hyperscalers entering UAE sovereign infrastructure",
+      "exit_trigger": "Theme matured as initial contract awards were absorbed into baseline revenue expectations; geopolitical negotiation over F-35/advanced tech access created uncertainty that capped further expansion",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI inference and sovereign AI ambitions represent a structurally new demand driver absent in prior GCC tech investment waves. Saudi SDAIA, UAE's AI national strategy (Falcon models, G42), and Qatar's ambitions to host hyperscale AI capacity reflect genuine sovereign compute demand — not merely financial diversification. This creates sticky, multi-year procurement pipelines tied to national strategic objectives rather than purely return-driven capital allocation.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Semiconductor fab and advanced AI chip supply is materially constrained by U.S. export control architecture (BIS Entity List, AI chip export rules under Executive Order frameworks). GCC nations face structural access limitations to leading-edge GPUs and HBM at scale, meaning deals that do achieve U.S. government clearance carry elevated scarcity value and strategic signaling weight — but also creating ceiling risk if export controls tighten further.",
+        "direction": "uncertain",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The U.S. government in 2026 appears to be actively facilitating — rather than passively permitting — select GCC technology deals as part of a broader geopolitical realignment strategy (counterbalancing Chinese tech influence in the Gulf). This marks a departure from prior cycles where Washington was ambivalent or obstructive. Active U.S. diplomatic endorsement may extend deal longevity and reduce execution risk.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "technology",
+        "description": "Data center and cloud infrastructure economics have shifted dramatically: hyperscale AI training and inference facilities require sustained power, cooling, and connectivity buildout over 5–10 year horizons. Unlike prior GCC tech investments (which were often minority equity stakes in growth companies), the current wave emphasizes physical infrastructure with long depreciation tails, creating more durable revenue visibility for Western construction, equipment, and cloud service partners.",
+        "direction": "may_extend",
+        "confidence": "high"
+      }
+    ],
+    "similarities": [
+      "Oil revenue dependency remains the underlying motivation — as in 2014 and 2020 cycles, a sustained oil price decline below GCC fiscal breakeven levels (~$70–90/bbl range) could compress sovereign capital available for discretionary tech deployment, echoing prior interruption patterns.",
+      "Geopolitical friction risk with Western partners has historically caused mid-cycle disruption (Khashoggi affair, UAE-F35 linkage); current deals remain vulnerable to analogous political shocks that could cause Western firms to pause or exit partnerships under public or regulatory pressure.",
+      "Execution gap between announced headline figures and actual deployed capital has historically been wide in GCC investment cycles; the $200B+ figure likely represents cumulative multi-year intention rather than near-term contracted spend, consistent with Vision 2030 announcement patterns."
+    ],
+    "observation": "The 2026 GCC tech investment wave may structurally extend longer than prior sovereign diversification cycles due to the intersection of genuine sovereign AI demand, physical infrastructure build timelines, and active U.S. geopolitical facilitation — but the historical pattern of oil-price-driven interruption and execution gaps between announced and deployed capital remains a durable constraint that observed precedent suggests investors should not dismiss."
+  },
+  "exit_signals": [
+    "Sustained Brent crude decline below approximately $65–70/bbl for 2+ consecutive quarters, historically associated with GCC fiscal pressure and repatriation of sovereign capital to cover domestic budget shortfalls",
+    "U.S. executive or legislative action materially tightening AI chip or data center technology export controls to GCC nations, reducing the addressable scope of deals and creating legal uncertainty for Western firm participation",
+    "Major geopolitical rupture between a GCC sovereign and key Western partner governments (analogous to 2018 Khashoggi episode) triggering corporate reputational withdrawal from announced partnership frameworks",
+    "Announced headline investment commitments failing to convert to executed contracts at expected pace over 12–18 months, causing sell-side revenue visibility estimates to be revised materially downward for exposed Western tech firms",
+    "Emergence of credible Chinese technology alternatives gaining GCC sovereign adoption at scale, reducing strategic dependency on Western vendors and compressing the pricing premium embedded in current partnership structures"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "GCC sovereign AI and infrastructure diversification is driven by structural national strategy mandates with multi-decade horizons (Vision 2030, UAE Centennial 2071), physical infrastructure build timelines of 5–10 years, and genuine sovereign compute demand — characteristics of an extended multi-year structural trend rather than a bounded event or derivative theme.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q4",
+    "description": "The current wave traces to late 2023 when G42 (UAE), Saudi Aramco, and PIF began executing visible large-scale AI infrastructure agreements with Microsoft, Google, and AWS, accelerating materially through 2024–2025 LEAP conference announcements and crystallizing into the $200B+ framework commitments announced in early-to-mid 2026.",
+    "current_maturity_estimate": "early"
+  }
+}

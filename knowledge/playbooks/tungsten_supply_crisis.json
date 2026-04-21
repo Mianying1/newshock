@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    900
+  ],
+  "historical_cases": [
+    {
+      "name": "2010-2011 China Rare Earth Export Quota Crisis",
+      "approximate_duration": "约 18-24 个月 (acute phase 约 12 个月)",
+      "peak_move": "Rare earth oxide prices surged 300-1000% across multiple elements; junior miner equities rose several hundred percent before collapsing",
+      "exit_trigger": "WTO dispute ruling against China; accelerated ex-China mine restarts (Mountain Pass, Lynas); demand destruction at high prices; China gradually relaxed quotas under international pressure",
+      "confidence": "high"
+    },
+    {
+      "name": "2022 Russia-Ukraine Neon/Palladium/Nickel Supply Shock",
+      "approximate_duration": "约 6-12 个月 (palladium/nickel acute phase 约 3-6 个月)",
+      "peak_move": "Nickel briefly spiked 250%+ on LME in days (trading halted); palladium rose ~80% before retreating; neon spot prices surged several hundred percent",
+      "exit_trigger": "LME nickel trading suspension and position unwinding; alternative supplier qualification; demand substitution accelerated; macro tightening compressed commodity multiples broadly",
+      "confidence": "high"
+    },
+    {
+      "name": "2010-2012 Molybdenum and Minor Metals Supply Concern Cycle",
+      "approximate_duration": "约 12-18 个月",
+      "peak_move": "Molybdenum prices roughly doubled; minor defense-critical metals (rhenium, hafnium) saw sharp spot spikes with thin liquidity amplifying moves",
+      "exit_trigger": "New mine capacity came online; demand softened with broader industrial slowdown; speculative positioning unwound as physical tightness proved less severe than feared",
+      "confidence": "medium"
+    },
+    {
+      "name": "2022-2023 China Gallium and Germanium Export Restriction Cycle",
+      "approximate_duration": "约 9-15 个月",
+      "peak_move": "Gallium spot prices approximately doubled to tripled; germanium rose sharply; semiconductor and defense sector stocks with exposure saw elevated volatility",
+      "exit_trigger": "Western nations accelerated domestic processing investments; buyer inventory restocking normalized spot demand signals; diplomatic negotiations created partial off-ramps; prices partially retreated as stockpile urgency faded",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "supply_side",
+        "factor": "Tungsten's supply concentration (approximately 85% from China) is structurally higher than most prior critical mineral crises, and ex-China restartable capacity is limited — known Western deposits (Canada, Australia, Portugal) face multi-year permitting and capital timelines, making near-term supply elasticity unusually low",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "factor": "Simultaneous defense demand surge (armor-piercing munitions procurement at Cold War-era urgency across NATO) and EV/thermal-management demand create a dual demand pull with no historical analog — prior crises typically had a single dominant demand driver, making demand destruction harder to achieve at price levels that historically terminated cycles",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "factor": "The 2026 geopolitical context involves active great-power strategic competition with explicit industrial policy coordination (US-EU Critical Minerals Agreements, IRA-adjacent incentives), suggesting government-sponsored stockpiling and mine-restart subsidies may sustain elevated equity sentiment longer than market-driven cycles, while also potentially accelerating the eventual supply response",
+        "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "factor": "Unlike the 2010-2011 rare earth crisis which occurred in a low-rate, post-GFC recovery environment with abundant risk appetite for junior miners, the 2026 macro backdrop may involve tighter capital conditions and higher discount rates, potentially capping the equity multiple expansion that junior miner restarts historically attracted — compressing the speculative overshoot phase",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in the 2010-2011 rare earth crisis, the initial price spike phase has historically been followed by a speculative equity wave in junior miners that overshoots fundamental value before supply-response realities are priced in",
+      "Government and industrial buyer panic-stockpiling behavior appears consistent with prior critical mineral shocks, tending to pull forward demand and create an eventual inventory overhang that contributes to price normalization",
+      "Diplomatic and WTO-mechanism responses to Chinese export restrictions have historically provided partial but meaningful off-ramps within 12-24 months, a pattern that may apply here depending on broader US-China trade negotiation dynamics"
+    ],
+    "observation": "The tungsten crisis may exhibit a structurally longer acute phase than prior critical mineral analogs due to uniquely low supply elasticity and dual defense-EV demand, though history suggests speculative equity positioning tends to peak well before physical market normalization, creating asymmetric timing risk for late-cycle participants."
+  },
+  "exit_signals": [
+    "Announced restart timelines for ex-China tungsten mines (Canada's Mactung, Australia's King Island Scheelite) convert to concrete capital commitment and permitting approvals, signaling medium-term supply response is credibly funded",
+    "Spot tungsten APT (ammonium paratungstate) prices stabilize or begin declining from peak levels on major benchmark assessments, suggesting physical hoarding urgency is diminishing",
+    "Major defense contractors and EV battery manufacturers publicly confirm strategic inventory targets have been met or provide forward guidance that normalizes tungsten input cost assumptions",
+    "China signals willingness to negotiate export license frameworks or partial exemptions (consistent with the Gallium/Germanium 2023 precedent), observed through official diplomatic statements or confirmed bilateral trade working group formation",
+    "Junior miner equity valuations relative to in-ground resource estimates reach historically elevated multiples with no corresponding production timeline acceleration, a pattern observed near cycle peaks in the 2011 rare earth and 2022 battery-metals cycles"
+  ],
+  "duration_type": "dependent",
+  "duration_type_reasoning": "The tungsten supply crisis theme is fundamentally dependent on the persistence of China's export restriction policy and the associated geopolitical tension — if restrictions are lifted, significantly relaxed, or circumvented through diplomatic agreements, the structural basis for the theme dissolves regardless of underlying demand trends.",
+  "real_world_timeline": {
+    "approximate_start": "2026 Q2",
+    "description": "China's formal tungsten export restriction announcement in April 2026 represents the discrete trigger event, though precursor signals (broader critical mineral export control escalation beginning with Gallium/Germanium in 2023 and graphite in 2023-2024) had been building for approximately 2-3 years",
+    "current_maturity_estimate": "early"
+  }
+}

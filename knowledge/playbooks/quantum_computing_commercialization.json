@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    900
+  ],
+  "historical_cases": [
+    {
+      "name": "Early Internet Infrastructure Commercialization Wave (1994–1996)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Networking and router stocks observed multi-hundred percent moves; Cisco, 3Com, and related infrastructure names saw sustained re-rating as enterprise TCP/IP adoption accelerated ahead of Y2K compliance deadlines",
+      "exit_trigger": "Valuation exhaustion combined with a gap between announced enterprise deployments and actual revenue recognition; cycle paused before resuming in the 1998–2000 bubble phase",
+      "confidence": "medium"
+    },
+    {
+      "name": "Cybersecurity Infrastructure Build-Out Post-NIST Framework Mandate (2014–2016)",
+      "approximate_duration": "约 18–30 个月",
+      "peak_move": "Pure-play cybersecurity names (Palo Alto Networks, FireEye, CyberArk) observed sustained sector outperformance of 40–120% over the period as compliance-driven enterprise budgets unlocked; ETF HACK launched and attracted rapid inflows",
+      "exit_trigger": "Crowded positioning, rising interest rates beginning to compress growth multiples, and a wave of high-profile breach disclosures paradoxically signaling market saturation of security spending narratives",
+      "confidence": "medium"
+    },
+    {
+      "name": "GPU / AI Accelerator Commercialization Cycle (2022–2024)",
+      "approximate_duration": "约 18–24 个月活跃重估期",
+      "peak_move": "NVIDIA and adjacent infrastructure names observed 3–10x moves from cycle lows; theme broadened from hyperscaler capex to enterprise AI pilots, mirroring the pattern of a new compute paradigm attracting successive investor cohorts",
+      "exit_trigger": "Supply normalization signals, hyperscaler capex guidance tempering, and rotation from infrastructure layer toward application layer; theme did not fully end but entered a digestion phase",
+      "confidence": "high"
+    },
+    {
+      "name": "Fiber Optic / Optical Networking Buildout (1999–2001)",
+      "approximate_duration": "约 18–24 个月高峰期",
+      "peak_move": "JDS Uniphase, Corning, and Ciena observed extreme valuation expansion as bandwidth demand narratives drove infrastructure investment; institutional capital concentrated in the 'picks and shovels' framing",
+      "exit_trigger": "Revenue shortfalls versus deployment announcements, inventory glut in optical components, and capital markets closing for secondary issuance; demonstrated the gap between pilot announcements and durable commercial throughput",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "policy",
+        "description": "The 2030 NIST post-quantum cryptography migration mandate creates a hard regulatory deadline that historical compute infrastructure cycles lacked. Enterprise procurement for quantum-safe cryptography tooling and quantum key distribution infrastructure is observed to be compliance-driven rather than purely discretionary, compressing the typical adoption S-curve and reducing the risk of indefinite deferral.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Error-corrected logical qubit milestones (crossing the 1000+ logical qubit threshold) represent a qualitatively different commercialization signal than prior quantum announcements, which were predominantly NISQ-era physical qubit counts with limited practical error tolerance. This hardware threshold may create a more credible investable infrastructure layer, analogous to the moment GPU parallelism crossed the threshold enabling practical deep learning.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Enterprise demand is observed to be bifurcated: near-term cryptography migration spending (defensive, budget-certain) and medium-term quantum advantage use cases (optimization, simulation). The defensive cryptography demand channel is structurally more durable than prior compute infrastructure cycles which relied entirely on offensive productivity narratives, potentially sustaining the theme through periods when quantum advantage claims face skepticism.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Quantum hardware manufacturing involves extreme technical barriers (cryogenic systems, superconducting fab processes, photonic integration) with no analog to commodity semiconductor scaling. Unlike GPU cycles where TSMC capacity expansion provided a visible supply response curve, quantum hardware supply elasticity is highly constrained, which may concentrate gains in a small number of names but also amplifies execution risk if shipment timelines slip.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in both the 1990s internet infrastructure cycle and the 2022–2024 GPU cycle, early commercialization phases tend to reward the 'picks and shovels' infrastructure layer (hardware, cryogenic systems, quantum networking) before application-layer value capture becomes legible to markets.",
+      "Pilot customer announcements historically precede durable revenue by 12–24 months, creating a window where narrative momentum and actual financial delivery diverge — a pattern observed in fiber optics (1999), early cloud (2008–2010), and AI infrastructure (2023).",
+      "Concentration risk in a small number of publicly traded pure-play names tends to produce high beta, crowded positioning, and sharp drawdowns on any single negative technical or commercial datapoint, consistent with prior emerging compute paradigm cycles."
+    ],
+    "observation": "The structural novelty of a hard regulatory deadline (NIST 2030) layered onto a genuine hardware threshold crossing may extend this cycle's institutional attention span beyond typical emerging-technology hype durations, though the persistent gap between quantum pilot announcements and auditable commercial revenue remains the most historically consistent risk to duration."
+  },
+  "exit_signals": [
+    "Quantum hardware vendors begin reporting material revenue from commercial pilots, followed by a subsequent quarter where revenue growth rate decelerates sharply or gross margins disappoint relative to software-like expectations — historically the moment infrastructure narratives reprice toward earnings reality.",
+    "A credible technical publication or peer-reviewed replication attempt raises questions about the error correction claims underpinning 1000+ logical qubit announcements, triggering institutional reassessment analogous to replication crises observed in other deep-tech commercialization cycles.",
+    "NIST post-quantum cryptography migration timelines are formally extended or enterprise compliance deadlines are softened by regulatory guidance, reducing the urgency of the defensive cryptography demand channel that underpins near-term revenue expectations.",
+    "Secondary equity issuance from quantum computing pure-plays accelerates materially (observed via S-1 filings, ATM programs, or SPAC combinations), historically a late-cycle signal indicating insiders and early investors are monetizing narrative premium ahead of revenue proof points.",
+    "Rotation signal: institutional fund flow data shows quantum computing ETF or basket inflows plateauing or reversing concurrent with AI application-layer names (software, agents) absorbing incremental technology sector allocations, suggesting the infrastructure phase is yielding to an application-layer investment cycle."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Quantum computing commercialization is driven by a multi-year convergence of hardware maturation, regulatory compliance mandates with a fixed 2030 horizon, and successive enterprise adoption waves — structural conditions that historically sustain investable themes across multiple years rather than resolving at a single bounded event.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q4",
+    "description": "The investable quantum commercialization narrative accelerated in late 2023 following Google, IBM, and IonQ announcements of error-correction milestones and expanded enterprise partnership programs, with the theme gaining additional institutional traction through 2025 as NIST finalized post-quantum cryptography standards and enterprise procurement cycles began.",
+    "current_maturity_estimate": "early"
+  }
+}
