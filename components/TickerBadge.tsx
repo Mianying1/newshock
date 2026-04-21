@@ -38,16 +38,18 @@ export function TickerBadge({ symbol, name, logoUrl, size = 'md', showName = fal
   return (
     <div className="inline-flex items-center gap-1.5">
       {logoUrl && !imgError ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={logoUrl}
-          alt={symbol}
-          className={`${wh} rounded bg-white border border-zinc-200 object-contain flex-shrink-0`}
-          onError={() => setImgError(true)}
-        />
+        <div className={`${wh} rounded-full bg-zinc-50 flex items-center justify-center overflow-hidden flex-shrink-0`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoUrl}
+            alt={symbol}
+            className="w-full h-full object-contain"
+            onError={() => setImgError(true)}
+          />
+        </div>
       ) : (
         <div
-          className={`${wh} rounded ${fallbackColor} flex items-center justify-center font-semibold ${text} flex-shrink-0`}
+          className={`${wh} rounded-full ${fallbackColor} flex items-center justify-center font-semibold ${text} flex-shrink-0`}
         >
           {symbol[0]}
         </div>
