@@ -1,0 +1,32 @@
+{
+  "id": "agriculture_supply_shock",
+  "name": "Agricultural Supply Shock",
+  "category": "supply_chain",
+  "description": "Disruptions to fertilizer, grain, or crop supply that drive commodity prices and benefit agri-commodity producers",
+  "trigger_keywords": [
+    "fertilizer supply",
+    "potash shortage",
+    "phosphate",
+    "nitrogen prices",
+    "grain supply",
+    "crop yield",
+    "agri-commodity",
+    "wheat export ban",
+    "Ukraine grain"
+  ],
+  "typical_tickers": {
+    "tier1": ["NTR", "MOS", "CF"],
+    "tier2": ["ADM", "BG", "CTVA"],
+    "tier3": ["FMC", "DE", "AGCO"]
+  },
+  "exclusion_rules": [
+    "Exclude large-cap diversified conglomerates not specific to agri-commodity supply",
+    "Exclude single-farm news without sector implications",
+    "Exclude consumer food brands (not raw commodity exposure)"
+  ],
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 120,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}

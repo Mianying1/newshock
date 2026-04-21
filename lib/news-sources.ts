@@ -1,5 +1,5 @@
 export type NewsSlot = 'asia_eu' | 'eu_us_mid' | 'us_close'
-export type NewsCategory = 'sec_filings' | 'general_news' | 'tech' | 'asia' | 'europe'
+export type NewsCategory = 'sec_filings' | 'general_news' | 'tech' | 'asia' | 'europe' | 'pharma' | 'defense' | 'crypto' | 'ev'
 
 export interface NewsSource {
   id: string
@@ -43,6 +43,35 @@ export const NEWS_SOURCES: NewsSource[] = [
     name: 'Reuters Tech',
     url: 'https://feeds.reuters.com/reuters/technologyNews',
     category: 'tech',
+    priority_slots: ['eu_us_mid', 'us_close'],
+  },
+  // Step 5: Diversified sector sources (AgWeb 403 SKIPPED, OilPrice 404 SKIPPED)
+  {
+    id: 'fiercepharma',
+    name: 'FiercePharma',
+    url: 'https://www.fiercepharma.com/rss/xml',
+    category: 'pharma',
+    priority_slots: ['eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'defense_news',
+    name: 'Defense News',
+    url: 'https://www.defensenews.com/arc/outboundfeeds/rss/',
+    category: 'defense',
+    priority_slots: ['eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'coindesk',
+    name: 'CoinDesk',
+    url: 'https://www.coindesk.com/arc/outboundfeeds/rss/',
+    category: 'crypto',
+    priority_slots: ['asia_eu', 'eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'electrek',
+    name: 'Electrek',
+    url: 'https://electrek.co/feed/',
+    category: 'ev',
     priority_slots: ['eu_us_mid', 'us_close'],
   },
 ]

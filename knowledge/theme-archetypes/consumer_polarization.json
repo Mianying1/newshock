@@ -1,0 +1,31 @@
+{
+  "id": "consumer_polarization",
+  "name": "Consumer Spending Polarization",
+  "category": "macro_monetary",
+  "description": "K-shaped consumer divergence: luxury demand strength coexisting with discount retail growth",
+  "trigger_keywords": [
+    "consumer spending divergence",
+    "luxury demand",
+    "dollar store growth",
+    "discount retail",
+    "premium pricing",
+    "trade-down behavior",
+    "K-shaped consumer",
+    "middle-class squeeze"
+  ],
+  "typical_tickers": {
+    "tier1": ["LVMUY", "RH", "DLTR", "DG"],
+    "tier2": ["CMG", "TJX", "WMT", "COST"],
+    "tier3": ["TGT", "MCD"]
+  },
+  "exclusion_rules": [
+    "Exclude single-company sales updates",
+    "Require macro-level data or sector trend",
+    "Exclude e-commerce-specific news"
+  ],
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}

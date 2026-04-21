@@ -1,0 +1,31 @@
+{
+  "id": "crypto_institutional_adoption",
+  "name": "Crypto Institutional Adoption",
+  "category": "macro_monetary",
+  "description": "Bitcoin ETF flows, stablecoin regulation, corporate BTC treasury moves, or major institutional crypto adoption",
+  "trigger_keywords": [
+    "Bitcoin ETF",
+    "crypto regulation",
+    "stablecoin",
+    "institutional crypto",
+    "SEC crypto approval",
+    "BTC treasury",
+    "digital asset",
+    "crypto custody"
+  ],
+  "typical_tickers": {
+    "tier1": ["COIN", "MSTR", "IBIT"],
+    "tier2": ["MARA", "RIOT", "CLSK"],
+    "tier3": ["HOOD", "SQ"]
+  },
+  "exclusion_rules": [
+    "Exclude routine altcoin volatility",
+    "Exclude small crypto scams or exchange failures",
+    "Exclude NFT-specific news"
+  ],
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 120,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}

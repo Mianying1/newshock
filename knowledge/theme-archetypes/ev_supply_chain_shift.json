@@ -1,0 +1,31 @@
+{
+  "id": "ev_supply_chain_shift",
+  "name": "EV Supply Chain Shift",
+  "category": "supply_chain",
+  "description": "Shifts in EV battery supply chain, lithium dynamics, or tariff/policy changes affecting EV producers",
+  "trigger_keywords": [
+    "EV battery",
+    "lithium supply",
+    "cathode material",
+    "EV tariff",
+    "Chinese EV",
+    "battery manufacturing",
+    "charging infrastructure",
+    "battery recycling"
+  ],
+  "typical_tickers": {
+    "tier1": ["ALB", "SQM", "LTHM"],
+    "tier2": ["F", "GM", "RIVN", "LCID"],
+    "tier3": ["TSLA", "BYDDY"]
+  },
+  "exclusion_rules": [
+    "Exclude Tesla-specific news unless sector implications",
+    "Exclude auto recalls without strategic impact",
+    "Exclude consumer-level EV reviews"
+  ],
+  "typical_duration_days_min": 60,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "obesity_drug_breakthrough",
+  "name": "GLP-1 / Obesity Drug Breakthrough",
+  "category": "tech_breakthrough",
+  "description": "New clinical trial results, FDA approvals, or expanded indications for GLP-1 and obesity drugs",
+  "trigger_keywords": [
+    "GLP-1",
+    "obesity drug",
+    "Wegovy",
+    "Zepbound",
+    "Mounjaro",
+    "weight loss drug",
+    "semaglutide",
+    "tirzepatide",
+    "anti-obesity"
+  ],
+  "typical_tickers": {
+    "tier1": ["LLY", "NVO"],
+    "tier2": ["VKTX", "MRK", "AMGN"],
+    "tier3": ["PFE", "REGN"]
+  },
+  "exclusion_rules": [
+    "Exclude unrelated biotech not in metabolic/obesity space",
+    "Exclude diet/nutrition consumer products",
+    "Exclude generic drug manufacturer news"
+  ],
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 180,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}

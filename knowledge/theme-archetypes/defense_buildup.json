@@ -1,0 +1,32 @@
+{
+  "id": "defense_buildup",
+  "name": "Defense Buildup & Military Contracts",
+  "category": "geopolitical",
+  "description": "Increased defense spending, major weapons contracts, or NATO frontier buildup",
+  "trigger_keywords": [
+    "defense budget",
+    "military contract",
+    "Patriot missile",
+    "F-35",
+    "arms deal",
+    "NATO spending",
+    "defense procurement",
+    "weapons system",
+    "foreign military sale"
+  ],
+  "typical_tickers": {
+    "tier1": ["LMT", "RTX", "NOC", "GD"],
+    "tier2": ["LHX", "HII", "KTOS"],
+    "tier3": ["LDOS", "TXT"]
+  },
+  "exclusion_rules": [
+    "Exclude one-time small contracts under $100M",
+    "Distinguish from civilian aerospace (Boeing commercial)",
+    "Exclude defense-related cyber/software unless major"
+  ],
+  "typical_duration_days_min": 90,
+  "typical_duration_days_max": 240,
+  "is_active": true,
+  "created_by": "manual_v1",
+  "confidence_level": "high"
+}
