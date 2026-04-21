@@ -1,6 +1,7 @@
 'use client'
 import type { ThemeRecommendation } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
+import { TickerBadge } from '@/components/TickerBadge'
 
 export default function RecommendationTier({
   tier,
@@ -24,17 +25,20 @@ export default function RecommendationTier({
       <p className="text-sm font-semibold text-zinc-700 mb-2">
         Tier {tier} · {t(tierKeys[tier])}
       </p>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {recommendations.map((r) => (
           <div key={r.ticker_symbol}>
-            <span className="font-mono font-semibold text-zinc-900">${r.ticker_symbol}</span>
-            {r.company_name && r.company_name !== r.ticker_symbol && (
-              <span className="text-zinc-700 ml-2">{r.company_name}</span>
-            )}
+            <TickerBadge
+              symbol={r.ticker_symbol}
+              name={r.company_name}
+              logoUrl={r.logo_url}
+              size="md"
+              showName
+            />
             {r.role_reasoning && r.role_reasoning.trim().length > 0 ? (
-              <p className="text-sm text-zinc-500 mt-0.5">{r.role_reasoning}</p>
+              <p className="text-sm text-zinc-500 mt-0.5 ml-9">{r.role_reasoning}</p>
             ) : (
-              <p className="text-xs text-zinc-400 italic mt-0.5">{t('theme_detail.exposure_fallback')}</p>
+              <p className="text-xs text-zinc-400 italic mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
             )}
           </div>
         ))}

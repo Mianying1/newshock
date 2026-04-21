@@ -3,6 +3,7 @@ export interface ThemeRecommendation {
   company_name: string
   sector: string
   market_cap_usd_b: number | null
+  logo_url: string | null
   tier: 1 | 2 | 3
   role_reasoning: string
   added_at: string

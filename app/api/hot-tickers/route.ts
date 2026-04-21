@@ -19,6 +19,7 @@ interface AggTicker {
   company_name: string
   sector: string | null
   market_cap_usd_b: number | null
+  logo_url: string | null
   themes: {
     id: string
     name: string
@@ -63,6 +64,7 @@ export async function GET() {
         company_name: sym,
         sector: null,
         market_cap_usd_b: null,
+        logo_url: null,
         themes: [],
         tier_distribution: { 1: 0, 2: 0, 3: 0 },
       }
@@ -83,7 +85,7 @@ export async function GET() {
   if (symbols.length > 0) {
     const { data: tickers } = await supabaseAdmin
       .from('tickers')
-      .select('symbol, company_name, sector, market_cap_usd_b')
+      .select('symbol, company_name, sector, market_cap_usd_b, logo_url')
       .in('symbol', symbols)
 
     for (const t of tickers ?? []) {
@@ -91,6 +93,7 @@ export async function GET() {
         aggregated[t.symbol].company_name = t.company_name
         aggregated[t.symbol].sector = t.sector
         aggregated[t.symbol].market_cap_usd_b = t.market_cap_usd_b
+        aggregated[t.symbol].logo_url = t.logo_url ?? null
       }
     }
   }

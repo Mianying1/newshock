@@ -40,6 +40,7 @@ interface TickerInfo {
   company_name: string
   sector: string | null
   market_cap_usd_b: number | null
+  logo_url: string | null
 }
 
 interface RecRow {
@@ -63,7 +64,7 @@ interface EventRow {
 async function fetchRecommendations(themeId: string): Promise<ThemeRecommendation[]> {
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
-    .select('ticker_symbol, tier, role_reasoning, added_at, tickers(company_name, sector, market_cap_usd_b)')
+    .select('ticker_symbol, tier, role_reasoning, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
     .eq('theme_id', themeId)
     .order('tier')
     .order('ticker_symbol')
@@ -77,6 +78,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       company_name: ticker?.company_name ?? r.ticker_symbol,
       sector: ticker?.sector ?? '',
       market_cap_usd_b: ticker?.market_cap_usd_b ?? null,
+      logo_url: ticker?.logo_url ?? null,
       tier: r.tier as 1 | 2 | 3,
       role_reasoning: r.role_reasoning ?? '',
       added_at: r.added_at,

@@ -4,6 +4,7 @@ import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { formatRelativeTime, STAGE_COLORS } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
+import { TickerBadge } from '@/components/TickerBadge'
 
 export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
   const { t } = useI18n()
@@ -35,11 +36,19 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
         {t('theme_card.active_days', { n: theme.days_active })} · {formatRelativeTime(theme.latest_event_date)}
       </p>
       {visible.length > 0 && (
-        <p className="text-sm text-zinc-700 mb-1">
-          {t('theme_detail.exposure_mapping')}:{' '}
-          {visible.map((r) => r.ticker_symbol).join(', ')}
-          {overflow > 0 && <span className="text-zinc-400"> + {overflow} more</span>}
-        </p>
+        <div className="flex flex-wrap items-center gap-2 mb-1">
+          {visible.map((r) => (
+            <TickerBadge
+              key={r.ticker_symbol}
+              symbol={r.ticker_symbol}
+              logoUrl={r.logo_url}
+              size="sm"
+            />
+          ))}
+          {overflow > 0 && (
+            <span className="text-xs text-zinc-400">+ {overflow} more</span>
+          )}
+        </div>
       )}
       {pb?.typical_duration_label && pb.typical_duration_label !== 'unknown' && (
         <div className="text-xs text-zinc-500 mt-1">

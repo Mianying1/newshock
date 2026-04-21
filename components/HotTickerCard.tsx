@@ -1,4 +1,7 @@
+'use client'
 import Link from 'next/link'
+import { TickerBadge } from '@/components/TickerBadge'
+import { useI18n } from '@/lib/i18n-context'
 
 interface ThemeRef {
   id: string
@@ -12,11 +15,13 @@ interface HotTicker {
   ticker_symbol: string
   company_name: string
   sector: string | null
+  logo_url?: string | null
   themes: ThemeRef[]
   tier_distribution: Record<number, number>
 }
 
 export default function HotTickerCard({ ticker }: { ticker: HotTicker }) {
+  const { t } = useI18n()
   const tierSummaryParts: string[] = []
   if (ticker.tier_distribution[1] > 0) tierSummaryParts.push(`Tier 1 × ${ticker.tier_distribution[1]}`)
   if (ticker.tier_distribution[2] > 0) tierSummaryParts.push(`Tier 2 × ${ticker.tier_distribution[2]}`)
@@ -24,29 +29,30 @@ export default function HotTickerCard({ ticker }: { ticker: HotTicker }) {
 
   return (
     <div className="py-4">
-      <div className="flex items-baseline gap-2 mb-1">
-        <span className="font-mono font-semibold text-xl text-zinc-900">
-          ${ticker.ticker_symbol}
-        </span>
-        {ticker.company_name && ticker.company_name !== ticker.ticker_symbol && (
-          <span className="text-base text-zinc-600">{ticker.company_name}</span>
-        )}
+      <div className="flex items-center gap-2 mb-1">
+        <TickerBadge
+          symbol={ticker.ticker_symbol}
+          name={ticker.company_name}
+          logoUrl={ticker.logo_url}
+          size="lg"
+          showName
+        />
       </div>
 
-      <p className="text-sm text-zinc-500 mb-2">
-        出现在 {ticker.themes.length} 个主题
+      <p className="text-sm text-zinc-500 mb-2 ml-11">
+        {t('hot_tickers.appears_in', { n: ticker.themes.length })}
         {tierSummaryParts.length > 0 && ` · ${tierSummaryParts.join(' · ')}`}
       </p>
 
-      <ul className="space-y-1">
-        {ticker.themes.map((t) => (
-          <li key={t.id} className="text-sm">
-            <Link href={`/themes/${t.id}`} className="text-blue-600 hover:underline">
-              {t.name}
+      <ul className="space-y-1 ml-11">
+        {ticker.themes.map((th) => (
+          <li key={th.id} className="text-sm">
+            <Link href={`/themes/${th.id}`} className="text-blue-600 hover:underline">
+              {th.name}
             </Link>
-            <span className="text-zinc-500 ml-1">· Tier {t.tier}</span>
-            {t.role_reasoning && (
-              <span className="text-zinc-400"> · {t.role_reasoning}</span>
+            <span className="text-zinc-500 ml-1">· Tier {th.tier}</span>
+            {th.role_reasoning && (
+              <span className="text-zinc-400"> · {th.role_reasoning}</span>
             )}
           </li>
         ))}
