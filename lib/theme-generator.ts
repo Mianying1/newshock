@@ -794,6 +794,7 @@ export async function generateThemesForPendingEvents(options: {
   for (const { event, sonnet } of sonnetResults) {
     try {
       if (sonnet.action === 'irrelevant') {
+        console.log(`  [IRRELEVANT] "${event.headline.slice(0, 60)}" reason="${sonnet.reasoning.slice(0, 80)}"`)
         await supabaseAdmin
           .from('events')
           .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${sonnet.reasoning}` })
@@ -801,6 +802,9 @@ export async function generateThemesForPendingEvents(options: {
         counts.irrelevant++
 
       } else if (sonnet.action === 'strengthen_existing' && sonnet.target_theme_id) {
+        const ctx = await getMatcherContext()
+        const matchedTheme = ctx.activeThemes.find((t) => t.id === sonnet.target_theme_id)
+        console.log(`  [STRENGTHEN] "${event.headline.slice(0, 60)}" → "${matchedTheme?.name ?? sonnet.target_theme_id}"`)
         await handleStrengthenExisting(event.id, sonnet.target_theme_id, sonnet.reasoning)
         counts.strengthen_existing++
 
@@ -814,6 +818,7 @@ export async function generateThemesForPendingEvents(options: {
           await handleStrengthenExisting(event.id, existingBatchThemeId, `[batch-dedup] ${sonnet.reasoning}`)
           counts.strengthen_existing++
         } else {
+          console.log(`  [NEW_ARCHETYPE] "${event.headline.slice(0, 60)}" → archetype="${sonnet.archetype_id}"`)
           const { theme_id, tickers_created } = await handleNewTheme(event.id, sonnet, false)
           batchArchetypeThemeMap[archetypeKey] = theme_id
           counts.themes_created++
@@ -822,6 +827,7 @@ export async function generateThemesForPendingEvents(options: {
         }
 
       } else if (sonnet.action === 'new_exploratory') {
+        console.log(`  [NEW_EXPLORATORY] "${event.headline.slice(0, 60)}" → theme="${sonnet.theme_name}"`)
         const { tickers_created } = await handleNewTheme(event.id, sonnet, true)
         counts.themes_created++
         counts.recommendations_created += tickers_created

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import ThemeCard from '@/components/ThemeCard'
 import DataFreshnessIndicator from '@/components/DataFreshnessIndicator'
 import type { ThemeRadarItem } from '@/types/recommendations'
@@ -32,7 +33,10 @@ export default function HomePage() {
       <header className="border-b border-zinc-200">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <span className="font-semibold text-lg">Newshock</span>
-          <span className="text-sm text-zinc-400">Explore →</span>
+          <nav className="flex gap-4 text-sm">
+            <span className="text-zinc-900 font-medium">主题</span>
+            <Link href="/hot-tickers" className="text-zinc-400 hover:text-zinc-900">热点股票</Link>
+          </nav>
         </div>
       </header>
 
