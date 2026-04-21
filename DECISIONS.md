@@ -345,3 +345,14 @@ v2: 考虑加 quality score 维度, 让高质量 exploratory recs 也进默认
 - Mega cap 投资方误进 tier 1 (EdgeCortix 案例)
   修复: Sonnet prompt 加 MEGA CAP INVESTOR EXCLUSION RULE
   结果: EdgeCortix 重分类为 exploratory (conf=45), tier1=GFS, tier2=AXTI
+
+### 已修 (A6 二次迭代)
+- BRK 从 mega cap 排除列表移除 (商业模式特殊性: BRK 投资即敞口)
+- "Direct exposure" 加 few-shot 例子校准 (Apple-Globalstar vs Google Ventures)
+- Commercial counterparty exception 规则加入
+  - AMZN/Anthropic: AMZN 是商业供应方 (AWS $100B) → tier1 保留 ✓
+  - NVDA/EdgeCortix: 纯财务投资, 无商业收入流 → tier1 排除 ✓
+  验证结果:
+  - Anthropic tier1 = [LITE, COHR, VRT, ANET, ETN, AMZN] ← AMZN 因商业关系保留
+  - EdgeCortix tier1 = [GFS] ← 无 AMD/NVDA
+  - 所有 active themes mega cap tier1 健康检查通过 (AMZN 是唯一例外且有理由)

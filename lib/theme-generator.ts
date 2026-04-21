@@ -135,7 +135,7 @@ ONLY use tickers present in the provided TICKERS DATABASE list — no others.
 
 MEGA CAP INVESTOR EXCLUSION RULE:
 When the news describes a mega cap company (NVDA, AMD, INTC, AMZN, GOOGL, MSFT, META,
-AAPL, TSLA, BRK, AVGO) MAKING an investment in another company, the mega cap investor
+AAPL, TSLA, AVGO) MAKING an investment in another company, the mega cap investor
 must NOT be placed in tier 1 or tier 2 of the recommendations.
 
 Reasoning: The mega cap's own stock impact from making an investment is negligible and
@@ -153,6 +153,44 @@ EXAMPLE:
   RIGHT: tier1=[GFS] (foundry for edge chips), tier2=[TSEM,AXTI], tier3=[AMD] (optional)
 
 Do NOT add NVDA or other mega caps just because they're in the same broad sector.
+
+FEW-SHOT EXAMPLES for tier 3 "direct exposure" test:
+
+ALLOW in tier 3:
+  News: "Apple announces $5B investment in Globalstar for satellite services"
+  Apple has $30B+ direct iPhone revenue exposure to satellite integration
+  → tier3=[AAPL] ✓ (direct ongoing revenue dependency)
+
+DO NOT ALLOW:
+  News: "Google Ventures leads $200M Series D in startup XYZ"
+  Pure venture investment, no Google P&L impact, no commercial relationship
+  → tier3=[] (exclude GOOGL entirely)
+
+THE TEST: Does the mega cap have material ongoing revenue flow tied to this investee?
+If yes (supplier, customer, integration partner) → maybe tier 3.
+If no (pure financial bet with no commercial dependency) → exclude entirely.
+
+COMMERCIAL COUNTERPARTY EXCEPTION:
+If the mega cap is SIMULTANEOUSLY a commercial counterparty (customer, supplier, or
+compute/infrastructure provider) to the investee/transaction WITH material ongoing
+revenue flow, re-include based on the COMMERCIAL relationship, not the investment.
+
+  EXAMPLE 1 — Anthropic-Amazon $100B deal:
+    AMZN provides AWS compute capacity to Anthropic ($100B contract)
+    AMZN is BOTH investor AND commercial supplier with direct AWS revenue impact
+    → Include AMZN in tier 1 based on AWS revenue impact ✓
+
+  EXAMPLE 2 — MSFT-OpenAI (hypothetical):
+    MSFT provides Azure compute to OpenAI + equity stake
+    → Include MSFT in tier 1 based on Azure commercial relationship ✓
+
+  EXAMPLE 3 — NVDA invests in EdgeCortix (DO NOT apply exception):
+    NVDA's relationship is purely strategic/financial
+    EdgeCortix does NOT generate material NVDA revenue
+    → Maintain exclusion from tier 1 ✗
+
+KEY DISTINCTION: Pure financial investment → exclude.
+Investment + material commercial revenue flow → include based on commercial side.
 
 theme_name format: "Situation · Beneficiary Category" (concise, max 60 chars, English or mix)
 Return ONLY valid JSON. No markdown, no text outside JSON.`
