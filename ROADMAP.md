@@ -103,6 +103,23 @@ Iran Crisis (parent)
   └─ Patriot Missile Replenishment
 ```
 
+## v1.6 · Weekly Market Scan
+
+问题: Newshock 基于固定 26 archetype, 新兴主题不会自动出现
+(如量子计算, 基因编辑等 2026 年热点).
+
+解决方案:
+- 每周 Sonnet 扫描当前市场热点
+- 识别 Newshock 未 cover 的主题 candidates
+- 人工 review + approve → 入 archetype
+- 跑 2-3 周验证质量后, 加自动 cron
+
+脚本: `npx tsx scripts/weekly-market-scan.ts`
+输出: `data/weekly-scans/scan-YYYY-MM-DD.json`
+建议频率: 每周一、周四各一次.
+
+未来 v1.7: 候选主题自动入 `archetype_candidates` 表 + admin UI 批量 approve.
+
 ## v1.5 · Auto-discovery for Ticker Universe (deferred)
 
 每周 cron 跑 ticker-expansion:

@@ -1,0 +1,192 @@
+{
+  "scan_date": "2026-04-21",
+  "scan_period": "2026-04-14 to 2026-04-21",
+  "candidates_count": 5,
+  "candidates": [
+    {
+      "title": "Quantum Computing Commercialization · Hardware Scale-Up Race",
+      "proposed_archetype_id": "quantum_computing_commercialization",
+      "category": "AI/Semi",
+      "description": "Multiple quantum computing firms announcing production-scale systems and commercial customer pilots in April 2026, driven by enterprise demand for cryptography migration ahead of 2030 NIST quantum-safe mandates. Hardware error correction breakthroughs enabling 1000+ logical qubit systems creating investable infrastructure layer distinct from AI model training.",
+      "initial_tickers": [
+        {
+          "symbol": "IONQ",
+          "reasoning": "Pure-play trapped-ion quantum, $1.2B market cap, announcing enterprise barium qubit systems"
+        },
+        {
+          "symbol": "RGTI",
+          "reasoning": "Superconducting quantum systems, partnerships with defense contractors"
+        },
+        {
+          "symbol": "QUBT",
+          "reasoning": "Room-temperature quantum photonics approach, recent Nvidia partnership rumors"
+        },
+        {
+          "symbol": "IBM",
+          "reasoning": "Quantum System Two deployed to Cleveland Clinic, 127+ qubit commercial availability"
+        },
+        {
+          "symbol": "MSFT",
+          "reasoning": "Azure Quantum platform, topological qubit research milestones"
+        }
+      ],
+      "recent_events": [
+        "IonQ announced April 15 commercial delivery of 64-qubit systems to financial services client for portfolio optimization",
+        "IBM published April 17 Nature paper on error correction achieving 99.9% gate fidelity milestone",
+        "Rigetti secured April 18 $50M DoD contract for quantum networking research",
+        "Google Quantum AI team demonstrated April 19 practical advantage in materials simulation for battery chemistry",
+        "NIST released April 14 updated timeline requiring quantum-resistant cryptography in federal systems by 2029"
+      ],
+      "why_this_is_a_theme": "Hardware reaching commercial viability thresholds with regulatory tailwinds creating 18-24 month investment window before commoditization.",
+      "estimated_importance": "medium"
+    },
+    {
+      "title": "GCC Sovereign Wealth Diversification · Gulf Tech Capex Wave",
+      "proposed_archetype_id": "gcc_sovereign_wealth_tech_pivot",
+      "category": "Geopolitics",
+      "description": "Saudi Arabia, UAE, and Qatar accelerating $200B+ technology infrastructure investments announced April 2026, targeting AI data centers, semiconductor fabs, and cloud infrastructure as oil-revenue diversification strategy. Direct equity stakes and supply agreements creating multi-year revenue visibility for select Western tech firms.",
+      "initial_tickers": [
+        {
+          "symbol": "EQIX",
+          "reasoning": "Equinix signed $4B joint venture with Saudi PIF for 12 MENA data centers announced April 16"
+        },
+        {
+          "symbol": "DLR",
+          "reasoning": "Digital Realty expanding UAE hyperscale campus, Abu Dhabi sovereign backing"
+        },
+        {
+          "symbol": "ANET",
+          "reasoning": "Arista secured $800M networking equipment order for Neom smart city project"
+        },
+        {
+          "symbol": "KLAC",
+          "reasoning": "KLA signed April 2026 service agreement for Saudi semiconductor R&D fab"
+        },
+        {
+          "symbol": "NVDA",
+          "reasoning": "Nvidia announced April 19 partnership with UAE's MGX for sovereign AI infrastructure"
+        }
+      ],
+      "recent_events": [
+        "Saudi Arabia PIF announced April 16 creation of $40B AI & Semiconductor Development Fund",
+        "UAE's MGX sovereign fund committed April 19 $50B to joint ventures with U.S. AI infrastructure companies",
+        "Qatar Investment Authority disclosed April 14 equity stakes in three U.S. data center REITs totaling $6B",
+        "Saudi NEOM project awarded April 17 contracts for 5GW data center power infrastructure",
+        "Abu Dhabi published April 15 2030 Technology Strategy targeting 5% GDP from digital economy"
+      ],
+      "why_this_is_a_theme": "Sovereign capital deployment creating multi-year contracted revenue streams distinct from cyclical hyperscaler capex patterns.",
+      "estimated_importance": "high"
+    },
+    {
+      "title": "Tungsten Supply Crisis · Defense & EV Upstream",
+      "proposed_archetype_id": "tungsten_supply_crisis",
+      "category": "Supply Chain",
+      "description": "China's April 2026 export restrictions on tungsten (85% global supply) targeting Western defense and EV industries, with tungsten carbide critical for armor-piercing munitions and EV battery thermal management. Prices surged 340% since April 14, triggering emergency stockpiling and North American mine restart announcements.",
+      "initial_tickers": [
+        {
+          "symbol": "ALB",
+          "reasoning": "Albemarle restarting Idaho tungsten operations mothballed since 2015, announced April 18"
+        },
+        {
+          "symbol": "MP",
+          "reasoning": "MP Materials exploring tungsten extraction from Mountain Pass rare earth tailings"
+        },
+        {
+          "symbol": "LMT",
+          "reasoning": "Lockheed Martin flagged April 16 tungsten supply risk to JASSM missile production"
+        },
+        {
+          "symbol": "RTX",
+          "reasoning": "Raytheon secured April 19 DoD funding for tungsten supply chain mapping"
+        },
+        {
+          "symbol": "GD",
+          "reasoning": "General Dynamics cited April 17 tungsten constraints in armor production guidance cut"
+        }
+      ],
+      "recent_events": [
+        "China Ministry of Commerce announced April 14 tungsten export licensing requirements citing 'national security'",
+        "London Metal Exchange tungsten price hit April 18 $580/MTU, up 340% from $130 in March 2026",
+        "U.S. Defense Production Act Title III invoked April 17 for tungsten as 'critical mineral'",
+        "Almonty Industries announced April 19 expedited permitting for South Korean Sangdong mine expansion",
+        "Pentagon released April 16 report identifying tungsten in top 3 defense supply chain vulnerabilities"
+      ],
+      "why_this_is_a_theme": "Acute supply shock with 18+ month mine restart lead times creating pricing power and strategic stockpile demand across defense/EV sectors.",
+      "estimated_importance": "high"
+    },
+    {
+      "title": "Cell Therapy Manufacturing Automation · CGT 2.0",
+      "proposed_archetype_id": "cell_therapy_manufacturing_automation",
+      "category": "Pharma",
+      "description": "FDA April 2026 guidance enabling automated closed-loop CAR-T and cell therapy manufacturing, reducing production time from 4 weeks to 48 hours and cost from $450K to sub-$100K per dose. Industrialization wave unlocking solid tumor and autoimmune disease addressable markets previously economics-limited.",
+      "initial_tickers": [
+        {
+          "symbol": "CRSP",
+          "reasoning": "CRISPR Therapeutics announced April 16 automated CAR-T platform with Lonza partnership"
+        },
+        {
+          "symbol": "FATE",
+          "reasoning": "Fate Therapeutics' off-the-shelf iPSC platform achieving FDA April 18 regenerative medicine designation"
+        },
+        {
+          "symbol": "BEAM",
+          "reasoning": "Beam Therapeutics' base editing approach for in-vivo cell therapy, manufacturing advantages"
+        },
+        {
+          "symbol": "BLUE",
+          "reasoning": "bluebird bio announced April 17 next-gen manufacturing cutting lovo-cel production to 5 days"
+        },
+        {
+          "symbol": "TMO",
+          "reasoning": "Thermo Fisher's Gibco cell therapy manufacturing systems, 40% market share"
+        }
+      ],
+      "recent_events": [
+        "FDA released April 15 draft guidance on 'Automated Manufacturing for Cell and Gene Therapies'",
+        "CRISPR Therapeutics demonstrated April 16 automated exa-cel production achieving 90% cost reduction",
+        "Lonza announced April 17 $600M investment in automated cell therapy CDMO capacity in Texas",
+        "CMS proposed April 18 Medicare coverage expansion for CAR-T to autoimmune diseases (lupus, MS)",
+        "Nature Medicine published April 19 Johns Hopkins trial showing automated CAR-T matching manual quality"
+      ],
+      "why_this_is_a_theme": "Manufacturing economics inflection removing primary barrier to cell therapy commercialization in non-oncology indications worth $80B+ TAM.",
+      "estimated_importance": "high"
+    },
+    {
+      "title": "India Semiconductor Fab Buildout · Supply Chain India+1",
+      "proposed_archetype_id": "india_semiconductor_fab_buildout",
+      "category": "Geopolitics",
+      "description": "India's April 2026 operationalization of $15B semiconductor incentive program with Micron, TSMC, and Tower Semiconductor announcing production timelines, creating 'India+1' supply chain diversification from China-Taiwan concentration. Equipment suppliers and materials firms securing multi-year India fab construction orders.",
+      "initial_tickers": [
+        {
+          "symbol": "AMAT",
+          "reasoning": "Applied Materials announced April 16 $2B India equipment order backlog through 2027"
+        },
+        {
+          "symbol": "LRCX",
+          "reasoning": "Lam Research signed April 18 strategic partnership with Tata Group for India expansion"
+        },
+        {
+          "symbol": "KLAC",
+          "reasoning": "KLA opening India application lab for process control, announced April 14"
+        },
+        {
+          "symbol": "ENTG",
+          "reasoning": "Entegris supplying materials to all three major India fab projects"
+        },
+        {
+          "symbol": "MKSI",
+          "reasoning": "MKS Instruments awarded April 17 contract for Micron India facility gas delivery systems"
+        }
+      ],
+      "recent_events": [
+        "Micron announced April 14 Gujarat ATMP facility operational Q3 2026, 6 months ahead of schedule",
+        "TSMC confirmed April 16 joint venture with Tata for 28nm fab in Karnataka, production start 2028",
+        "Tower Semiconductor broke ground April 18 on $8B Dholera 65nm fab with Apollo Global backing",
+        "India Ministry of Electronics announced April 15 additional $5B in fab incentives for sub-14nm nodes",
+        "JP Morgan upgraded India semiconductor supply chain April 19 citing 'sustained 10-year capex cycle'"
+      ],
+      "why_this_is_a_theme": "Geopolitical hedge demand accelerating India fab timeline from 2030 to 2027-28, creating incremental equipment TAM outside China-Taiwan.",
+      "estimated_importance": "medium"
+    }
+  ]
+}
