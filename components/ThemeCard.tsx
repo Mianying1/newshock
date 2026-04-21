@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
-import { formatRelativeTime, STAGE_COLORS, calcDifferenceSignal } from '@/lib/utils'
+import { formatRelativeTime, STAGE_COLORS } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
 
 export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
@@ -26,8 +26,6 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
     ? Math.min(100, Math.round((theme.days_active / daysMax) * 100))
     : 0
   const stageColor = STAGE_COLORS[theme.playbook_stage] ?? 'bg-zinc-300'
-
-  const signal = calcDifferenceSignal(pb?.this_time_different?.differences)
 
   return (
     <Link href={`/themes/${theme.id}`} className="block py-5 hover:bg-zinc-50 transition-colors">
@@ -56,11 +54,6 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
             {theme.playbook_stage === 'beyond' && (
               <span className="text-red-600">· 超出历史区间</span>
             )}
-            {signal ? (
-              <span className={`ml-1 ${signal.color}`}>
-                · {signal.icon} {t(`theme_card.diff_${signal.key}`)}
-              </span>
-            ) : null}
           </div>
           {progressPercent > 0 && (
             <div className="h-1 bg-zinc-100 rounded-full overflow-hidden mt-1.5">
