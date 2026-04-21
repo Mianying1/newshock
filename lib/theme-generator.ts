@@ -370,6 +370,44 @@ async function getValidTickers(symbols: string[]): Promise<Set<string>> {
   return new Set<string>((data ?? []).map((r: { symbol: string }) => r.symbol))
 }
 
+// ─── Ticker candidate logging ─────────────────────────────────────────────────
+
+async function logTickerCandidate(
+  symbol: string,
+  context: {
+    event_id: string
+    theme_id: string
+    suggested_tier: number
+    role_reasoning: string
+    confidence: number
+  }
+): Promise<void> {
+  const cleanSymbol = symbol.toUpperCase().trim()
+  const { data: existing } = await supabaseAdmin
+    .from('ticker_candidates')
+    .select('id, mention_count, contexts')
+    .eq('symbol', cleanSymbol)
+    .maybeSingle()
+
+  const newContext = { ...context, suggested_at: new Date().toISOString() }
+
+  if (existing) {
+    await supabaseAdmin
+      .from('ticker_candidates')
+      .update({
+        mention_count: (existing.mention_count ?? 0) + 1,
+        contexts: [...((existing.contexts as unknown[]) ?? []), newContext],
+        last_seen_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+  } else {
+    await supabaseAdmin
+      .from('ticker_candidates')
+      .insert({ symbol: cleanSymbol, contexts: [newContext] })
+  }
+}
+
 // ─── Ticker merging ───────────────────────────────────────────────────────────
 
 function mergeTickers(
@@ -459,9 +497,7 @@ async function handleNewTheme(
 
   const validSet = await getValidTickers(uniqueProposed.map((x) => x.symbol))
   const validRows = uniqueProposed.filter((x) => validSet.has(x.symbol))
-  const skipped = uniqueProposed
-    .filter((x) => !validSet.has(x.symbol))
-    .map((x) => x.symbol)
+  const skippedRows = uniqueProposed.filter((x) => !validSet.has(x.symbol))
 
   // Insert theme
   const { data: newTheme, error: themeErr } = await supabaseAdmin
@@ -505,10 +541,21 @@ async function handleNewTheme(
     }
   }
 
-  // Log skipped tickers
+  // Log unknown tickers to candidates table for human review
+  for (const { symbol, tier } of skippedRows) {
+    await logTickerCandidate(symbol, {
+      event_id: eventId,
+      theme_id: themeId,
+      suggested_tier: tier,
+      role_reasoning: sonnet.ticker_reasoning[symbol] ?? '',
+      confidence: sonnet.classification_confidence,
+    })
+  }
+
+  const skipped = skippedRows.map((x) => x.symbol)
   const reasoningNote =
     skipped.length > 0
-      ? `${sonnet.reasoning} | novel tickers skipped: ${skipped.join(', ')}`
+      ? `${sonnet.reasoning} | novel tickers logged: ${skipped.join(', ')}`
       : sonnet.reasoning
 
   await supabaseAdmin

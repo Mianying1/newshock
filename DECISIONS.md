@@ -356,3 +356,30 @@ v2: 考虑加 quality score 维度, 让高质量 exploratory recs 也进默认
   - Anthropic tier1 = [LITE, COHR, VRT, ANET, ETN, AMZN] ← AMZN 因商业关系保留
   - EdgeCortix tier1 = [GFS] ← 无 AMD/NVDA
   - 所有 active themes mega cap tier1 健康检查通过 (AMZN 是唯一例外且有理由)
+
+## 2026-04-20 · 后端 V1 正式完成
+
+### 完成清单
+- Step 8 (旧编号) Pipeline 重构为 v2 主题雷达架构
+- A1 文档 + 20 archetype 草稿
+- A2 schema 改造 (3 新表)
+- A2.5 + A3 schema 补字段 + 20 archetype 入库
+- A3.5 archetype 重构 (砍 6 加 6, 最终 20 个高质量原型)
+- A4 + A4.5 Theme Generator (3 步判断 + Pattern Discovery Loop)
+- A5 端到端稳定性 (47 events 100% 分类, 0 孤儿)
+- A6 Recommendation Builder + 3 API endpoints
+- A6 二次迭代 (mega cap 排除 + commercial counterparty exception)
+- Ticker Discovery Loop (自动捕获库外 ticker)
+- 量子模拟测试通过 (整套机制端到端验证)
+
+### 当前能力
+- 自动从 4 个 RSS 源拉新闻
+- Haiku 初筛 + Sonnet 主题识别
+- 13 个真实 active themes + exploratory
+- 85+ 推荐, 0 孤儿数据
+- 2 套自我进化机制 (Pattern Discovery + Ticker Discovery)
+- 3 个 API endpoint 给前端 ready
+
+### 下一阶段
+B 阶段 · 前端 UI (Next.js + Tailwind, 主题雷达 + 详情页)
+预计 2-3 周
