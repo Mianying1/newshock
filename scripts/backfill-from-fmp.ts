@@ -1,9 +1,5 @@
 import { config } from 'dotenv'
-config({ path: '.env.local' })
-
-import { supabaseAdmin } from '@/lib/supabase-admin'
-import { anthropic } from '@/lib/anthropic'
-import { getStockNewsMultiTicker } from '@/lib/fmp'
+config({ path: '.env.localc' })
 
 interface ArchetypeConfig {
   archetype_id: string
@@ -79,7 +75,51 @@ const ARCHETYPE_CONFIGS: ArchetypeConfig[] = [
     keywords: ['rare earth', 'critical mineral', 'lithium', 'national security', 'China export ban', 'strategic reserve', 'mine'],
     target_count: 8,
   },
+  // Step 6 new archetypes
+  {
+    archetype_id: 'agriculture_supply_shock',
+    tickers: ['NTR', 'MOS', 'CF', 'ADM', 'BG', 'DE', 'CTVA', 'FMC'],
+    keywords: ['fertilizer', 'potash', 'phosphate', 'nitrogen', 'grain supply', 'crop yield', 'agri-commodity'],
+    target_count: 10,
+  },
+  {
+    archetype_id: 'obesity_drug_breakthrough',
+    tickers: ['LLY', 'NVO', 'VKTX', 'MRK', 'AMGN', 'PFE', 'REGN'],
+    keywords: ['GLP-1', 'obesity drug', 'Wegovy', 'Zepbound', 'Mounjaro', 'weight loss', 'semaglutide', 'tirzepatide'],
+    target_count: 10,
+  },
+  {
+    archetype_id: 'defense_buildup',
+    tickers: ['LMT', 'RTX', 'NOC', 'GD', 'LHX', 'HII', 'KTOS', 'LDOS'],
+    keywords: ['defense budget', 'military contract', 'Patriot missile', 'F-35', 'arms deal', 'defense procurement', 'foreign military sale'],
+    target_count: 10,
+  },
+  {
+    archetype_id: 'ev_supply_chain_shift',
+    tickers: ['ALB', 'SQM', 'LTHM', 'F', 'GM', 'RIVN', 'LCID', 'TSLA'],
+    keywords: ['EV battery', 'lithium supply', 'cathode material', 'EV tariff', 'Chinese EV', 'battery manufacturing', 'charging infrastructure'],
+    target_count: 10,
+  },
+  {
+    archetype_id: 'crypto_institutional_adoption',
+    tickers: ['COIN', 'MSTR', 'MARA', 'RIOT', 'CLSK', 'HOOD', 'SQ', 'IBIT'],
+    keywords: ['Bitcoin ETF', 'crypto regulation', 'stablecoin', 'institutional crypto', 'BTC treasury', 'digital asset', 'SEC crypto approval'],
+    target_count: 10,
+  },
+  {
+    archetype_id: 'consumer_polarization',
+    tickers: ['LVMUY', 'RH', 'DLTR', 'DG', 'CMG', 'TJX', 'WMT', 'COST', 'TGT'],
+    keywords: ['luxury demand', 'dollar store', 'discount retail', 'premium pricing', 'trade-down behavior', 'consumer spending divergence', 'K-shaped consumer'],
+    target_count: 8,
+  },
 ]
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let supabaseAdmin: any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let anthropic: any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let getStockNewsMultiTicker: any
 
 interface ArchetypeRow {
   name: string
@@ -314,6 +354,11 @@ async function main() {
   const dryRun = args.includes('--dry-run')
   const archetypeArg = args.find((a) => a.startsWith('--archetype='))?.split('=')[1]
   const startTime = Date.now()
+
+  // Dynamic imports after dotenv config runs
+  ;({ supabaseAdmin } = await import('@/lib/supabase-admin'))
+  ;({ anthropic } = await import('@/lib/anthropic'))
+  ;({ getStockNewsMultiTicker } = await import('@/lib/fmp'))
 
   console.log(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`)
   if (archetypeArg) console.log(`Filter: archetype = ${archetypeArg}`)
