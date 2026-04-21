@@ -74,6 +74,12 @@
     "error": "Something went wrong, please try again later",
     "disclaimer_footer": "Information only, not investment advice. Past performance does not predict future results."
   },
+  "narratives": {
+    "heading": "This Week's Narratives",
+    "narrative": "Narrative",
+    "tickers": "{n} tickers",
+    "themes": "{n} themes"
+  },
   "categories": {
     "geopolitics": "Geopolitics",
     "geopolitical": "Geopolitics",

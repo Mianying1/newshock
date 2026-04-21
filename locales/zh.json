@@ -74,6 +74,12 @@
     "error": "出错了, 稍后重试",
     "disclaimer_footer": "信息展示, 非投资建议. 历史表现不代表未来结果."
   },
+  "narratives": {
+    "heading": "本周主线",
+    "narrative": "主线",
+    "tickers": "{n} 只股票",
+    "themes": "{n} 个主题"
+  },
   "categories": {
     "geopolitics": "地缘政治",
     "geopolitical": "地缘政治",

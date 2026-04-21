@@ -5,6 +5,7 @@ import Link from 'next/link'
 import ThemeCard from '@/components/ThemeCard'
 import DataFreshnessIndicator from '@/components/DataFreshnessIndicator'
 import { LocaleToggle } from '@/components/LocaleToggle'
+import { MarketNarratives } from '@/components/MarketNarratives'
 import { useI18n } from '@/lib/i18n-context'
 import type { ThemeRadarItem } from '@/types/recommendations'
 
@@ -52,6 +53,8 @@ export default function HomePage() {
             <DataFreshnessIndicator />
           </p>
         </div>
+
+        <MarketNarratives />
 
         <div className="divide-y divide-zinc-200">
           {loading && (
