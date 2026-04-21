@@ -1,5 +1,3 @@
-import * as fs from 'node:fs'
-import * as path from 'node:path'
 import { supabaseAdmin } from './supabase-admin'
 import { calculateDaysAgo } from './theme-formatter'
 import type {
@@ -10,19 +8,6 @@ import type {
   ArchetypePlaybook,
   PlaybookStage,
 } from '@/types/recommendations'
-
-const PLAYBOOKS_DIR = path.join(process.cwd(), 'knowledge', 'playbooks')
-
-function loadPlaybook(archetypeId: string | null): ArchetypePlaybook | null {
-  if (!archetypeId) return null
-  try {
-    const filePath = path.join(PLAYBOOKS_DIR, `${archetypeId}.json`)
-    if (!fs.existsSync(filePath)) return null
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ArchetypePlaybook
-  } catch {
-    return null
-  }
-}
 
 function computePlaybookStage(daysActive: number, playbook: ArchetypePlaybook | null): PlaybookStage {
   const max = playbook?.typical_duration_days_approx?.[1] ?? 0
@@ -48,7 +33,7 @@ interface ThemeRow {
   first_seen_at: string
   last_active_at: string
   event_count: number
-  theme_archetypes: { category: string } | null
+  theme_archetypes: { category: string; playbook: ArchetypePlaybook | null } | null
 }
 
 interface TickerInfo {
@@ -142,7 +127,7 @@ function buildItem(
   const startDate = new Date(earliest)
   const daysActive = Math.max(1, Math.floor((Date.now() - startDate.getTime()) / 86400000))
 
-  const archetype_playbook = loadPlaybook(row.archetype_id)
+  const archetype_playbook = row.theme_archetypes?.playbook ?? null
   const playbook_stage = computePlaybookStage(daysActive, archetype_playbook)
 
   return {
@@ -195,7 +180,7 @@ export async function buildThemeRadar(options: {
       'id, name, archetype_id, status, institutional_awareness, ' +
       'theme_strength_score, classification_confidence, summary, ' +
       'first_seen_at, last_active_at, event_count, ' +
-      'theme_archetypes(category)'
+      'theme_archetypes(category, playbook)'
     )
     .in('status', statusValues)
     .order('theme_strength_score', { ascending: false })
@@ -291,7 +276,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'id, name, archetype_id, status, institutional_awareness, ' +
       'theme_strength_score, classification_confidence, summary, ' +
       'first_seen_at, last_active_at, event_count, ' +
-      'theme_archetypes(category)'
+      'theme_archetypes(category, playbook)'
     )
     .eq('id', themeId)
     .single()
