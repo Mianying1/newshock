@@ -1,9 +1,9 @@
 import { config } from 'dotenv'
 config({ path: '.env.local' })
-import { supabaseAdmin } from '../lib/supabase-admin'
-import { anthropic, MODEL_SONNET } from '../lib/anthropic'
 
 async function main() {
+  const { supabaseAdmin } = await import('../lib/supabase-admin')
+  const { anthropic, MODEL_SONNET } = await import('../lib/anthropic')
   const { data: candidates } = await supabaseAdmin
     .from('archetype_candidates')
     .select('*')
@@ -91,6 +91,7 @@ Rules:
       .update({
         theme_group: analysis.theme_group,
         similarity_warnings: analysis.similarity_warnings || [],
+        overall_assessment: analysis.overall_assessment ?? null,
       })
       .eq('id', cand.id)
 

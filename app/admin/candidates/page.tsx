@@ -28,6 +28,52 @@ interface Candidate {
   reviewed_at: string | null
   theme_group: string | null
   similarity_warnings: SimilarityWarning[] | null
+  overall_assessment: string | null
+}
+
+function getRecommendation(candidate: Candidate): {
+  type: 'approve' | 'reject' | 'review'
+  reason: string
+  color: 'emerald' | 'red' | 'amber'
+} {
+  const warnings = candidate.similarity_warnings || []
+
+  if (warnings.length === 0) {
+    return { type: 'approve', reason: 'No overlap with existing archetypes', color: 'emerald' }
+  }
+
+  const strongMerge = warnings.find(
+    (w) => w.recommendation === 'merge_into_target' && w.similarity_score >= 0.75
+  )
+  if (strongMerge) {
+    return {
+      type: 'reject',
+      reason: `${Math.round(strongMerge.similarity_score * 100)}% overlap with "${strongMerge.target_name}". Core logic already covered.`,
+      color: 'red',
+    }
+  }
+
+  const mediumMerge = warnings.find((w) => w.recommendation === 'merge_into_target')
+  if (mediumMerge) {
+    return {
+      type: 'review',
+      reason: `Possible overlap with "${mediumMerge.target_name}" (${Math.round(mediumMerge.similarity_score * 100)}%). Review carefully.`,
+      color: 'amber',
+    }
+  }
+
+  const highApproveAsNew = warnings.find(
+    (w) => w.recommendation === 'approve_as_new' && w.similarity_score >= 0.75
+  )
+  if (highApproveAsNew) {
+    return {
+      type: 'approve',
+      reason: `Related to "${highApproveAsNew.target_name}" but distinct angle`,
+      color: 'emerald',
+    }
+  }
+
+  return { type: 'approve', reason: 'Related but independent theme', color: 'emerald' }
 }
 
 export default function CandidatesPage() {
@@ -50,6 +96,16 @@ export default function CandidatesPage() {
     acc[group].push(c)
     return acc
   }, {})
+
+  const pendingCounts = candidates.reduce(
+    (acc, c) => {
+      if (c.status !== 'pending') return acc
+      const rec = getRecommendation(c)
+      acc[rec.type] = (acc[rec.type] || 0) + 1
+      return acc
+    },
+    { approve: 0, reject: 0, review: 0 }
+  )
 
   async function approve(id: string) {
     setActioningId(id)
@@ -82,37 +138,29 @@ export default function CandidatesPage() {
     }
   }
 
-  async function bulkApprove(importance: string) {
-    if (!confirm(`Approve all ${importance.toUpperCase()} candidates without duplicate warnings?`)) return
-    const targets = candidates.filter(
-      (c) =>
-        c.status === 'pending' &&
-        c.estimated_importance === importance &&
-        (!c.similarity_warnings || c.similarity_warnings.length === 0)
-    )
+  async function bulkApproveRecommended() {
+    const targets = candidates.filter((c) => c.status === 'pending' && getRecommendation(c).type === 'approve')
+    if (targets.length === 0) { setMessage('No candidates recommended for approval'); return }
+    if (!confirm(`Approve ${targets.length} recommended candidate(s)?`)) return
     for (const c of targets) {
       await fetch(`/api/admin/candidates/${c.id}/approve`, { method: 'POST' })
     }
     mutate()
-    setMessage(`✅ Approved ${targets.length} ${importance} candidate(s)`)
+    setMessage(`✅ Approved ${targets.length} candidate(s)`)
     setTimeout(() => setMessage(null), 8000)
   }
 
-  async function bulkReject(importance: string) {
-    if (!confirm(`Reject all ${importance.toUpperCase()} pending candidates?`)) return
-    const targets = candidates.filter(
-      (c) => c.status === 'pending' && c.estimated_importance === importance
-    )
+  async function bulkRejectRecommended() {
+    const targets = candidates.filter((c) => c.status === 'pending' && getRecommendation(c).type === 'reject')
+    if (targets.length === 0) { setMessage('No candidates recommended for rejection'); return }
+    if (!confirm(`Reject ${targets.length} recommended candidate(s)?`)) return
     for (const c of targets) {
       await fetch(`/api/admin/candidates/${c.id}/reject`, { method: 'POST' })
     }
     mutate()
-    setMessage(`Rejected ${targets.length} ${importance} candidate(s)`)
+    setMessage(`Rejected ${targets.length} candidate(s)`)
     setTimeout(() => setMessage(null), 5000)
   }
-
-  const pendingHigh = byStatus.pending.filter((c) => c.estimated_importance === 'high' && (!c.similarity_warnings || c.similarity_warnings.length === 0)).length
-  const pendingMedium = byStatus.pending.filter((c) => c.estimated_importance === 'medium').length
 
   if (isLoading) return <div className="p-8 text-zinc-500 text-sm">Loading...</div>
 
@@ -152,18 +200,18 @@ export default function CandidatesPage() {
         {filter === 'pending' && (
           <div className="flex gap-2 pb-3">
             <button
-              onClick={() => bulkReject('medium')}
-              disabled={pendingMedium === 0}
-              className="px-3 py-1.5 text-xs border border-zinc-300 rounded hover:bg-zinc-50 disabled:opacity-40 transition-colors"
+              onClick={bulkRejectRecommended}
+              disabled={pendingCounts.reject === 0}
+              className="px-3 py-1.5 text-xs bg-red-50 text-red-700 border border-red-200 rounded hover:bg-red-100 disabled:opacity-40 transition-colors"
             >
-              Reject all MEDIUM ({pendingMedium})
+              ❌ Reject all recommended ({pendingCounts.reject})
             </button>
             <button
-              onClick={() => bulkApprove('high')}
-              disabled={pendingHigh === 0}
+              onClick={bulkApproveRecommended}
+              disabled={pendingCounts.approve === 0}
               className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-40 transition-colors"
             >
-              Approve all HIGH ({pendingHigh})
+              ✅ Approve all recommended ({pendingCounts.approve})
             </button>
           </div>
         )}
@@ -228,8 +276,31 @@ function CandidateCard({
     low: 'bg-zinc-50 text-zinc-600 border-zinc-200',
   }[c.estimated_importance]
 
+  const rec = getRecommendation(c)
+  const recBg = {
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    red: 'bg-red-50 border-red-200 text-red-800',
+    amber: 'bg-amber-50 border-amber-200 text-amber-800',
+  }[rec.color]
+  const recIcon = rec.type === 'approve' ? '✅' : rec.type === 'reject' ? '❌' : '⚠️'
+  const recLabel =
+    rec.type === 'approve' ? 'Recommended: Approve' :
+    rec.type === 'reject' ? 'Recommended: Reject' :
+    'Needs Review'
+
   return (
     <div className="bg-white border border-zinc-200 rounded-lg p-5 hover:border-zinc-300 transition-colors">
+      {/* Recommendation badge — pending only */}
+      {showActions && (
+        <div className={`mb-3 p-3 rounded border ${recBg}`}>
+          <div className="flex items-center gap-2 font-medium text-sm">
+            <span>{recIcon}</span>
+            <span>{recLabel}</span>
+          </div>
+          <div className="text-xs mt-1 opacity-80">{rec.reason}</div>
+        </div>
+      )}
+
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-base leading-snug text-zinc-900">{c.title}</h3>
