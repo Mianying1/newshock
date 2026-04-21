@@ -191,3 +191,68 @@ Newshock pipeline 用 Sonnet 4.5 为主, Haiku 4.5 做初筛。
 ### 何时切 Opus
 只有在 "Sonnet 分类错误率 >20%" 时才评估升级。
 届时账号自动到 Tier 2, 切换无成本。
+
+---
+
+## 2026-04-20 · 产品方向最终锁定 · v1 Theme Radar
+
+### v1 定位
+
+一句话: 基于新闻扫描全市场投资主题, 推荐候选股票梯队, 广覆盖不漏机会.
+
+### v1 做什么
+
+1. 主题发现 (Hybrid: 20 起始原型 + Claude 动态识别)
+2. 候选股票梯队 (tier 1/2/3 结构)
+3. 分层展示:
+   - 默认首页: 高置信度主题 (5-15 个活跃)
+   - 探索模式: 包含 exploratory 主题 (30-50 个)
+
+### v1 不做
+
+❌ 技术指标 (RSI / 均线)
+❌ Setup 标签 (强势股回撤等)
+❌ 股价数据 (无 FMP 依赖)
+❌ 预测未来
+❌ 投资建议
+❌ 持仓管理
+
+### v2 扩展 (发布后根据反馈)
+
+- 集成 FMP 股价 API
+- 3 种 setup 标签
+- 历史可比精确数字
+
+### 核心护城河: Pattern Discovery Loop
+
+原型库持续扩张:
+- v1 上线: 20 个
+- 3 个月: 40 个
+- 1 年: 100 个
+- 长期: 200+ 个
+
+扩张机制: Claude exploratory → 每周人工 review → 确认升级
+
+### 合规
+
+Publisher/Information tool.
+每页免责: "信息展示, 非投资建议"
+
+### 技术影响 (vs 之前 pattern 版本)
+
+保留 (80%):
+- Supabase 8 表 (字段语义调整)
+- RSS 摄入 pipeline
+- Claude 分类器 (升级为主题识别)
+- 54 个 ticker
+
+弃用:
+- pattern_ticker_map 表 (v1 不用)
+- Pattern #01-#07 定义 (保留文件, 不入库)
+- Score 算法 (v2 再考虑)
+
+新增:
+- themes 表 (动态活跃主题)
+- theme_archetypes 表 (20 原型起步, 持续扩张)
+- theme_recommendations 表
+- events.trigger_theme_id 字段
