@@ -7,6 +7,7 @@ import type {
   CatalystEvent,
   ArchetypePlaybook,
   PlaybookStage,
+  ExposureDirection,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysActive: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -47,6 +48,7 @@ interface RecRow {
   ticker_symbol: string
   tier: number
   role_reasoning: string | null
+  exposure_direction: string | null
   added_at: string
   tickers: TickerInfo | TickerInfo[] | null
 }
@@ -64,7 +66,7 @@ interface EventRow {
 async function fetchRecommendations(themeId: string): Promise<ThemeRecommendation[]> {
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
-    .select('ticker_symbol, tier, role_reasoning, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
+    .select('ticker_symbol, tier, role_reasoning, exposure_direction, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
     .eq('theme_id', themeId)
     .order('tier')
     .order('ticker_symbol')
@@ -73,6 +75,10 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
 
   return (data ?? []).map((r: RecRow) => {
     const ticker = Array.isArray(r.tickers) ? r.tickers[0] : r.tickers
+    const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
+    const direction = validDirections.has(r.exposure_direction ?? '')
+      ? (r.exposure_direction as ExposureDirection)
+      : 'uncertain'
     return {
       ticker_symbol: r.ticker_symbol,
       company_name: ticker?.company_name ?? r.ticker_symbol,
@@ -80,6 +86,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       market_cap_usd_b: ticker?.market_cap_usd_b ?? null,
       logo_url: ticker?.logo_url ?? null,
       tier: r.tier as 1 | 2 | 3,
+      exposure_direction: direction,
       role_reasoning: r.role_reasoning ?? '',
       added_at: r.added_at,
     }

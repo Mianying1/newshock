@@ -1,3 +1,5 @@
+export type ExposureDirection = 'benefits' | 'headwind' | 'mixed' | 'uncertain'
+
 export interface ThemeRecommendation {
   ticker_symbol: string
   company_name: string
@@ -5,6 +7,7 @@ export interface ThemeRecommendation {
   market_cap_usd_b: number | null
   logo_url: string | null
   tier: 1 | 2 | 3
+  exposure_direction: ExposureDirection
   role_reasoning: string
   added_at: string
 }

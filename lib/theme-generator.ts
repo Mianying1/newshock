@@ -295,6 +295,26 @@ Tier definitions:
 - Tier 3 (Peripheral Exposure): Companies with observable but limited
   connection — different time horizon or partial revenue dependency.
 
+For EACH recommended ticker, you must specify exposure_direction:
+- 'benefits'  = company's revenue/earnings likely INCREASE from this theme
+- 'headwind'  = company's revenue/earnings likely DECREASE from this theme
+- 'mixed'     = both positive and negative effects, net unclear
+- 'uncertain' = direction truly unknown
+
+CRITICAL: Tier only indicates STRENGTH of exposure, NOT direction.
+A Tier 1 ticker can be 'headwind' (directly impacted negatively) or
+'benefits' (directly gaining). Always mark direction explicitly.
+
+Example (consumer polarization theme):
+- DG: tier=1, direction='headwind' (low-income core customer under stress)
+- LVMUY: tier=1, direction='benefits' (luxury demand from wealth concentration)
+- COST: tier=2, direction='benefits' (trade-down drives value-seeking)
+- TGT: tier=1, direction='headwind' (squeezed middle — losing both ends)
+
+Include exposure_direction in ticker_reasoning as a prefix:
+"[benefits] Direct beneficiary of GPU compute demand surge"
+"[headwind] Core customer base under spending pressure"
+
 TICKER SELECTION POLICY:
 
 Primary: Prefer tickers from the TICKERS DATABASE provided.
@@ -741,12 +761,22 @@ async function handleNewTheme(
 
   // Insert recommendations
   if (validRows.length > 0) {
-    const recs = validRows.map(({ symbol, tier }) => ({
-      theme_id: themeId,
-      ticker_symbol: symbol,
-      tier,
-      role_reasoning: sonnet.ticker_reasoning[symbol] ?? null,
-    }))
+    const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
+    const recs = validRows.map(({ symbol, tier }) => {
+      const raw = sonnet.ticker_reasoning[symbol] ?? ''
+      const dirMatch = raw.match(/^\[(benefits|headwind|mixed|uncertain)\]\s*/i)
+      const exposureDirection = dirMatch && validDirections.has(dirMatch[1].toLowerCase())
+        ? dirMatch[1].toLowerCase()
+        : 'uncertain'
+      const cleanReasoning = dirMatch ? raw.slice(dirMatch[0].length) : raw
+      return {
+        theme_id: themeId,
+        ticker_symbol: symbol,
+        tier,
+        role_reasoning: cleanReasoning || null,
+        exposure_direction: exposureDirection,
+      }
+    })
 
     const { error: recErr } = await supabaseAdmin
       .from('theme_recommendations')

@@ -1,7 +1,14 @@
 'use client'
-import type { ThemeRecommendation } from '@/types/recommendations'
+import type { ThemeRecommendation, ExposureDirection } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { TickerBadge } from '@/components/TickerBadge'
+
+const DIRECTION_CONFIG: Record<ExposureDirection, { icon: string; color: string; labelKey: string }> = {
+  benefits:  { icon: '▲', color: 'text-emerald-600', labelKey: 'theme_detail.direction_benefits' },
+  headwind:  { icon: '▼', color: 'text-rose-600',    labelKey: 'theme_detail.direction_headwind' },
+  mixed:     { icon: '◆', color: 'text-amber-600',   labelKey: 'theme_detail.direction_mixed' },
+  uncertain: { icon: '○', color: 'text-zinc-400',    labelKey: 'theme_detail.direction_uncertain' },
+}
 
 export default function RecommendationTier({
   tier,
@@ -21,27 +28,38 @@ export default function RecommendationTier({
   if (recommendations.length === 0) return null
 
   return (
-    <div className="mb-4">
+    <div className="mb-5">
       <p className="text-sm font-semibold text-zinc-700 mb-2">
         Tier {tier} · {t(tierKeys[tier])}
       </p>
       <div className="space-y-3">
-        {recommendations.map((r) => (
-          <div key={r.ticker_symbol}>
-            <TickerBadge
-              symbol={r.ticker_symbol}
-              name={r.company_name}
-              logoUrl={r.logo_url}
-              size="md"
-              showName
-            />
-            {r.role_reasoning && r.role_reasoning.trim().length > 0 ? (
-              <p className="text-sm text-zinc-500 mt-0.5 ml-9">{r.role_reasoning}</p>
-            ) : (
-              <p className="text-xs text-zinc-400 italic mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
-            )}
-          </div>
-        ))}
+        {recommendations.map((r) => {
+          const dir = DIRECTION_CONFIG[r.exposure_direction] ?? DIRECTION_CONFIG.uncertain
+          const showDirection = r.exposure_direction !== 'uncertain'
+          return (
+            <div key={r.ticker_symbol}>
+              <div className="flex items-center gap-2 flex-wrap">
+                <TickerBadge
+                  symbol={r.ticker_symbol}
+                  name={r.company_name}
+                  logoUrl={r.logo_url}
+                  size="md"
+                  showName
+                />
+                {showDirection && (
+                  <span className={`text-xs font-medium ${dir.color}`}>
+                    {dir.icon} {t(dir.labelKey)}
+                  </span>
+                )}
+              </div>
+              {r.role_reasoning && r.role_reasoning.trim().length > 0 ? (
+                <p className="text-sm text-zinc-500 mt-0.5 ml-9">{r.role_reasoning}</p>
+              ) : (
+                <p className="text-xs text-zinc-400 italic mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
