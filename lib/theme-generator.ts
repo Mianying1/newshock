@@ -133,6 +133,27 @@ ENHANCE with 1-3 situational tickers from TICKERS DATABASE specific to this even
 For [DYNAMIC] archetypes: build all tiers from situational analysis using TICKERS DATABASE.
 ONLY use tickers present in the provided TICKERS DATABASE list — no others.
 
+MEGA CAP INVESTOR EXCLUSION RULE:
+When the news describes a mega cap company (NVDA, AMD, INTC, AMZN, GOOGL, MSFT, META,
+AAPL, TSLA, BRK, AVGO) MAKING an investment in another company, the mega cap investor
+must NOT be placed in tier 1 or tier 2 of the recommendations.
+
+Reasoning: The mega cap's own stock impact from making an investment is negligible and
+already priced in. The real opportunity is in the investee ecosystem.
+
+Instead look for:
+  • The investee company (if listed) → tier 1
+  • Listed competitors of the investee (category beneficiaries) → tier 1/2
+  • Upstream suppliers / foundries benefiting from the investment theme → tier 2
+  • The mega cap investor → tier 3 ONLY if they have separate direct revenue exposure
+
+EXAMPLE:
+  News: "AMD invests $200M in EdgeCortix for AI edge chips"
+  WRONG: tier1=[AMD, NVDA]   ← AMD is the investor; NVDA is unrelated association
+  RIGHT: tier1=[GFS] (foundry for edge chips), tier2=[TSEM,AXTI], tier3=[AMD] (optional)
+
+Do NOT add NVDA or other mega caps just because they're in the same broad sector.
+
 theme_name format: "Situation · Beneficiary Category" (concise, max 60 chars, English or mix)
 Return ONLY valid JSON. No markdown, no text outside JSON.`
 
