@@ -259,6 +259,27 @@ If strengthen conditions met → action = "strengthen_existing", set target_them
 Otherwise → action = "new_from_archetype".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI INFRASTRUCTURE TICKER REMINDER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When processing AI compute, data center, or AI infrastructure
+themes, consider these ticker categories explicitly:
+
+- Primary GPU vendors: NVDA, AMD, AVGO
+- Neocloud / GPU-as-a-Service: NBIS, CRWV, IREN, APLD, WULF,
+  CIFR, HUT, BTDR, HIVE
+- Data center REITs: DLR, EQIX
+- AI networking: ANET, CIEN
+- AI power (nuclear): CEG, VST, TLN, OKLO, SMR
+- AI power (fuel cell): BE, FCEL
+- AI cooling: VRT, SMCI
+- Memory/storage: MU, WDC
+
+Do not overlook second-tier compute providers (neocloud) even if
+less well-known than hyperscalers — they are core direct exposure
+to compute demand themes.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EXPOSURE MAPPING (for new_from_archetype and new_exploratory)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 List exposure mapping (direct/indirect/peripheral).

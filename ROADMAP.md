@@ -80,3 +80,21 @@ B 路径 (15-20h/周): 10-13 周, 目标 7 月底 - 8 月初发布
 - Embedding-based 跨 archetype 相似度
 - 动态查询最相似历史主题
 - 工作量: 2-3 周
+
+## v1.5 · Auto-discovery for Ticker Universe (deferred)
+
+每周 cron 跑 ticker-expansion:
+- 对每个 active theme
+- Sonnet 列 10 个相关但不在 DB 的 ticker (market cap > $500M)
+- 写入 ticker_candidates
+- 周日 review 批量 approve
+
+解决问题: 避免 Newshock 遗漏新兴 / 冷门 ticker (如 NBIS).
+
+v1.1.3 是临时补丁 (手动扩展 16 AI 算力 ticker):
+- AI neocloud (9): NBIS, CRWV, IREN, APLD, WULF, CIFR, HUT, BTDR, HIVE
+- Data center REITs (2): DLR, EQIX
+- Nuclear SMR (3): OKLO, SMR, TLN
+- Fuel cell (2): BE, FCEL
+
+v1.5 是系统性解决.
