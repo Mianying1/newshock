@@ -66,6 +66,8 @@ export interface ThemeRadarItem {
   last_active_at: string
   days_active: number
   event_count: number
+  earliest_event_date: string
+  latest_event_date: string
   recommendations: ThemeRecommendation[]
   catalysts: CatalystEvent[]
   archetype_playbook: ArchetypePlaybook | null

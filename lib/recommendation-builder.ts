@@ -136,9 +136,10 @@ function buildItem(
   catalysts: CatalystEvent[],
   earliestEventDate: string | null
 ): ThemeRadarItem {
-  const startDate = earliestEventDate
-    ? new Date(earliestEventDate)
-    : new Date(row.first_seen_at)
+  const earliest = earliestEventDate ?? row.first_seen_at
+  const latest = catalysts[0]?.published_at ?? row.last_active_at
+
+  const startDate = new Date(earliest)
   const daysActive = Math.max(1, Math.floor((Date.now() - startDate.getTime()) / 86400000))
 
   const archetype_playbook = loadPlaybook(row.archetype_id)
@@ -158,6 +159,8 @@ function buildItem(
     first_seen_at: row.first_seen_at,
     last_active_at: row.last_active_at,
     days_active: daysActive,
+    earliest_event_date: earliest,
+    latest_event_date: latest,
     event_count: row.event_count,
     recommendations: recs,
     catalysts,
@@ -244,6 +247,13 @@ export async function buildThemeRadar(options: {
       return buildItem(row, recs, catalysts, earliestEventDate)
     })
   )
+
+  // Sort by latest_event_date DESC (most recently active first), strength as tiebreaker
+  items.sort((a, b) => {
+    const dateDiff = new Date(b.latest_event_date).getTime() - new Date(a.latest_event_date).getTime()
+    if (dateDiff !== 0) return dateDiff
+    return b.theme_strength_score - a.theme_strength_score
+  })
 
   // Build summary
   const byCategory: Record<string, number> = {}
