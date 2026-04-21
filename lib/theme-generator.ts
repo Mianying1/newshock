@@ -189,6 +189,56 @@ Rationale: The system's long-term value depends on discovering new themes outsid
 Bias: When archetype confidence is 55-70, prefer new_exploratory over strengthen_existing.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THEME NAMING RULES (mandatory)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Theme names MUST be in English only.
+   ❌ "AI 数据中心全光互联 · 5 年转型预期"
+   ✅ "AI Data Center Optical Interconnect · 5-Year Transition"
+
+2. Theme names MUST align with the matched archetype.
+   Do NOT add unrelated prefixes even if the triggering news mentions them.
+   ❌ "Iran Conflict · Fertilizer Supply Disruption"
+      (fertilizer supply archetype — do not add Iran prefix)
+   ✅ "Fertilizer Supply Disruption · Global Agri-Commodity"
+
+3. Use the format: "[Main Concept] · [Specific Angle]"
+   - Main Concept: The core theme (matches archetype)
+   - Specific Angle: What makes this instance unique (max 30 chars)
+   - Total length: max 60 characters
+
+4. If an event involves multiple distinct causal chains, prefer SPLIT
+   (use THEME SPLIT RULE below) over compound naming.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THEME SPLIT RULE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If a single news event involves multiple distinct causal chains
+(different drivers, time horizons, exposure baskets), DO NOT
+merge them into one theme.
+
+Examples of mis-merging:
+❌ "AI Data Center Power · Semiconductor Efficiency"
+   = mixes compute + cooling + power supply + grid + chips
+
+Should split into separate themes:
+✅ "AI Compute Demand Surge" (NVDA, AMD, AVGO)
+✅ "Datacenter Liquid Cooling" (VRT, SMCI)
+✅ "Datacenter Power Supply" (CEG, VST)
+✅ "Grid Infrastructure Buildout" (ETN, ENTG)
+
+Split criteria — if ANY apply, split:
+- Different primary catalysts
+- Different time horizons (quarterly vs multi-year)
+- Different exposure baskets (no ticker overlap)
+- Different archetypes apply
+
+When in doubt: SPLIT. Multiple narrow themes > one broad theme.
+For a split: create the primary theme now; note the secondary
+themes in theme_summary for human review.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 3 — EXISTING THEME CONSOLIDATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 If Step 2 found a match, check ACTIVE_THEMES for an existing theme.
@@ -209,11 +259,20 @@ If strengthen conditions met → action = "strengthen_existing", set target_them
 Otherwise → action = "new_from_archetype".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TIER ASSIGNMENT (for new_from_archetype and new_exploratory)
+EXPOSURE MAPPING (for new_from_archetype and new_exploratory)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+List exposure mapping (direct/indirect/peripheral).
 Start with archetype.typical_tickers as baseline.
 ENHANCE with 1-3 situational tickers specific to this event.
 For [DYNAMIC] archetypes: build all tiers from situational analysis.
+
+Tier definitions:
+- Tier 1 (Direct Exposure): Companies whose revenue/profit is most directly
+  driven by this theme. Primary causal link, near-term impact.
+- Tier 2 (Indirect Exposure): Companies with secondary exposure through
+  supply chain, adjacent market, or downstream demand effects.
+- Tier 3 (Peripheral Exposure): Companies with observable but limited
+  connection — different time horizon or partial revenue dependency.
 
 TICKER SELECTION POLICY:
 
@@ -296,7 +355,7 @@ revenue flow, re-include based on the COMMERCIAL relationship, not the investmen
 KEY DISTINCTION: Pure financial investment → exclude.
 Investment + material commercial revenue flow → include based on commercial side.
 
-theme_name format: "Situation · Beneficiary Category" (concise, max 60 chars, English or mix)
+theme_name format: "Main Concept · Specific Angle" (concise, max 60 chars, English only)
 Return ONLY valid JSON. No markdown, no text outside JSON.`
 
 // ─── Cost estimates (per-event) ───────────────────────────────────────────────

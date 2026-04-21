@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "themes": "Themes",
+    "hot_tickers": "Hot Tickers",
+    "about": "About"
+  },
+  "homepage": {
+    "title": "Newshock",
+    "subtitle": "Information only, not investment advice",
+    "updated": "Updated {time}"
+  },
+  "theme_card": {
+    "events": "{n} events",
+    "active_days": "Active for {n} days",
+    "history_window": "Historical window {label}",
+    "stage_early": "early",
+    "stage_mid": "mid",
+    "stage_late": "late",
+    "stage_beyond": "beyond typical",
+    "has_differences": "Structural differences"
+  },
+  "theme_detail": {
+    "summary": "Summary",
+    "trigger_events": "Trigger Events",
+    "exposure_mapping": "Exposure Mapping",
+    "tier1": "Direct Exposure",
+    "tier2": "Indirect Exposure",
+    "tier3": "Peripheral Exposure",
+    "no_exposure": "No exposure mapped",
+    "historical_playbook": "Historical Playbook",
+    "typical_duration": "Typical duration",
+    "active_for": "Active for",
+    "days": "days",
+    "near_limit": "(near typical limit)",
+    "beyond_limit": "(beyond typical range)",
+    "historical_cases": "Historical comparables",
+    "this_time_different": "This time different?",
+    "structural_differences": "Structural differences",
+    "similarities": "Similar to history",
+    "observation": "Observation",
+    "exit_signals": "Cooling signals",
+    "disclaimer_playbook": "Based on Claude AI training data estimation. Not precise market measurement. Future versions will calibrate with actual price data.",
+    "disclaimer_observation": "Observational analysis only. Not prediction or investment advice.",
+    "back": "← Back",
+    "loading": "Loading...",
+    "error": "Something went wrong, please try again later"
+  },
+  "hot_tickers": {
+    "subtitle": "Tickers appearing across multiple themes",
+    "count": "· {n} total",
+    "appears_in": "Appears in {n} themes",
+    "no_data": "No high-frequency tickers yet"
+  },
+  "common": {
+    "no_themes": "No themes yet",
+    "error": "Something went wrong, please try again later",
+    "disclaimer_footer": "Information only, not investment advice. Past performance does not predict future results."
+  },
+  "categories": {
+    "geopolitics": "Geopolitics",
+    "geopolitical": "Geopolitics",
+    "tech_breakthrough": "Tech Breakthrough",
+    "supply_chain": "Supply Chain",
+    "macro_monetary": "Macro / Monetary",
+    "ai_semi": "AI / Semiconductors",
+    "pharma": "Pharma / Biotech",
+    "defense": "Defense",
+    "energy": "Energy",
+    "crypto": "Crypto",
+    "consumer": "Consumer",
+    "exploratory": "Exploratory"
+  }
+}

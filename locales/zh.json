@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "themes": "主题",
+    "hot_tickers": "热点股票",
+    "about": "关于"
+  },
+  "homepage": {
+    "title": "Newshock",
+    "subtitle": "信息展示, 非投资建议",
+    "updated": "数据更新于 {time}"
+  },
+  "theme_card": {
+    "events": "{n} events",
+    "active_days": "持续 {n} 天",
+    "history_window": "历史窗口 {label}",
+    "stage_early": "前期",
+    "stage_mid": "中期",
+    "stage_late": "晚期",
+    "stage_beyond": "超出典型范围",
+    "has_differences": "有结构性差异"
+  },
+  "theme_detail": {
+    "summary": "摘要",
+    "trigger_events": "触发事件",
+    "exposure_mapping": "暴露映射",
+    "tier1": "直接暴露",
+    "tier2": "间接暴露",
+    "tier3": "外围暴露",
+    "no_exposure": "暂无暴露映射",
+    "historical_playbook": "历史 Playbook",
+    "typical_duration": "典型持续",
+    "active_for": "主题已持续",
+    "days": "天",
+    "near_limit": "(接近典型上限)",
+    "beyond_limit": "(超出典型范围)",
+    "historical_cases": "历史可比",
+    "this_time_different": "这次可能不同?",
+    "structural_differences": "结构性差异",
+    "similarities": "与历史类似的",
+    "observation": "观察",
+    "exit_signals": "退出信号",
+    "disclaimer_playbook": "基于 Claude AI 训练数据估算, 非精确市场测量. 后续版本将基于实际股价数据校准.",
+    "disclaimer_observation": "以上为观察分析, 非预测或投资建议.",
+    "back": "← 返回",
+    "loading": "Loading...",
+    "error": "出错了, 稍后重试"
+  },
+  "hot_tickers": {
+    "subtitle": "被多个主题同时列出的股票",
+    "count": "· 共 {n} 只",
+    "appears_in": "出现在 {n} 个主题",
+    "no_data": "暂无高频股票"
+  },
+  "common": {
+    "no_themes": "暂无主题数据",
+    "error": "出错了, 稍后重试",
+    "disclaimer_footer": "信息展示, 非投资建议. 历史表现不代表未来结果."
+  },
+  "categories": {
+    "geopolitics": "地缘政治",
+    "geopolitical": "地缘政治",
+    "tech_breakthrough": "技术突破",
+    "supply_chain": "供应链",
+    "macro_monetary": "宏观货币",
+    "ai_semi": "AI / 半导体",
+    "pharma": "医药 / 生物",
+    "defense": "国防",
+    "energy": "能源",
+    "crypto": "加密",
+    "consumer": "消费",
+    "exploratory": "探索性"
+  }
+}
