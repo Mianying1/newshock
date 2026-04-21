@@ -103,6 +103,30 @@ Return JSON array only.`
   const outFile = path.join(outDir, `scan-${now}.json`)
   fs.writeFileSync(outFile, JSON.stringify(report, null, 2))
 
+  // 3b. Write candidates to DB
+  let dbInserted = 0
+  for (const c of candidates) {
+    const { error } = await supabaseAdmin
+      .from('archetype_candidates')
+      .insert({
+        proposed_archetype_id: c.proposed_archetype_id,
+        title: c.title,
+        category: c.category,
+        description: c.description,
+        initial_tickers: c.initial_tickers || [],
+        recent_events: c.recent_events || [],
+        why_this_matters: c.why_this_is_a_theme || c.why_this_matters,
+        estimated_importance: c.estimated_importance || 'medium',
+        scan_date: now,
+        status: 'pending',
+      })
+    if (!error) dbInserted++
+    else if (error.code !== '23505') {
+      console.log(`  ⚠️  Failed to insert ${c.proposed_archetype_id}: ${error.message}`)
+    }
+  }
+  console.log(`${dbInserted} candidates saved to DB (duplicates skipped)`)
+
   // 4. Print summary
   console.log(`\n=== Weekly Market Scan: ${now} ===\n`)
   console.log(`Found ${candidates.length} candidate themes:\n`)
@@ -121,11 +145,7 @@ Return JSON array only.`
   }
 
   console.log(`Full report saved to: ${outFile}`)
-  console.log(`\nNext steps:`)
-  console.log(`  1. Review ${outFile}`)
-  console.log(`  2. Decide which candidates to promote to archetypes`)
-  console.log(`  3. Insert approved archetypes into theme_archetypes table`)
-  console.log(`  4. Run generate-archetype-playbooks.ts for new archetypes`)
+  console.log(`\nReview and approve at: https://newshock.vercel.app/admin/candidates`)
 }
 
 main().catch(console.error)
