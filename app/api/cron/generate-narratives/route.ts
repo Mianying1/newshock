@@ -32,14 +32,16 @@ Task: Identify 2-3 dominant market narratives that synthesize multiple themes in
 - Do NOT just list themes — synthesize the overarching causal story
 - Avoid investment recommendations, use observational language
 - Each narrative must group 2+ themes logically
-- Use English title (max 6 words)
+- English title max 6 words; Chinese title ≤ 10 characters
+- description: 1-2 sentences (English); description_zh: same meaning in professional Chinese, using standard finance terminology
+- Preserve tickers/years/brand names unchanged
 
 Return JSON only:
-[{"title": "...", "description": "1-2 sentences", "related_theme_ids": ["uuid1", "uuid2"], "rank": 1}]`
+[{"title": "...", "title_zh": "...", "description": "1-2 sentences", "description_zh": "1-2 句中文概述", "related_theme_ids": ["uuid1", "uuid2"], "rank": 1}]`
 
   const response = await anthropic.messages.create({
     model: MODEL_SONNET,
-    max_tokens: 2000,
+    max_tokens: 3500,
     temperature: 0,
     messages: [{ role: 'user', content: NARRATIVE_PROMPT }],
   })
@@ -48,8 +50,14 @@ Return JSON only:
   const jsonMatch = text.replace(/```json\n?|\n?```/g, '').trim().match(/\[[\s\S]*\]/)
   if (!jsonMatch) return Response.json({ error: 'Parse failed', raw: text.slice(0, 200) }, { status: 500 })
 
-  const narratives: { title: string; description: string; related_theme_ids: string[]; rank: number }[] =
-    JSON.parse(jsonMatch[0])
+  const narratives: {
+    title: string
+    title_zh?: string | null
+    description: string
+    description_zh?: string | null
+    related_theme_ids: string[]
+    rank: number
+  }[] = JSON.parse(jsonMatch[0])
 
   await supabaseAdmin.from('market_narratives').update({ is_active: false }).eq('is_active', true)
 
@@ -77,7 +85,9 @@ Return JSON only:
 
     await supabaseAdmin.from('market_narratives').insert({
       title: n.title,
+      title_zh: n.title_zh ?? null,
       description: n.description,
+      description_zh: n.description_zh ?? null,
       related_theme_ids: validIds,
       aggregate_ticker_count: uniqueTickers.length,
       top_chokepoint_tickers: chokepoints,

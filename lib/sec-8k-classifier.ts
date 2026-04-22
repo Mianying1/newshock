@@ -17,6 +17,7 @@ export interface EightKDecision {
   action: EightKAction
   archetype_id: string | null
   reasoning: string
+  reasoning_zh: string | null
 }
 
 const IRRELEVANT_ONLY_ITEMS = new Set(['5.07', '5.08', '9.01'])
@@ -41,14 +42,16 @@ Return JSON only:
 {
   "action": "irrelevant" | "match_archetype" | "exploratory",
   "archetype_id": "string or null",
-  "reasoning": "1 short sentence"
+  "reasoning": "1 short English sentence",
+  "reasoning_zh": "1 句中文简短描述"
 }
 
 Rules:
 - "match_archetype": the filing is a material corporate event (1.01/2.01/7.01/8.01/etc.) that plausibly strengthens an existing archetype. Set archetype_id.
 - "exploratory": material event but no archetype fits well. archetype_id = null.
 - "irrelevant": routine (5.02 executive change, 2.02 pure earnings, 5.03 bylaws, 5.07 shareholder vote, 9.01 exhibits-only, 3.02 stock issuance that is not major) OR material but not thematically relevant (e.g., small-cap single-company debt restructuring).
-- A mega-cap issuer with a non-routine item that could hint at broader theme (e.g., Apple 1.01 with a supplier) can still be exploratory.`
+- A mega-cap issuer with a non-routine item that could hint at broader theme (e.g., Apple 1.01 with a supplier) can still be exploratory.
+- reasoning_zh: accurate Chinese translation using standard finance terminology (如 "物料事件" "暴露" "利好" "承压"). Preserve tickers/CIK/years unchanged.`
 
 function buildUserPrompt(
   context: SEC8KContext,
@@ -78,6 +81,7 @@ interface SonnetDecision {
   action: EightKAction
   archetype_id: string | null
   reasoning: string
+  reasoning_zh?: string | null
 }
 
 export async function classify8KEvent(
@@ -102,6 +106,7 @@ export async function classify8KEvent(
       action: 'irrelevant',
       archetype_id: null,
       reasoning: `[pre-filter] ${pre.reason}`,
+      reasoning_zh: `[预过滤] 仅含例行事项 (${context.items.join(',')}),非市场敏感`,
     }
   }
 
@@ -130,6 +135,7 @@ export async function classify8KEvent(
         action: 'error',
         archetype_id: null,
         reasoning: 'sonnet parse failed',
+        reasoning_zh: 'sonnet 解析失败',
       }
     }
     const parsed = JSON.parse(jsonMatch[0]) as SonnetDecision
@@ -141,6 +147,7 @@ export async function classify8KEvent(
       action: parsed.action,
       archetype_id: parsed.archetype_id,
       reasoning: parsed.reasoning,
+      reasoning_zh: parsed.reasoning_zh ?? null,
     }
   } catch (err) {
     return {
@@ -151,6 +158,7 @@ export async function classify8KEvent(
       action: 'error',
       archetype_id: null,
       reasoning: `sonnet error: ${(err as Error).message}`,
+      reasoning_zh: `sonnet 错误: ${(err as Error).message}`,
     }
   }
 }

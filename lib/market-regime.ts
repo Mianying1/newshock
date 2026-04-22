@@ -24,6 +24,7 @@ export interface ManualInputs {
 export interface DimensionScore {
   score: 0 | 1 | 2
   reasoning: string
+  reasoning_zh: string
   value: string
 }
 
@@ -46,7 +47,9 @@ export interface RegimeScores {
   sentiment: DimensionScore
   total: number
   label: string
+  label_zh: string
   guidance: string
+  guidance_zh: string
 }
 
 export const FRED_SERIES = {
@@ -127,6 +130,20 @@ function payrollsMonthOverMonth(obs: FREDObservation[]): number[] {
   return changes
 }
 
+const TREND_ZH: Record<ManualInputs['spx_eps_revision_trend'], string> = {
+  up: '上调',
+  stable: '持稳',
+  down: '下调',
+}
+
+const STANCE_ZH: Record<ManualInputs['fed_cycle_stance'], string> = {
+  cutting: '降息中',
+  on_hold_with_cuts_ahead: '观望·偏鸽',
+  on_hold: '观望',
+  hawkish_pivot: '鹰派转向',
+  hiking: '加息中',
+}
+
 function scoreEarnings(manual: ManualInputs): DimensionScore {
   const yoy = manual.spx_eps_yoy
   const trend = manual.spx_eps_revision_trend
@@ -134,7 +151,8 @@ function scoreEarnings(manual: ManualInputs): DimensionScore {
   if (yoy > 10 && trend !== 'down') score = 2
   else if (yoy >= 5 || trend === 'stable') score = 1
   const reasoning = `SPX EPS YoY ${yoy.toFixed(1)}% · revisions ${trend}`
-  return { score, reasoning, value: `${yoy.toFixed(1)}% YoY` }
+  const reasoning_zh = `标普500 EPS 同比 ${yoy.toFixed(1)}% · 盈利预期${TREND_ZH[trend]}`
+  return { score, reasoning, reasoning_zh, value: `${yoy.toFixed(1)}% YoY` }
 }
 
 function scoreValuation(manual: ManualInputs): DimensionScore {
@@ -144,7 +162,8 @@ function scoreValuation(manual: ManualInputs): DimensionScore {
   if (pe < 17 || cape < 25) score = 2
   else if (pe <= 20 || cape <= 30) score = 1
   const reasoning = `Fwd P/E ${pe.toFixed(2)} · CAPE ${cape.toFixed(1)}`
-  return { score, reasoning, value: `Fwd P/E ${pe.toFixed(2)}` }
+  const reasoning_zh = `前瞻 P/E ${pe.toFixed(2)} · CAPE ${cape.toFixed(1)}`
+  return { score, reasoning, reasoning_zh, value: `Fwd P/E ${pe.toFixed(2)}` }
 }
 
 function scoreFed(manual: ManualInputs, fedFunds: FREDObservation[]): DimensionScore {
@@ -157,7 +176,8 @@ function scoreFed(manual: ManualInputs, fedFunds: FREDObservation[]): DimensionS
   else score = 0
   const rateStr = rate !== null ? `${rate.toFixed(2)}%` : 'n/a'
   const reasoning = `Fed Funds ${rateStr} · ${stance.replace(/_/g, ' ')}`
-  return { score, reasoning, value: rateStr }
+  const reasoning_zh = `联邦基金利率 ${rateStr} · ${STANCE_ZH[stance]}`
+  return { score, reasoning, reasoning_zh, value: rateStr }
 }
 
 function scoreEconomic(series: {
@@ -187,14 +207,26 @@ function scoreEconomic(series: {
   else if (jobsStable && inflationCooling) score = 2
 
   const pieces: string[] = []
-  if (unrate !== null) pieces.push(`UNRATE ${unrate.toFixed(1)}%`)
-  if (corePceYoy !== null) pieces.push(`Core PCE ${corePceYoy.toFixed(1)}%`)
-  if (wageYoy !== null) pieces.push(`Wage ${wageYoy.toFixed(1)}%`)
+  const piecesZh: string[] = []
+  if (unrate !== null) {
+    pieces.push(`UNRATE ${unrate.toFixed(1)}%`)
+    piecesZh.push(`失业率 ${unrate.toFixed(1)}%`)
+  }
+  if (corePceYoy !== null) {
+    pieces.push(`Core PCE ${corePceYoy.toFixed(1)}%`)
+    piecesZh.push(`核心 PCE ${corePceYoy.toFixed(1)}%`)
+  }
+  if (wageYoy !== null) {
+    pieces.push(`Wage ${wageYoy.toFixed(1)}%`)
+    piecesZh.push(`工资同比 ${wageYoy.toFixed(1)}%`)
+  }
   const reasoning = pieces.join(' · ') || 'insufficient data'
+  const reasoning_zh = piecesZh.join(' · ') || '数据不足'
 
   return {
     score,
     reasoning,
+    reasoning_zh,
     value: unrate !== null ? `UNRATE ${unrate.toFixed(1)}%` : 'n/a',
     sub_indicators: {
       unrate,
@@ -221,6 +253,7 @@ function scoreCredit(hyOas: FREDObservation[], t10y2y: FREDObservation[]): Dimen
   return {
     score,
     reasoning: `HY OAS ${hyStr} · 10Y-2Y ${spreadStr}`,
+    reasoning_zh: `高收益债利差 ${hyStr} · 10年-2年利差 ${spreadStr}`,
     value: `HY OAS ${hyStr}`,
   }
 }
@@ -240,16 +273,43 @@ function scoreSentiment(vix: FREDObservation[], manual: ManualInputs): Dimension
   return {
     score,
     reasoning: `VIX ${vStr} · AAII ${bull}/${bear}`,
+    reasoning_zh: `VIX ${vStr} · 散户看多/看空 ${bull}/${bear}`,
     value: `VIX ${vStr}`,
   }
 }
 
-export function labelFor(total: number): { label: string; guidance: string } {
-  if (total >= 9) return { label: 'expansion', guidance: 'maintain_equity' }
-  if (total >= 7) return { label: 'neutral_expansion', guidance: 'hold_no_leverage' }
-  if (total >= 5) return { label: 'watch', guidance: 'reduce_beta' }
-  if (total >= 3) return { label: 'stress', guidance: 'heavy_reduce' }
-  return { label: 'bear', guidance: 'defensive' }
+const REGIME_LABEL_ZH: Record<string, string> = {
+  expansion: '扩张',
+  neutral_expansion: '中性扩张',
+  watch: '观察',
+  stress: '承压',
+  bear: '熊市',
+}
+
+const GUIDANCE_ZH: Record<string, string> = {
+  maintain_equity: '维持权益仓位',
+  hold_no_leverage: '持有,不加杠杆',
+  reduce_beta: '降低 Beta',
+  heavy_reduce: '大幅减仓',
+  defensive: '防御性配置',
+}
+
+export function labelFor(total: number): { label: string; label_zh: string; guidance: string; guidance_zh: string } {
+  const pair =
+    total >= 9
+      ? { label: 'expansion', guidance: 'maintain_equity' }
+      : total >= 7
+      ? { label: 'neutral_expansion', guidance: 'hold_no_leverage' }
+      : total >= 5
+      ? { label: 'watch', guidance: 'reduce_beta' }
+      : total >= 3
+      ? { label: 'stress', guidance: 'heavy_reduce' }
+      : { label: 'bear', guidance: 'defensive' }
+  return {
+    ...pair,
+    label_zh: REGIME_LABEL_ZH[pair.label] ?? pair.label,
+    guidance_zh: GUIDANCE_ZH[pair.guidance] ?? pair.guidance,
+  }
 }
 
 export interface RegimeInputs {
@@ -281,9 +341,9 @@ export function computeRegimeScores(inputs: RegimeInputs): RegimeScores {
 
   const total =
     earnings.score + valuation.score + fed.score + economic.score + credit.score + sentiment.score
-  const { label, guidance } = labelFor(total)
+  const { label, label_zh, guidance, guidance_zh } = labelFor(total)
 
-  return { earnings, valuation, fed, economic, credit, sentiment, total, label, guidance }
+  return { earnings, valuation, fed, economic, credit, sentiment, total, label, label_zh, guidance, guidance_zh }
 }
 
 async function upsertSeries(indicator: string, obs: FREDObservation[]): Promise<void> {
@@ -379,13 +439,21 @@ export async function updateRegimeSnapshot(
       sentiment_score: scores.sentiment.score,
       total_score: scores.total,
       regime_label: scores.label,
+      regime_label_zh: scores.label_zh,
       configuration_guidance: scores.guidance,
+      configuration_guidance_zh: scores.guidance_zh,
       earnings_reasoning: scores.earnings.reasoning,
+      earnings_reasoning_zh: scores.earnings.reasoning_zh,
       valuation_reasoning: scores.valuation.reasoning,
+      valuation_reasoning_zh: scores.valuation.reasoning_zh,
       fed_reasoning: scores.fed.reasoning,
+      fed_reasoning_zh: scores.fed.reasoning_zh,
       economic_reasoning: scores.economic.reasoning,
+      economic_reasoning_zh: scores.economic.reasoning_zh,
       credit_reasoning: scores.credit.reasoning,
+      credit_reasoning_zh: scores.credit.reasoning_zh,
       sentiment_reasoning: scores.sentiment.reasoning,
+      sentiment_reasoning_zh: scores.sentiment.reasoning_zh,
       raw_data: rawData,
     },
     { onConflict: 'snapshot_date' }

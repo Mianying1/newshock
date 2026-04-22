@@ -49,20 +49,27 @@ Look for emerging themes that traditional screens miss:
 For each theme provide:
 {
   "title": "English theme name · subtitle",
+  "title_zh": "中文主题名称 · 副标题",
   "proposed_archetype_id": "snake_case_id",
   "category": "ai_semi | geopolitics | supply_chain | pharma | macro_monetary | defense | energy | crypto | consumer",
   "description": "2-3 sentences explaining causal story",
+  "description_zh": "2-3 句中文阐述因果逻辑,使用专业金融术语",
   "initial_tickers": [{"symbol": "XXX", "reasoning": "1 sentence"}],
   "recent_events": ["headline 1", "headline 2", "headline 3"],
   "why_this_matters": "1 sentence rationale",
   "estimated_importance": "high | medium | low"
 }
 
+BILINGUAL RULES:
+- title_zh: faithful Chinese rendering of title. Preserve tickers/years/brand names.
+- description_zh: accurate Chinese translation using finance terminology (如 "暴露" "受益" "承压" "供应链" "监管拐点").
+- Both versions required for every candidate.
+
 Return JSON array only.`
 
   const response = await anthropic.messages.create({
     model: MODEL_SONNET,
-    max_tokens: 4000,
+    max_tokens: 6000,
     messages: [{ role: 'user', content: prompt }],
   })
 
@@ -77,8 +84,10 @@ Return JSON array only.`
   const candidates: {
     proposed_archetype_id: string
     title: string
+    title_zh?: string | null
     category: string
     description: string
+    description_zh?: string | null
     initial_tickers?: { symbol: string; reasoning?: string }[]
     recent_events?: string[]
     why_this_matters?: string
@@ -113,8 +122,10 @@ Return JSON array only.`
     const { error } = await supabaseAdmin.from('archetype_candidates').insert({
       proposed_archetype_id: c.proposed_archetype_id,
       title: c.title,
+      title_zh: c.title_zh ?? null,
       category: c.category,
       description: c.description,
+      description_zh: c.description_zh ?? null,
       initial_tickers: c.initial_tickers ?? [],
       recent_events: c.recent_events ?? [],
       why_this_matters: c.why_this_matters ?? c.why_this_is_a_theme ?? null,

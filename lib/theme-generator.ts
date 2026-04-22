@@ -38,10 +38,13 @@ interface SonnetThemeResult {
   target_theme_id: string | null
   archetype_id: string | null
   theme_name: string | null
+  theme_name_zh: string | null
   theme_summary: string | null
+  theme_summary_zh: string | null
   classification_confidence: number
   suggested_tickers: { tier1: string[]; tier2: string[]; tier3: string[] }
   ticker_reasoning: Record<string, string>
+  ticker_reasoning_zh: Record<string, string>
   reasoning: string
   why_exploratory_not_strengthen: string | null
 }
@@ -494,13 +497,21 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     `  "target_theme_id": uuid | null,\n` +
     `  "archetype_id": string | null,\n` +
     `  "theme_name": string | null,\n` +
+    `  "theme_name_zh": string | null,\n` +
     `  "theme_summary": string | null,\n` +
+    `  "theme_summary_zh": string | null,\n` +
     `  "classification_confidence": integer 0-100,\n` +
     `  "suggested_tickers": { "tier1": [], "tier2": [], "tier3": [] },\n` +
     `  "ticker_reasoning": { "TICKER": "causal role one-liner" },\n` +
+    `  "ticker_reasoning_zh": { "TICKER": "中文因果角色一句话描述" },\n` +
     `  "reasoning": "one sentence why this action",\n` +
     `  "why_exploratory_not_strengthen": "If action is strengthen_existing but archetype match was partial, explain why not exploratory. Otherwise null."\n` +
-    `}`
+    `}\n\n` +
+    `BILINGUAL OUTPUT RULES:\n` +
+    `- theme_name / theme_name_zh: English name + professional Chinese translation. Keep tickers/years/CIK/brand names unchanged.\n` +
+    `- theme_summary / theme_summary_zh: both 1-2 concise sentences describing the investable theme.\n` +
+    `- ticker_reasoning / ticker_reasoning_zh: same ticker keys; Chinese version uses standard finance terms (受益 / 承压 / 供应链 / 暴露). Preserve any [benefits]/[headwind]/[mixed]/[uncertain] direction prefix in BOTH versions.\n` +
+    `- When action is "irrelevant", all *_zh fields may be null.`
 
   const msg = await anthropic.messages.create({
     model: MODEL_SONNET,
@@ -546,14 +557,17 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       target_theme_id: json.target_theme_id ?? null,
       archetype_id: json.archetype_id ?? null,
       theme_name: json.theme_name ?? null,
+      theme_name_zh: json.theme_name_zh ?? null,
       theme_summary: json.theme_summary ?? null,
+      theme_summary_zh: json.theme_summary_zh ?? null,
       classification_confidence: typeof json.classification_confidence === 'number' ? json.classification_confidence : 50,
       suggested_tickers: {
         tier1: Array.isArray(json.suggested_tickers?.tier1) ? json.suggested_tickers.tier1 : [],
         tier2: Array.isArray(json.suggested_tickers?.tier2) ? json.suggested_tickers.tier2 : [],
         tier3: Array.isArray(json.suggested_tickers?.tier3) ? json.suggested_tickers.tier3 : [],
       },
-      ticker_reasoning: typeof json.ticker_reasoning === 'object' ? json.ticker_reasoning : {},
+      ticker_reasoning: typeof json.ticker_reasoning === 'object' && json.ticker_reasoning !== null ? json.ticker_reasoning : {},
+      ticker_reasoning_zh: typeof json.ticker_reasoning_zh === 'object' && json.ticker_reasoning_zh !== null ? json.ticker_reasoning_zh : {},
       reasoning: String(json.reasoning ?? ''),
       why_exploratory_not_strengthen: json.why_exploratory_not_strengthen ?? null,
     }
@@ -573,10 +587,13 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       target_theme_id: null,
       archetype_id: null,
       theme_name: null,
+      theme_name_zh: null,
       theme_summary: null,
+      theme_summary_zh: null,
       classification_confidence: 0,
       suggested_tickers: { tier1: [], tier2: [], tier3: [] },
       ticker_reasoning: {},
+      ticker_reasoning_zh: {},
       reasoning: 'json parse error',
       why_exploratory_not_strengthen: null,
     }
@@ -747,7 +764,9 @@ async function handleNewTheme(
     .insert({
       archetype_id: isExploratory ? null : (sonnet.archetype_id ?? null),
       name: sonnet.theme_name ?? 'Unnamed Theme',
+      name_zh: sonnet.theme_name_zh ?? null,
       summary: sonnet.theme_summary,
+      summary_zh: sonnet.theme_summary_zh ?? null,
       status: isExploratory ? 'exploratory_candidate' : 'active',
       institutional_awareness: isExploratory ? 'hidden' : 'early',
       theme_strength_score: isExploratory ? 40 : 55,
@@ -770,16 +789,20 @@ async function handleNewTheme(
     const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
     const recs = validRows.map(({ symbol, tier }) => {
       const raw = sonnet.ticker_reasoning[symbol] ?? ''
+      const rawZh = sonnet.ticker_reasoning_zh[symbol] ?? ''
       const dirMatch = raw.match(/^\[(benefits|headwind|mixed|uncertain)\]\s*/i)
       const exposureDirection = dirMatch && validDirections.has(dirMatch[1].toLowerCase())
         ? dirMatch[1].toLowerCase()
         : 'uncertain'
       const cleanReasoning = dirMatch ? raw.slice(dirMatch[0].length) : raw
+      const zhDirMatch = rawZh.match(/^\[(benefits|headwind|mixed|uncertain)\]\s*/i)
+      const cleanReasoningZh = zhDirMatch ? rawZh.slice(zhDirMatch[0].length) : rawZh
       return {
         theme_id: themeId,
         ticker_symbol: symbol,
         tier,
         role_reasoning: cleanReasoning || null,
+        role_reasoning_zh: cleanReasoningZh || null,
         exposure_direction: exposureDirection,
       }
     })
