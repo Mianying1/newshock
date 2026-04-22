@@ -185,13 +185,14 @@
     "license_expires": "License"
   },
   "topbar": {
-    "search_placeholder": "Search themes, tickers, events… (coming soon)"
+    "search_placeholder": "Search themes, tickers, events…",
+    "search_soon": "SOON"
   },
   "radar": {
     "today_on_radar": "Today on the Radar",
     "narratives_count": "{n} narratives",
     "active_themes_count": "{n} active themes",
-    "events_scanned_7d": "{n} events scanned 7d"
+    "events_scanned_7d": "{n} events scanned (7d)"
   },
   "top_tickers": {
     "title": "Top Tickers",
@@ -231,10 +232,13 @@
     "framework_matches": "Framework matches based on historical patterns. Information tool, not investment advice."
   },
   "narratives": {
-    "heading": "This Week's Narratives",
+    "heading": "Market Narratives",
     "narrative": "Narrative",
     "tickers": "{n} tickers",
-    "themes": "{n} themes"
+    "themes": "{n} themes",
+    "synthesis_meta": "Daily synthesis · updated {time} · AI drafted, curator reviewed",
+    "mark_reviewed": "Reviewed",
+    "mark_ai": "AI"
   },
   "market_regime": {
     "title": "Market Regime",
@@ -288,12 +292,18 @@
     "tech_breakthrough": "Tech Breakthrough",
     "supply_chain": "Supply Chain",
     "macro_monetary": "Macro / Monetary",
-    "ai_semi": "AI / Semiconductors",
-    "pharma": "Pharma / Biotech",
+    "ai_semi": "AI / Semi",
+    "pharma": "Pharma",
     "defense": "Defense",
     "energy": "Energy",
+    "materials": "Materials",
     "crypto": "Crypto",
     "consumer": "Consumer",
     "exploratory": "Exploratory"
+  },
+  "curator_strip": {
+    "by": "This week curated by",
+    "role": "Senior Product Designer",
+    "disclaim": "Framework matches, not predictions. Information only — not investment advice."
   }
 }

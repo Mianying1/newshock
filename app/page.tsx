@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { LocaleToggle } from '@/components/LocaleToggle'
 import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
 import { MarketNarratives } from '@/components/MarketNarratives'
@@ -11,6 +10,7 @@ import { EventStream } from '@/components/EventStream'
 import { ActiveThemeCard } from '@/components/ActiveThemeCard'
 import { useI18n } from '@/lib/i18n-context'
 import type { ThemeRadarItem } from '@/types/recommendations'
+import './radar.css'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -23,23 +23,52 @@ interface Overview {
 
 function SearchIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="w-3.5 h-3.5"
-    >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.35-4.35" />
     </svg>
   )
 }
 
+function SettingsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.36.13.68.35.94.62l.06.05A2 2 0 1 1 21 14h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  )
+}
+
+function LangSwitch() {
+  const { locale, setLocale } = useI18n()
+  return (
+    <div className="lang-switch">
+      <button className={locale === 'en' ? 'on' : ''} onClick={() => setLocale('en')}>EN</button>
+      <button className={locale === 'zh' ? 'on' : ''} onClick={() => setLocale('zh')}>中</button>
+    </div>
+  )
+}
+
+function useHeaderDate(locale: 'en' | 'zh') {
+  const [label, setLabel] = useState('')
+  useEffect(() => {
+    const d = new Date()
+    const hh = String(d.getHours()).padStart(2, '0')
+    const mm = String(d.getMinutes()).padStart(2, '0')
+    if (locale === 'zh') {
+      const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()]
+      setLabel(`${weekday} · ${d.getMonth() + 1}月${d.getDate()}日 · ${hh}:${mm}`)
+    } else {
+      const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
+      const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]
+      setLabel(`${weekday} · ${month} ${d.getDate()} · ${hh}:${mm}`)
+    }
+  }, [locale])
+  return label
+}
+
 export default function HomePage() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [themes, setThemes] = useState<ThemeRadarItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -64,46 +93,43 @@ export default function HomePage() {
       })
   }, [])
 
-  const activeThemes = themes.filter((t) => t.status !== 'archived')
-  const themeCount = activeThemes.length
+  const activeThemes = themes.filter((th) => th.status !== 'archived')
+  const totalThemes = activeThemes.length
+  const visibleThemes = activeThemes.slice(0, 6)
   const narrativesCount = overview?.narratives_count ?? 0
   const eventsWeek = overview?.events_7d ?? 0
+  const headerDate = useHeaderDate(locale)
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      <Sidebar />
-
-      <div className="md:ml-[220px]">
-        {/* Top bar */}
-        <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-zinc-200">
-          <div className="flex items-center justify-between px-6 py-3 gap-4">
-            <div
-              className="flex-1 max-w-md flex items-center gap-2 px-3 py-1.5 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-400 cursor-not-allowed"
-              aria-disabled
-            >
+    <div className="radar-page">
+      <div className="app">
+        <Sidebar />
+        <main className="main">
+          <div className="topbar">
+            <div className="search is-disabled" aria-disabled>
               <SearchIcon />
-              <span className="text-xs">{t('topbar.search_placeholder')}</span>
+              <span className="ph">{t('topbar.search_placeholder')}</span>
+              <span className="soon">{t('topbar.search_soon')}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <LocaleToggle />
+            <LangSwitch />
+            <button className="iconbtn" aria-label="Settings" type="button">
+              <SettingsIcon />
+            </button>
+          </div>
+
+          <div className="page-head">
+            <h1 className="page-title">{t('radar.today_on_radar')}</h1>
+            <div className="page-sub">
+              {headerDate && <span>{headerDate}</span>}
+              {headerDate && <span className="sep">·</span>}
+              <span className="dot" />
+              <span>{t('radar.narratives_count', { n: narrativesCount })}</span>
+              <span className="sep">·</span>
+              <span>{t('radar.active_themes_count', { n: totalThemes })}</span>
+              <span className="sep">·</span>
+              <span>{t('radar.events_scanned_7d', { n: eventsWeek })}</span>
             </div>
           </div>
-        </div>
-
-        <main className="max-w-5xl mx-auto px-6 py-6">
-          {/* Header */}
-          <header className="mb-8">
-            <h1 className="text-2xl font-semibold text-zinc-900 mb-1">
-              {t('radar.today_on_radar')}
-            </h1>
-            <p className="text-xs text-zinc-500 font-mono">
-              {t('radar.active_themes_count', { n: themeCount })}
-              {' · '}
-              {t('radar.narratives_count', { n: narrativesCount })}
-              {' · '}
-              {t('radar.events_scanned_7d', { n: eventsWeek })}
-            </p>
-          </header>
 
           <MarketRegimeCard />
 
@@ -113,58 +139,48 @@ export default function HomePage() {
 
           <EventStream />
 
-          {/* Active Themes grid */}
-          <section className="mb-10">
-            <div className="flex items-baseline justify-between mb-3">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
-                {t('active_themes.title')}
-              </h2>
-              <span className="text-[11px] text-zinc-400">
-                {t('active_themes.showing', { n: activeThemes.length })}
-                {' · '}
-                {t('active_themes.sorted_by_strength')}
-              </span>
+          <div className="sec-label">
+            <span className="l">{t('active_themes.title')}</span>
+            <span className="r">
+              {t('active_themes.showing', { n: visibleThemes.length })}
+              {totalThemes > visibleThemes.length && ` / ${totalThemes}`}
+              {' · '}
+              {t('active_themes.sorted_by_strength')}
+            </span>
+          </div>
+
+          {loading && (
+            <p style={{ padding: '40px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+              {t('theme_detail.loading')}
+            </p>
+          )}
+          {error && (
+            <p style={{ padding: '40px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+              {t('common.error')}
+            </p>
+          )}
+          {!loading && !error && visibleThemes.length === 0 && (
+            <p style={{ padding: '40px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+              {t('common.no_themes')}
+            </p>
+          )}
+
+          {visibleThemes.length > 0 && (
+            <div className="themes-grid">
+              {visibleThemes.map((theme) => (
+                <ActiveThemeCard key={theme.id} theme={theme} />
+              ))}
             </div>
+          )}
 
-            {loading && (
-              <p className="py-10 text-center text-zinc-400 text-xs">
-                {t('theme_detail.loading')}
-              </p>
-            )}
-            {error && (
-              <p className="py-10 text-center text-zinc-400 text-xs">
-                {t('common.error')}
-              </p>
-            )}
-            {!loading && !error && activeThemes.length === 0 && (
-              <p className="py-10 text-center text-zinc-400 text-xs">
-                {t('common.no_themes')}
-              </p>
-            )}
-
-            {activeThemes.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {activeThemes.map((theme) => (
-                  <ActiveThemeCard key={theme.id} theme={theme} />
-                ))}
-              </div>
-            )}
-
-            <p className="mt-4 text-[10px] text-zinc-400 text-center">
-              {t('disclaimer.framework_matches')}
-            </p>
-          </section>
-
-          {/* Curator footer */}
-          <footer className="border-t border-zinc-200 mt-10 pt-6 pb-10 text-center space-y-2">
-            <p className="text-[11px] uppercase tracking-widest text-zinc-400">
-              {t('curator.title')}
-            </p>
-            <p className="text-xs text-zinc-500">{t('curator.signature')}</p>
-            <p className="text-[10px] text-zinc-400 pt-2">
-              {t('common.disclaimer_footer')}
-            </p>
-          </footer>
+          <div className="curator-strip">
+            <div className="avatar">MC</div>
+            <div className="who">
+              <span style={{ color: 'var(--ink-3)' }}>{t('curator_strip.by')}</span>{' '}
+              <b>Mianying Chen</b> · {t('curator_strip.role')}
+            </div>
+            <span className="disclaim">{t('curator_strip.disclaim')}</span>
+          </div>
         </main>
       </div>
     </div>

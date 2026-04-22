@@ -27,6 +27,29 @@ interface StreamResponse {
   limit: number
 }
 
+const SRC_CLASS: Record<string, string> = {
+  Reuters: 'src-reuters',
+  Bloomberg: 'src-bloomberg',
+  WSJ: 'src-wsj',
+  'Financial Times': 'src-ft',
+  CNBC: 'src-cnbc',
+  NYT: 'src-nyt',
+  'Nikkei Asia': 'src-nikkei',
+  Nikkei: 'src-nikkei',
+  CoinDesk: 'src-coindesk',
+  SEC: 'src-sec',
+}
+
+function shortPublisher(name: string): string {
+  if (name === 'Financial Times') return 'FT'
+  if (name === 'Nikkei Asia') return 'Nikkei'
+  if (name === "Investor's Business Daily") return 'IBD'
+  if (name === 'GlobeNewswire') return 'Globe'
+  if (name === 'PR Newswire') return 'PRNews'
+  if (name === 'BusinessWire') return 'BizWire'
+  return name
+}
+
 export function EventStream() {
   const { t, locale } = useI18n()
   const { data } = useSWR<StreamResponse>('/api/events/recent?limit=8', fetcher)
@@ -35,80 +58,68 @@ export function EventStream() {
   const unmatched = data?.unmatched_count ?? 0
 
   return (
-    <section className="mb-10">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
-          {t('event_stream.title')}
-        </h2>
-        <div className="flex items-center gap-3 text-[11px] text-zinc-400">
-          <span>{t('event_stream.auto_matched')}</span>
+    <>
+      <div className="sec-label">
+        <span className="l">{t('event_stream.title')}</span>
+        <span className="r">
+          {t('event_stream.auto_matched')}
           {unmatched > 0 && (
-            <button className="text-zinc-500 hover:text-zinc-900 transition-colors">
-              {t('event_stream.show_unmatched', { n: unmatched })}
-            </button>
+            <>
+              {' · '}
+              <a>{t('event_stream.show_unmatched', { n: unmatched })}</a>
+            </>
           )}
-        </div>
+        </span>
       </div>
 
-      <div className="bg-white border border-zinc-200 rounded-lg overflow-hidden">
+      <div className="evt-card">
         {events.length === 0 ? (
-          <p className="py-8 text-center text-xs text-zinc-400">
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
             {t('common.no_themes')}
-          </p>
+          </div>
         ) : (
           events.map((e) => {
             const publisher = getDisplayPublisher(e.source_name, e.source_url)
+            const srcCls = SRC_CLASS[publisher] ?? ''
             const themeName = pickField(locale, e.theme_name, e.theme_name_zh)
             const timeRef = e.published_at ?? e.event_date
             const timeAgo = formatRelativeTime(timeRef, t, locale)
 
-            return (
-              <div
-                key={e.id}
-                className="px-4 py-3 border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 transition-colors"
+            const headlineContent = e.source_url ? (
+              <a
+                href={e.source_url}
+                target="_blank"
+                rel="noreferrer"
+                className="evt-headline"
+                style={{ color: 'inherit', textDecoration: 'none' }}
               >
-                <div className="flex items-center gap-3 text-[11px] font-mono text-zinc-400 mb-1">
-                  <span className="w-14 shrink-0">{timeAgo}</span>
-                  <span className="text-zinc-500">[{publisher}]</span>
+                {e.headline}
+              </a>
+            ) : (
+              <div className="evt-headline">{e.headline}</div>
+            )
+
+            return (
+              <div className="evt-row" key={e.id}>
+                <div className="evt-time">{timeAgo}</div>
+                <div>
+                  <span className={`src ${srcCls}`}>{shortPublisher(publisher)}</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-14 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    {e.source_url ? (
-                      <a
-                        href={e.source_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm text-zinc-800 hover:text-zinc-900 hover:underline leading-snug block"
-                      >
-                        {e.headline}
-                      </a>
-                    ) : (
-                      <span className="text-sm text-zinc-800 leading-snug">
-                        {e.headline}
-                      </span>
-                    )}
-                    <div className="mt-1 text-[11px]">
-                      {e.theme_id && themeName ? (
-                        <Link
-                          href={`/themes/${e.theme_id}`}
-                          className="text-zinc-500 hover:text-zinc-900 hover:underline"
-                        >
-                          → {themeName}
-                        </Link>
-                      ) : (
-                        <span className="text-zinc-400 italic">
-                          {t('event_stream.no_theme_match')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                {headlineContent}
+                {e.theme_id && themeName ? (
+                  <Link href={`/themes/${e.theme_id}`} className="evt-link">
+                    → {themeName}
+                  </Link>
+                ) : (
+                  <span className="evt-link muted">
+                    {t('event_stream.no_theme_match')}
+                  </span>
+                )}
               </div>
             )
           })
         )}
       </div>
-    </section>
+    </>
   )
 }

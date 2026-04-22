@@ -185,13 +185,14 @@
     "license_expires": "授权"
   },
   "topbar": {
-    "search_placeholder": "搜索主题 / 股票 / 事件… (规划中)"
+    "search_placeholder": "搜索主题 / 股票 / 事件…",
+    "search_soon": "即将上线"
   },
   "radar": {
     "today_on_radar": "今日雷达",
-    "narratives_count": "{n} 条主线",
+    "narratives_count": "{n} 条叙事",
     "active_themes_count": "{n} 个活跃主题",
-    "events_scanned_7d": "近 7 天扫描 {n} 事件"
+    "events_scanned_7d": "7 日内扫描 {n} 条事件"
   },
   "top_tickers": {
     "title": "头部股票",
@@ -231,10 +232,13 @@
     "framework_matches": "框架匹配基于历史模式. 信息工具, 非投资建议."
   },
   "narratives": {
-    "heading": "本周主线",
-    "narrative": "主线",
+    "heading": "市场叙事",
+    "narrative": "叙事",
     "tickers": "{n} 只股票",
-    "themes": "{n} 个主题"
+    "themes": "{n} 个主题",
+    "synthesis_meta": "每日汇总 · {time} · AI 起草, 策展人已校",
+    "mark_reviewed": "已校",
+    "mark_ai": "AI"
   },
   "market_regime": {
     "title": "市场周期",
@@ -283,17 +287,23 @@
     "since": "since"
   },
   "categories": {
-    "geopolitics": "地缘政治",
-    "geopolitical": "地缘政治",
+    "geopolitics": "地缘",
+    "geopolitical": "地缘",
     "tech_breakthrough": "技术突破",
     "supply_chain": "供应链",
-    "macro_monetary": "宏观货币",
-    "ai_semi": "AI / 半导体",
-    "pharma": "医药 / 生物",
+    "macro_monetary": "宏观 / 货币",
+    "ai_semi": "AI · 半导体",
+    "pharma": "医药",
     "defense": "国防",
     "energy": "能源",
+    "materials": "材料",
     "crypto": "加密",
     "consumer": "消费",
     "exploratory": "探索性"
+  },
+  "curator_strip": {
+    "by": "本周策展",
+    "role": "高级产品设计师",
+    "disclaim": "复述历史, 不预测未来. 仅供参考, 不构成投资建议."
   }
 }

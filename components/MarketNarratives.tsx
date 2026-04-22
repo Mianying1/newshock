@@ -24,6 +24,46 @@ interface Narrative {
   top_chokepoint_tickers: string[] | null
   related_themes: RelatedTheme[]
   rank: number
+  created_at?: string
+  updated_at?: string
+  review_status?: string | null
+}
+
+const CATEGORY_TAG: Record<string, { cls: string; labelKey: string }> = {
+  geopolitical: { cls: 'geo', labelKey: 'categories.geopolitics' },
+  geopolitics: { cls: 'geo', labelKey: 'categories.geopolitics' },
+  ai_semi: { cls: 'ai', labelKey: 'categories.ai_semi' },
+  tech_breakthrough: { cls: 'ai', labelKey: 'categories.tech_breakthrough' },
+  supply_chain: { cls: 'supp', labelKey: 'categories.supply_chain' },
+  pharma: { cls: 'pha', labelKey: 'categories.pharma' },
+  defense: { cls: 'def', labelKey: 'categories.defense' },
+  energy: { cls: 'ene', labelKey: 'categories.energy' },
+  materials: { cls: 'mat', labelKey: 'categories.materials' },
+  macro_monetary: { cls: 'mun', labelKey: 'categories.macro_monetary' },
+}
+
+function AISparkIcon() {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
+      <path d="M3 3l3 3 3-3M3 9l3-3 3 3" />
+    </svg>
+  )
+}
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M2 6l3 3 5-7" />
+    </svg>
+  )
+}
+
+function formatTime(iso?: string): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  return `${hh}:${mm}`
 }
 
 export function MarketNarratives() {
@@ -32,73 +72,67 @@ export function MarketNarratives() {
 
   if (!data?.narratives || data.narratives.length === 0) return null
 
-  return (
-    <section className="py-4 border-b border-zinc-100 mb-2">
-      <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-3">
-        {t('narratives.heading')}
-      </h2>
+  const narratives = data.narratives.slice(0, 3)
+  const lastUpdated = narratives[0]?.updated_at ?? narratives[0]?.created_at
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {data.narratives.slice(0, 3).map((n) => {
+  return (
+    <>
+      <div className="sec-label">
+        <span className="l">{t('narratives.heading')}</span>
+        <span className="r">
+          {t('narratives.synthesis_meta', { time: formatTime(lastUpdated) })}
+        </span>
+      </div>
+      <div className="narr-grid">
+        {narratives.map((n) => {
           const title = pickField(locale, n.title, n.title_zh)
           const description = pickField(locale, n.description, n.description_zh)
+          const primaryTheme = n.related_themes[0]
+          const catMeta =
+            (primaryTheme && CATEGORY_TAG[primaryTheme.category]) ?? null
+          const isReviewed =
+            n.review_status === 'reviewed' || n.review_status === 'approved'
+
           return (
-          <div
-            key={n.id}
-            className="bg-zinc-50 border border-zinc-200 rounded-lg p-4 hover:border-zinc-300 transition-colors"
-          >
-            <div className="text-[10px] uppercase tracking-wider text-zinc-400 mb-1">
-              {t('narratives.narrative')}
-            </div>
-            <h3 className="font-semibold text-sm mb-1.5 text-zinc-900 leading-snug">
-              {title}
-            </h3>
-            <p className="text-xs text-zinc-600 mb-3 line-clamp-2 leading-relaxed">
-              {description}
-            </p>
-
-            {n.related_themes.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-3">
-                {n.related_themes.slice(0, 3).map((th) => {
-                  const themeName = pickField(locale, th.name, th.name_zh)
-                  return (
-                  <Link
-                    key={th.id}
-                    href={`/themes/${th.id}`}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400 transition-colors truncate max-w-[120px]"
-                    title={themeName}
-                  >
-                    {themeName.split(' · ')[0]}
-                  </Link>
-                  )
-                })}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between text-[10px] text-zinc-400">
-              <span>{t('narratives.tickers', { n: n.aggregate_ticker_count ?? 0 })}</span>
-              {(n.top_chokepoint_tickers?.length ?? 0) > 0 && (
-                <span className="font-mono flex gap-1">
-                  {n.top_chokepoint_tickers!.slice(0, 3).map((sym, idx) => (
-                    <span key={sym}>
-                      <Link
-                        href={`/tickers/${sym}`}
-                        className="text-zinc-500 hover:text-zinc-900 hover:underline"
-                      >
-                        {sym}
-                      </Link>
-                      {idx < Math.min(2, n.top_chokepoint_tickers!.length - 1) && (
-                        <span className="text-zinc-400 ml-1">·</span>
-                      )}
-                    </span>
-                  ))}
+            <div className="narr-card" key={n.id}>
+              <div className="narr-top">
+                {catMeta ? (
+                  <span className={`tag ${catMeta.cls}`}>{t(catMeta.labelKey)}</span>
+                ) : (
+                  <span className="tag low">{t('narratives.narrative')}</span>
+                )}
+                <span className={`mark ${isReviewed ? 'curated' : 'ai'}`}>
+                  {isReviewed ? <CheckIcon /> : <AISparkIcon />}
+                  {isReviewed
+                    ? t('narratives.mark_reviewed')
+                    : t('narratives.mark_ai')}
                 </span>
-              )}
+                <span className="t-time">{formatTime(n.updated_at ?? n.created_at)}</span>
+              </div>
+              <div className="narr-title">{title}</div>
+              <div className="narr-body">{description}</div>
+              <div className="narr-foot">
+                <div className="links">
+                  {n.related_themes.slice(0, 4).map((th, i) => {
+                    const themeName = pickField(locale, th.name, th.name_zh)
+                    return (
+                      <span key={th.id}>
+                        <Link href={`/themes/${th.id}`}>
+                          {themeName.split(' · ')[0]}
+                        </Link>
+                        {i < Math.min(3, n.related_themes.length - 1) && (
+                          <span className="sep"> · </span>
+                        )}
+                      </span>
+                    )
+                  })}
+                </div>
+                <span>{t('narratives.themes', { n: n.related_themes.length })}</span>
+              </div>
             </div>
-          </div>
           )
         })}
       </div>
-    </section>
+    </>
   )
 }
