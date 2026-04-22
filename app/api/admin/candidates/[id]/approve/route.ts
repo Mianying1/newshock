@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { runArchetypePipeline } from '@/lib/archetype-pipeline'
+
+export const maxDuration = 60
 
 export async function POST(
   _req: NextRequest,
@@ -50,6 +53,8 @@ export async function POST(
     typical_duration_days_max: 180,
     confidence_level: 'medium',
     created_by: 'admin_approve',
+    pipeline_status: 'pending',
+    pipeline_started_at: new Date().toISOString(),
   })
 
   if (archErr) {
@@ -59,8 +64,9 @@ export async function POST(
     )
   }
 
-  // Add missing tickers (tickers table has no notes column)
+  // Add missing tickers
   const tickers = (cand.initial_tickers as { symbol: string; reasoning?: string }[]) ?? []
+  const allSymbols = tickers.map((t) => t.symbol)
   let newTickerCount = 0
 
   for (const t of tickers) {
@@ -87,13 +93,16 @@ export async function POST(
     .update({ status: 'approved', reviewed_at: new Date().toISOString() })
     .eq('id', id)
 
+  // Fire-and-forget async pipeline. Caught errors are logged inside runArchetypePipeline.
+  void runArchetypePipeline(cand.proposed_archetype_id as string, allSymbols).catch((e) => {
+    console.error(`[approve] pipeline crashed for ${cand.proposed_archetype_id}:`, e)
+  })
+
   return Response.json({
     ok: true,
     archetype_id: cand.proposed_archetype_id,
     new_tickers: newTickerCount,
-    next_steps: [
-      'npx tsx scripts/generate-archetype-playbooks.ts --archetype=' + cand.proposed_archetype_id,
-      'npx tsx scripts/fetch-ticker-logos.ts',
-    ],
+    pipeline_status: 'pending',
+    message: 'Approved. Pipeline started in background (~30s).',
   })
 }

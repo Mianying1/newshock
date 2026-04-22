@@ -115,7 +115,10 @@ export default function CandidatesPage() {
       const result = await res.json()
       if (result.ok) {
         const n = result.new_tickers ?? 0
-        setMessage(`✅ Approved — ${n} new ticker(s) added. Run: ${result.next_steps?.[0] ?? 'generate-archetype-playbooks.ts'}`)
+        const pipelineMsg = result.pipeline_status
+          ? `Playbook + logos generating in background (~30s). Check archetype in a minute.`
+          : (result.note ?? '')
+        setMessage(`✅ Approved — ${n} new ticker(s) added. ${pipelineMsg}`)
         mutate()
       } else {
         setMessage(`❌ ${result.error ?? 'approval failed'}`)
@@ -244,12 +247,9 @@ export default function CandidatesPage() {
       )}
 
       <div className="mt-12 pt-6 border-t border-zinc-200 text-xs text-zinc-500">
-        <p className="mb-2 font-medium">After approving, run locally:</p>
-        <pre className="bg-zinc-50 border border-zinc-200 p-3 rounded font-mono leading-relaxed">
-{`npx tsx scripts/generate-archetype-playbooks.ts --archetype=<id>
-npx tsx scripts/sync-playbooks-to-db.ts
-npx tsx scripts/fetch-ticker-logos.ts`}
-        </pre>
+        <p>Approval now triggers playbook + logo generation automatically (~30s).
+        To re-run a failed pipeline:
+        <code className="ml-1 bg-zinc-100 px-1.5 py-0.5 rounded">POST /api/admin/archetypes/&lt;id&gt;/run-pipeline</code></p>
       </div>
     </div>
   )
