@@ -126,7 +126,20 @@
     "no_potential_next": "Next weekly scan: {date}",
     "loading": "Loading...",
     "updated": "Updated {time}",
-    "rank_prefix": "#{n}"
+    "rank_prefix": "#{n}",
+    "tickers_unit": "tickers",
+    "show_more": "Show {n} more",
+    "sector_geopolitics": "🛡️ Defense / Geopolitics",
+    "sector_ai_semi": "🤖 Semis / AI",
+    "sector_supply_chain": "🔗 Supply Chain",
+    "sector_macro": "💰 Macro / Finance",
+    "sector_pharma": "💊 Pharma",
+    "sector_energy": "⚡ Energy",
+    "sector_materials": "⛏️ Materials",
+    "sector_auto": "🚗 Auto",
+    "sector_fintech": "💰 Fintech",
+    "sector_semiconductors": "🔌 Semiconductors",
+    "sector_other": "📌 Other"
   },
   "ticker_detail": {
     "back": "← Back",

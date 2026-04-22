@@ -35,6 +35,32 @@ const DESC_KEY: Record<SortKey, string> = {
 
 const MIN_POTENTIAL_DISPLAY = 5
 
+const SECTOR_KEY: Record<string, string> = {
+  'Geopolitics': 'sector_geopolitics',
+  'geopolitics': 'sector_geopolitics',
+  'geopolitical': 'sector_geopolitics',
+  'AI / 半导体': 'sector_ai_semi',
+  'AI / Semi': 'sector_ai_semi',
+  'ai_semi': 'sector_ai_semi',
+  'supply_chain': 'sector_supply_chain',
+  'Macro / Monetary': 'sector_macro',
+  'macro_monetary': 'sector_macro',
+  'Pharma': 'sector_pharma',
+  'pharma': 'sector_pharma',
+  'Energy': 'sector_energy',
+  'energy': 'sector_energy',
+  'Materials': 'sector_materials',
+  'materials': 'sector_materials',
+  'auto': 'sector_auto',
+  'fintech': 'sector_fintech',
+  'semiconductors': 'sector_semiconductors',
+}
+
+function sectorKeyFor(category: string | null | undefined): string {
+  if (!category) return 'sector_other'
+  return SECTOR_KEY[category] ?? 'sector_other'
+}
+
 export default function TickersPage() {
   const { t } = useI18n()
   const [sort, setSort] = useState<SortKey>('thematic')
@@ -42,6 +68,7 @@ export default function TickersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [potentialPoor, setPotentialPoor] = useState<RankedResponse | null>(null)
+  const [showMore, setShowMore] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     let cancelled = false
@@ -65,6 +92,10 @@ export default function TickersPage() {
     return () => {
       cancelled = true
     }
+  }, [sort])
+
+  useEffect(() => {
+    setShowMore({})
   }, [sort])
 
   useEffect(() => {
@@ -132,7 +163,14 @@ export default function TickersPage() {
         <div className="space-y-2">
           {loading && <p className="py-10 text-center text-zinc-400">{t('tickers_ranked.loading')}</p>}
           {error && <p className="py-10 text-center text-zinc-400">{t('common.error')}</p>}
-          {!loading && !error && data?.tickers.map((ticker, idx) => (
+          {!loading && !error && sort === 'thematic' && data && data.tickers.length > 0 && (
+            <GroupedThematicList
+              tickers={data.tickers}
+              showMore={showMore}
+              onToggle={(key) => setShowMore((prev) => ({ ...prev, [key]: true }))}
+            />
+          )}
+          {!loading && !error && sort === 'potential' && data?.tickers.map((ticker, idx) => (
             <RankedTickerCard
               key={ticker.symbol}
               ticker={ticker}
@@ -155,6 +193,75 @@ export default function TickersPage() {
         </p>
       </footer>
     </div>
+  )
+}
+
+function GroupedThematicList({
+  tickers,
+  showMore,
+  onToggle,
+}: {
+  tickers: TickerScores[]
+  showMore: Record<string, boolean>
+  onToggle: (key: string) => void
+}) {
+  const { t } = useI18n()
+
+  const groups = new Map<string, TickerScores[]>()
+  for (const ticker of tickers) {
+    const key = sectorKeyFor(ticker.dominant_category)
+    const existing = groups.get(key)
+    if (existing) existing.push(ticker)
+    else groups.set(key, [ticker])
+  }
+
+  const ordered = Array.from(groups.entries())
+    .map(([key, list]) => {
+      const sorted = [...list].sort((a, b) => b.thematic_score - a.thematic_score)
+      return { key, list: sorted, top: sorted[0]?.thematic_score ?? 0 }
+    })
+    .sort((a, b) => b.top - a.top)
+
+  let rank = 0
+  return (
+    <>
+      {ordered.map(({ key, list }) => {
+        const expanded = showMore[key] ?? false
+        const visible = expanded ? list : list.slice(0, 5)
+        const hidden = list.length - visible.length
+        const startRank = rank
+        rank += list.length
+        return (
+          <div key={key} className="pt-2">
+            <h3 className="text-sm font-medium mb-2 mt-4 first:mt-0 flex items-baseline gap-2">
+              <span>{t(`tickers_ranked.${key}`)}</span>
+              <span className="text-xs font-normal text-zinc-500">
+                {list.length} {t('tickers_ranked.tickers_unit')}
+              </span>
+            </h3>
+            <div className="space-y-2">
+              {visible.map((ticker, i) => (
+                <RankedTickerCard
+                  key={ticker.symbol}
+                  ticker={ticker}
+                  rank={startRank + i + 1}
+                  primaryKey="thematic"
+                />
+              ))}
+            </div>
+            {hidden > 0 && (
+              <button
+                type="button"
+                onClick={() => onToggle(key)}
+                className="text-sm text-blue-600 hover:underline mt-2"
+              >
+                {t('tickers_ranked.show_more', { n: hidden })}
+              </button>
+            )}
+          </div>
+        )
+      })}
+    </>
   )
 }
 

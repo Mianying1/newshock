@@ -126,7 +126,20 @@
     "no_potential_next": "下次 weekly scan: {date}",
     "loading": "加载中...",
     "updated": "更新于 {time}",
-    "rank_prefix": "#{n}"
+    "rank_prefix": "#{n}",
+    "tickers_unit": "只股票",
+    "show_more": "显示更多 {n} 只",
+    "sector_geopolitics": "🛡️ 国防 / 地缘",
+    "sector_ai_semi": "🤖 半导体 / AI",
+    "sector_supply_chain": "🔗 供应链",
+    "sector_macro": "💰 宏观 / 金融",
+    "sector_pharma": "💊 医药",
+    "sector_energy": "⚡ 能源",
+    "sector_materials": "⛏️ 材料",
+    "sector_auto": "🚗 汽车",
+    "sector_fintech": "💰 金融科技",
+    "sector_semiconductors": "🔌 半导体",
+    "sector_other": "📌 其他"
   },
   "ticker_detail": {
     "back": "← 返回",
