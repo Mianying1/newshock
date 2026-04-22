@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    900
+  ],
+  "historical_cases": [
+    {
+      "name": "CME Bitcoin Futures Launch & Exchange Infrastructure Buildout (2017–2018)",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "Crypto exchange equities and OTC desks experienced dramatic revenue and valuation expansion; Coinbase reportedly reached ~$8B private valuation; CME futures open interest surged multi-fold",
+      "exit_trigger": "Prolonged crypto bear market post-January 2018 crash caused trading volumes to collapse, institutional pipeline dried up, and custody revenues failed to materialize at projected scale",
+      "confidence": "high"
+    },
+    {
+      "name": "Traditional Finance Custody & Prime Brokerage Buildout Post-2020 Bull Cycle (2020–2022)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Coinbase IPO valued at ~$86B; Anchorage received first OCC federal charter; Fidelity Digital Assets expanded; BitGo, Fireblocks saw surging institutional AUC",
+      "exit_trigger": "FTX collapse (November 2022) triggered regulatory freeze, institutional withdrawal, and a multi-quarter retrenchment in new custody and exchange licensing activity",
+      "confidence": "high"
+    },
+    {
+      "name": "NYSE Arca & NASDAQ Electronic Exchange Licensing Wave (1999–2001)",
+      "approximate_duration": "约 18–30 个月",
+      "peak_move": "Electronic exchange and ECN valuations surged as Reg ATS spurred institutional adoption; Instinet, Island ECN, and Archipelago saw rapid AUM and revenue growth",
+      "exit_trigger": "Dot-com bust, equity volume collapse, and margin compression from decimalization ended the revaluation cycle; several ECNs consolidated or shut down",
+      "confidence": "medium"
+    },
+    {
+      "name": "Spot Bitcoin ETF Approval & Institutional Custody Re-Rating (2024–2025)",
+      "approximate_duration": "约 12–18 个月（进行中）",
+      "peak_move": "Coinbase stock re-rated sharply upward as ETF custodian; BlackRock, Fidelity inflows drove custody fee revenues; exchange volumes and prime brokerage margins expanded materially",
+      "exit_trigger": "Theme had not fully exhausted as of early 2026; partial deceleration observed as ETF inflow pace normalized post-initial launch surge",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "policy",
+        "description": "The U.S. regulatory environment in 2025–2026 has shifted from adversarial enforcement (Gensler-era SEC) to active licensing framework development under new SEC/CFTC leadership, with potential passage of comprehensive digital asset market structure legislation. This creates durable revenue visibility for licensed exchanges and custodians that was absent in all prior cycles.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Sovereign wealth funds, pension allocators, and corporate treasuries are now actively allocating to digital assets — a structurally new institutional demand cohort not present in 2017–2018 or meaningfully active in 2020–2022. This broadens the revenue base for custody and prime brokerage beyond retail-correlated crypto cycles.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Qualified custodian frameworks, banking charter requirements, and technical infrastructure barriers (MPC key management, insurance capacity) create meaningful supply-side friction that limits rapid competitor entry, unlike the 2017–2018 cycle where exchange and custody proliferation was nearly unconstrained.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "description": "The current macro environment features elevated but stabilizing interest rates, which simultaneously increases stablecoin yield revenue for exchanges and compresses speculative appetite — an ambiguous mix not observed in the zero-rate environment of 2020–2021 that turbocharged the prior cycle.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "Regulatory clarity events (OCC charters, ETF approvals) historically trigger sharp institutional re-rating waves followed by gradual normalization, consistent with prior exchange infrastructure cycles.",
+      "Exchange revenue concentration risk remains high — as in 2017–2018 and 2020–2022, a significant portion of fee income is correlated with spot and derivatives trading volume, making fundamentals sensitive to crypto market sentiment.",
+      "The gap between institutional pipeline announcements and actual capital deployment has historically been wider than consensus expects, causing mid-cycle sentiment corrections as in 2018 and early 2022."
+    ],
+    "observation": "The 2024–2026 cycle may be structurally more durable than prior analogs due to simultaneous regulatory legitimization and sovereign/institutional demand entry, but exchange and custody infrastructure equities remain partially hostage to underlying crypto market volume — a dependency that has historically truncated or complicated every prior revaluation cycle."
+  },
+  "exit_signals": [
+    "Spot crypto trading volumes on regulated exchanges sustain a multi-month decline of 40%+ from cycle peaks, compressing exchange fee revenues below levels needed to justify elevated valuation multiples.",
+    "U.S. or EU comprehensive digital asset legislation stalls, is significantly watered down, or introduces retroactive requirements that raise compliance costs materially for existing licensed entities.",
+    "A major licensed custodian or prime broker experiences a significant loss event, hack, or insolvency — similar in psychological impact to FTX 2022 — triggering institutional re-withdrawal and regulatory freeze.",
+    "ETF inflows into spot Bitcoin/Ethereum products reverse to sustained net outflows over a 60–90 day window, signaling institutional demand saturation and removing the primary custody revenue growth narrative.",
+    "New market entrants (e.g., TradFi incumbents with existing banking licenses) achieve regulatory approval and begin price competition on custody fees, compressing margin expectations and triggering multiple compression across the infrastructure cohort."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Crypto exchange and custody infrastructure buildout is a multi-year structural trend driven by regulatory framework construction, institutional onboarding pipelines, and technical standard-setting — none of which resolve on a bounded timeline — making this archetype better characterized as an extended structural theme with embedded cyclical volatility rather than a discrete bounded event.",
+  "real_world_timeline": {
+    "approximate_start": "2024 Q1",
+    "description": "The theme's current cycle originated with the January 2024 approval of U.S. spot Bitcoin ETFs, which catalyzed a wave of institutional custody mandates, exchange re-ratings, and accelerated regulatory engagement that extended through 2025 with the shift in U.S. crypto policy posture.",
+    "current_maturity_estimate": "mid"
+  }
+}

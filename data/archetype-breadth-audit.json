@@ -1,0 +1,417 @@
+[
+  {
+    "id": "agriculture_supply_shock",
+    "name": "Agricultural Supply Shock",
+    "description": "Disruptions to fertilizer, grain, or crop supply that drive commodity prices and benefit agri-commodity producers",
+    "keywords": [
+      "fertilizer supply",
+      "potash shortage",
+      "phosphate",
+      "nitrogen prices",
+      "grain supply",
+      "crop yield",
+      "agri-commodity",
+      "wheat export ban",
+      "Ukraine grain"
+    ],
+    "themes": [
+      {
+        "id": "8ebdc0ee-e0a7-4a61-840e-6f5ff7dfde2f",
+        "name": "Fertilizer Supply Chain Disruption · Global Repricing",
+        "event_count": 12
+      }
+    ],
+    "breadth_verdict": "moderate",
+    "reasoning": "This archetype spans two distinct mechanisms: (1) fertilizer/input supply disruptions affecting production costs, and (2) grain/crop output supply shocks affecting food commodity prices. These have different causal chains, affected companies, and market dynamics.",
+    "split_suggestions": [
+      {
+        "id": "fertilizer_supply_shock",
+        "name": "Fertilizer Supply Shock",
+        "description": "Disruptions to fertilizer supply (potash, phosphate, nitrogen) that increase input costs for farmers and benefit fertilizer producers.",
+        "trigger_keywords": [
+          "fertilizer supply",
+          "potash shortage",
+          "phosphate supply",
+          "nitrogen prices",
+          "fertilizer export ban"
+        ]
+      },
+      {
+        "id": "grain_supply_shock",
+        "name": "Grain and Crop Supply Shock",
+        "description": "Disruptions to grain and crop output supply that drive food commodity prices and benefit grain producers/traders.",
+        "trigger_keywords": [
+          "grain supply",
+          "crop yield",
+          "wheat export ban",
+          "Ukraine grain",
+          "harvest disruption"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crypto_institutional_adoption",
+    "name": "Crypto Institutional Adoption",
+    "description": "Bitcoin ETF flows, stablecoin regulation, corporate BTC treasury moves, or major institutional crypto adoption",
+    "keywords": [
+      "Bitcoin ETF",
+      "crypto regulation",
+      "stablecoin",
+      "institutional crypto",
+      "SEC crypto approval",
+      "BTC treasury",
+      "digital asset",
+      "crypto custody"
+    ],
+    "themes": [
+      {
+        "id": "6076581a-4d49-4db8-bc0e-ba4e20276e24",
+        "name": "Coinbase Payment License · Stablecoin Infrastructure",
+        "event_count": 29
+      },
+      {
+        "id": "5ca9dc3a-cd04-4c8f-975f-7b2df82c9042",
+        "name": "Trump Crypto Policy Volatility · BTC Price Swings",
+        "event_count": 1
+      }
+    ],
+    "breadth_verdict": "broad",
+    "reasoning": "This archetype conflates at least four distinct mechanisms: ETF/investment products, regulatory frameworks for stablecoins, corporate treasury decisions, and crypto infrastructure licensing. Each operates through different actors, timelines, and market dynamics.",
+    "split_suggestions": [
+      {
+        "id": "crypto_etf_products",
+        "name": "Crypto ETF & Investment Products",
+        "description": "Bitcoin ETFs, crypto spot ETFs, institutional investment vehicle approvals and their associated fund flows.",
+        "trigger_keywords": [
+          "Bitcoin ETF",
+          "crypto ETF",
+          "spot ETF",
+          "ETF flows",
+          "ETF approval"
+        ]
+      },
+      {
+        "id": "stablecoin_regulation",
+        "name": "Stablecoin Regulation & Infrastructure",
+        "description": "Regulatory frameworks, payment licenses, and infrastructure development specific to stablecoins and payment tokens.",
+        "trigger_keywords": [
+          "stablecoin",
+          "payment license",
+          "stablecoin regulation",
+          "USDC",
+          "digital dollar"
+        ]
+      },
+      {
+        "id": "corporate_btc_treasury",
+        "name": "Corporate Bitcoin Treasury Adoption",
+        "description": "Public companies adding Bitcoin to balance sheets as treasury reserve asset or corporate strategy shifts.",
+        "trigger_keywords": [
+          "BTC treasury",
+          "corporate Bitcoin",
+          "balance sheet BTC",
+          "treasury reserve",
+          "MicroStrategy"
+        ]
+      },
+      {
+        "id": "crypto_exchange_custody",
+        "name": "Crypto Exchange & Custody Infrastructure",
+        "description": "Institutional crypto custody solutions, exchange licensing, and digital asset infrastructure development.",
+        "trigger_keywords": [
+          "crypto custody",
+          "exchange license",
+          "digital asset infrastructure",
+          "qualified custody",
+          "institutional custody"
+        ]
+      },
+      {
+        "id": "crypto_policy_framework",
+        "name": "Crypto Regulatory Policy & SEC Actions",
+        "description": "Broad SEC regulatory decisions, crypto classification frameworks, and federal crypto policy developments.",
+        "trigger_keywords": [
+          "SEC crypto",
+          "crypto regulation",
+          "digital asset policy",
+          "crypto framework",
+          "SEC approval"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "defense_buildup",
+    "name": "Defense Buildup & Military Contracts",
+    "description": "Increased defense spending, major weapons contracts, or NATO frontier buildup",
+    "keywords": [
+      "defense budget",
+      "military contract",
+      "Patriot missile",
+      "F-35",
+      "arms deal",
+      "NATO spending",
+      "defense procurement",
+      "weapons system",
+      "foreign military sale"
+    ],
+    "themes": [
+      {
+        "id": "7c7356ee-505b-458a-8784-6619c735f2ab",
+        "name": "Iran War Munitions Replenishment · Patriot Missile",
+        "event_count": 16
+      },
+      {
+        "id": "daff2614-9594-4681-ad73-4f372d5eb6f9",
+        "name": "Japan Defense Export Liberalization · Production Ramp",
+        "event_count": 6
+      },
+      {
+        "id": "c3537282-f1dd-4c98-81c5-177625f9b3d1",
+        "name": "Combat Rescue Helicopter Upgrade · IR Countermeasures",
+        "event_count": 3
+      }
+    ],
+    "breadth_verdict": "moderate",
+    "reasoning": "The archetype conflates distinct mechanisms: government budget allocation for defense spending, commercial contracts between governments and defense contractors, and geopolitical military buildups. These represent different trigger events (fiscal policy vs procurement vs deployment) that could be tracked separately.",
+    "split_suggestions": [
+      {
+        "id": "defense_budget_allocation",
+        "name": "Defense Budget & Appropriations",
+        "description": "Government announcements of defense budget increases, military spending bills, or national defense appropriations.",
+        "trigger_keywords": [
+          "defense budget",
+          "military spending",
+          "defense appropriation",
+          "NATO spending target",
+          "defense expenditure"
+        ]
+      },
+      {
+        "id": "military_procurement_contract",
+        "name": "Military Procurement & Weapons Contracts",
+        "description": "Awards of contracts for weapons systems, military equipment, or defense platforms to contractors.",
+        "trigger_keywords": [
+          "military contract",
+          "defense contract award",
+          "weapons system order",
+          "F-35 order",
+          "Patriot missile sale"
+        ]
+      },
+      {
+        "id": "foreign_military_sale",
+        "name": "Foreign Military Sales & Arms Exports",
+        "description": "Government-to-government arms deals, foreign military sales approvals, or defense export agreements.",
+        "trigger_keywords": [
+          "foreign military sale",
+          "arms deal",
+          "defense export",
+          "military aid package",
+          "weapons transfer"
+        ]
+      },
+      {
+        "id": "military_deployment_buildup",
+        "name": "Military Deployment & Force Posture",
+        "description": "Announcements of troop deployments, base expansions, or military buildups in strategic regions.",
+        "trigger_keywords": [
+          "NATO frontier",
+          "troop deployment",
+          "military buildup",
+          "base expansion",
+          "force posture"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "energy_transition_acceleration",
+    "name": "Energy Transition Acceleration · AI Power Demand / Nuclear Renaissance",
+    "description": "Explosive power demand from \n  AI data centers, nuclear technology breakthroughs (SMR commercialization), and large-scale energy storage deployment are triggering a revaluation of     \n  clean energy infrastructure, grid modernization assets, and nuclear supply chains.",
+    "keywords": [
+      "nuclear power deal",
+      "SMR contract",
+      "data center power",
+      "grid capacity",
+      "clean energy demand",
+      "nuclear revival",
+      "power purchase agreement",
+      "AI power consumption",
+      "energy storage deployment",
+      "transmission investment"
+    ],
+    "themes": [
+      {
+        "id": "48b6c967-570e-46a8-98ec-5846abef872e",
+        "name": "AI Data Center Power · Semiconductor Efficiency",
+        "event_count": 10
+      }
+    ],
+    "breadth_verdict": "broad",
+    "reasoning": "This archetype combines three distinct mechanisms: (1) AI-driven power demand creating capacity constraints, (2) nuclear technology renaissance with SMR commercialization, and (3) energy storage deployment. Each has different drivers, stakeholders, and market dynamics that deserve separate tracking.",
+    "split_suggestions": [
+      {
+        "id": "ai_datacenter_power_demand",
+        "name": "AI Data Center Power Demand",
+        "description": "Explosive electricity consumption from AI compute infrastructure driving power purchase agreements, grid capacity investments, and utility revaluations.",
+        "trigger_keywords": [
+          "data center power",
+          "AI power consumption",
+          "hyperscaler PPA",
+          "compute power demand",
+          "data center electricity"
+        ]
+      },
+      {
+        "id": "nuclear_renaissance_smr",
+        "name": "Nuclear Renaissance · SMR Commercialization",
+        "description": "Small modular reactor deployment, nuclear supply chain expansion, and regulatory approvals revitalizing nuclear energy as clean baseload power.",
+        "trigger_keywords": [
+          "SMR contract",
+          "nuclear power deal",
+          "nuclear revival",
+          "reactor approval",
+          "nuclear supply chain"
+        ]
+      },
+      {
+        "id": "grid_modernization_storage",
+        "name": "Grid Modernization · Energy Storage",
+        "description": "Large-scale battery storage deployment, transmission infrastructure upgrades, and grid capacity expansion enabling renewable integration and reliability.",
+        "trigger_keywords": [
+          "energy storage deployment",
+          "grid capacity",
+          "transmission investment",
+          "battery storage",
+          "grid modernization"
+        ]
+      },
+      {
+        "id": "clean_energy_offtake",
+        "name": "Clean Energy Corporate Offtake",
+        "description": "Long-term power purchase agreements from corporations driving renewable project financing and clean energy infrastructure build-out.",
+        "trigger_keywords": [
+          "power purchase agreement",
+          "clean energy demand",
+          "corporate PPA",
+          "renewable offtake",
+          "clean power contract"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "middle_east_energy_shock",
+    "name": "Middle East Conflict · Oil War Premium",
+    "description": "When military conflicts or escalating sanctions occur in the \n  Middle East region (involving Iran, Israel, Red Sea/Strait of Hormuz), crude oil supply faces threats, causing oil prices to surge with a war premium and\n   energy stocks to outperform.",
+    "keywords": [
+      "Iran",
+      "Israel",
+      "Strait of Hormuz",
+      "oil embargo",
+      "Middle East attack",
+      "Houthi",
+      "Red Sea",
+      "Gulf of Oman",
+      "Persian Gulf strike"
+    ],
+    "themes": [
+      {
+        "id": "ae1b63fc-17e1-4734-9448-e81fa6e1b08b",
+        "name": "Iran Crisis Escalation · Oil War Premium",
+        "event_count": 23
+      }
+    ],
+    "breadth_verdict": "narrow",
+    "reasoning": "This archetype covers a single specific mechanism: geopolitical conflict in the Middle East disrupting oil supply routes and production, creating a war risk premium in energy markets. All trigger keywords relate to the same geographic region and the same causal chain (conflict → supply threat → oil price spike).",
+    "split_suggestions": []
+  },
+  {
+    "id": "us_china_tariff_escalation",
+    "name": "U.S.-China Tariff Escalation · Domestic Substitution",
+    "description": "Rising U.S. tariffs on Chinese semiconductors, \n  critical technologies, and strategic materials—combined with expanded export controls—trigger domestic substitution demand and upward revaluation of     \n  upstream critical material suppliers in China.",
+    "keywords": [
+      "tariff increase",
+      "trade war",
+      "entity list",
+      "export restriction",
+      "chip ban",
+      "BIS",
+      "technology restriction",
+      "decoupling"
+    ],
+    "themes": [
+      {
+        "id": "7c3615df-9113-4915-9446-794dc118d382",
+        "name": "Allied Chip Export Controls · China Localization",
+        "event_count": 11
+      }
+    ],
+    "breadth_verdict": "broad",
+    "reasoning": "This archetype conflates the trigger mechanism (U.S. tariffs/export controls) with the response mechanism (China domestic substitution) and covers multiple distinct policy instruments (tariffs, entity lists, export controls) and multiple affected sectors (semiconductors, critical materials, broader technology). These represent separate causal chains that should be tracked independently.",
+    "split_suggestions": [
+      {
+        "id": "us_china_semiconductor_controls",
+        "name": "U.S. Semiconductor Export Controls · China",
+        "description": "U.S. restrictions on advanced chip exports, semiconductor manufacturing equipment, and related technology transfers to China drive localization efforts in Chinese semiconductor supply chain.",
+        "trigger_keywords": [
+          "chip ban",
+          "semiconductor export control",
+          "ASML restriction",
+          "EUV ban",
+          "advanced node restriction"
+        ]
+      },
+      {
+        "id": "us_china_tariff_import_costs",
+        "name": "U.S.-China Tariff Imposition · Import Cost",
+        "description": "Direct impact of U.S. tariff increases on Chinese goods raising import costs, reducing demand for Chinese exports, or triggering retaliatory tariffs.",
+        "trigger_keywords": [
+          "tariff increase",
+          "Section 301",
+          "customs duty",
+          "tariff rate hike",
+          "import tax"
+        ]
+      },
+      {
+        "id": "china_critical_materials_substitution",
+        "name": "China Critical Materials Localization",
+        "description": "Chinese domestic substitution demand for rare earths, strategic minerals, and upstream materials due to supply chain security concerns drives revaluation of local suppliers.",
+        "trigger_keywords": [
+          "rare earth substitution",
+          "critical mineral localization",
+          "strategic material stockpile",
+          "domestic sourcing priority",
+          "mineral self-sufficiency"
+        ]
+      },
+      {
+        "id": "us_entity_list_technology_access",
+        "name": "U.S. Entity List · Technology Access Restriction",
+        "description": "Addition of Chinese firms to U.S. Entity List or similar restricted parties lists curtails their access to U.S. technology, components, and software.",
+        "trigger_keywords": [
+          "entity list",
+          "BIS blacklist",
+          "restricted parties",
+          "denied persons",
+          "export privilege denial"
+        ]
+      },
+      {
+        "id": "us_china_technology_decoupling",
+        "name": "U.S.-China Technology Decoupling · Supply Chain",
+        "description": "Broad strategic decoupling initiatives forcing bifurcation of technology supply chains, standards, and ecosystems between U.S. and Chinese spheres.",
+        "trigger_keywords": [
+          "technology decoupling",
+          "supply chain bifurcation",
+          "tech cold war",
+          "dual ecosystem",
+          "strategic competition"
+        ]
+      }
+    ]
+  }
+]

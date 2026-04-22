@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1825
+  ],
+  "historical_cases": [
+    {
+      "name": "Post-Three Mile Island Nuclear Rehabilitation (Late 1990s–2000s)",
+      "approximate_duration": "约 5–8 年",
+      "peak_move": "Uranium spot prices rose from under $10/lb to over $130/lb by 2007; nuclear utility stocks and uranium miners saw multi-hundred-percent gains across the cycle",
+      "exit_trigger": "Fukushima Daiichi disaster (March 2011) abruptly reversed sentiment; Germany announced phase-out, Japan shuttered fleet, uranium prices collapsed over 70% from peak",
+      "confidence": "high"
+    },
+    {
+      "name": "2006–2008 Uranium Bull Market / 'Nuclear Renaissance' Narrative",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Uranium spot surged from ~$20 to ~$136/lb; Cameco, Paladin Energy, and uranium ETFs saw explosive appreciation; reactor orderbooks expanded significantly",
+      "exit_trigger": "Combination of financial crisis demand destruction (2008) and subsequent Fukushima shock (2011) permanently ended that cycle; planned reactor builds were cancelled or deferred en masse",
+      "confidence": "high"
+    },
+    {
+      "name": "Post-Fukushima Recovery & Carbon-Driven Nuclear Re-evaluation (2018–2021)",
+      "approximate_duration": "约 2–4 年",
+      "peak_move": "Gradual re-rating of existing nuclear operators; uranium physical funds (e.g., Sprott) began accumulating; modest but sustained re-rating of nuclear equities",
+      "exit_trigger": "Theme did not fully exit but stalled on lack of concrete new-build catalysts and persistent regulatory friction; momentum folded into the broader 2022 energy crisis re-acceleration",
+      "confidence": "medium"
+    },
+    {
+      "name": "2022 European Energy Crisis Nuclear Re-Rating",
+      "approximate_duration": "约 6–18 个月",
+      "peak_move": "EDF and European nuclear utilities surged; Belgium reversed phase-out; uranium spot re-accelerated above $50/lb; political consensus in EU began shifting toward nuclear taxonomy inclusion",
+      "exit_trigger": "Acute energy price normalization through mid-2023 reduced urgency premium; theme evolved into slower-burn SMR/supply chain narrative rather than collapsing outright",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI data center power demand has created an entirely new category of baseload electricity buyer with explicit nuclear procurement commitments — Microsoft-Constellation (Three Mile Island restart), Google-Kairos, Amazon-X-energy deals represent demand-pull that was absent in all prior nuclear cycles. Hyperscalers are signing 20-year PPAs specifically for nuclear output, providing revenue visibility that historically never existed for prospective new builds.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "SMR designs (NuScale, GE-Hitachi BWRX-300, Rolls-Royce SMR, Oklo, TerraPower) represent a genuine paradigm shift from the gigawatt-scale overnight-cost overruns that killed prior cycles. Modular factory fabrication aims to break the cost-escalation pathology historically endemic to nuclear construction, though no SMR has yet achieved commercial operation at scale — meaning the technology promise remains partially unvalidated.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "Regulatory environment has materially shifted: U.S. ADVANCE Act (2024) streamlined NRC licensing; DOE loan guarantees and production tax credits under IRA provide explicit subsidy backstop; NATO-aligned governments are treating nuclear as energy security infrastructure rather than purely an environmental debate. This policy architecture was not present in the 2006–2008 or 2018–2021 cycles.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Uranium enrichment and fuel fabrication supply chains remain structurally constrained — Western enrichment capacity (Urenco, Centrus) is limited, and post-Russia sanctions on TENEX have exposed concentration risk. Unlike prior cycles where supply could respond within a few years, HALEU (high-assay low-enriched uranium) production for advanced reactors faces a multi-year ramp with few qualified producers, potentially sustaining fuel price elevation longer than historical analogs.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "Sentiment cycles in nuclear have historically been highly binary — euphoria followed by a single catastrophic event (Chernobyl, Fukushima) reset decades of progress; tail-risk from any operational incident anywhere in the world remains the dominant exogenous exit risk, as observed repeatedly",
+      "Construction cost and schedule overruns have plagued every Western nuclear new-build attempt in the modern era (Vogtle, Hinkley Point C, Flamanville); until an SMR demonstrates on-time, on-budget delivery, investor skepticism from prior cycles may periodically resurface as a valuation ceiling",
+      "The gap between announced project pipelines and actual grid-connected capacity has historically been very wide; prior 'nuclear renaissance' narratives (2006–2011) also featured large orderbooks that were subsequently cancelled, suggesting the current announced SMR pipeline should be discounted for execution risk"
+    ],
+    "observation": "The current nuclear renaissance may be structurally more durable than its predecessors due to the convergence of AI-driven baseload demand and policy support, but the cycle's ultimate length remains dependent on whether even one SMR platform achieves commercial-scale operation without the cost and schedule pathologies that terminated prior cycles."
+  },
+  "exit_signals": [
+    "A significant nuclear operational incident (even outside the U.S./Europe) triggers regulatory freezes, PPA renegotiations, or hyperscaler counterparty withdrawals from nuclear procurement commitments — historically the single most reliable cycle-ender",
+    "First commercial SMR project (NuScale UAMPS, BWRX-300 Ontario, or equivalent) announces material cost overrun or cancellation, validating the 'same story different decade' bear thesis and removing the technology differentiation premium from SMR equities",
+    "AI data center power demand growth decelerates sharply or hyperscalers pivot to alternative baseload solutions (geothermal at scale, long-duration storage breakthroughs), removing the demand-pull anchor that differentiates this cycle",
+    "Uranium spot and term prices retreat sustainably below ~$65/lb, signaling that the physical market supply-demand narrative has loosened and removing the fuel economics underpinning upstream miner and enricher valuations",
+    "Broad risk-off macro environment or credit tightening raises the cost of capital for infrastructure-duration nuclear projects to levels that make projected returns uneconomic, as observed during the 2008 financial crisis which stalled the prior renaissance"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "SMR commercialization is a multi-year infrastructure deployment cycle with no inherent expiration date — progress is gated by regulatory approvals, construction milestones, and grid integration timelines measured in years to decades, making it structurally extended rather than bounded or derivative.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q3",
+    "description": "The current SMR-focused nuclear renaissance phase accelerated in mid-to-late 2023 when Constellation's Three Mile Island restart announcement and a wave of hyperscaler nuclear PPAs transformed nuclear from a policy debate into an active commercial procurement story, coinciding with uranium spot prices breaking above multi-year resistance levels.",
+    "current_maturity_estimate": "early"
+  }
+}

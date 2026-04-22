@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    180,
+    730
+  ],
+  "historical_cases": [
+    {
+      "name": "Trump Administration Section 301 Tariff Escalation 2018–2019",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "U.S. tariff rates on Chinese goods rose from near 0% to covering roughly $360B in imports at rates of 10–25%; Chinese yuan depreciated approximately 10% against the dollar; U.S. soybean exports to China collapsed; retaliatory Chinese tariffs hit U.S. agriculture and autos materially",
+      "exit_trigger": "Phase One trade deal signed January 2020, providing a partial tariff rollback framework and Chinese purchase commitments, reducing immediate escalation pressure",
+      "confidence": "high"
+    },
+    {
+      "name": "U.S.–China Trade Truce and Phase One Deal Pause 2019–2020",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "Markets temporarily repriced risk as tariff escalation paused; supply chain reshuffling toward Vietnam, Mexico, and Taiwan accelerated; import cost pressures moderated but did not reverse as most tariffs remained in place",
+      "exit_trigger": "COVID-19 pandemic disrupted trade flows entirely in Q1 2020, superseding tariff dynamics as the dominant market driver",
+      "confidence": "high"
+    },
+    {
+      "name": "Biden Administration Tariff Continuity and Strategic Sector Expansion 2021–2024",
+      "approximate_duration": "约 36 个月以上（持续性）",
+      "peak_move": "Existing Section 301 tariffs maintained; new targeted tariffs on EVs (raised to 100%), solar cells (raised to 50%), and semiconductors added in May 2024; import cost pressures embedded in industrial supply chains rather than producing sharp market dislocations",
+      "exit_trigger": "No clean exit observed; theme evolved into structural industrial policy regime rather than resolving",
+      "confidence": "high"
+    },
+    {
+      "name": "Trump Second Term Tariff Shock April 2025",
+      "approximate_duration": "约 3–6 个月（初始冲击阶段，尚未完全解决）",
+      "peak_move": "Tariffs on Chinese goods announced at 145% effective rate in April 2025; broad equity market sell-off of approximately 10–15% within days; U.S. Treasury yields rose anomalously alongside dollar weakness suggesting confidence stress; 90-day pause on some tariffs announced but China-specific rates held",
+      "exit_trigger": "Partial de-escalation signals emerged in May 2025 with both sides announcing negotiation frameworks, though structural tariff levels remained historically elevated",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "macro",
+        "description": "The 2025–2026 tariff cycle occurs against a backdrop of already-elevated U.S. inflation and a Federal Reserve constrained in its ability to offset demand destruction with rate cuts, unlike 2018–2019 when the Fed pivoted dovishly to cushion trade war damage. This reduces the policy offset available and may prolong cost-pressure transmission.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Supply chain diversification away from China has already advanced significantly since 2018, with manufacturing capacity built in Vietnam, India, and Mexico. This means the marginal cost-pass-through from new tariffs may be partially absorbed by already-relocated capacity, potentially limiting the acute import cost spike relative to 2018 levels.",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "Tariff rates in 2025–2026 reached levels (100%+ on selected categories) that are structurally prohibitive rather than merely punitive, effectively functioning as near-embargoes on certain goods categories. This qualitative shift suggests a different policy regime where negotiated rollbacks require more significant political concessions, potentially making resolution slower.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "China's retaliatory toolkit has expanded and matured — including rare earth export controls, restrictions on U.S. firm operations in China, and dollar-alternative trade settlement mechanisms — creating a more symmetric escalation dynamic than observed in 2018, which may complicate exit negotiation timelines.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As in 2018–2019, market volatility tends to cluster around tariff announcement events and then partially mean-revert as participants reprice underlying fundamentals rather than headline rates.",
+      "Sector rotation patterns observed historically — away from U.S. agricultural exporters, multinational consumer goods, and semiconductor equipment toward domestic-facing industrials and reshoring beneficiaries — appear structurally similar to the 2018 cycle.",
+      "Negotiation dynamics continue to follow a observable pattern of maximum pressure followed by partial de-escalation frameworks, consistent with prior U.S.–China trade confrontations."
+    ],
+    "observation": "The current cycle may be structurally harder to exit than 2018–2019 because both tariff levels and geopolitical distrust have reached thresholds where a Phase One-style cosmetic agreement is less likely to satisfy domestic political constituencies on either side."
+  },
+  "exit_signals": [
+    "Formal announcement of a negotiated tariff reduction framework or trade deal between the U.S. and China with specific rate rollback schedules, analogous to the January 2020 Phase One signing.",
+    "Sustained decline in U.S. import price indices for Chinese-origin goods over two or more consecutive months, signaling that cost-pass-through pressure is abating in the real economy.",
+    "Reversal of supply chain diversion trends — observable as a meaningful recovery in U.S. direct imports from China rather than via third-country transshipment — suggesting tariff circumvention has normalized costs.",
+    "Chinese government policy signals of substantive concessions (e.g., currency management commitments, state subsidy disclosures, or large-scale U.S. goods purchase agreements) that historically preceded prior de-escalation phases.",
+    "A dominant macro shock (recession, financial stress event, or geopolitical crisis elsewhere) that supersedes the tariff dynamic as the primary driver of global risk appetite, as observed when COVID-19 displaced the trade war narrative in early 2020."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "U.S.–China tariff conflicts have historically evolved into multi-year structural policy regimes rather than discrete bounded episodes, with each escalation cycle embedding a higher tariff floor that persists regardless of partial negotiated pauses.",
+  "real_world_timeline": {
+    "approximate_start": "2025 Q1",
+    "description": "The current acute phase was triggered by the Trump second-term administration's announcement of sweeping tariff increases on Chinese goods beginning in early 2025, escalating to effective rates exceeding 100% by April 2025 and prompting Chinese retaliation.",
+    "current_maturity_estimate": "mid"
+  }
+}

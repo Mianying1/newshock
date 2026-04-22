@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    180,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "Huawei Entity List Addition (2019)",
+      "approximate_duration": "约 18-24 个月（初始冲击阶段约 3-6 个月，结构性调整持续至今）",
+      "peak_move": "Huawei suppliers (Xilinx, Qorvo, Skyworks, Lumentum) saw 10-25% drawdowns within weeks of announcement; broader semiconductor sector experienced elevated volatility for multiple quarters; Huawei smartphone market share collapsed from ~20% globally to single digits within two years",
+      "exit_trigger": "No clean exit; theme evolved into structural supply-chain restructuring, partial license grants, and Chinese domestic substitution push — the cycle never fully closed",
+      "confidence": "high"
+    },
+    {
+      "name": "SMIC Entity List Addition (2020)",
+      "approximate_duration": "约 6-12 个月の直接市场影响，结构影响持续更长",
+      "peak_move": "SMIC Hong Kong-listed shares fell approximately 20-30% in weeks surrounding the announcement; TSMC and Samsung observed elevated demand inquiries as customers sought alternative foundries; Chinese government accelerated domestic semiconductor subsidies shortly after",
+      "exit_trigger": "Market partially stabilized as customers rerouted orders and SMIC continued operating within allowed technology nodes; no formal de-listing occurred",
+      "confidence": "high"
+    },
+    {
+      "name": "Semiconductor Export Controls Expansion — Advanced Chips to China (Oct 2022)",
+      "approximate_duration": "约 3-6 个月的急性市场波动，政策执行影响持续 12 个月以上",
+      "peak_move": "Philadelphia Semiconductor Index (SOX) declined approximately 10-15% in the weeks surrounding the October 7, 2022 rules; Nvidia, AMD, KLA, Lam Research, Applied Materials all saw meaningful short-term drawdowns; Chinese AI semiconductor stocks (Cambricon, etc.) initially spiked then consolidated",
+      "exit_trigger": "Partial stabilization came as markets priced in the new baseline; Nvidia subsequently received some license approvals and released China-specific compliant chips (A800/H800), partially reopening demand channels until further tightening in Oct 2023",
+      "confidence": "high"
+    },
+    {
+      "name": "Hikvision / Dahua Surveillance Firm Restrictions (2019–2020)",
+      "approximate_duration": "约 6-9 个月の直接冲击，长期估值重置",
+      "peak_move": "Hikvision Shenzhen-listed shares fell approximately 15-25% over the months following U.S. restrictions; Western surveillance-equipment peers (Axis, Hanwha) observed incremental demand inquiries; U.S. government contractors required to remove equipment",
+      "exit_trigger": "Theme matured into a permanent structural procurement ban for U.S. federal agencies; no reversal occurred, but acute market volatility subsided after 6-9 months as the new compliance baseline was absorbed",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "technology",
+        "factor": "AI compute dependency creates asymmetric leverage: Chinese firms now require cutting-edge AI accelerators (H100-class GPUs, advanced HBM) for frontier model training in a way that has no historical analog — prior restrictions targeted communications hardware or mature-node chips with available substitutes",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "factor": "Chinese domestic semiconductor ecosystem (SMIC N+2 node, Huawei Ascend, Cambricon, domestic EDA tools) has matured meaningfully since 2019, potentially reducing the acute supply shock duration as partial substitution becomes more viable — though leading-edge gaps (sub-7nm, advanced packaging, EUV) remain structurally unbridgeable in the near term",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "factor": "Multilateral coordination has expanded significantly: Netherlands (ASML EUV restrictions), Japan (23 categories of semiconductor equipment), and potential allied alignment on AI chip controls represent a qualitatively different enforcement architecture versus the largely unilateral U.S. actions of 2019-2020, closing circumvention pathways that existed historically",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "macro",
+        "factor": "The current environment (2025-2026) features elevated U.S.-China economic decoupling momentum, ongoing tariff escalation, and reduced diplomatic circuit-breakers compared to 2019 when trade deal negotiations provided periodic de-escalation relief valves that temporarily softened restriction impacts",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "The recurring pattern of initial acute equity sell-offs in exposed U.S. suppliers followed by partial stabilization as customers reroute and compliance baselines are absorbed appears consistent with prior Entity List cycles",
+      "Chinese government response has historically followed a predictable playbook: accelerate domestic substitution funding, pursue third-country workarounds, and selectively retaliate on non-semiconductor sectors — this pattern may repeat",
+      "License application and exemption processes historically create prolonged uncertainty phases where affected companies operate in ambiguous compliance environments, extending the duration of theme-relevant volatility beyond the initial announcement shock"
+    ],
+    "observation": "The current Entity List cycle may be structurally more durable than prior episodes because AI compute has become a genuine national-security-tier capability bottleneck — unlike prior restrictions on communications or surveillance hardware, there is no near-term commercial substitute that satisfies frontier AI training requirements, suggesting the demand-side pressure on restricted firms may compound rather than dissipate over time."
+  },
+  "exit_signals": [
+    "Formal diplomatic framework agreement between U.S. and China that includes explicit carve-outs or licensing relief for specific technology categories — historically, trade deal progress (e.g., Phase One 2020) temporarily softened enforcement momentum",
+    "Nvidia or equivalent U.S. chipmakers receive broad license approvals to ship China-compliant AI accelerator products at meaningful volume, signaling regulatory appetite for revenue-preserving middle-ground solutions rather than full denial",
+    "Evidence that Chinese domestic AI chip alternatives (Huawei Ascend, Cambricon, Moore Threads) achieve sufficient performance parity on specific workloads to reduce import dependency — observable via Chinese hyperscaler procurement announcements shifting away from restricted foreign chips",
+    "Congressional or executive branch policy reversal, sunset provision activation, or court-ordered stay of specific Entity List designations — rare historically but observable via Federal Register filings and litigation outcomes",
+    "Significant reduction in U.S. supplier earnings guidance revisions attributable to China export restrictions, suggesting the market has fully priced the new demand baseline and the incremental information content of the theme is exhausted"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Entity List technology access restrictions, once imposed on strategic Chinese firms, have historically not been reversed and instead accumulate additional scope over time, making this a multi-year structural trend rather than a bounded or event-dependent cycle.",
+  "real_world_timeline": {
+    "approximate_start": "2019 Q2",
+    "description": "The modern iteration of this archetype began with Huawei's Entity List addition in May 2019, and has since expanded through successive waves including SMIC (2020), the October 2022 advanced semiconductor export controls, and further AI chip restriction tightening in 2023-2025.",
+    "current_maturity_estimate": "mid"
+  }
+}

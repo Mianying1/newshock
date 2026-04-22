@@ -1,0 +1,89 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    730,
+    2190
+  ],
+  "historical_cases": [
+    {
+      "name": "U.S. Entity List & Huawei Semiconductor Cutoff (2019–2022)",
+      "approximate_duration": "约 3–4 年持续演进",
+      "peak_move": "半导体设备股（如 AMAT、LRCX、KLAC）在多个波次中累计大幅上涨；国内替代概念股（中芯国际、华虹）在中国市场出现结构性重估",
+      "exit_trigger": "尚未完全退出；2022 年《芯片法案》通过后进入新阶段，部分贸易限制有所松动但核心管制持续加强",
+      "confidence": "high"
+    },
+    {
+      "name": "冷战时期 COCOM 技术出口管制体系 (1949–1994)",
+      "approximate_duration": "约 45 年结构性周期",
+      "peak_move": "西方军工与半导体企业获得长期护城河溢价；苏联阵营被迫发展平行技术生态系统",
+      "exit_trigger": "苏联解体、柏林墙倒塌后 COCOM 于 1994 年正式解散，全球化供应链重新整合",
+      "confidence": "high"
+    },
+    {
+      "name": "日美半导体贸易摩擦与《日美半导体协议》(1986–1996)",
+      "approximate_duration": "约 8–10 年结构性调整期",
+      "peak_move": "美国半导体股在协议后期获得市场份额保障溢价；日本 DRAM 企业估值长期承压，韩国三星趁机崛起填补份额",
+      "exit_trigger": "1996 年协议到期不续签，WTO 框架下多边贸易规则替代双边管制；日本企业竞争力已被结构性削弱",
+      "confidence": "high"
+    },
+    {
+      "name": "5G 标准竞争与盟国华为禁令浪潮 (2020–2023)",
+      "approximate_duration": "约 2–3 年集中落地期",
+      "peak_move": "爱立信、诺基亚股价阶段性显著上涨；Open RAN 概念股获得政策驱动估值提升；台积电、高通等受益于去华为替代需求",
+      "exit_trigger": "主要盟国完成华为设备替换路线图锁定后，主题热度转移至更广泛的供应链重组议题；部分国家因成本压力出现政策摇摆",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "technology",
+        "factor": "AI 算力军备竞赛使芯片管制成为真正的战略武器",
+        "detail": "历史上的技术管制主要针对军事用途的双用途技术，而当前 AI 训练芯片（如 H100/B200 系列）直接决定大模型能力上限，管制效果可观测、可量化，使美国政府将出口管制视为可精确校准的地缘政策工具，管制强度与持续性均超过历史先例",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "factor": "台积电等关键节点的地理集中度前所未有，供应弹性极低",
+        "detail": "冷战及日美摩擦时期，先进制程分散于多国；当前 3nm 以下制程几乎完全集中于台湾，叠加 EUV 光刻机单一供应商（ASML）格局，供应链重组的物理成本和时间成本远超历史可比案例，或使本轮周期拉长",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "factor": "多边联盟管制框架（Chip 4、Wassenaar 修订）替代单边行动",
+        "detail": "历史上 COCOM 虽为多边机制，但执行较松散；当前美国通过盟友协调（荷兰限制 ASML 出口、日本限制光刻设备）构建更严密的多边管制网络，中国的绕道采购空间被系统性压缩，与历史上存在明显漏洞的管制体系有本质不同",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "factor": "中国国内替代需求（信创、华为鸿蒙生态）形成真实且持续的内需拉力",
+        "detail": "历史类比中，被管制一方的替代能力往往有限（如苏联）或依赖第三方（如日本）；中国拥有全球最大半导体消费市场、完整工程师队伍及国家资本支持，国内替代需求可能在 3–5 年内形成独立于西方的平行市场，这一结构性需求在历史上几乎没有先例",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "技术标准分裂导致企业被迫'选边站队'的格局，与冷战时期 COCOM 阵营划分高度相似，跨国企业面临同等的合规成本与市场取舍压力",
+      "管制初期市场往往高估短期影响、低估长期结构调整深度，与 1986 年日美半导体协议签署后的市场反应模式类似",
+      "第三国（东南亚、印度、墨西哥）趁机吸引转移产能，复制了冷战期间中立国获取地缘红利的历史逻辑"
+    ],
+    "observation": "当前的中美技术脱钩在历史上可观察到最接近的类比是冷战 COCOM 体系，但 AI 算力的战略属性叠加台湾供应链地理集中风险，可能使本轮周期的烈度与持续性均超过历史先例所暗示的区间。"
+  },
+  "exit_signals": [
+    "美中双方在某一技术领域达成可核查的贸易框架协议，且主要出口管制实体清单出现实质性删减而非仅象征性调整",
+    "台积电、三星在美国/日本/欧洲的境外晶圆厂产能爬坡至可覆盖盟国关键需求的 30% 以上，供应链重组的迫切性边际下降",
+    "中国本土先进制程（7nm 以下）良率及产能达到可支撑国内主流 AI 芯片需求的门槛，替代逻辑兑现导致主题溢价收窄",
+    "美国国内政治环境发生重大转向（如国会选举后对华政策共识破裂），或盟友联盟出现明显裂痕导致多边管制协调机制松动",
+    "全球宏观环境恶化（深度衰退）迫使各国政府将经济修复置于技术脱钩之上，资本开支计划大规模推迟或取消"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "U.S.-China technology decoupling is a multi-year structural geopolitical realignment driven by state-level strategic competition rather than a discrete event, with no observable near-term endpoint and reinforcing policy feedback loops that compound over time.",
+  "real_world_timeline": {
+    "approximate_start": "2018–2019",
+    "description": "The theme's structural origin can be traced to the 2018 ZTE sanctions and the 2019 Huawei Entity List designation, which marked the U.S. government's pivot from targeted trade friction to systematic technology supply chain bifurcation as an explicit national security strategy.",
+    "current_maturity_estimate": "mid"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1825
+  ],
+  "historical_cases": [
+    {
+      "name": "Google's First Large-Scale Wind PPA (2010–2013 Buildout Wave)",
+      "approximate_duration": "约 2–4 年",
+      "peak_move": "Triggered a wave of utility-scale wind and solar project financings in the US; developers and yieldco equities saw multi-year re-rating as corporate offtake became recognized as bankable credit",
+      "exit_trigger": "Natural gas price collapse post-2014 shale boom eroded the economics of new renewable PPAs and slowed corporate signing momentum temporarily",
+      "confidence": "medium"
+    },
+    {
+      "name": "US Corporate PPA Market Inflection (2015–2018)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Annual corporate PPA volumes in the US grew from under 1 GW to over 6 GW; renewable developers, independent power producers, and yieldcos experienced sustained equity appreciation and capital inflows",
+      "exit_trigger": "Tariff uncertainty (Section 201 solar tariffs, 2018), rising interest rates, and interconnection queue congestion caused deal timelines to lengthen and some projects to stall, cooling investor enthusiasm",
+      "confidence": "high"
+    },
+    {
+      "name": "European Corporate PPA Expansion (2018–2022)",
+      "approximate_duration": "约 3–5 年",
+      "peak_move": "Nordic and Iberian markets saw material new wind and solar capacity financed on the back of tech and industrial corporate PPAs; green bond issuance linked to PPA-backed projects surged",
+      "exit_trigger": "Russia-Ukraine energy shock (2022) created wholesale price spikes that temporarily made fixed-price PPAs unattractive for buyers and created renegotiation pressure, pausing new signings in several markets",
+      "confidence": "high"
+    },
+    {
+      "name": "Hyperscaler-Driven US Renewable PPA Surge (2021–2024)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Amazon, Microsoft, Google, and Meta collectively contracted tens of gigawatts; clean energy developer equities and project finance activity reached cycle highs; IRA passage (2022) amplified momentum",
+      "exit_trigger": "Rising interest rates (2022–2023) compressed project IRRs, grid interconnection delays accumulated, and some hyperscalers paused or restructured PPA pipelines pending clearer transmission buildout timelines",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI data center power demand has introduced a structurally new and unusually large incremental load category. Unlike prior corporate PPA waves dominated by tech ESG commitments, current demand is operationally driven — data centers require firm, around-the-clock power, pushing corporate buyers toward 24/7 clean energy matching and hybrid PPA structures that bundle solar, wind, and storage. This qualitatively changes the size and complexity of offtake deals.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The US Inflation Reduction Act (2022) and its production/investment tax credit transferability provisions have structurally lowered the cost of capital for qualifying renewable projects. This is a historically novel policy instrument that allows tax credit monetization at scale without requiring tax equity partnerships, potentially sustaining project economics through higher interest rate environments that historically would have curtailed activity.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "macro",
+        "description": "The current macro environment combines elevated interest rates relative to the 2015–2020 PPA boom era with persistent inflation in construction and equipment costs. Historically, falling rates were a tailwind for long-duration infrastructure assets; the current regime introduces margin compression that may slow but not halt the cycle, as corporate buyers absorb higher PPA strike prices to meet both regulatory and operational power security goals.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Grid interconnection queues in the US and permitting backlogs in Europe represent a structural supply bottleneck absent in prior PPA expansion waves at comparable scale. The backlog of projects waiting for grid connection has grown to multi-year timelines in many regions, creating a physical constraint on how quickly signed PPAs can translate into operating capacity and revenue.",
+        "direction": "may_shorten",
+        "confidence": "high"
+      }
+    ],
+    "similarities": [
+      "Corporate reputational and ESG commitment dynamics continue to drive early-mover signing behavior among large multinationals, mirroring the 2015–2018 pattern where tech majors competed to announce renewable milestones.",
+      "Project finance structures (non-recourse debt backed by PPA cash flows) remain the dominant execution mechanism, consistent across all prior cycles, suggesting similar lender appetite dynamics and credit underwriting cycles apply.",
+      "Periods of interest rate or policy uncertainty have historically caused deal pipeline delays rather than outright cancellations, and current pipeline stalls observed in 2024–2025 appear consistent with this pattern."
+    ],
+    "observation": "The current cycle may observed to be structurally larger and potentially longer than prior analogs due to AI-driven power demand and IRA policy tailwinds, but grid infrastructure bottlenecks introduce a physical ceiling that prior cycles did not face at comparable scale."
+  },
+  "exit_signals": [
+    "Material deceleration in new corporate PPA announcement volume on a trailing 12-month basis, particularly among hyperscalers and large industrials, suggesting demand saturation or buyer fatigue with current pricing.",
+    "Sustained compression in renewable developer equity valuations and significant widening of project finance spreads, indicating capital markets are pricing in deteriorating project economics or execution risk.",
+    "Regulatory reversal or substantial curtailment of IRA tax credit provisions — including transferability — which would materially raise the effective cost of capital for new project financings.",
+    "Resolution of grid interconnection backlogs (positive signal) OR regulatory imposition of hard caps/moratoria on new interconnection requests (negative signal) — either could mark a structural inflection in the pace of capacity delivery and thus corporate buyer confidence.",
+    "Emergence of competing power procurement strategies at scale — such as large-scale corporate investment in nuclear SMRs or long-duration storage replacing wind/solar PPAs as the preferred structure — signaling the PPA mechanism itself is losing primacy."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Corporate clean energy offtake is a multi-year structural buildout theme driven by capital deployment cycles, regulatory frameworks, and long-dated contract horizons (typically 10–20 years), with no discrete catalytic endpoint analogous to a single event resolution.",
+  "real_world_timeline": {
+    "approximate_start": "2021",
+    "description": "The current acceleration of this theme is observed to have begun around 2021, when hyperscaler PPA ambitions combined with accelerating ESG mandates and then the 2022 IRA passage to create the largest sustained wave of corporate renewable contracting on record.",
+    "current_maturity_estimate": "mid"
+  }
+}

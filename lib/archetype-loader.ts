@@ -39,6 +39,7 @@ export async function loadActiveArchetypes(): Promise<Archetype[]> {
       'exclusion_rules, notes'
     )
     .eq('is_active', true)
+    .not('deprecated', 'is', true)
     .order('category')
     .order('id')
 

@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "MicroStrategy Initial Bitcoin Treasury Pivot (2020–2021)",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "MSTR equity rose approximately 10x from initial BTC purchase announcement through late 2021 peak; BTC itself rose ~500% over the same window; spawned direct imitators including Square and Tesla",
+      "exit_trigger": "Fed pivot to tightening cycle (late 2021), Bitcoin entering bear market, broader risk-off rotation unwound leveraged BTC-proxy equity premium",
+      "confidence": "high"
+    },
+    {
+      "name": "Gold Mining Companies as Monetary Hedge (1970s Inflation Era)",
+      "approximate_duration": "约 5–7 年（分波段）",
+      "peak_move": "Senior gold miners appreciated several hundred percent as institutional capital sought hard-asset proxy equities when gold was re-monetized post-Bretton Woods; Homestake Mining and Newmont led waves of revaluation",
+      "exit_trigger": "Volcker tightening crushed inflation expectations; gold price peaked 1980; miners derated as real rates turned sharply positive and the monetary narrative faded",
+      "confidence": "medium"
+    },
+    {
+      "name": "Japanese Corporate Land/Equity Cross-Holdings Bubble (1985–1989)",
+      "approximate_duration": "约 4–5 年",
+      "peak_move": "Companies with large real-estate or equity holdings on balance sheets traded at dramatic premiums to operating earnings; balance-sheet asset revaluation became the dominant equity narrative; Nikkei rose ~300%",
+      "exit_trigger": "BOJ aggressive rate hikes 1989–1990, land prices turned, hidden balance-sheet assets became liabilities; entire premium collapsed within 12–18 months",
+      "confidence": "medium"
+    },
+    {
+      "name": "Tesla / Square Bitcoin Adoption Wave and Second MSTR Cycle (2021 / 2023–2024)",
+      "approximate_duration": "约 12–24 个月（第二波）",
+      "peak_move": "MSTR re-emerged as dominant BTC-proxy vehicle through 2023–2024, rising ~10x from 2023 lows; a cohort of smaller public companies (Metaplanet, Semler Scientific, Marathon) adopted similar treasury strategies and were revalued sharply; Bitcoin ETF approval acted as additional catalyst",
+      "exit_trigger": "Theme had not fully concluded as of early 2026; partial cooling observed when macro risk-off episodes compressed BTC premium multiples on proxy equities",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "Spot Bitcoin ETF approval (January 2024, US) created a parallel institutional demand channel that did not exist in prior corporate treasury cycles. Institutional allocators can now access BTC directly without equity proxies, which simultaneously deepens the legitimacy signal for corporate adoption while potentially compressing the 'proxy premium' that treasury-holding equities historically enjoyed.",
+        "direction": "uncertain",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "As of 2025–2026, a materially more crypto-friendly US regulatory posture has emerged (SEC leadership change, proposed Strategic Bitcoin Reserve discussions, state-level BTC reserve legislation). This reduces the compliance and reputational risk that previously constrained corporate treasury adoption, potentially broadening the universe of adopting companies beyond early-mover risk-tolerant firms.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "macro",
+        "description": "The current macro regime features elevated sovereign debt levels globally and episodic dollar debasement concerns, providing a more persistent structural rationale for hard-asset treasury diversification compared with the low-debt, low-inflation environment of 2012–2019. This may sustain the monetary hedge narrative for longer cycles than historical analogs.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Post-April 2024 halving, Bitcoin issuance has been reduced to approximately 3.125 BTC per block. Combined with significant long-term holder and ETF absorption of float, the marginal supply available for corporate treasury accumulation is structurally tighter than during the 2020–2021 first adoption wave, potentially amplifying per-unit price sensitivity to demand.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "Balance-sheet revaluation narratives historically follow a wave pattern: a high-conviction pioneer (MicroStrategy / Homestake) attracts imitators, which compresses the first-mover premium and eventually commoditizes the strategy.",
+      "In prior cycles, the theme's durability was tightly coupled to the underlying asset's price trend; sustained drawdowns in BTC have historically collapsed the equity premium on treasury-holding companies faster than the underlying asset itself recovers.",
+      "Leverage amplification is a recurring feature: companies borrowing to accumulate the reserve asset (convertible notes, ATM equity offerings) historically accelerated both upside revaluation and eventual downside dislocation when credit conditions tightened."
+    ],
+    "observation": "The structural legitimization of Bitcoin through ETF approval and a permissive regulatory shift may extend this adoption cycle meaningfully beyond prior analogs, though the proliferation of direct-access instruments may simultaneously cap the equity-proxy premium that historically drove the most dramatic stock-level returns."
+  },
+  "exit_signals": [
+    "Sustained BTC price drawdown exceeding 40–50% from cycle highs, historically sufficient to invert the cost-of-carry mathematics for leveraged treasury holders and trigger forced selling or equity dilution spirals in proxy stocks.",
+    "Material tightening of convertible debt or ATM equity market access for BTC-treasury companies, signaling that capital markets have withdrawn the 'Bitcoin premium' financing subsidy that enables continued accumulation.",
+    "Regulatory reversal or imposition of restrictive accounting/capital treatment for corporate BTC holdings (e.g., mandatory mark-to-market with adverse capital implications), removing the balance-sheet optionality rationale.",
+    "Significant institutional rotation out of BTC-proxy equities into spot ETFs, observable as persistent and widening NAV discounts on proxy vehicles (e.g., MSTR trading below NAV-per-BTC) that do not recover within weeks.",
+    "Broad corporate adoption reaching saturation — observable when the marginal corporate BTC announcement generates minimal equity re-rating, suggesting the novelty premium has been fully arbitraged away by the market."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Corporate Bitcoin treasury adoption reflects a multi-year structural shift in how public companies conceptualize reserve asset allocation, driven by persistent macro debasement concerns and compounding institutional legitimization, without a predetermined cyclical endpoint analogous to a bounded event-driven theme.",
+  "real_world_timeline": {
+    "approximate_start": "2020 Q3",
+    "description": "MicroStrategy's August 2020 initial Bitcoin treasury purchase ($250M) is widely observed as the origin event that established the corporate treasury adoption playbook and triggered subsequent imitation waves through 2021, 2023, and into 2025–2026.",
+    "current_maturity_estimate": "mid"
+  }
+}

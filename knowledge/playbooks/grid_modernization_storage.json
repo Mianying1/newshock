@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1460
+  ],
+  "historical_cases": [
+    {
+      "name": "U.S. Smart Grid Buildout Post-ARRA 2009–2012",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Grid equipment and automation companies (e.g., Itron, Quanta Services, ABB) observed multi-year outperformance vs. broader market; sector ETFs saw sustained elevated multiples during stimulus deployment window",
+      "exit_trigger": "ARRA stimulus funds largely disbursed by 2012–2013; utility capex cycle softened as regulatory uncertainty rose and natural gas prices collapsed, reducing urgency for grid overhaul",
+      "confidence": "high"
+    },
+    {
+      "name": "European Energy Transition Grid Investment Cycle 2015–2019",
+      "approximate_duration": "约 4–5 年",
+      "peak_move": "Transmission infrastructure and grid-balancing equipment suppliers (Siemens Energy, Vestas adjacent supply chain, Prysmian) observed sustained revenue expansion and re-rating; theme broadly tracked renewable capacity addition targets",
+      "exit_trigger": "COVID-19 disruption in 2020 temporarily froze capex commitments; prior to that, the theme moderated as initial renewable integration milestones were met and policy pipeline uncertainty increased post-2019 elections in key markets",
+      "confidence": "medium"
+    },
+    {
+      "name": "U.S. Utility-Scale Battery Storage Emergence 2020–2022",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Energy storage pure-plays (Fluence, Stem, Eos Energy) and adjacent names saw IPO-era peak valuations; IRA anticipation drove forward estimates sharply higher in 2021–2022",
+      "exit_trigger": "Rising interest rates through 2022–2023 compressed long-duration infrastructure multiples significantly; supply chain disruptions for lithium and battery cells caused project delays that reset near-term earnings expectations",
+      "confidence": "high"
+    },
+    {
+      "name": "Post-IRA Grid and Storage Capex Cycle 2022–Present",
+      "approximate_duration": "约 3 年以上，仍在进行中",
+      "peak_move": "Transmission infrastructure names (Quanta Services, MYR Group, Ørsted supply chain) and battery storage integrators observed renewed multi-year order book expansion; grid equipment backlogs extended to 3–5 years for transformers and switchgear",
+      "exit_trigger": "Theme has not fully exited as of early 2026; partial moderation observed when IRA implementation uncertainty rose in late 2024–2025 amid political transition; full exit trigger not yet confirmed",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI data center load growth has introduced a structurally new and large incremental demand driver for grid capacity that was absent in prior infrastructure cycles. Hyperscaler power procurement commitments (often 500 MW to multi-GW in scale) are pulling forward transmission and storage investment timelines beyond what renewable integration alone would justify.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Critical grid equipment — particularly high-voltage transformers, switchgear, and long-duration cable — faces multi-year manufacturing bottlenecks with lead times extending 3–5 years in some categories. This supply inelasticity is more severe than prior cycles, suggesting the capex opportunity may persist longer before demand is satisfied.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The IRA provided an unprecedented 10-year forward visibility on tax credits for storage and grid investment, creating a structural policy floor that prior cycles (ARRA, state-level mandates) did not offer. However, ongoing political uncertainty around IRA preservation introduces a non-trivial risk that this floor may be partially eroded, introducing execution risk not present in the initial 2022–2023 enthusiasm phase.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "technology",
+        "description": "Battery chemistry improvements (LFP cost curves, grid-scale long-duration alternatives like iron-air and flow batteries reaching early commercial deployment) are reducing the cost per MWh of storage faster than prior cycles anticipated, potentially accelerating project economics and pulling forward deployment timelines.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As in prior infrastructure capex cycles, utility regulatory lag remains a binding constraint — rate cases and interconnection queues slow project execution regardless of capital availability or policy support.",
+      "Investor enthusiasm in early phases has historically driven valuations of pure-play names well ahead of observable earnings, followed by multi-year consolidation as execution timelines slip — a pattern visible in both the 2009–2012 and 2020–2022 episodes.",
+      "Commodity input volatility (lithium, copper, rare earths) has historically introduced earnings risk for integrators and developers mid-cycle, compressing margins even when end-demand remains strong — similar dynamics are observable in the current cycle."
+    ],
+    "observation": "The current cycle may be structurally longer than prior grid investment waves due to the coincidence of AI-driven load growth, policy-backed demand certainty, and genuine supply bottlenecks — but execution risk and political uncertainty around IRA preservation introduce meaningful mid-cycle volatility that historical analogs suggest investors tend to underestimate."
+  },
+  "exit_signals": [
+    "Interconnection queue backlogs begin clearing materially — FERC or regional grid operators report sustained reduction in project approval timelines below 24 months, signaling capacity constraint relief",
+    "Transformer and high-voltage equipment lead times compress back toward historical norms (under 18 months), indicating supply has caught up with demand and pricing power for equipment manufacturers normalizes",
+    "Utility sector capex guidance for grid and storage begins to plateau or decline in aggregate across major IOUs during earnings cycles, suggesting the peak of the multi-year spend wave has passed",
+    "Battery storage installed cost per MWh reaches a level where incremental policy support is no longer the marginal driver of project FIDs — commoditization signals the end of the high-growth phase for integrators",
+    "A significant IRA credit reduction or phase-out is enacted legislatively, materially altering the forward project economics that underpin the current order book expansion cycle"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Grid modernization and large-scale storage deployment represents a multi-decade infrastructure replacement cycle without a single discrete endpoint, driven by compounding demand from renewable integration, electrification, and AI load growth across a regulatory and capex environment that resets continuously.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q3",
+    "description": "The current cycle is broadly observed to have accelerated following passage of the Inflation Reduction Act in August 2022, which catalyzed a wave of utility and developer commitments to large-scale storage and transmission infrastructure investment with 10-year policy visibility.",
+    "current_maturity_estimate": "mid"
+  }
+}

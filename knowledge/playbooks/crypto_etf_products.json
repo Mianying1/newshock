@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    180,
+    730
+  ],
+  "historical_cases": [
+    {
+      "name": "Gold ETF Launch Cycle (GLD, 2004–2006)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Gold prices observed a sustained re-rating of approximately 50–60% over the post-launch accumulation window; gold mining equities outperformed spot during peak inflows",
+      "exit_trigger": "ETF inflows plateaued as early adopter institutional allocation was largely completed; broader commodity cycle rotation drew capital away",
+      "confidence": "high"
+    },
+    {
+      "name": "Bitcoin Futures ETF Launch (ProShares BITO, October 2021)",
+      "approximate_duration": "约 4–6 周 (acute phase); 约 3–4 个月 (full cycle)",
+      "peak_move": "Bitcoin reached approximate all-time highs within weeks of launch; crypto-adjacent equities (Coinbase, MicroStrategy, miners) surged 30–80% in the acute window before reversing sharply",
+      "exit_trigger": "Futures ETF structure introduced persistent roll cost drag, dampening sustained institutional demand; macro tightening signals from Fed accelerated the reversal",
+      "confidence": "high"
+    },
+    {
+      "name": "U.S. Bitcoin Spot ETF Approval Cycle (BlackRock iShares, January 2024)",
+      "approximate_duration": "约 12–18 个月 (ongoing structural re-rating)",
+      "peak_move": "Bitcoin appreciated roughly 150–160% from pre-approval anticipation lows through the post-halving peak; custody and infrastructure equities (Coinbase, Galaxy) observed multi-hundred-percent moves from cycle lows",
+      "exit_trigger": "Initial acute inflow phase moderated by mid-2024 as early allocation was absorbed; macro rate environment and ETH ETF approval sequencing created rotation within the theme",
+      "confidence": "high"
+    },
+    {
+      "name": "Canadian Bitcoin Spot ETF Launch (Purpose Bitcoin ETF, February 2021)",
+      "approximate_duration": "约 2–3 个月 (acute inflow phase)",
+      "peak_move": "Preceded U.S. approval by nearly three years; observed strong initial AUM accumulation but limited global institutional re-rating given market size constraints; served as structural proof-of-concept",
+      "exit_trigger": "Theme faded locally as Canadian market depth was insufficient to sustain re-rating momentum; global attention remained focused on anticipated U.S. approval",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "By 2025–2026, sovereign wealth funds, pension allocators, and corporate treasuries are observed actively allocating to spot Bitcoin ETFs as a recognized asset class, a demand cohort largely absent in prior cycles. Ethereum spot ETFs and potential multi-asset crypto ETF structures have expanded the addressable institutional market beyond Bitcoin-only mandates.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The U.S. regulatory environment has undergone a structural shift with SEC leadership changes and a more crypto-accommodative posture in 2025, reducing the overhang of enforcement-driven supply shocks that historically compressed valuations. A national strategic bitcoin reserve discussion at the federal level represents an unprecedented policy dimension with no historical analog.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "The April 2024 Bitcoin halving reduced new supply issuance to approximately 3.125 BTC per block, occurring simultaneously with record ETF demand absorption. This supply constraint is structurally tighter than the 2020 halving cycle, which preceded ETF availability, potentially compressing the float available to ETF products more severely than historical episodes suggest.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "description": "The 2025–2026 macro environment reflects a delayed but ongoing rate normalization cycle alongside elevated sovereign debt concerns globally, which may sustain the hard-asset and inflation-hedge narrative that historically drives gold ETF analog demand. However, if risk-off episodes materialize sharply, crypto ETF flows have historically shown high beta correlation to equity drawdowns, introducing a shortening risk.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "The post-approval inflow arc closely mirrors the gold ETF experience: acute launch-period inflows, a mid-cycle consolidation, and a multi-year structural accumulation phase as advisor platforms and institutional consultants expand approved-list access",
+      "Infrastructure and custody equities historically lead and then lag underlying asset performance, consistent with prior commodity ETF launch cycles where exchange and custodian equities peaked earlier than the underlying commodity",
+      "Retail investor participation, measured by options activity and leveraged product volumes, tends to surge in the 12–18 months following institutional product approval, consistent with observed patterns across ETF-enabled commodity cycles"
+    ],
+    "observation": "The convergence of post-halving supply compression, unprecedented sovereign and institutional demand cohorts, and a structurally accommodative regulatory regime suggests the current cycle may more closely resemble the multi-year gold ETF re-rating arc than the brief, futures-ETF-driven 2021 episode, though macro liquidity conditions remain the primary uncertainty governing duration."
+  },
+  "exit_signals": [
+    "Sustained weekly ETF net outflows across the major spot Bitcoin and Ethereum ETF products for 4+ consecutive weeks, signaling institutional allocation saturation rather than temporary profit-taking",
+    "Custody and crypto infrastructure equities (e.g., Coinbase, Galaxy Digital) begin underperforming Bitcoin spot on a rolling 30-day basis despite continued ETF inflows, indicating equity valuation has run ahead of fundamental re-rating",
+    "ETF AUM growth rate decelerates to single-digit monthly percentage gains and advisor platform new-approval momentum stalls, suggesting the addressable institutional market has been largely penetrated",
+    "A significant macro risk-off episode (e.g., credit spread widening, equity drawdown exceeding 15–20%) triggers correlated liquidations across crypto ETF products, breaking the institutional safe-haven narrative",
+    "Regulatory re-tightening signals, such as congressional action on crypto taxation, stablecoin restrictions, or SEC revisitation of ETF approval frameworks, emerge as credible policy headwinds dampening new product development momentum"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "The crypto ETF and institutional product theme reflects a structural market infrastructure buildout analogous to the multi-year gold ETF adoption arc, with no clear finite endpoint as advisor platform approvals, sovereign allocations, and product proliferation represent a secular rather than episodic demand shift.",
+  "real_world_timeline": {
+    "approximate_start": "2024 Q1",
+    "description": "The theme's current structural phase originated with the SEC's January 2024 approval of U.S. spot Bitcoin ETFs, which catalyzed unprecedented institutional inflows, spawned Ethereum spot ETF approvals by mid-2024, and triggered a global re-rating of crypto custody and infrastructure equities.",
+    "current_maturity_estimate": "mid"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "U.S. Money Market Fund Reform (2010–2016)",
+      "approximate_duration": "约 5–6 年（监管周期）",
+      "peak_move": "Prime MMF assets contracted sharply (~$1T outflow to government funds post-2016 rule); institutional prime funds repriced with floating NAV premiums; custodians and transfer agents saw sustained fee compression then stabilization",
+      "exit_trigger": "SEC Rule 2a-7 amendments took full effect October 2016; market structure re-equilibrated as institutional flows settled into new fund classifications",
+      "confidence": "high"
+    },
+    {
+      "name": "EU Electronic Money Institution (EMI) Licensing Wave (2009–2015)",
+      "approximate_duration": "约 4–5 年",
+      "peak_move": "Regulated e-money issuers (PayPal Europe, Skrill, early fintech licenses) captured significant valuation premiums over unlicensed peers; incumbent banks lost payment float share to licensed non-banks",
+      "exit_trigger": "Regulatory framework matured under PSD2 pipeline; market largely bifurcated into licensed operators vs. unregulated remainder, reducing licensing optionality premium",
+      "confidence": "medium"
+    },
+    {
+      "name": "Hong Kong & Singapore Payment Services Act Licensing Cycle (2019–2023)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "MAS-licensed payment institutions and HKMA-approved stored value facilities commanded M&A premiums; Grab Financial, Revolut Asia, and local fintechs saw material valuation re-ratings upon license grants",
+      "exit_trigger": "License grants normalized; regulatory arbitrage premium compressed as framework became well-understood and supply of licenses expanded",
+      "confidence": "medium"
+    },
+    {
+      "name": "EU MiCA Stablecoin Title Implementation (2023–2024)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Circle (EURC) and regulated EMT issuers gained observable market share as Tether (USDT) faced de-listing pressure on EU exchanges; compliant infrastructure providers (custody, reserve auditing) saw contract pipeline expansion",
+      "exit_trigger": "MiCA Title III (e-money tokens) enforcement date June 2024; initial market adjustment completed, though ongoing compliance monitoring continues",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "policy",
+        "description": "The U.S. is for the first time advancing comprehensive federal stablecoin legislation (GENIUS Act / STABLE Act frameworks, 2025–2026) rather than leaving stablecoins in regulatory limbo. Prior analogs involved either non-U.S. jurisdictions or narrower product-specific rules. A U.S. federal license regime may structurally legitimize stablecoin issuers as regulated financial entities, which is qualitatively different from ad-hoc enforcement.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Cross-border B2B settlement and emerging-market dollarization demand for stablecoins is now observable at scale (~$200B+ market cap, trillions in annual on-chain transfer volume as of 2025), dwarfing the institutional use cases present during prior regulatory cycles for e-money or MMFs. Regulated stablecoins now compete directly with correspondent banking rails, creating a structurally larger addressable market.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Programmable stablecoins embedded in smart contract ecosystems and integrated into AI-agent payment flows represent a technology layer absent in prior e-money or MMF regulatory cycles. This creates non-linear adoption vectors that may accelerate demand for compliant infrastructure faster than traditional financial product rollouts.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "description": "The current environment involves elevated U.S. fiscal deficits and active discussion of stablecoins as a mechanism to export dollar demand and absorb Treasury issuance. This geopolitical-monetary dimension — stablecoins as soft-power infrastructure — may sustain regulatory momentum beyond typical financial regulation cycles driven purely by consumer protection motives.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "Regulatory clarity events historically compress licensing premiums over time as compliant supply expands, consistent with prior EMI and PSA licensing cycles.",
+      "Incumbent payment processors and banks have historically moved to acquire or partner with newly licensed entities post-framework clarity, a pattern observed in both EU PSD2 and Asian PSA cycles.",
+      "Regulatory arbitrage — entities domiciling in more favorable jurisdictions — has been a persistent feature of every prior payments licensing cycle and is already observable with stablecoin issuers."
+    ],
+    "observation": "The current stablecoin regulation cycle may structurally resemble the EMI licensing era in its regulatory mechanics but is likely operating at a significantly larger scale and with stronger sovereign-level tailwinds, suggesting the duration and market impact could exceed prior analogous frameworks."
+  },
+  "exit_signals": [
+    "U.S. federal stablecoin legislation passes and primary licensing guidance is published, removing the dominant regulatory uncertainty premium from compliant issuers.",
+    "Concentration of regulated stablecoin issuance among 3–5 dominant licensed entities becomes observable, signaling market structure has settled and licensing optionality has been exhausted.",
+    "Major incumbent payment networks (Visa, Mastercard, JPMorgan) formally integrate licensed stablecoin rails into core product offerings at scale, indicating infrastructure phase is maturing into commodity status.",
+    "Stablecoin reserve auditing and compliance infrastructure (custody, attestation providers) becomes commoditized with observable margin compression among service providers.",
+    "Regulatory enforcement actions against non-compliant issuers wind down or stabilize, indicating the winnowing phase is complete and surviving licensed entities face reduced competitive disruption."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Stablecoin regulatory and infrastructure buildout is a multi-year structural transformation of payment system architecture rather than a discrete event cycle, with no single endpoint but rather a series of milestone-driven re-ratings over potentially 3–7 years.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q3",
+    "description": "The theme gained structural momentum with MiCA Title III finalization in mid-2023 and accelerated materially through 2025 as U.S. congressional stablecoin bills advanced and major issuers (Circle, Tether competitors) began actively pursuing regulated status in multiple jurisdictions.",
+    "current_maturity_estimate": "mid"
+  }
+}

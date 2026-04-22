@@ -1,0 +1,863 @@
+[
+  {
+    "id": "crypto_institutional_adoption",
+    "name": "Crypto Institutional Adoption",
+    "description": "Bitcoin ETF flows, stablecoin regulation, corporate BTC treasury moves, or major institutional crypto adoption",
+    "keywords": [
+      "Bitcoin ETF",
+      "crypto regulation",
+      "stablecoin",
+      "institutional crypto",
+      "SEC crypto approval",
+      "BTC treasury",
+      "digital asset",
+      "crypto custody"
+    ],
+    "themes": [
+      {
+        "id": "6076581a-4d49-4db8-bc0e-ba4e20276e24",
+        "name": "Coinbase Payment License · Stablecoin Infrastructure",
+        "event_count": 29,
+        "theme_strength_score": 100
+      },
+      {
+        "id": "5ca9dc3a-cd04-4c8f-975f-7b2df82c9042",
+        "name": "Trump Crypto Policy Volatility · BTC Price Swings",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 2,
+    "maxEvents": 29,
+    "kwCount": 8,
+    "descLen": 110,
+    "risk": 1
+  },
+  {
+    "id": "defense_buildup",
+    "name": "Defense Buildup & Military Contracts",
+    "description": "Increased defense spending, major weapons contracts, or NATO frontier buildup",
+    "keywords": [
+      "defense budget",
+      "military contract",
+      "Patriot missile",
+      "F-35",
+      "arms deal",
+      "NATO spending",
+      "defense procurement",
+      "weapons system",
+      "foreign military sale"
+    ],
+    "themes": [
+      {
+        "id": "7c7356ee-505b-458a-8784-6619c735f2ab",
+        "name": "Iran War Munitions Replenishment · Patriot Missile",
+        "event_count": 16,
+        "theme_strength_score": 85
+      },
+      {
+        "id": "daff2614-9594-4681-ad73-4f372d5eb6f9",
+        "name": "Japan Defense Export Liberalization · Production Ramp",
+        "event_count": 6,
+        "theme_strength_score": 65
+      },
+      {
+        "id": "c3537282-f1dd-4c98-81c5-177625f9b3d1",
+        "name": "Combat Rescue Helicopter Upgrade · IR Countermeasures",
+        "event_count": 3,
+        "theme_strength_score": 59
+      }
+    ],
+    "themeCount": 3,
+    "maxEvents": 16,
+    "kwCount": 9,
+    "descLen": 77,
+    "risk": 1
+  },
+  {
+    "id": "middle_east_energy_shock",
+    "name": "Middle East Conflict · Oil War Premium",
+    "description": "When military conflicts or escalating sanctions occur in the \n  Middle East region (involving Iran, Israel, Red Sea/Strait of Hormuz), crude oil supply faces threats, causing oil prices to surge with a war premium and\n   energy stocks to outperform.",
+    "keywords": [
+      "Iran",
+      "Israel",
+      "Strait of Hormuz",
+      "oil embargo",
+      "Middle East attack",
+      "Houthi",
+      "Red Sea",
+      "Gulf of Oman",
+      "Persian Gulf strike"
+    ],
+    "themes": [
+      {
+        "id": "ae1b63fc-17e1-4734-9448-e81fa6e1b08b",
+        "name": "Iran Crisis Escalation · Oil War Premium",
+        "event_count": 23,
+        "theme_strength_score": 99
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 23,
+    "kwCount": 9,
+    "descLen": 249,
+    "risk": 0
+  },
+  {
+    "id": "agriculture_supply_shock",
+    "name": "Agricultural Supply Shock",
+    "description": "Disruptions to fertilizer, grain, or crop supply that drive commodity prices and benefit agri-commodity producers",
+    "keywords": [
+      "fertilizer supply",
+      "potash shortage",
+      "phosphate",
+      "nitrogen prices",
+      "grain supply",
+      "crop yield",
+      "agri-commodity",
+      "wheat export ban",
+      "Ukraine grain"
+    ],
+    "themes": [
+      {
+        "id": "8ebdc0ee-e0a7-4a61-840e-6f5ff7dfde2f",
+        "name": "Fertilizer Supply Chain Disruption · Global Repricing",
+        "event_count": 12,
+        "theme_strength_score": 77
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 12,
+    "kwCount": 9,
+    "descLen": 113,
+    "risk": 0
+  },
+  {
+    "id": "us_china_tariff_escalation",
+    "name": "U.S.-China Tariff Escalation · Domestic Substitution",
+    "description": "Rising U.S. tariffs on Chinese semiconductors, \n  critical technologies, and strategic materials—combined with expanded export controls—trigger domestic substitution demand and upward revaluation of     \n  upstream critical material suppliers in China.",
+    "keywords": [
+      "tariff increase",
+      "trade war",
+      "entity list",
+      "export restriction",
+      "chip ban",
+      "BIS",
+      "technology restriction",
+      "decoupling"
+    ],
+    "themes": [
+      {
+        "id": "7c3615df-9113-4915-9446-794dc118d382",
+        "name": "Allied Chip Export Controls · China Localization",
+        "event_count": 11,
+        "theme_strength_score": 75
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 11,
+    "kwCount": 8,
+    "descLen": 252,
+    "risk": 0
+  },
+  {
+    "id": "energy_transition_acceleration",
+    "name": "Energy Transition Acceleration · AI Power Demand / Nuclear Renaissance",
+    "description": "Explosive power demand from \n  AI data centers, nuclear technology breakthroughs (SMR commercialization), and large-scale energy storage deployment are triggering a revaluation of     \n  clean energy infrastructure, grid modernization assets, and nuclear supply chains.",
+    "keywords": [
+      "nuclear power deal",
+      "SMR contract",
+      "data center power",
+      "grid capacity",
+      "clean energy demand",
+      "nuclear revival",
+      "power purchase agreement",
+      "AI power consumption",
+      "energy storage deployment",
+      "transmission investment"
+    ],
+    "themes": [
+      {
+        "id": "48b6c967-570e-46a8-98ec-5846abef872e",
+        "name": "AI Data Center Power · Semiconductor Efficiency",
+        "event_count": 10,
+        "theme_strength_score": 73
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 10,
+    "kwCount": 10,
+    "descLen": 269,
+    "risk": 0
+  },
+  {
+    "id": "obesity_drug_breakthrough",
+    "name": "GLP-1 / Obesity Drug Breakthrough",
+    "description": "New clinical trial results, FDA approvals, or expanded indications for GLP-1 and obesity drugs",
+    "keywords": [
+      "GLP-1",
+      "obesity drug",
+      "Wegovy",
+      "Zepbound",
+      "Mounjaro",
+      "weight loss drug",
+      "semaglutide",
+      "tirzepatide",
+      "anti-obesity"
+    ],
+    "themes": [
+      {
+        "id": "5a5d87c5-5292-4456-a48f-3208ffde72f6",
+        "name": "Lilly Oral GLP-1 Launch · Obesity Drug Competition",
+        "event_count": 9,
+        "theme_strength_score": 71
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 9,
+    "kwCount": 9,
+    "descLen": 94,
+    "risk": 0
+  },
+  {
+    "id": "rare_earth_national_security",
+    "name": "Rare Earth Security · Mining Opportunities",
+    "description": "Western nations implementing supply security policies for\n   critical strategic minerals (rare earths, gallium, germanium), or China restricting exports, triggers revaluation of U.S. rare earth mining companies.  \n  This catalyzes investment opportunities in domestic rare earth production as countries seek to reduce dependence on Chinese supply chains.",
+    "keywords": [
+      "rare earth",
+      "gallium restriction",
+      "critical minerals",
+      "REE",
+      "germanium",
+      "neodymium",
+      "rare earth export ban",
+      "strategic minerals"
+    ],
+    "themes": [
+      {
+        "id": "ed9161de-61aa-490b-912e-e7c53a7db3ee",
+        "name": "US Rare Earth Onshoring · Magnet Manufacturing",
+        "event_count": 7,
+        "theme_strength_score": 67
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 7,
+    "kwCount": 8,
+    "descLen": 354,
+    "risk": 0
+  },
+  {
+    "id": "hyperscaler_mega_capex",
+    "name": "Hyperscaler Mega Capex · Photonics/Power Infrastructure",
+    "description": "Hyperscale cloud providers or neoclouds   \n  announce gigawatt-scale AI datacenter commitments (≥$5B), triggering revaluation of upstream supply chain including optical modules, lasers, substrates, \n  and power equipment.",
+    "keywords": [
+      "gigawatt",
+      "data center buildout",
+      "multi-year compute",
+      "capex increase",
+      "AI infrastructure",
+      "data center investment",
+      "Stargate",
+      "billion data center"
+    ],
+    "themes": [
+      {
+        "id": "c1c27785-b0a8-4ae3-80d2-5addbaab2a0c",
+        "name": "Anthropic-Amazon $100B AI Deal · Compute Infrastructure",
+        "event_count": 7,
+        "theme_strength_score": 67
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 7,
+    "kwCount": 8,
+    "descLen": 221,
+    "risk": 0
+  },
+  {
+    "id": "ev_supply_chain_shift",
+    "name": "EV Supply Chain Shift",
+    "description": "Shifts in EV battery supply chain, lithium dynamics, or tariff/policy changes affecting EV producers",
+    "keywords": [
+      "EV battery",
+      "lithium supply",
+      "cathode material",
+      "EV tariff",
+      "Chinese EV",
+      "battery manufacturing",
+      "charging infrastructure",
+      "battery recycling"
+    ],
+    "themes": [
+      {
+        "id": "23d40834-82fe-47c3-8977-9053411ec50d",
+        "name": "Chinese EV Price Competition · UK Market Disruption",
+        "event_count": 5,
+        "theme_strength_score": 63
+      },
+      {
+        "id": "7c86a573-c5fa-4bc7-bad8-900b07c8ce22",
+        "name": "EV Battery Arms Race · Ultra-Fast Charging",
+        "event_count": 4,
+        "theme_strength_score": 59
+      },
+      {
+        "id": "5362e6c2-2262-4f4d-af84-7f1561397204",
+        "name": "Ford-China EV Partnership · US Market Entry",
+        "event_count": 3,
+        "theme_strength_score": 59
+      },
+      {
+        "id": "d25b0327-6cad-4a61-b438-657ae40b689e",
+        "name": "GM EV Retreat · Gas Truck Pivot",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 4,
+    "maxEvents": 5,
+    "kwCount": 8,
+    "descLen": 100,
+    "risk": 0
+  },
+  {
+    "id": "nvda_avgo_strategic_investment",
+    "name": "NVDA/AVGO Strategic Investments · Capacity Lock Signals",
+    "description": "Major semiconductor companies like NVIDIA \n  and Broadcom make strategic equity investments in upstream suppliers or sign multi-year supply agreements, with capacity-locking signals triggering      \n  repricing across comparable companies in the same sector.",
+    "keywords": [
+      "NVIDIA invests",
+      "Broadcom partnership",
+      "strategic equity",
+      "strategic investment",
+      "multi-year supply agreement",
+      "equity stake semiconductor"
+    ],
+    "themes": [
+      {
+        "id": "866743d7-ab1c-4815-b8e8-6238d3cc9880",
+        "name": "NVDA-Tower Deal · Specialty Foundry Capacity Lock",
+        "event_count": 5,
+        "theme_strength_score": 63
+      },
+      {
+        "id": "5c6134a9-a93e-47da-a316-d17450d68584",
+        "name": "NVDA $4B Photonics Lock · Optical Interconnect Capacity",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 2,
+    "maxEvents": 5,
+    "kwCount": 6,
+    "descLen": 258,
+    "risk": 0
+  },
+  {
+    "id": "cpo_photonics_rotation",
+    "name": "CPO & Photonics Rotation · Next-Gen Interconnect",
+    "description": "Accelerating commercialization of Co-Packaged      \n  Optics and silicon photonics technologies is driving explosive demand for 400G/800G/1.6T optical interconnects, triggering a large-scale revaluation of \n  the photonics supply chain.",
+    "keywords": [
+      "co-packaged optics",
+      "silicon photonics",
+      "1.6T photonics",
+      "CPO",
+      "optical interconnect",
+      "datacom transceiver",
+      "800G optical"
+    ],
+    "themes": [
+      {
+        "id": "fc2e07d0-d63c-4ee2-a787-b02edbeff571",
+        "name": "AI Data Center Optical Interconnect · 5-Year Transition",
+        "event_count": 5,
+        "theme_strength_score": 63
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 5,
+    "kwCount": 7,
+    "descLen": 236,
+    "risk": 0
+  },
+  {
+    "id": "taiwan_strait_tension",
+    "name": "Taiwan Strait Tensions · Semiconductor Supply Chain Repricing",
+    "description": "Escalating military tensions in the   \n  Taiwan Strait create significant disruption risks to the global semiconductor supply chain, triggering a repricing of alternative fabrication capacity \n  such as INTC and GFS as geopolitical hedges.",
+    "keywords": [
+      "Taiwan",
+      "TSMC",
+      "PLA exercise",
+      "blockade",
+      "Taiwan Strait",
+      "People's Liberation Army",
+      "Taiwan invasion",
+      "Chinese military drill"
+    ],
+    "themes": [
+      {
+        "id": "2a1fef04-7456-4133-85f1-6bbbd3c8ec97",
+        "name": "Taiwan Info War Escalation · Semiconductor Risk",
+        "event_count": 4,
+        "theme_strength_score": 61
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 4,
+    "kwCount": 8,
+    "descLen": 239,
+    "risk": 0
+  },
+  {
+    "id": "critical_component_shortage",
+    "name": "Critical Component Shortages · Upstream Pricing Power",
+    "description": "Industry-wide shortages of critical components\n   (chips, optical modules, capacitors, substrates, etc.) trigger a repricing of upstream suppliers' bargaining power. Supply constraints shift \n  negotiating leverage to component manufacturers, enabling margin expansion and valuation re-rating.",
+    "keywords": [
+      "shortage",
+      "allocation",
+      "price hike",
+      "supply constraint",
+      "backlog surge",
+      "lead time extended",
+      "component scarcity"
+    ],
+    "themes": [
+      {
+        "id": "df120359-c0cc-422a-979c-964b52d6ae19",
+        "name": "DRAM Allocation Shift · Auto Chip Shortage",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 1,
+    "kwCount": 7,
+    "descLen": 293,
+    "risk": 0
+  },
+  {
+    "id": "consumer_polarization",
+    "name": "Consumer Spending Polarization",
+    "description": "K-shaped consumer divergence: luxury demand strength coexisting with discount retail growth",
+    "keywords": [
+      "consumer spending divergence",
+      "luxury demand",
+      "dollar store growth",
+      "discount retail",
+      "premium pricing",
+      "trade-down behavior",
+      "K-shaped consumer",
+      "middle-class squeeze"
+    ],
+    "themes": [
+      {
+        "id": "9cf60c3b-54d4-4e67-86c4-8225f9fc9b63",
+        "name": "Low-Income Consumer Stress · Discount Retail Slowdown",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 1,
+    "kwCount": 8,
+    "descLen": 91,
+    "risk": 0
+  },
+  {
+    "id": "cell_therapy_manufacturing_automation",
+    "name": "Cell Therapy Manufacturing Automation",
+    "description": "FDA April 2026 guidance enabling automated closed-loop CAR-T and cell therapy manufacturing, reducing production time from 4 weeks to 48 hours and cost from $450K to sub-$100K per dose. Industrialization wave unlocking solid tumor and autoimmune disease addressable markets previously economics-limited.",
+    "keywords": [],
+    "themes": [
+      {
+        "id": "a73def07-891b-473b-8065-e8073de04577",
+        "name": "Cell Therapy Manufacturing Automation · iPS Cost Breakthrough",
+        "event_count": 1,
+        "theme_strength_score": 55
+      }
+    ],
+    "themeCount": 1,
+    "maxEvents": 1,
+    "kwCount": 0,
+    "descLen": 303,
+    "risk": 0
+  },
+  {
+    "id": "water_infrastructure_failure",
+    "name": "Water Infrastructure Crisis",
+    "description": "Cascading failures in aging US municipal water systems—from lead pipe contamination to treatment plant breakdowns—are forcing emergency federal/state spending and creating urgent demand for water treatment technology, infrastructure replacement, and monitoring systems. PFAS contamination mandates (EPA limit effective 2026) and drought-driven scarcity in Southwest are compounding capital requirements. This represents a $600B+ infrastructure replacement cycle over 10 years.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 476,
+    "risk": 0
+  },
+  {
+    "id": "ai_inference_chip_race",
+    "name": "AI Inference Chip Arms Race",
+    "description": "Hyperscalers and edge device makers are rapidly developing custom inference ASICs to reduce dependency on NVIDIA GPUs for deployment workloads. This shift is driven by cost-per-inference economics, power efficiency requirements, and the maturation of models moving from training to production at scale. The theme captures companies enabling custom silicon design (EDA, foundry services, IP licensing) and those pivoting from pure training to inference-optimized architectures.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 476,
+    "risk": 0
+  },
+  {
+    "id": "fed_dovish_pivot",
+    "name": "Fed Dovish Pivot · Small-Cap Biotech / REITs",
+    "description": "The Federal Reserve has clearly shifted to a           \n  rate-cutting cycle, creating a repricing opportunity for small-cap stocks, biotechnology companies, and REITs that benefit from lower interest rates.",
+    "keywords": [
+      "Fed cut",
+      "dovish",
+      "dot plot shift",
+      "rate pivot",
+      "Federal Reserve lower rates",
+      "FOMC dovish",
+      "rate reduction"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 7,
+    "descLen": 207,
+    "risk": 0
+  },
+  {
+    "id": "inflation_surprise_upside",
+    "name": "Inflation Surprise · Inflation-Resistant Assets",
+    "description": "When CPI/PCE data significantly exceeds expectations\n   or inflation expectations rise again, inflation-resistant assets such as gold and energy benefit from increased hedging demand and pricing power.",
+    "keywords": [
+      "CPI above",
+      "inflation accelerating",
+      "price surge",
+      "CPI beats",
+      "inflation hotter",
+      "PCE surprise",
+      "core inflation"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 7,
+    "descLen": 201,
+    "risk": 0
+  },
+  {
+    "id": "ai_model_breakthrough",
+    "name": "Paradigm AI Model Breakthrough · Compute Demand Surge",
+    "description": "Paradigm-shifting AI model releases           \n  (architectural revolution or capability phase-transition) trigger market expectations of exponential compute demand growth, catalyzing revaluation of    \n  upstream chip manufacturers and optical interconnect providers. Limited to true paradigm shifts only, excluding incremental model iterations.",
+    "keywords": [
+      "new model release",
+      "compute demand",
+      "GPU shortage",
+      "AI breakthrough",
+      "model launch",
+      "foundation model",
+      "reasoning model",
+      "AGI milestone"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 8,
+    "descLen": 346,
+    "risk": 0
+  },
+  {
+    "id": "regulatory_greenlight",
+    "name": "Regulatory Green Light · FDA/SEC/FTC Major Approvals",
+    "description": "Captures breakthrough regulatory approvals \n  including FDA drug/device clearances, SEC financial product authorizations (ETFs/crypto), and FTC merger clearances that unlock growth potential and     \n  trigger sector revaluations. These catalysts signal reduced regulatory overhang and open addressable markets for affected companies.",
+    "keywords": [
+      "FDA approval",
+      "FDA cleared",
+      "SEC approves",
+      "FTC clears",
+      "merger approved",
+      "drug approval",
+      "breakthrough therapy designation",
+      "NDA approved",
+      "510k cleared",
+      "crypto ETF approved"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 10,
+    "descLen": 334,
+    "risk": 0
+  },
+  {
+    "id": "shipping_disruption",
+    "name": "Port/Shipping Disruption · Freight Rates + Repositioning",
+    "description": "Major port closures, blockages, or attacks \n  on key shipping routes trigger freight rate spikes and revaluation of shipping equities. Disruptions create supply chain bottlenecks that drive pricing  \n  power for carriers and infrastructure plays.",
+    "keywords": [
+      "port closure",
+      "Suez blockage",
+      "Red Sea attack",
+      "shipping disruption",
+      "container shortage",
+      "Panama Canal",
+      "strait closure",
+      "shipping route"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 8,
+    "descLen": 246,
+    "risk": 0
+  },
+  {
+    "id": "semi_fab_disruption",
+    "name": "Fab Disruption/Outage · Alternative Capacity Revaluation",
+    "description": "Production disruptions at critical \n  semiconductor fabrication facilities due to earthquakes, fires, accidents, or natural disasters trigger revaluation of alternative capacity suppliers and\n   memory markets. Supply constraints drive pricing power and market share shifts to unaffected manufacturers.",
+    "keywords": [
+      "fab shutdown",
+      "earthquake Taiwan",
+      "semiconductor shortage",
+      "wafer fab fire",
+      "production halt",
+      "fab disruption",
+      "chip shortage"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 7,
+    "descLen": 302,
+    "risk": 0
+  },
+  {
+    "id": "macro_risk_regime_shift",
+    "name": "Macro Risk Regime Shift · VIX Spike / Flight to Safety",
+    "description": "Systematic macro shocks (recession         \n  expectations, credit crises, geopolitical escalation) trigger sharp VIX spikes, driving large-scale capital rotation out of risk assets into safe havens \n  such as gold, Treasuries, and defensive consumer staples. This is a defensive/risk-off investment theme.",
+    "keywords": [
+      "VIX spike",
+      "market crash",
+      "risk-off",
+      "flight to safety",
+      "credit crisis",
+      "recession fears",
+      "yield curve inversion",
+      "systemic risk",
+      "bank stress",
+      "financial contagion"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 10,
+    "descLen": 306,
+    "risk": 0
+  },
+  {
+    "id": "onshoring_industrial_policy",
+    "name": "Reshoring & Industrial Policy · CHIPS Act / IRA",
+    "description": "U.S. industrial policy initiatives—including the \n  CHIPS Act, IRA clean energy subsidies, and friend-shoring mandates—are driving a capital expenditure wave across semiconductor manufacturing, clean      \n  energy production, and defense supply chain repatriation. These policies incentivize domestic and allied-nation production, creating investment     \n  opportunities in facilities, equipment, and infrastructure buildout.",
+    "keywords": [
+      "CHIPS Act funding",
+      "IRA tax credit",
+      "onshoring",
+      "reshoring",
+      "domestic manufacturing",
+      "fab construction",
+      "friend-shoring",
+      "supply chain localization",
+      "DoD contract",
+      "semiconductor factory"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 10,
+    "descLen": 427,
+    "risk": 0
+  },
+  {
+    "id": "turnaround_profitability_inflection",
+    "name": "Turnaround Recovery · Multi-Quarter Earnings Inflection",
+    "description": "Companies emerging from prolonged losses or \n  EBITDA turning positive, guidance revisions upward), triggering valuation re-rating from distressed discount to normalized multiples.",
+    "keywords": [
+      "first profit",
+      "EBITDA positive",
+      "free cash flow positive",
+      "profitability milestone",
+      "cost restructuring complete",
+      "margin inflection",
+      "raised guidance",
+      "operational turnaround",
+      "breakeven"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 9,
+    "descLen": 180,
+    "risk": 0
+  },
+  {
+    "id": "ai_drug_design_validation",
+    "name": "Computational Drug Design Platform Shift",
+    "description": "First wave of AI-discovered drug candidates reaching Phase 2/3 with clinical validation, triggering major pharma M&A premiums for computational platforms. Multiple $1B+ acquisitions of AI-native biotechs (Recursion-Roche, Exscientia programs) proving model economics and accelerating platform proliferation. Differentiation emerging between foundation model generalists vs. vertical specialists.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 395,
+    "risk": 0
+  },
+  {
+    "id": "gcc_sovereign_wealth_tech_pivot",
+    "name": "GCC Sovereign Wealth Diversification",
+    "description": "Saudi Arabia, UAE, and Qatar accelerating $200B+ technology infrastructure investments announced April 2026, targeting AI data centers, semiconductor fabs, and cloud infrastructure as oil-revenue diversification strategy. Direct equity stakes and supply agreements creating multi-year revenue visibility for select Western tech firms.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 334,
+    "risk": 0
+  },
+  {
+    "id": "quantum_computing_commercialization",
+    "name": "Quantum Computing Commercialization",
+    "description": "Multiple quantum computing firms announcing production-scale systems and commercial customer pilots in April 2026, driven by enterprise demand for cryptography migration ahead of 2030 NIST quantum-safe mandates. Hardware error correction breakthroughs enabling 1000+ logical qubit systems creating investable infrastructure layer distinct from AI model training.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 362,
+    "risk": 0
+  },
+  {
+    "id": "tungsten_supply_crisis",
+    "name": "Tungsten Supply Crisis",
+    "description": "China's April 2026 export restrictions on tungsten (85% global supply) targeting Western defense and EV industries, with tungsten carbide critical for armor-piercing munitions and EV battery thermal management. Prices surged 340% since April 14, triggering emergency stockpiling and North American mine restart announcements.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 325,
+    "risk": 0
+  },
+  {
+    "id": "space_infrastructure_commercialization",
+    "name": "Space Infrastructure Commercialization",
+    "description": "Rapid increase in commercial and defense satellite deployment driven by SpaceX Starship operational readiness, Amazon Kuiper production ramp, and Pentagon's Proliferated Low Earth Orbit (pLEO) architecture contracts. Launch costs declining 40-60% YoY enabling new economics for satellite constellations, space-based AI inference, and persistent ISR capabilities.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 362,
+    "risk": 0
+  },
+  {
+    "id": "cdr_corporate_procurement",
+    "name": "Carbon Dioxide Removal Procurement",
+    "description": "Frontier Carbon procurement coalition (Stripe, Alphabet, Meta, Shopify, McKinsey) scaling from $1B to $6B+ commitments, pulling forward commercialization of Direct Air Capture (DAC), enhanced weathering, and biochar projects. 45Q tax credit expansion to $180/ton and California LCFS credit pricing >$200/ton creating viable unit economics for first-generation CDR facilities.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 375,
+    "risk": 0
+  },
+  {
+    "id": "china_stimulus",
+    "name": "China Stimulus · Commodity / Industrial Metals Demand",
+    "description": "PBoC announces significant RRR cuts and rate  \n  reductions, or Ministry of Finance unveils above-expected infrastructure/consumption stimulus, triggering upward revision in demand expectations for \n  commodities (copper, iron ore, oil). Mining, energy, and industrial stocks benefiting from China demand undergo revaluation.",
+    "keywords": [
+      "China stimulus",
+      "PBOC rate cut",
+      "China infrastructure",
+      "China consumption boost",
+      "China fiscal stimulus",
+      "China property rescue",
+      "RRR cut",
+      "China economic package"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 8,
+    "descLen": 325,
+    "risk": 0
+  },
+  {
+    "id": "alzheimers_next_gen_therapeutics",
+    "name": "Next-Gen Alzheimer's Therapeutics",
+    "description": "Multiple Phase 2/3 trials are showing promising results for Alzheimer's treatments targeting tau protein, neuroinflammation, and synaptic restoration—moving beyond the amyloid-beta hypothesis that dominated for decades. Recent biomarker validation and earlier-stage patient enrollment strategies are accelerating clinical timelines. This represents a fundamental shift in Alzheimer's R&D with 8-10 novel mechanisms entering late-stage trials in 2026.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 450,
+    "risk": 0
+  },
+  {
+    "id": "radioisotope_supply_breakthrough",
+    "name": "Medical Radioisotope Supply Chain",
+    "description": "Critical shortage resolution and new production capacity for Actinium-225, Lutetium-177, and Radium-223 enabling commercialization wave of targeted alpha/beta therapies for oncology. Domestic production via cyclotrons and small modular reactors reducing dependency on European/Russian supply chains while new FDA approvals create pull-through demand.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 350,
+    "risk": 0
+  },
+  {
+    "id": "dollar_strength",
+    "name": "USD Strength · Overseas Revenue Pressure",
+    "description": "The U.S. Dollar Index is strengthening significantly,      \n  creating FX headwinds for technology and industrial companies with high overseas revenue exposure. This theme serves as a risk monitoring framework for \n  currency translation impacts on multinational earnings.",
+    "keywords": [
+      "DXY surge",
+      "Fed hawkish",
+      "dollar rally",
+      "strong dollar",
+      "dollar index",
+      "USD strength",
+      "currency headwind"
+    ],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 7,
+    "descLen": 272,
+    "risk": 0
+  },
+  {
+    "id": "space_solar_power",
+    "name": "Space-Based Solar Power",
+    "description": "Multiple government and private initiatives are advancing space-based solar power (SBSP) systems that collect solar energy in orbit and beam it to Earth via microwave transmission. Recent breakthroughs in lightweight photovoltaic panels, wireless power transmission efficiency (>40% demonstrated), and launch cost reductions below $1,000/kg are making previously theoretical concepts commercially viable. This represents a frontier energy solution targeting AI data center baseload power and remote/military applications.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 521,
+    "risk": 0
+  },
+  {
+    "id": "utility_scale_battery_inflection",
+    "name": "Grid-Scale Energy Storage Deployment",
+    "description": "Utility-scale battery storage deployments accelerating to 40+ GWh annually (3x 2024 levels) driven by IRA 45X Advanced Manufacturing Production Credits ($35/kWh), interconnection queue clearing, and renewable curtailment reaching economically painful levels in CAISO/ERCOT. Sodium-ion and iron-air long-duration technologies achieving commercial deployment beyond lithium-ion 4-hour systems.",
+    "keywords": [],
+    "themes": [],
+    "themeCount": 0,
+    "maxEvents": 0,
+    "kwCount": 0,
+    "descLen": 391,
+    "risk": 0
+  }
+]

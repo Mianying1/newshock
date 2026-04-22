@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1825
+  ],
+  "historical_cases": [
+    {
+      "name": "1987–1991 U.S. Toshiba-Kongsberg Export Control Sanctions",
+      "approximate_duration": "约 2–4 年",
+      "peak_move": "Japanese machine-tool and semiconductor equipment exporters faced prolonged revenue disruption; U.S. domestic equipment makers observed multi-year order tailwinds; Toshiba Machine share price suffered sustained decline over 12–18 months before partial recovery",
+      "exit_trigger": "Congressional sanctions expired and bilateral negotiations produced new COCOM compliance frameworks; commercial pressure from U.S. chip industry lobbying to resume equipment trade eventually eased restrictions",
+      "confidence": "high"
+    },
+    {
+      "name": "1990s U.S. COCOM → Wassenaar Arrangement Transition & China Semiconductor Restrictions",
+      "approximate_duration": "约 3–5 年（过渡期）",
+      "peak_move": "Chinese state investment in domestic IC design and fab accelerated modestly; foreign equipment suppliers saw selective market access restrictions; theme was muted in capital markets due to limited China semiconductor scale at the time",
+      "exit_trigger": "Wassenaar Arrangement (1996) replaced COCOM with a multilateral but less restrictive regime; China's WTO accession process created diplomatic incentives to partially normalize technology trade",
+      "confidence": "medium"
+    },
+    {
+      "name": "2018–2020 U.S. Entity List — Huawei & SMIC Escalation",
+      "approximate_duration": "约 18–30 个月（第一波）",
+      "peak_move": "SMIC ADR and A-shares rallied 60–100%+ in the 12 months following initial restrictions as localization narrative peaked; ASML and AMAT saw mixed reactions — near-term order pull-forward offset by China revenue uncertainty; Huawei handset share collapsed, accelerating domestic chip demand narrative",
+      "exit_trigger": "Theme modestly decelerated in late 2020–early 2021 as markets digested SMIC advanced-node capacity limitations; no formal policy reversal occurred — theme evolved into the next escalation wave rather than cleanly ending",
+      "confidence": "high"
+    },
+    {
+      "name": "2022–2023 Biden Administration October 7 Rule & Expanded Entity List Controls",
+      "approximate_duration": "约 12–24 个月（市场主题活跃期）",
+      "peak_move": "Chinese domestic semiconductor equipment names (北方华创, 中微公司, 华海清科) observed 40–150% moves over 12–18 months; NVIDIA H100/A100 ban drove China AI chip gap narrative; U.S. equipment makers (AMAT, Lam, KLA) saw China revenue guidance cuts of 10–30%",
+      "exit_trigger": "Theme has not cleanly exited as of early 2026; partial deceleration observed when Chinese equipment localization timeline slippages became apparent and NVIDIA pursued compliant chip variants (H20); ongoing escalation waves continue to re-energize the theme",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI infrastructure buildout creates unprecedented demand for advanced logic and HBM that did not exist in prior export control cycles. Chinese hyperscalers and LLM developers face acute capability gaps at the cutting edge (sub-3nm, HBM3E), making localization urgency structurally higher than any prior episode where China's domestic AI compute demand was negligible.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "EUV lithography remains a near-absolute single-supplier chokepoint (ASML) with no observed credible Chinese alternative within a 5–7 year horizon. In prior cycles (e.g., Toshiba, 1980s), denied technologies had multiple potential substitute suppliers or faster catch-up curves. The technical barriers to replicating EUV supply chains appear structurally higher, making Chinese self-sufficiency timelines longer and the theme more durable.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The current control regime is multilateral in a way prior cycles were not — the Netherlands (ASML EUV), Japan (TEL, Shin-Etsu, Tokyo Electron advanced chemicals), and South Korea (Samsung, SK Hynix HBM) have all coordinated restrictions to varying degrees. Historical analogs like COCOM were broader but less technically precise; the current architecture targets specific node thresholds and end-use cases with greater enforcement granularity.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Chinese chipmakers (SMIC, Hua Hong) have demonstrated surprising progress at 7nm-equivalent nodes using multi-patterning DUV workarounds (observed in Huawei Mate 60 Pro, 2023). This partial-catch-up dynamic may compress the capability gap at mature trailing-edge nodes while the frontier gap widens, creating a bifurcated market outcome not observed in prior restriction cycles.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in the 1980s Japan semiconductor trade conflict, national security framing tends to politically insulate export controls from near-term commercial lobbying reversal, suggesting the policy floor remains elevated regardless of business cycle pressure.",
+      "Historical cycles consistently show that targeted countries accelerate state-directed investment in restricted technologies — China's announced semiconductor fund tranches mirror South Korea's and Taiwan's earlier state-backed catch-up programs, suggesting the localization equity narrative follows a recognizable pattern of initial enthusiasm followed by execution-gap disillusionment.",
+      "Exit triggers in prior cycles were typically diplomatic normalization events or multilateral framework changes rather than technological breakthroughs by the restricted party — suggesting the theme's duration may remain primarily policy-dependent rather than technology-dependent."
+    ],
+    "observation": "The current U.S.–China semiconductor restriction cycle may be structurally more durable than historical analogs due to the combination of an AI-driven demand shock at the frontier, unprecedented multilateral supply-side coordination, and the near-irreplicable EUV chokepoint — though partial Chinese catch-up at mature nodes introduces meaningful uncertainty about the ultimate scope of the capability gap."
+  },
+  "exit_signals": [
+    "Observable diplomatic framework agreement (analogous to a new Wassenaar-type arrangement) that formally establishes mutually accepted technology transfer boundaries between the U.S. and China, reducing binary escalation risk.",
+    "SMIC or a Chinese fab publicly demonstrating credible high-volume manufacturing at sub-5nm nodes using domestically sourced equipment — a technical milestone that would signal localization success and potentially reduce the urgency premium embedded in Chinese equipment stocks.",
+    "Sustained revenue guidance reductions from Chinese domestic semiconductor equipment makers (北方华创, 中微公司) citing order delays or fab customer capex cuts, indicating localization investment cycle is decelerating from peak.",
+    "NVIDIA or equivalent U.S. AI chip designers receiving broad licenses to sell compliant advanced AI accelerators into China at volumes that materially recover their China revenue share — signaling a policy softening at the application layer even if manufacturing controls persist.",
+    "Multilateral export control coordination visibly fracturing — e.g., Netherlands or Japan publicly diverging from U.S. control timelines or carving out significant exceptions — which would signal the coalition underpinning the restriction regime is losing cohesion."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "This archetype reflects a multi-year structural geopolitical and industrial policy contest rather than an event-driven shock, with no observable natural endpoint absent a fundamental shift in U.S.–China strategic competition or a diplomatic framework agreement.",
+  "real_world_timeline": {
+    "approximate_start": "2018 Q2",
+    "description": "The modern phase of U.S. semiconductor export controls on China is observed to have originated with the April 2018 ZTE denial order and accelerated materially with the May 2019 Huawei Entity List designation, establishing the structural framework that subsequent escalation waves (2020 SMIC restrictions, 2022 October Rule) have built upon.",
+    "current_maturity_estimate": "mid"
+  }
+}
