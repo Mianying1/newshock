@@ -49,6 +49,8 @@ function shortPublisher(name: string): string {
   if (name === 'GlobeNewswire') return 'Globe'
   if (name === 'PR Newswire') return 'PRNews'
   if (name === 'BusinessWire') return 'BizWire'
+  // Cap unknown long names so badge stays compact
+  if (name.length > 10) return name.split(/\s+/)[0].slice(0, 10)
   return name
 }
 
@@ -114,7 +116,7 @@ export function EventStream() {
         {!isLoading && !error && events.length > 0 && (
           events.map((e) => {
             const publisher = getDisplayPublisher(e.source_name, e.source_url)
-            const srcCls = SRC_CLASS[publisher] ?? ''
+            const srcCls = SRC_CLASS[publisher] ?? 'src-press'
             const themeName = pickField(locale, e.theme_name, e.theme_name_zh)
             const timeAgo = formatRelativeTime(e.event_date, t, locale)
 

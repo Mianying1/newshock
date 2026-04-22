@@ -416,15 +416,16 @@
   background: var(--bg-sunk);
   color: var(--ink-2);
 }
-.radar-page .src-reuters   { background:#F4E4D3; color:#8A4A1F; }
-.radar-page .src-bloomberg { background:#DDE6D4; color:#405A2B; }
-.radar-page .src-wsj       { background:#E8DCEF; color:#5E3680; }
-.radar-page .src-ft        { background:#F5D9D6; color:#8A3A32; }
-.radar-page .src-cnbc      { background:#E0ECF4; color:#1F5A85; }
-.radar-page .src-nyt       { background:#E6E6E6; color:#333; }
-.radar-page .src-nikkei    { background:#F4DEE3; color:#8A3548; }
-.radar-page .src-coindesk  { background:#F5E2EC; color:#8F3670; }
-.radar-page .src-sec       { background:#E4E4D6; color:#4E4E2B; }
+.radar-page .src-reuters   { background:#FFEDD5; color:#C2410C; }
+.radar-page .src-bloomberg { background:#D1FAE5; color:#047857; }
+.radar-page .src-wsj       { background:#EDE9FE; color:#6D28D9; }
+.radar-page .src-ft        { background:#FCE7F3; color:#BE185D; }
+.radar-page .src-cnbc      { background:#E0F2FE; color:#0369A1; }
+.radar-page .src-nyt       { background:#F4F4F5; color:#3F3F46; }
+.radar-page .src-nikkei    { background:#E0E7FF; color:#4338CA; }
+.radar-page .src-coindesk  { background:#FCE7F3; color:#9D174D; }
+.radar-page .src-sec       { background:#F4F4F5; color:#3F3F46; }
+.radar-page .src-press     { background:#FAFAFA; color:#71717A; }
 
 /* ===== Stage dots / progress ===== */
 .radar-page .stage-dot {
