@@ -13,6 +13,13 @@ function capLabel(band: string | null, t: (k: string) => string): string | null 
   return null
 }
 
+function confBandClass(b: string | null): string {
+  if (b === 'high') return 'bg-emerald-50 text-emerald-700'
+  if (b === 'medium') return 'bg-amber-50 text-amber-700'
+  if (b === 'low') return 'bg-zinc-100 text-zinc-500'
+  return ''
+}
+
 export function RecommendationCard({ r }: { r: ThemeRecommendation }) {
   const { t, locale } = useI18n()
   const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
@@ -20,7 +27,6 @@ export function RecommendationCard({ r }: { r: ThemeRecommendation }) {
   const catalyst = pickField(locale, r.catalyst, r.catalyst_zh)
   const risk = pickField(locale, r.risk, r.risk_zh)
   const capText = capLabel(r.market_cap_band, t)
-  const tierText = `T${r.tier}`
 
   return (
     <div className="border border-zinc-200 rounded-lg p-3 bg-white">
@@ -35,25 +41,22 @@ export function RecommendationCard({ r }: { r: ThemeRecommendation }) {
           />
         </Link>
         <div className="flex items-center gap-1.5 flex-wrap ml-auto">
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600">
-            {tierText}
-          </span>
-          {r.is_pure_play && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-              {t('theme_detail.pure_play_badge')}
+          {r.is_thematic_tool && (
+            <span
+              className="text-[10px] text-zinc-500 cursor-help"
+              title={t('theme_detail.thematic_tool_tooltip')}
+            >
+              ⚙︎
             </span>
           )}
-          {r.is_often_missed && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-100 text-purple-700">
-              {t('theme_detail.hidden_angle_badge')}
+          {r.confidence_band && (
+            <span
+              className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${confBandClass(r.confidence_band)}`}
+            >
+              {r.confidence_band}
             </span>
           )}
-          {capText && (
-            <span className="text-[10px] text-zinc-500">{capText}</span>
-          )}
-          {typeof r.confidence === 'number' && r.confidence > 0 && (
-            <span className="text-[10px] text-zinc-400">· {r.confidence}%</span>
-          )}
+          {capText && <span className="text-[10px] text-zinc-500">{capText}</span>}
         </div>
       </div>
 
@@ -89,22 +92,22 @@ export function RecommendationGroup({
 }: {
   title: string
   items: ThemeRecommendation[]
-  variant?: 'default' | 'hidden' | 'headwind'
+  variant?: 'default' | 'pressure' | 'headwind'
 }) {
   if (items.length === 0) return null
 
   const wrapperClass =
     variant === 'headwind'
       ? 'mb-5 rounded-lg bg-rose-50 border border-rose-100 p-3'
-      : variant === 'hidden'
-        ? 'mb-5 rounded-lg bg-purple-50/60 border border-purple-100 p-3'
+      : variant === 'pressure'
+        ? 'mb-5 rounded-lg bg-amber-50/60 border border-amber-100 p-3'
         : 'mb-5'
 
   const titleColor =
     variant === 'headwind'
       ? 'text-rose-700'
-      : variant === 'hidden'
-        ? 'text-purple-700'
+      : variant === 'pressure'
+        ? 'text-amber-800'
         : 'text-zinc-800'
 
   return (

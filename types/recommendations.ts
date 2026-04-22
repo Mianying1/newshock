@@ -1,5 +1,7 @@
 export type ExposureDirection = 'benefits' | 'headwind' | 'mixed' | 'uncertain'
 export type MarketCapBand = 'small' | 'mid' | 'large'
+export type ExposureType = 'direct' | 'observational' | 'pressure'
+export type ConfidenceBand = 'high' | 'medium' | 'low'
 
 export interface ThemeRecommendation {
   ticker_symbol: string
@@ -21,6 +23,9 @@ export interface ThemeRecommendation {
   is_pure_play: boolean | null
   is_often_missed: boolean | null
   confidence: number | null
+  exposure_type: ExposureType | null
+  confidence_band: ConfidenceBand | null
+  is_thematic_tool: boolean | null
   added_at: string
 }
 

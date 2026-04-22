@@ -39,13 +39,11 @@ export default function ThemeDetailPage() {
   }, [id])
 
   const recs = theme?.recommendations ?? []
-  const headwinds = recs.filter((r) => r.exposure_direction === 'headwind')
-  const nonHeadwinds = recs.filter((r) => r.exposure_direction !== 'headwind')
-  const pureBeneficiaries = nonHeadwinds.filter((r) => r.is_pure_play === true)
-  const diversifiedBeneficiaries = nonHeadwinds.filter((r) => r.is_pure_play !== true)
-  const hiddenAngles = recs.filter((r) => r.is_often_missed === true)
-  const reflection =
-    theme ? pickField(locale, theme.strategist_reflection, theme.strategist_reflection_zh) : ''
+  const directRecs = recs.filter((r) => r.exposure_type === 'direct')
+  const observationalRecs = recs.filter((r) => r.exposure_type === 'observational')
+  const pressureRecs = recs.filter((r) => r.exposure_type === 'pressure')
+  const unclassified = recs.filter((r) => !r.exposure_type && r.exposure_direction !== 'headwind')
+  const headwinds = recs.filter((r) => !r.exposure_type && r.exposure_direction === 'headwind')
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
@@ -107,27 +105,22 @@ export default function ThemeDetailPage() {
             <div>
               <p className="font-semibold text-zinc-800 mb-3">━━ {t('theme_detail.exposure_mapping')} ━━</p>
 
-              {reflection.trim().length > 0 && (
-                <div className="mb-5 p-3 border-l-2 border-zinc-300 bg-zinc-50 rounded-r">
-                  <p className="text-[11px] uppercase tracking-wide text-zinc-400 mb-1">
-                    {t('theme_detail.strategist_reflection')}
-                  </p>
-                  <p className="text-sm italic text-zinc-700 leading-relaxed">{reflection}</p>
-                </div>
-              )}
-
               <RecommendationGroup
-                title={t('theme_detail.pure_play_beneficiaries')}
-                items={pureBeneficiaries}
+                title={t('theme_detail.direct_exposure')}
+                items={directRecs}
+              />
+              <RecommendationGroup
+                title={t('theme_detail.observational_mapping')}
+                items={observationalRecs}
+              />
+              <RecommendationGroup
+                title={t('theme_detail.pressure_assets')}
+                items={pressureRecs}
+                variant="pressure"
               />
               <RecommendationGroup
                 title={t('theme_detail.diversified_beneficiaries')}
-                items={diversifiedBeneficiaries}
-              />
-              <RecommendationGroup
-                title={t('theme_detail.hidden_angles')}
-                items={hiddenAngles}
-                variant="hidden"
+                items={unclassified}
               />
               <RecommendationGroup
                 title={t('theme_detail.headwinds')}

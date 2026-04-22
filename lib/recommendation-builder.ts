@@ -9,6 +9,8 @@ import type {
   PlaybookStage,
   ExposureDirection,
   MarketCapBand,
+  ExposureType,
+  ConfidenceBand,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -72,6 +74,9 @@ interface RecRow {
   is_pure_play: boolean | null
   is_often_missed: boolean | null
   confidence: number | null
+  exposure_type: string | null
+  confidence_band: string | null
+  is_thematic_tool: boolean | null
   added_at: string
   tickers: TickerInfo | TickerInfo[] | null
 }
@@ -92,7 +97,8 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
     .select(
       'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
       'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
-      'market_cap_band, is_pure_play, is_often_missed, confidence, added_at, ' +
+      'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
+      'exposure_type, confidence_band, is_thematic_tool, added_at, ' +
       'tickers(company_name, sector, market_cap_usd_b, logo_url)'
     )
     .eq('theme_id', themeId)
@@ -102,6 +108,8 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
   if (error) throw new Error(`recs fetch failed: ${error.message}`)
 
   const validCapBands = new Set(['small', 'mid', 'large'])
+  const validExposureTypes = new Set(['direct', 'observational', 'pressure'])
+  const validConfBands = new Set(['high', 'medium', 'low'])
 
   return ((data ?? []) as unknown as RecRow[]).map((r) => {
     const ticker = Array.isArray(r.tickers) ? r.tickers[0] : r.tickers
@@ -111,6 +119,12 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       : 'uncertain'
     const capBand = validCapBands.has(r.market_cap_band ?? '')
       ? (r.market_cap_band as MarketCapBand)
+      : null
+    const exposureType = validExposureTypes.has(r.exposure_type ?? '')
+      ? (r.exposure_type as ExposureType)
+      : null
+    const confBand = validConfBands.has(r.confidence_band ?? '')
+      ? (r.confidence_band as ConfidenceBand)
       : null
     return {
       ticker_symbol: r.ticker_symbol,
@@ -132,6 +146,9 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       is_pure_play: r.is_pure_play,
       is_often_missed: r.is_often_missed,
       confidence: r.confidence,
+      exposure_type: exposureType,
+      confidence_band: confBand,
+      is_thematic_tool: r.is_thematic_tool,
       added_at: r.added_at,
     }
   })
