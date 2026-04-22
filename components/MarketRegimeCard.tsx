@@ -1,6 +1,5 @@
 'use client'
 import useSWR from 'swr'
-import { useState } from 'react'
 import { useI18n } from '@/lib/i18n-context'
 import { pickField } from '@/lib/useField'
 
@@ -31,120 +30,46 @@ interface RegimeSnapshot {
   credit_reasoning_zh: string | null
   sentiment_reasoning: string | null
   sentiment_reasoning_zh: string | null
-  raw_data: Record<string, unknown> | null
 }
 
-interface SeriesPoint {
-  date: string
-  value: number
+const DIM_ORDER = ['earnings', 'valuation', 'fed', 'credit', 'economic', 'sentiment'] as const
+
+function scoreColors(score: number) {
+  if (score === 2) return { bar: 'bg-emerald-500', text: 'text-emerald-600' }
+  if (score === 1) return { bar: 'bg-amber-500', text: 'text-amber-600' }
+  return { bar: 'bg-rose-500', text: 'text-rose-600' }
 }
 
-const SERIES_BY_DIMENSION: Record<string, string | null> = {
-  earnings: null,
-  valuation: null,
-  fed: 'FEDFUNDS',
-  economic: 'UNRATE',
-  credit: 'HY_OAS',
-  sentiment: 'VIX',
-}
-
-function Dots({ score }: { score: number }) {
-  const cls = (i: number) => {
-    if (i < score) {
-      if (score === 2) return 'bg-emerald-500'
-      if (score === 1) return 'bg-amber-500'
-      return 'bg-rose-500'
-    }
-    return 'bg-zinc-200'
-  }
-  return (
-    <div className="flex gap-1">
-      {[0, 1].map((i) => (
-        <span key={i} className={`w-1.5 h-1.5 rounded-full ${cls(i)}`} />
-      ))}
-    </div>
-  )
-}
-
-function Sparkline({ points, score }: { points: SeriesPoint[]; score: number }) {
-  if (points.length < 2) return null
-  const values = points.map((p) => p.value)
-  const min = Math.min(...values)
-  const max = Math.max(...values)
-  const range = max - min || 1
-  const w = 80
-  const h = 24
-  const step = w / (points.length - 1)
-  const pathPoints = points
-    .map((p, i) => {
-      const x = i * step
-      const y = h - ((p.value - min) / range) * h
-      return `${x.toFixed(1)},${y.toFixed(1)}`
-    })
-    .join(' ')
-  const color = score === 2 ? '#10b981' : score === 1 ? '#f59e0b' : '#f43f5e'
-  return (
-    <svg width={w} height={h} className="opacity-80">
-      <polyline points={pathPoints} fill="none" stroke={color} strokeWidth="1.5" />
-    </svg>
-  )
-}
-
-function DimensionRow({
+function DimensionCell({
   labelKey,
   score,
   reasoning,
-  seriesIndicator,
-  expanded,
-  onToggle,
 }: {
   labelKey: string
   score: number
   reasoning: string | null
-  seriesIndicator: string | null
-  expanded: boolean
-  onToggle: () => void
 }) {
   const { t } = useI18n()
-  const { data: seriesData } = useSWR<{ points: SeriesPoint[] }>(
-    expanded && seriesIndicator ? `/api/regime/series?indicator=${seriesIndicator}` : null,
-    fetcher
-  )
-  const scoreColor =
-    score === 2 ? 'text-emerald-600' : score === 1 ? 'text-amber-600' : 'text-rose-600'
-
+  const { bar, text } = scoreColors(score)
   return (
-    <div className="py-2 border-b border-zinc-100 last:border-b-0">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center gap-3 text-left"
-      >
-        <span className="w-16 text-xs text-zinc-600">{t(`market_regime.${labelKey}`)}</span>
-        <span className={`w-4 text-xs font-semibold ${scoreColor}`}>{score}</span>
-        <Dots score={score} />
-        <span className="flex-1 text-xs text-zinc-500 truncate">{reasoning}</span>
-        <span className="text-xs text-zinc-300">{expanded ? '−' : '+'}</span>
-      </button>
-      {expanded && (
-        <div className="mt-2 pl-[76px] pr-2">
-          {seriesIndicator ? (
-            seriesData && seriesData.points.length >= 2 ? (
-              <div className="flex items-center gap-3">
-                <Sparkline points={seriesData.points} score={score} />
-                <span className="text-[10px] text-zinc-400">
-                  {seriesIndicator} · {seriesData.points.length}m
-                </span>
-              </div>
-            ) : (
-              <span className="text-[10px] text-zinc-400">
-                {t('market_regime.sparkline_unavailable')}
-              </span>
-            )
-          ) : (
-            <span className="text-[10px] text-zinc-400">{reasoning}</span>
-          )}
-        </div>
+    <div className="py-3 px-4 border-r border-b border-zinc-100 last:border-r-0 md:[&:nth-child(3n)]:border-r-0">
+      <div className="flex items-baseline justify-between mb-1.5">
+        <span className="text-xs font-medium text-zinc-700">{t(`market_regime.${labelKey}`)}</span>
+        <span className={`text-sm font-mono font-semibold ${text}`}>
+          {score}
+          <span className="text-zinc-300 text-xs">/2</span>
+        </span>
+      </div>
+      <div className="flex gap-0.5 mb-1.5">
+        {[0, 1].map((i) => (
+          <span
+            key={i}
+            className={`flex-1 h-1 rounded-sm ${i < score ? bar : 'bg-zinc-100'}`}
+          />
+        ))}
+      </div>
+      {reasoning && (
+        <p className="text-[11px] text-zinc-500 leading-snug line-clamp-2">{reasoning}</p>
       )}
     </div>
   )
@@ -152,7 +77,6 @@ function DimensionRow({
 
 export function MarketRegimeCard() {
   const { t, locale } = useI18n()
-  const [expanded, setExpanded] = useState<string | null>(null)
   const { data } = useSWR<{ snapshot: RegimeSnapshot | null }>('/api/regime/current', fetcher)
 
   const snap = data?.snapshot
@@ -170,54 +94,75 @@ export function MarketRegimeCard() {
       ? 'bg-rose-500'
       : 'bg-rose-700'
 
-  const dims: Array<{ key: string; score: number; reasoning: string | null }> = [
-    { key: 'earnings', score: snap.earnings_score, reasoning: pickField(locale, snap.earnings_reasoning, snap.earnings_reasoning_zh) },
-    { key: 'valuation', score: snap.valuation_score, reasoning: pickField(locale, snap.valuation_reasoning, snap.valuation_reasoning_zh) },
-    { key: 'fed', score: snap.fed_score, reasoning: pickField(locale, snap.fed_reasoning, snap.fed_reasoning_zh) },
-    { key: 'economic', score: snap.economic_score, reasoning: pickField(locale, snap.economic_reasoning, snap.economic_reasoning_zh) },
-    { key: 'credit', score: snap.credit_score, reasoning: pickField(locale, snap.credit_reasoning, snap.credit_reasoning_zh) },
-    { key: 'sentiment', score: snap.sentiment_score, reasoning: pickField(locale, snap.sentiment_reasoning, snap.sentiment_reasoning_zh) },
-  ]
+  const dimReasoning: Record<string, string | null> = {
+    earnings: pickField(locale, snap.earnings_reasoning, snap.earnings_reasoning_zh),
+    valuation: pickField(locale, snap.valuation_reasoning, snap.valuation_reasoning_zh),
+    fed: pickField(locale, snap.fed_reasoning, snap.fed_reasoning_zh),
+    economic: pickField(locale, snap.economic_reasoning, snap.economic_reasoning_zh),
+    credit: pickField(locale, snap.credit_reasoning, snap.credit_reasoning_zh),
+    sentiment: pickField(locale, snap.sentiment_reasoning, snap.sentiment_reasoning_zh),
+  }
+  const dimScore: Record<string, number> = {
+    earnings: snap.earnings_score,
+    valuation: snap.valuation_score,
+    fed: snap.fed_score,
+    economic: snap.economic_score,
+    credit: snap.credit_score,
+    sentiment: snap.sentiment_score,
+  }
 
   return (
-    <section className="py-4 border-b border-zinc-100 mb-2">
-      <div className="flex items-baseline justify-between mb-2">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+    <section className="mb-10">
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
           {t('market_regime.title')}
         </h2>
-        <span className="text-[10px] text-zinc-400">
-          {t('market_regime.updated_label', { date: snap.snapshot_date })}
+        <span className="text-[11px] text-zinc-400">
+          {t('market_regime.scores_refresh_twice_weekly')}
         </span>
       </div>
 
-      <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-2xl font-semibold text-zinc-900">{snap.total_score}</span>
-          <span className="text-sm text-zinc-400">{t('market_regime.score_suffix')}</span>
-          <span className="ml-auto text-xs font-medium text-zinc-700">
-            {t(`market_regime.regime_label.${snap.regime_label}`)}
-          </span>
+      <div className="bg-white border border-zinc-200 rounded-lg overflow-hidden">
+        <div className="p-5 border-b border-zinc-100">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
+                {t('market_regime.composite')}
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-mono font-semibold text-zinc-900">
+                  {snap.total_score}
+                </span>
+                <span className="text-base text-zinc-400 font-mono">/12</span>
+              </div>
+            </div>
+            <span className="text-xs font-medium px-2 py-1 rounded border bg-zinc-50 border-zinc-200 text-zinc-700">
+              {t(`market_regime.regime_label.${snap.regime_label}`)}
+            </span>
+          </div>
+
+          <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
+            <div className={`h-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
+          </div>
+
+          <p className="text-xs text-zinc-600 leading-relaxed">
+            <span className="text-zinc-400">{t('market_regime.guidance_label')}: </span>
+            {t(`market_regime.guidance_text.${snap.configuration_guidance}`)}
+          </p>
         </div>
 
-        <div className="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden mb-2">
-          <div className={`h-full ${barColor}`} style={{ width: `${pct}%` }} />
+        <div className="flex items-center justify-between px-5 py-2 text-[11px] text-zinc-400 bg-zinc-50/50">
+          <span className="uppercase tracking-widest">{t('market_regime.six_dimensions')}</span>
+          <span>{t('market_regime.updated_daily_dimensions', { date: snap.snapshot_date })}</span>
         </div>
 
-        <p className="text-xs text-zinc-600 mb-3">
-          <span className="text-zinc-400">{t('market_regime.guidance_label')}: </span>
-          {t(`market_regime.guidance_text.${snap.configuration_guidance}`)}
-        </p>
-
-        <div className="pt-2 border-t border-zinc-200">
-          {dims.map((d) => (
-            <DimensionRow
-              key={d.key}
-              labelKey={d.key}
-              score={d.score}
-              reasoning={d.reasoning}
-              seriesIndicator={SERIES_BY_DIMENSION[d.key] ?? null}
-              expanded={expanded === d.key}
-              onToggle={() => setExpanded((prev) => (prev === d.key ? null : d.key))}
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          {DIM_ORDER.map((k) => (
+            <DimensionCell
+              key={k}
+              labelKey={k}
+              score={dimScore[k]}
+              reasoning={dimReasoning[k]}
             />
           ))}
         </div>

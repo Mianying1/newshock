@@ -175,6 +175,61 @@
     "error": "出错了, 稍后重试",
     "disclaimer_footer": "信息展示, 非投资建议. 历史表现不代表未来结果."
   },
+  "sidebar": {
+    "workspace": "工作台",
+    "radar": "雷达",
+    "themes": "主题",
+    "tickers": "股票",
+    "events": "事件",
+    "last_sync": "最近同步",
+    "license_expires": "授权"
+  },
+  "topbar": {
+    "search_placeholder": "搜索主题 / 股票 / 事件… (规划中)"
+  },
+  "radar": {
+    "today_on_radar": "今日雷达",
+    "narratives_count": "{n} 条主线",
+    "active_themes_count": "{n} 个活跃主题",
+    "events_scanned_7d": "近 7 天扫描 {n} 事件"
+  },
+  "top_tickers": {
+    "title": "头部股票",
+    "thematic_subtitle": "当下热点主题里有活跃催化剂的股票",
+    "potential_subtitle": "长周期结构性主题中仍处早期的股票",
+    "event_driven_hot": "事件驱动 · 热",
+    "structural_early": "结构性 · 早期",
+    "show_all_thematic": "查看全部 {n} 只题材股 →",
+    "show_all_potential": "查看全部 {n} 只潜力股 →",
+    "tab_7d": "7d",
+    "tab_30d": "30d",
+    "tab_90d": "90d",
+    "tab_early": "早期",
+    "tab_mid": "中期",
+    "tab_all": "全部"
+  },
+  "event_stream": {
+    "title": "事件流",
+    "auto_matched": "已自动归类",
+    "show_unmatched": "显示未归类 ({n})",
+    "no_theme_match": "尚未匹配主题 · 待审核"
+  },
+  "active_themes": {
+    "title": "活跃主题",
+    "showing": "显示 {n} 条",
+    "sorted_by_strength": "按强度排序",
+    "stage_bar_mid": "{stage} 阶段 · 活跃中",
+    "stage_bar_early": "{stage} 阶段 · 积累中",
+    "since": "自 {date}",
+    "est_horizon": "预期时长 {label}"
+  },
+  "curator": {
+    "title": "策展信号",
+    "signature": "人工精选的模式. 无自动推送. 运营者周度修订."
+  },
+  "disclaimer": {
+    "framework_matches": "框架匹配基于历史模式. 信息工具, 非投资建议."
+  },
   "narratives": {
     "heading": "本周主线",
     "narrative": "主线",
@@ -183,6 +238,7 @@
   },
   "market_regime": {
     "title": "市场周期",
+    "composite": "综合评分",
     "score_suffix": "/12",
     "guidance_label": "配置建议",
     "earnings": "盈利",
@@ -192,6 +248,9 @@
     "credit": "信用",
     "sentiment": "情绪",
     "sparkline_unavailable": "暂无历史数据",
+    "six_dimensions": "六个维度",
+    "scores_refresh_twice_weekly": "每周更新两次",
+    "updated_daily_dimensions": "数据 {date}",
     "updated_label": "更新于 {date}",
     "regime_label": {
       "expansion": "扩张延续",

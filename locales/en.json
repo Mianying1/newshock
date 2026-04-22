@@ -175,6 +175,61 @@
     "error": "Something went wrong, please try again later",
     "disclaimer_footer": "Information only, not investment advice. Past performance does not predict future results."
   },
+  "sidebar": {
+    "workspace": "Workspace",
+    "radar": "Radar",
+    "themes": "Themes",
+    "tickers": "Tickers",
+    "events": "Events",
+    "last_sync": "Last sync",
+    "license_expires": "License"
+  },
+  "topbar": {
+    "search_placeholder": "Search themes, tickers, events… (coming soon)"
+  },
+  "radar": {
+    "today_on_radar": "Today on the Radar",
+    "narratives_count": "{n} narratives",
+    "active_themes_count": "{n} active themes",
+    "events_scanned_7d": "{n} events scanned 7d"
+  },
+  "top_tickers": {
+    "title": "Top Tickers",
+    "thematic_subtitle": "Active tickers across hot themes with recent catalyst flow",
+    "potential_subtitle": "Structural long-horizon themes still in early stage",
+    "event_driven_hot": "Event-driven · Hot",
+    "structural_early": "Structural · Early",
+    "show_all_thematic": "Show all {n} thematic →",
+    "show_all_potential": "Show all {n} potential →",
+    "tab_7d": "7d",
+    "tab_30d": "30d",
+    "tab_90d": "90d",
+    "tab_early": "Early",
+    "tab_mid": "Mid",
+    "tab_all": "All"
+  },
+  "event_stream": {
+    "title": "Event Stream",
+    "auto_matched": "Auto-matched to themes",
+    "show_unmatched": "show unmatched ({n})",
+    "no_theme_match": "No theme match · queued for review"
+  },
+  "active_themes": {
+    "title": "Active Themes",
+    "showing": "showing {n}",
+    "sorted_by_strength": "sorted by strength",
+    "stage_bar_mid": "{stage} stage · active",
+    "stage_bar_early": "{stage} stage · building",
+    "since": "Since {date}",
+    "est_horizon": "est. horizon {label}"
+  },
+  "curator": {
+    "title": "Curated Signal",
+    "signature": "Hand-picked patterns. Zero auto-posts. Weekly revisions by human operators."
+  },
+  "disclaimer": {
+    "framework_matches": "Framework matches based on historical patterns. Information tool, not investment advice."
+  },
   "narratives": {
     "heading": "This Week's Narratives",
     "narrative": "Narrative",
@@ -183,6 +238,7 @@
   },
   "market_regime": {
     "title": "Market Regime",
+    "composite": "Composite",
     "score_suffix": "/12",
     "guidance_label": "Configuration",
     "earnings": "Earnings",
@@ -192,6 +248,9 @@
     "credit": "Credit",
     "sentiment": "Sentiment",
     "sparkline_unavailable": "No history yet",
+    "six_dimensions": "Six dimensions",
+    "scores_refresh_twice_weekly": "Scores refresh twice weekly",
+    "updated_daily_dimensions": "Updated {date}",
     "updated_label": "as of {date}",
     "regime_label": {
       "expansion": "Expansion",
