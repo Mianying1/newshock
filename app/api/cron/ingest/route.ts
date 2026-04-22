@@ -1,5 +1,6 @@
 import { runIngest } from '@/lib/ingest'
 import { generateThemesForPendingEvents } from '@/lib/theme-generator'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { NextRequest } from 'next/server'
 
 export const maxDuration = 300 // Vercel Pro: 5-minute timeout
@@ -26,9 +27,29 @@ export async function GET(request: NextRequest) {
     console.log(`[cron] Ingest done: ${ingestResult.new_inserted} new events`)
 
     // Step 2: Run LLM theme pipeline on newly pending events
+    // limit=50 · rate_limit=3 keeps classify under ~3-4min, within 5min Vercel cap.
+    // Skip if backlog <5 — save Sonnet cost on quiet slots.
+    const { count: pendingCount } = await supabaseAdmin
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .is('trigger_theme_id', null)
+      .is('classifier_reasoning', null)
+
+    if ((pendingCount ?? 0) < 5) {
+      console.log(`[cron] Skip theme gen: only ${pendingCount} pending (<5)`)
+      return Response.json({
+        success: true,
+        slot,
+        duration_ms: Date.now() - startTime,
+        ingest: ingestResult,
+        theme_generation: { skipped: true, pending: pendingCount ?? 0 },
+        timestamp: new Date().toISOString(),
+      })
+    }
+
     const themeResult = await generateThemesForPendingEvents({
-      limit: 150,
-      rate_limit: 5,
+      limit: 50,
+      rate_limit: 3,
     })
     console.log(`[cron] Theme gen done: ${themeResult.themes_created} new themes`)
 
