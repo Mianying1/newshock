@@ -1021,8 +1021,11 @@ export async function generateThemesForPendingEvents(options: {
   // Single-stage Sonnet — STEP 0 relevance filter merged into Sonnet prompt
   // Concurrency 3 to respect Sonnet rate limits
   // SEC 8-K events route through dedicated classifier (classify8KEvent + applyDecision)
+  // allSettled: a single 429 used to reject the whole Promise.all and drop all
+  // successful classifications. Now partial successes still land in DB; failed
+  // events stay pending for the next cron.
   const sonnetLimiter = pLimit(rate_limit)
-  const sonnetResults = await Promise.all(
+  const settled = await Promise.allSettled(
     events.map((event) =>
       sonnetLimiter(async () => {
         if (isSecFiling(event)) {
@@ -1045,6 +1048,19 @@ export async function generateThemesForPendingEvents(options: {
     )
   )
 
+  let classifyErrors = 0
+  settled.forEach((r, idx) => {
+    if (r.status === 'rejected') {
+      classifyErrors++
+      const msg = r.reason instanceof Error ? r.reason.message : String(r.reason)
+      console.error(`[classify-failed] ${events[idx].id.slice(0, 8)}: ${msg.slice(0, 200)}`)
+    }
+  })
+  if (classifyErrors > 0) {
+    console.warn(`[theme-generator] ${classifyErrors}/${events.length} classify calls failed — events stay pending for next cron`)
+  }
+  const sonnetResults = settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+
   // Stage 3: DB operations — serial to avoid race conditions
   // batchArchetypeThemeMap: within-batch dedup — archetype_id → first theme_id created
   // When Sonnet calls ran in parallel they all saw an empty active-themes list, so
@@ -1056,7 +1072,7 @@ export async function generateThemesForPendingEvents(options: {
     new_from_archetype: 0,
     new_exploratory: 0,
     irrelevant: 0,
-    errors: 0,
+    errors: classifyErrors,
     themes_created: 0,
     recommendations_created: 0,
   }
