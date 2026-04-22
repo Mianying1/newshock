@@ -32,6 +32,10 @@
 - Every recommendation must show historical failure rate visibly.
 - Every page must include "Information tool, not investment advice" disclaimer.
 
+## Roadmap
+See docs/ROADMAP.md for detailed roadmap.
+Current phase: Phase 2 · Coverage Audit.
+
 ## Before completing any task
 - Update DECISIONS.md if a significant decision was made
 - Commit with clear message describing what changed
