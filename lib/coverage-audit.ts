@@ -30,6 +30,11 @@ interface NarrativeRow {
   related_theme_ids: string[] | null
 }
 
+interface ThemeRow {
+  name: string
+  summary: string | null
+}
+
 export interface SuggestedArchetype {
   name: string
   name_zh: string
@@ -92,11 +97,15 @@ function buildAuditPrompt({
   unmatched,
   regime,
   narratives,
+  umbrellas,
+  subthemes,
 }: {
   archetypes: ArchetypeRow[]
   unmatched: UnmatchedEventRow[]
   regime: RegimeRow | null
   narratives: NarrativeRow[]
+  umbrellas: ThemeRow[]
+  subthemes: ThemeRow[]
 }): string {
   const archetypeBlock = archetypes
     .map(
@@ -114,6 +123,14 @@ function buildAuditPrompt({
     .map((n) => `- ${n.title}: ${(n.description ?? '').slice(0, 200)}`)
     .join('\n')
 
+  const umbrellaBlock = umbrellas
+    .map((u) => `- ${u.name}${u.summary ? ': ' + u.summary.slice(0, 100) : ''}`)
+    .join('\n')
+
+  const subthemeBlock = subthemes
+    .map((s) => `- ${s.name}${s.summary ? ': ' + s.summary.slice(0, 100) : ''}`)
+    .join('\n')
+
   const regimeLine = regime
     ? `${regime.regime_label ?? 'n/a'} (${regime.total_score ?? '?'}/12)`
     : 'n/a'
@@ -122,6 +139,12 @@ function buildAuditPrompt({
 
 CURRENT ARCHETYPE LIBRARY (${archetypes.length} active):
 ${archetypeBlock}
+
+CURRENT ACTIVE UMBRELLAS (${umbrellas.length}):
+${umbrellaBlock || '(none)'}
+
+CURRENT ACTIVE SUBTHEMES (${subthemes.length}):
+${subthemeBlock || '(none)'}
 
 RECENT UNMATCHED EVENTS (last 14 days, sample of ${Math.min(50, unmatched.length)} of ${unmatched.length} total):
 ${unmatchedBlock || '(none)'}
@@ -135,7 +158,7 @@ ${narrativesBlock || '(none)'}
 
 AUDIT TASK:
 
-Review the archetype library from 3 perspectives:
+Review the archetype library from 4 perspectives:
 
 1. MACRO UMBRELLA COVERAGE
    Event-driven themes are well covered.
@@ -171,6 +194,25 @@ Review the archetype library from 3 perspectives:
    - "Israel Conflict Oil Impact"
    - "Venezuela Sanctions Oil"
    → Could merge into "Geopolitical Oil Premium" umbrella
+
+4. EXISTING SUBTHEMES CLUSTERING (important)
+   Review the 'Current Active Subthemes' list above.
+   Are there 3+ subthemes that should cluster under a MISSING umbrella?
+
+   Examples of the pattern:
+   - 5 subthemes about AI datacenter/compute/power capex → should fit under an 'AI Capex & Infrastructure' umbrella
+   - 4 subthemes about Fed/bank/rate/dollar → should fit under a 'Fed Rate Cycle Transition' umbrella
+   - 6 subthemes about crypto ETF/exchange/stablecoin → should fit under a 'Crypto Institutional Infrastructure' umbrella
+   - 4 subthemes about EV/battery/grid/nuclear → should fit under an 'Energy Transition Capex Cycle' umbrella
+
+   Rules:
+   - Only suggest if 3+ subthemes would genuinely cluster under the new umbrella.
+   - Priority HIGH if 4+ subthemes fit. Priority MEDIUM if exactly 3 fit. Don't suggest if <3.
+   - Do NOT propose an umbrella that duplicates one already in 'Current Active Umbrellas' above.
+     (Check names AND scope — don't re-propose "AI Capex", "Fed Rate Cycle", "Crypto Institutional",
+      "Energy Transition", "Pharma Innovation" or any near-synonym of an existing umbrella.)
+   - Output clustered-from subthemes in the 'reasoning' field (list the subtheme names).
+   - Use the same 'suggested_new_archetypes' output schema.
 
 ===
 
@@ -245,32 +287,45 @@ function parseAuditResponse(text: string): AuditPayload {
 export async function runCoverageAudit(): Promise<AuditReportRow> {
   const fourteenAgo = new Date(Date.now() - 14 * 86_400_000).toISOString()
 
-  const [archsRes, unmatchedRes, regimeRes, narrativesRes] = await Promise.all([
-    supabaseAdmin
-      .from('theme_archetypes')
-      .select('id, name, description, category, is_active')
-      .eq('is_active', true)
-      .order('name'),
-    supabaseAdmin
-      .from('events')
-      .select('id, headline, source_name, event_date, mentioned_tickers')
-      .is('trigger_theme_id', null)
-      .gte('event_date', fourteenAgo)
-      .order('event_date', { ascending: false })
-      .limit(100),
-    supabaseAdmin
-      .from('market_regime_snapshots')
-      .select('snapshot_date, regime_label, regime_label_zh, total_score')
-      .order('snapshot_date', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabaseAdmin
-      .from('market_narratives')
-      .select('title, description, related_theme_ids')
-      .eq('is_active', true)
-      .order('generated_at', { ascending: false })
-      .limit(10),
-  ])
+  const [archsRes, unmatchedRes, regimeRes, narrativesRes, umbrellasRes, subthemesRes] =
+    await Promise.all([
+      supabaseAdmin
+        .from('theme_archetypes')
+        .select('id, name, description, category, is_active')
+        .eq('is_active', true)
+        .order('name'),
+      supabaseAdmin
+        .from('events')
+        .select('id, headline, source_name, event_date, mentioned_tickers')
+        .is('trigger_theme_id', null)
+        .gte('event_date', fourteenAgo)
+        .order('event_date', { ascending: false })
+        .limit(100),
+      supabaseAdmin
+        .from('market_regime_snapshots')
+        .select('snapshot_date, regime_label, regime_label_zh, total_score')
+        .order('snapshot_date', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabaseAdmin
+        .from('market_narratives')
+        .select('title, description, related_theme_ids')
+        .eq('is_active', true)
+        .order('generated_at', { ascending: false })
+        .limit(10),
+      supabaseAdmin
+        .from('themes')
+        .select('name, summary')
+        .eq('theme_tier', 'umbrella')
+        .in('status', ['active', 'cooling'])
+        .order('name'),
+      supabaseAdmin
+        .from('themes')
+        .select('name, summary')
+        .eq('theme_tier', 'subtheme')
+        .in('status', ['active', 'cooling'])
+        .order('name'),
+    ])
 
   if (archsRes.error) throw new Error(`archetypes fetch: ${archsRes.error.message}`)
   if (unmatchedRes.error) throw new Error(`unmatched fetch: ${unmatchedRes.error.message}`)
@@ -279,8 +334,17 @@ export async function runCoverageAudit(): Promise<AuditReportRow> {
   const unmatched = (unmatchedRes.data ?? []) as UnmatchedEventRow[]
   const regime = (regimeRes.data ?? null) as RegimeRow | null
   const narratives = (narrativesRes.data ?? []) as NarrativeRow[]
+  const umbrellas = (umbrellasRes.data ?? []) as ThemeRow[]
+  const subthemes = (subthemesRes.data ?? []) as ThemeRow[]
 
-  const prompt = buildAuditPrompt({ archetypes, unmatched, regime, narratives })
+  const prompt = buildAuditPrompt({
+    archetypes,
+    unmatched,
+    regime,
+    narratives,
+    umbrellas,
+    subthemes,
+  })
 
   const response = await anthropic.messages.create({
     model: MODEL_SONNET,

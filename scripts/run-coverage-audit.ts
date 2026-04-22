@@ -1,6 +1,8 @@
-import { runCoverageAudit } from '../lib/coverage-audit'
+import { config } from 'dotenv'
+config({ path: '.env.local' })
 
 async function main() {
+  const { runCoverageAudit } = await import('../lib/coverage-audit')
   console.log('Running coverage audit…')
   const report = await runCoverageAudit()
 
