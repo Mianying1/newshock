@@ -87,6 +87,13 @@
     "cooling_archive_hint": "最后事件距今 {n} 天. 若无新事件, {m} 天后归档.",
     "cooling_label": "冷却中",
     "based_on_real_timeline": "(基于真实世界时间线)",
+    "view_all_events": "查看全部 {n} 条 →",
+    "collapse_events": "收起",
+    "theme_timeline": "主题时间线",
+    "expected_end": "预期持续",
+    "now_marker": "当前",
+    "no_catalysts": "暂无触发事件记录",
+    "today": "今天",
     "back": "← 返回",
     "loading": "Loading...",
     "error": "出错了, 稍后重试"

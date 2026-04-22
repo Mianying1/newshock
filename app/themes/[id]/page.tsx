@@ -18,6 +18,7 @@ export default function ThemeDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [showAllDiffs, setShowAllDiffs] = useState(false)
+  const [showAllEvents, setShowAllEvents] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -76,7 +77,19 @@ export default function ThemeDetailPage() {
               <p className="font-semibold text-zinc-800 mb-3">
                 ━━ {t('theme_detail.trigger_events')} ({theme.catalysts.length}) ━━
               </p>
-              <CatalystList catalysts={theme.catalysts} />
+              <CatalystList
+                catalysts={showAllEvents ? theme.catalysts : theme.catalysts.slice(0, 5)}
+              />
+              {theme.catalysts.length > 5 && (
+                <button
+                  onClick={() => setShowAllEvents((v) => !v)}
+                  className="mt-3 text-sm text-blue-600 hover:underline"
+                >
+                  {showAllEvents
+                    ? t('theme_detail.collapse_events')
+                    : t('theme_detail.view_all_events', { n: theme.catalysts.length })}
+                </button>
+              )}
             </div>
 
             {/* Exposure Mapping */}
@@ -122,112 +135,89 @@ export default function ThemeDetailPage() {
                     {t('theme_detail.disclaimer_playbook')}
                   </p>
 
-                  {/* Timeline — 3 modes by duration_type */}
+                  {/* Timeline — unified visual bar across bounded/extended/dependent */}
                   {(() => {
                     const dtype = pb.duration_type ?? 'bounded'
                     const rwt = pb.real_world_timeline
-
-                    if (dtype === 'bounded') {
-                      return (
-                        <div className="mt-3 mb-6">
-                          <div className="flex justify-between text-xs text-zinc-500 mb-1">
-                            <span>0 {t('theme_detail.days')}</span>
-                            <span>{hotProgressPercent}% {t('theme_detail.elapsed')}</span>
-                            <span>{daysMax} {t('theme_detail.days')} ({t('theme_detail.typical_ceiling')})</span>
-                          </div>
-                          <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
-                            <div className={`h-full ${stageColor} transition-all`} style={{ width: `${hotProgressPercent}%` }} />
-                          </div>
-                          {t(stageDescKey) && (
-                            <p className="text-xs mt-2 text-zinc-600">{t(stageDescKey)}</p>
-                          )}
-                          <div className="mt-3 space-y-1 text-sm">
-                            <div>
-                              <span className="text-zinc-600">{t('theme_detail.typical_duration')}: </span>
-                              <span className="font-medium">{pb.typical_duration_label}</span>
-                            </div>
-                            <div>
-                              <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
-                              <span className="font-medium">{theme.days_hot} {t('theme_detail.days')}</span>
-                              {theme.playbook_stage === 'late' && <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>}
-                              {theme.playbook_stage === 'beyond' && <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>}
-                            </div>
-                          </div>
-                          {isCooling && (
-                            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
-                              <div className="font-medium text-amber-900 mb-1">
-                                {t('theme_detail.cooling_banner_title', { n: theme.days_hot })}
-                              </div>
-                              <div className="text-amber-700 text-xs mb-2">
-                                {t('theme_detail.cooling_archive_hint', {
-                                  n: theme.days_since_last_event,
-                                  m: Math.max(0, 60 - theme.days_since_last_event),
-                                })}
-                              </div>
-                              <div className="flex justify-between text-[10px] text-amber-600 mb-0.5">
-                                <span>{t('theme_detail.cooling_label')}</span>
-                                <span>{theme.days_since_last_event}d / 60d</span>
-                              </div>
-                              <div className="h-1 bg-amber-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-amber-500 transition-all" style={{ width: `${coolProgressPercent}%` }} />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )
+                    const maturityLabel: Record<string, string> = {
+                      early: t('theme_card.stage_early'),
+                      mid: t('theme_card.stage_mid'),
+                      late: t('theme_card.stage_late'),
+                      beyond: t('theme_card.stage_beyond'),
+                      beyond_typical: t('theme_card.stage_beyond'),
+                      unknown: '',
                     }
+                    const startLabel =
+                      rwt?.approximate_start ??
+                      (theme.first_seen_at ? theme.first_seen_at.slice(0, 10) : 'Start')
+                    const expectedDays = daysMax > 0 ? daysMax : 0
+                    const progressPercent = expectedDays > 0
+                      ? Math.min(100, Math.round((theme.days_hot / expectedDays) * 100))
+                      : 20
+                    const modeNote =
+                      dtype === 'extended'
+                        ? t('timeline.extended_note')
+                        : dtype === 'dependent'
+                          ? t('timeline.dependent_note')
+                          : t(stageDescKey)
+                    const stageText = maturityLabel[theme.playbook_stage] ?? ''
 
-                    if (dtype === 'extended') {
-                      const maturityLabel: Record<string, string> = {
-                        early: t('theme_card.stage_early'),
-                        mid: t('theme_card.stage_mid'),
-                        late: t('theme_card.stage_late'),
-                        beyond_typical: t('theme_card.stage_beyond'),
-                      }
-                      return (
-                        <div className="mt-3 mb-6 p-3 bg-zinc-50 rounded border border-zinc-200 text-sm space-y-2">
-                          <div className="font-medium text-zinc-700">━━ {t('timeline.heading')} ━━</div>
-                          <div>
-                            <span className="text-zinc-500">⏱ {t('timeline.tracked')}: </span>
-                            <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
-                            <span className="text-zinc-400 ml-1">({t('timeline.since')} {theme.first_seen_at?.slice(0, 10)})</span>
-                          </div>
-                          {rwt && (
-                            <>
-                              <div>
-                                <span className="text-zinc-500">⏳ {t('timeline.real_world')}: </span>
-                                <span className="font-medium">~{rwt.approximate_start}</span>
-                                {rwt.description && (
-                                  <span className="text-zinc-500 ml-1">· {rwt.description}</span>
-                                )}
-                              </div>
-                              <div>
-                                <span className="text-zinc-500">📊 {t('timeline.maturity')}: </span>
-                                <span className="font-medium">{maturityLabel[rwt.current_maturity_estimate] ?? rwt.current_maturity_estimate}</span>
-                                <span className="text-zinc-400 ml-2 text-xs">{t('theme_detail.based_on_real_timeline')}</span>
-                              </div>
-                            </>
-                          )}
-                          <p className="text-xs text-zinc-400 italic">{t('timeline.extended_note')}</p>
-                        </div>
-                      )
-                    }
-
-                    // dependent
                     return (
-                      <div className="mt-3 mb-6 p-3 bg-amber-50 rounded border border-amber-100 text-sm space-y-2">
-                        <div className="font-medium text-zinc-700">━━ {t('timeline.heading')} ━━</div>
-                        <div>
-                          <span className="text-zinc-500">⏱ {t('timeline.this_cycle')}: </span>
-                          <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                      <div className="border border-zinc-200 rounded-lg p-4 my-6">
+                        <h3 className="text-sm font-medium mb-3">
+                          {t('theme_detail.theme_timeline')}
+                        </h3>
+
+                        <div className="flex justify-between text-xs text-zinc-500 mb-2">
+                          <span>{startLabel}</span>
+                          <span>{t('theme_detail.expected_end')}</span>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-amber-600">🔗</span>
-                          <span className="font-medium text-amber-700">{t('duration_type.dependent')}</span>
+
+                        <div className="relative h-2 bg-zinc-100 rounded-full">
+                          <div
+                            className={`absolute top-0 left-0 h-full ${stageColor} rounded-full transition-all`}
+                            style={{ width: `${progressPercent}%` }}
+                          />
+                          <div
+                            className="absolute -top-1 w-3.5 h-3.5 bg-blue-600 border-2 border-white rounded-full shadow"
+                            style={{ left: `calc(${progressPercent}% - 7px)` }}
+                            title={t('theme_detail.now_marker')}
+                          />
                         </div>
-                        <p className="text-xs text-amber-700">{t('timeline.dependent_note')}</p>
-                        {pb.duration_type_reasoning && (
-                          <p className="text-xs text-zinc-500 italic">{pb.duration_type_reasoning}</p>
+
+                        <div className="flex justify-between text-xs mt-3">
+                          <span className="text-zinc-600">
+                            {t('theme_card.stage_prefix')}:{' '}
+                            <strong className="text-zinc-900">{stageText}</strong>
+                          </span>
+                          <span className="text-zinc-500">
+                            {theme.days_hot} / {expectedDays > 0 ? `~${expectedDays}` : '?'} {t('theme_detail.days')}
+                          </span>
+                        </div>
+
+                        {modeNote && (
+                          <p className="text-xs text-zinc-500 italic mt-2">{modeNote}</p>
+                        )}
+
+                        {isCooling && (
+                          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
+                            <div className="font-medium text-amber-900 mb-1">
+                              {t('theme_detail.cooling_banner_title', { n: theme.days_hot })}
+                            </div>
+                            <div className="text-amber-700 text-xs mb-2">
+                              {t('theme_detail.cooling_archive_hint', {
+                                n: theme.days_since_last_event,
+                                m: Math.max(0, 60 - theme.days_since_last_event),
+                              })}
+                            </div>
+                            <div className="flex justify-between text-[10px] text-amber-600 mb-0.5">
+                              <span>{t('theme_detail.cooling_label')}</span>
+                              <span>{theme.days_since_last_event}d / 60d</span>
+                            </div>
+                            <div className="h-1 bg-amber-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-amber-500 transition-all" style={{ width: `${coolProgressPercent}%` }} />
+                            </div>
+                          </div>
                         )}
                       </div>
                     )
@@ -256,20 +246,41 @@ export default function ThemeDetailPage() {
 
                       {visibleDiffs.length > 0 && (
                         <div className="mb-3">
-                          <div className="text-sm font-medium mb-2">{t('theme_detail.structural_differences')}:</div>
-                          <ul className="space-y-1 text-sm">
-                            {visibleDiffs.map((d, i) => (
-                              <li key={i} className="flex gap-2">
-                                <span className="flex-shrink-0">
-                                  {d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '?'}
-                                </span>
-                                <span>
-                                  <span className="text-zinc-600">{d.dimension}:</span> {d.description}
-                                  <span className="text-xs text-zinc-500 ml-1">[{d.confidence}]</span>
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
+                          <div className="text-sm font-medium mb-2">{t('theme_detail.structural_differences')}</div>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            {visibleDiffs.map((d, i) => {
+                              const arrow =
+                                d.direction === 'may_extend' ? '↑'
+                                : d.direction === 'may_shorten' ? '↓'
+                                : '⇅'
+                              const arrowColor =
+                                d.direction === 'may_extend' ? 'text-emerald-600'
+                                : d.direction === 'may_shorten' ? 'text-rose-600'
+                                : 'text-zinc-500'
+                              const confClass =
+                                d.confidence === 'high'
+                                  ? 'bg-emerald-50 text-emerald-700'
+                                  : 'bg-amber-50 text-amber-700'
+                              return (
+                                <div key={i} className="border border-zinc-200 bg-white rounded-lg p-3">
+                                  <div className="flex items-center justify-between mb-1.5">
+                                    <div className="flex items-center gap-2">
+                                      <span className={`text-base ${arrowColor}`}>{arrow}</span>
+                                      <span className="text-sm font-medium capitalize">
+                                        {d.dimension.replace(/_/g, ' ')}
+                                      </span>
+                                    </div>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${confClass}`}>
+                                      {d.confidence}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-zinc-600 leading-relaxed">
+                                    {d.description}
+                                  </p>
+                                </div>
+                              )
+                            })}
+                          </div>
                           {!showAllDiffs && hiddenCount > 0 && (
                             <button
                               onClick={() => setShowAllDiffs(true)}

@@ -87,6 +87,13 @@
     "cooling_archive_hint": "Last event: {n} days ago. Archive in {m} days if no new events.",
     "cooling_label": "Cooling",
     "based_on_real_timeline": "(based on real-world timeline)",
+    "view_all_events": "View all {n} events →",
+    "collapse_events": "Collapse",
+    "theme_timeline": "Theme Timeline",
+    "expected_end": "Expected",
+    "now_marker": "NOW",
+    "no_catalysts": "No trigger events yet",
+    "today": "today",
     "back": "← Back",
     "loading": "Loading...",
     "error": "Something went wrong, please try again later"

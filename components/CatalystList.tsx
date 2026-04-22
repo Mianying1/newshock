@@ -1,8 +1,12 @@
+'use client'
 import type { CatalystEvent } from '@/types/recommendations'
+import { useI18n } from '@/lib/i18n-context'
 
 export default function CatalystList({ catalysts }: { catalysts: CatalystEvent[] }) {
+  const { t } = useI18n()
+
   if (catalysts.length === 0) {
-    return <p className="text-sm text-zinc-400">暂无触发事件记录</p>
+    return <p className="text-sm text-zinc-400">{t('theme_detail.no_catalysts')}</p>
   }
 
   return (
@@ -23,7 +27,7 @@ export default function CatalystList({ catalysts }: { catalysts: CatalystEvent[]
           )}
           <p className="text-xs text-zinc-400 mt-0.5">
             {c.source_name && <span>{c.source_name} · </span>}
-            {c.days_ago === 0 ? '今天' : `${c.days_ago} 天前`}
+            {c.days_ago === 0 ? t('theme_detail.today') : t('relative_time.days_ago', { n: c.days_ago })}
           </p>
         </div>
       ))}
