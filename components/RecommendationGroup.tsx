@@ -43,10 +43,10 @@ export function RecommendationCard({ r }: { r: ThemeRecommendation }) {
         <div className="flex items-center gap-1.5 flex-wrap ml-auto">
           {r.is_thematic_tool && (
             <span
-              className="text-[10px] text-zinc-500 cursor-help"
+              className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 cursor-help"
               title={t('theme_detail.thematic_tool_tooltip')}
             >
-              ⚙︎
+              💎
             </span>
           )}
           {r.confidence_band && (
