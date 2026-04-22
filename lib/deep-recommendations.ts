@@ -451,8 +451,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
 
   const priorSymbols = new Set(currentRecs.map((r) => r.ticker_symbol))
   const nowSymbols = new Set(uniqueTickers)
-  const added = [...nowSymbols].filter((s) => !priorSymbols.has(s))
-  const removed = [...priorSymbols].filter((s) => !nowSymbols.has(s))
+  const added = Array.from(nowSymbols).filter((s) => !priorSymbols.has(s))
+  const removed = Array.from(priorSymbols).filter((s) => !nowSymbols.has(s))
 
   const generatedAt = new Date().toISOString()
   const rowsToInsert = result.output.recommendations.map((r) => ({

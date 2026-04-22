@@ -8,6 +8,7 @@ import type {
   ArchetypePlaybook,
   PlaybookStage,
   ExposureDirection,
+  MarketCapBand,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -38,6 +39,9 @@ interface ThemeRow {
   first_event_at: string | null
   days_hot: number | null
   event_count: number
+  strategist_reflection: string | null
+  strategist_reflection_zh: string | null
+  deep_generated_at: string | null
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -58,6 +62,16 @@ interface RecRow {
   role_reasoning: string | null
   role_reasoning_zh: string | null
   exposure_direction: string | null
+  business_exposure: string | null
+  business_exposure_zh: string | null
+  catalyst: string | null
+  catalyst_zh: string | null
+  risk: string | null
+  risk_zh: string | null
+  market_cap_band: string | null
+  is_pure_play: boolean | null
+  is_often_missed: boolean | null
+  confidence: number | null
   added_at: string
   tickers: TickerInfo | TickerInfo[] | null
 }
@@ -75,19 +89,29 @@ interface EventRow {
 async function fetchRecommendations(themeId: string): Promise<ThemeRecommendation[]> {
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
-    .select('ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
+    .select(
+      'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
+      'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
+      'market_cap_band, is_pure_play, is_often_missed, confidence, added_at, ' +
+      'tickers(company_name, sector, market_cap_usd_b, logo_url)'
+    )
     .eq('theme_id', themeId)
     .order('tier')
     .order('ticker_symbol')
 
   if (error) throw new Error(`recs fetch failed: ${error.message}`)
 
-  return (data ?? []).map((r: RecRow) => {
+  const validCapBands = new Set(['small', 'mid', 'large'])
+
+  return ((data ?? []) as unknown as RecRow[]).map((r) => {
     const ticker = Array.isArray(r.tickers) ? r.tickers[0] : r.tickers
     const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
     const direction = validDirections.has(r.exposure_direction ?? '')
       ? (r.exposure_direction as ExposureDirection)
       : 'uncertain'
+    const capBand = validCapBands.has(r.market_cap_band ?? '')
+      ? (r.market_cap_band as MarketCapBand)
+      : null
     return {
       ticker_symbol: r.ticker_symbol,
       company_name: ticker?.company_name ?? r.ticker_symbol,
@@ -98,6 +122,16 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       exposure_direction: direction,
       role_reasoning: r.role_reasoning ?? '',
       role_reasoning_zh: r.role_reasoning_zh ?? null,
+      business_exposure: r.business_exposure ?? null,
+      business_exposure_zh: r.business_exposure_zh ?? null,
+      catalyst: r.catalyst ?? null,
+      catalyst_zh: r.catalyst_zh ?? null,
+      risk: r.risk ?? null,
+      risk_zh: r.risk_zh ?? null,
+      market_cap_band: capBand,
+      is_pure_play: r.is_pure_play,
+      is_often_missed: r.is_often_missed,
+      confidence: r.confidence,
       added_at: r.added_at,
     }
   })
@@ -184,6 +218,9 @@ function buildItem(
     archetype_playbook,
     archetype_playbook_zh,
     playbook_stage,
+    strategist_reflection: row.strategist_reflection ?? null,
+    strategist_reflection_zh: row.strategist_reflection_zh ?? null,
+    deep_generated_at: row.deep_generated_at ?? null,
   }
 }
 
@@ -213,6 +250,7 @@ export async function buildThemeRadar(options: {
       'id, name, name_zh, archetype_id, status, institutional_awareness, ' +
       'theme_strength_score, classification_confidence, summary, summary_zh, ' +
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
+      'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
@@ -306,10 +344,11 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   const { data: row, error } = await supabaseAdmin
     .from('themes')
     .select(
-      'id, name, archetype_id, status, institutional_awareness, ' +
-      'theme_strength_score, classification_confidence, summary, ' +
+      'id, name, name_zh, archetype_id, status, institutional_awareness, ' +
+      'theme_strength_score, classification_confidence, summary, summary_zh, ' +
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
-      'theme_archetypes(category, playbook)'
+      'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
+      'theme_archetypes(category, playbook, playbook_zh)'
     )
     .eq('id', themeId)
     .single()

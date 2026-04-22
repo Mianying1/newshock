@@ -42,6 +42,7 @@ export function ActiveThemeCard({ theme }: { theme: ThemeRadarItem }) {
   const { t, locale } = useI18n()
   const themeName = useField(theme, 'name')
   const summary = useField(theme, 'summary')
+  const reflection = useField(theme, 'strategist_reflection')
 
   const stage =
     STAGE_META[theme.playbook_stage] ?? STAGE_META.unknown
@@ -72,6 +73,22 @@ export function ActiveThemeCard({ theme }: { theme: ThemeRadarItem }) {
         <div style={{ minWidth: 0 }}>
           <div className="th-title">{themeName}</div>
           {summary && <div className="th-sub">{summary}</div>}
+          {reflection && (
+            <div
+              className="th-sub"
+              style={{
+                fontStyle: 'italic',
+                color: 'var(--ink-4)',
+                marginTop: 4,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              — {reflection}
+            </div>
+          )}
         </div>
         <div className="th-evts">str {theme.theme_strength_score.toFixed(0)}</div>
       </div>

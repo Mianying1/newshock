@@ -1,4 +1,5 @@
 export type ExposureDirection = 'benefits' | 'headwind' | 'mixed' | 'uncertain'
+export type MarketCapBand = 'small' | 'mid' | 'large'
 
 export interface ThemeRecommendation {
   ticker_symbol: string
@@ -10,6 +11,16 @@ export interface ThemeRecommendation {
   exposure_direction: ExposureDirection
   role_reasoning: string
   role_reasoning_zh: string | null
+  business_exposure: string | null
+  business_exposure_zh: string | null
+  catalyst: string | null
+  catalyst_zh: string | null
+  risk: string | null
+  risk_zh: string | null
+  market_cap_band: MarketCapBand | null
+  is_pure_play: boolean | null
+  is_often_missed: boolean | null
+  confidence: number | null
   added_at: string
 }
 
@@ -93,6 +104,9 @@ export interface ThemeRadarItem {
   archetype_playbook: ArchetypePlaybook | null
   archetype_playbook_zh: ArchetypePlaybook | null
   playbook_stage: PlaybookStage
+  strategist_reflection: string | null
+  strategist_reflection_zh: string | null
+  deep_generated_at: string | null
 }
 
 export interface ThemeRadarSummary {

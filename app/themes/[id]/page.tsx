@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import RecommendationTier from '@/components/RecommendationTier'
+import { RecommendationGroup } from '@/components/RecommendationGroup'
 import CatalystList from '@/components/CatalystList'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
@@ -38,9 +38,14 @@ export default function ThemeDetailPage() {
       })
   }, [id])
 
-  const tier1 = theme?.recommendations.filter((r) => r.tier === 1) ?? []
-  const tier2 = theme?.recommendations.filter((r) => r.tier === 2) ?? []
-  const tier3 = theme?.recommendations.filter((r) => r.tier === 3) ?? []
+  const recs = theme?.recommendations ?? []
+  const headwinds = recs.filter((r) => r.exposure_direction === 'headwind')
+  const nonHeadwinds = recs.filter((r) => r.exposure_direction !== 'headwind')
+  const pureBeneficiaries = nonHeadwinds.filter((r) => r.is_pure_play === true)
+  const diversifiedBeneficiaries = nonHeadwinds.filter((r) => r.is_pure_play !== true)
+  const hiddenAngles = recs.filter((r) => r.is_often_missed === true)
+  const reflection =
+    theme ? pickField(locale, theme.strategist_reflection, theme.strategist_reflection_zh) : ''
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
@@ -100,10 +105,35 @@ export default function ThemeDetailPage() {
 
             {/* Exposure Mapping */}
             <div>
-              <p className="font-semibold text-zinc-800 mb-4">━━ {t('theme_detail.exposure_mapping')} ━━</p>
-              <RecommendationTier tier={1} recommendations={tier1} />
-              <RecommendationTier tier={2} recommendations={tier2} />
-              <RecommendationTier tier={3} recommendations={tier3} />
+              <p className="font-semibold text-zinc-800 mb-3">━━ {t('theme_detail.exposure_mapping')} ━━</p>
+
+              {reflection.trim().length > 0 && (
+                <div className="mb-5 p-3 border-l-2 border-zinc-300 bg-zinc-50 rounded-r">
+                  <p className="text-[11px] uppercase tracking-wide text-zinc-400 mb-1">
+                    {t('theme_detail.strategist_reflection')}
+                  </p>
+                  <p className="text-sm italic text-zinc-700 leading-relaxed">{reflection}</p>
+                </div>
+              )}
+
+              <RecommendationGroup
+                title={t('theme_detail.pure_play_beneficiaries')}
+                items={pureBeneficiaries}
+              />
+              <RecommendationGroup
+                title={t('theme_detail.diversified_beneficiaries')}
+                items={diversifiedBeneficiaries}
+              />
+              <RecommendationGroup
+                title={t('theme_detail.hidden_angles')}
+                items={hiddenAngles}
+                variant="hidden"
+              />
+              <RecommendationGroup
+                title={t('theme_detail.headwinds')}
+                items={headwinds}
+                variant="headwind"
+              />
               {theme.recommendations.length === 0 && (
                 <p className="text-sm text-zinc-400">{t('theme_detail.no_exposure')}</p>
               )}
