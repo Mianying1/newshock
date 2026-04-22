@@ -37,7 +37,7 @@ export async function getMatcherContext(forceRefresh = false): Promise<MatcherCo
 
   const [archetypes, activeThemes, tickerData] = await Promise.all([
     loadActiveArchetypes(),
-    loadActiveThemes(30),
+    loadActiveThemes(90),
     supabaseAdmin.from('tickers').select('symbol').eq('is_recommendation_candidate', true),
   ])
 

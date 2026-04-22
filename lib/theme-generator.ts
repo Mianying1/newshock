@@ -1,5 +1,5 @@
 import pLimit from 'p-limit'
-import { anthropic, MODEL_HAIKU, MODEL_SONNET } from './anthropic'
+import { anthropic, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import { isSecFiling, SEC_DEFER_REASONING } from './sec-filter'
 import { getMatcherContext, invalidateMatcherCache } from './theme-matcher'
@@ -241,22 +241,38 @@ themes in theme_summary for human review.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 3 — EXISTING THEME CONSOLIDATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-If Step 2 found a match, check ACTIVE_THEMES for an existing theme.
-Use strengthen_existing if ALL hold:
-  ✓ An active theme has the SAME archetype_id as your match
-  ✓ Its last_active_at is within 14 days of this news
-  ✓ This news is about the SAME ongoing situation (same country/entity/event chain)
-  ✓ News adds new information (not a duplicate)
+DEFAULT: Strengthen existing theme.
+The prior bias of this system was too aggressive in creating new themes —
+most related events should strengthen, not spawn a new theme.
+
+Check ACTIVE_THEMES (includes active + cooling + exploratory within 90d).
+
+STRENGTHEN (ANY sufficient — lean heavily toward strengthen):
+  ✓ Same archetype_id + last_active_at within 90 days
+  ✓ Different archetype but theme is semantically highly overlapping
+    (e.g. two "DeFi security" themes with different archetypes → merge)
+  ✓ Same entity / geography / mechanism (Iran, EV battery, DeFi exploit,
+    rare-earth export, GLP-1 trial, etc.)
+  ✓ Adds a new angle to an existing theme (new angle ≠ new theme)
+
+Only create a NEW theme when AT LEAST ONE is true:
+  ✗ Completely different entity / geography / mechanism
+  ✗ Same archetype but last_active_at > 90 days (genuinely old theme)
+  ✗ Clearly distinct sub-theme angle (provide concrete justification)
 
 STRENGTHEN examples:
-  • 3rd US chip-export update → existing "US AI Chip Export" theme (same archetype, same policy)
-  • 2nd Iran escalation report → existing "Iran Crisis" theme (same conflict)
-DO NOT strengthen:
-  • Same archetype but different country or entity (Iran tension ≠ Russia sanctions)
-  • News from a different archetype's perspective
+  • 3rd US chip-export update → existing "US AI Chip Export" theme
+  • 2nd Iran escalation report → existing "Iran Crisis" theme
+  • New DeFi exploit headline + existing "DeFi Security Crisis" → STRENGTHEN
+    (do not spawn "DeFi Security Crisis · <protocol name>")
+  • New LFP fast-charge claim + existing "EV Battery Arms Race"  → STRENGTHEN
+NEW theme only when:
+  • Iran tension when current active theme is Russia sanctions (different entity)
+  • AI compute demand when current theme is AI cooling (different mechanism)
 
 If strengthen conditions met → action = "strengthen_existing", set target_theme_id.
 Otherwise → action = "new_from_archetype".
+Reserve new_exploratory for events genuinely outside all existing themes AND archetypes.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 AI INFRASTRUCTURE TICKER REMINDER
@@ -399,80 +415,17 @@ Investment + material commercial revenue flow → include based on commercial si
 theme_name format: "Main Concept · Specific Angle" (concise, max 60 chars, English only)
 Return ONLY valid JSON. No markdown, no text outside JSON.`
 
-// ─── Cost estimates (per-event) ───────────────────────────────────────────────
-// Haiku: ~700 input + 100 output = ~$0.0006
-// Sonnet cache miss: ~9k input + 500 output = ~$0.041
-// Sonnet cache hit: ~8k cached + 700 uncached input + 500 output = ~$0.014
-// Use cache-hit estimate after first call in a batch
-const COST_HAIKU = 0.0006
-const COST_SONNET_CACHE_MISS = 0.041
+// Sonnet cache hit: ~8k cached + 700 uncached + 500 output ≈ $0.014 per event
 const COST_SONNET_CACHE_HIT = 0.014
 
-// ─── Stage 1: Haiku pre-filter ────────────────────────────────────────────────
-
-async function haikusFilter(
-  headline: string,
-  snippet: string
-): Promise<{ relevant: boolean; reason: string }> {
-  const prompt = `You are a financial news relevance filter for a thematic investing tool.
-
-Mark as RELEVANT if the news could move stock prices in ANY sector. Broad inclusion — when in doubt, mark relevant. Specifically include:
-
-- AI / semiconductors / data center / cloud infrastructure
-- Macroeconomic shifts (Fed, inflation, FX, VIX, credit, yield curve)
-- Geopolitical events (wars, tariffs, sanctions, China, Taiwan, Middle East, elections with market impact)
-- Supply chain disruptions (shipping, fab, critical components, ports, logistics)
-- Industrial policy / onshoring / reshoring / energy transition / grid
-- Regulatory decisions (FDA, FTC, SEC, FAA, BIS, CFIUS)
-- Commodity shocks (oil, gas, rare earth, copper, power, agricultural)
-
-- 【扩展】Agriculture / fertilizer / food supply (wheat, corn, potash, phosphate)
-- 【扩展】Pharma / biotech / GLP-1 / clinical trials / drug approvals
-- 【扩展】Defense / aerospace / military contracts / weapons systems
-- 【扩展】EV / battery / lithium / automotive supply chain
-- 【扩展】Crypto / stablecoins / BTC ETF / digital assets regulation
-- 【扩展】Consumer shifts / retail / restaurant / travel / housing
-
-- Corporate catalysts (major M&A, strategic investments, partnerships, restructuring, turnarounds)
-- Single-company catalysts if the company is large enough to move sector ETFs or has supply chain ripple effects
-
-Mark as IRRELEVANT only if clearly:
-- Pure politics / elections without direct market mechanism
-- Sports / entertainment / celebrity / lifestyle
-- Small-cap earnings with no sector read-across (under $500M market cap solo news)
-- Internal corporate news (personnel below C-suite, office moves, routine filings without financial substance)
-
-Default: when unsure, mark RELEVANT and let downstream analysis decide.
-
-Return JSON only: {"relevant": boolean, "reason": "one sentence"}
-
-Headline: ${headline}
-Snippet: ${snippet.slice(0, 500)}`
-
-  const msg = await anthropic.messages.create({
-    model: MODEL_HAIKU,
-    max_tokens: 120,
-    temperature: 0,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  const text = (msg.content[0] as { type: string; text: string }).text.trim()
-  try {
-    const json = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim())
-    return { relevant: Boolean(json.relevant), reason: String(json.reason ?? '') }
-  } catch {
-    return { relevant: true, reason: 'parse error - treated as relevant' }
-  }
-}
-
-// ─── Stage 2: Sonnet theme identification (with prompt caching) ───────────────
+// ─── Sonnet theme identification (with prompt caching) ────────────────────────
 
 async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> {
   const ctx = await getMatcherContext()
 
   const cachedContext =
     `ARCHETYPES (20 active):\n${ctx.archetypesText}\n\n` +
-    `ACTIVE_THEMES (last 30 days):\n${ctx.activeThemesText}\n\n` +
+    `ACTIVE_THEMES (status=active|cooling|exploratory_candidate|archived, last 90 days):\n${ctx.activeThemesText}\n\n` +
     `TICKERS DATABASE (only use symbols from this list):\n${ctx.tickersText}`
 
   const mentionedTickers = (event.mentioned_tickers ?? []).join(', ') || '(none extracted)'
@@ -669,32 +622,43 @@ async function handleStrengthenExisting(
   themeId: string,
   reasoning: string
 ): Promise<{ tickers_created: number; novel_tickers_skipped: string[] }> {
-  await supabaseAdmin
-    .from('themes')
-    .update({
-      event_count: supabaseAdmin.rpc as unknown as never, // handled below via raw increment
-      last_active_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', themeId)
-
-  // Use RPC-style increment via raw SQL workaround: read then write
   const { data: existing } = await supabaseAdmin
     .from('themes')
-    .select('event_count, theme_strength_score')
+    .select('event_count, theme_strength_score, status')
     .eq('id', themeId)
     .single()
 
   if (existing) {
+    const newEventCount = (existing.event_count ?? 0) + 1
+    const newStrength = Math.min(100, (existing.theme_strength_score ?? 50) + 2)
+
     await supabaseAdmin
       .from('themes')
       .update({
-        event_count: (existing.event_count ?? 0) + 1,
-        theme_strength_score: Math.min(100, (existing.theme_strength_score ?? 50) + 2),
+        event_count: newEventCount,
+        theme_strength_score: newStrength,
         last_active_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq('id', themeId)
+
+    // Auto-promote exploratory → active when it has earned attention
+    if (existing.status === 'exploratory_candidate' && (newEventCount >= 3 || newStrength >= 55)) {
+      await supabaseAdmin
+        .from('themes')
+        .update({ status: 'active', institutional_awareness: 'early' })
+        .eq('id', themeId)
+      console.log(`  [promote] ${themeId}: exploratory_candidate → active (events=${newEventCount}, strength=${newStrength})`)
+    }
+
+    // Revive archived / cooling themes on fresh strengthen
+    if (existing.status === 'archived' || existing.status === 'cooling') {
+      await supabaseAdmin
+        .from('themes')
+        .update({ status: 'active' })
+        .eq('id', themeId)
+      console.log(`  [revive] ${themeId}: ${existing.status} → active`)
+    }
   }
 
   await supabaseAdmin

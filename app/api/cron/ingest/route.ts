@@ -18,11 +18,10 @@ export async function GET(request: NextRequest) {
   try {
     console.log(`[cron] Starting slot=${slot}`)
 
-    // Step 1: Ingest new articles (skip built-in classifier — theme generator handles it)
+    // Step 1: Ingest new articles (theme generator handles classification)
     const ingestResult = await runIngest({
       slot,
       per_source_limit: 30,
-      classify: false,
     })
     console.log(`[cron] Ingest done: ${ingestResult.new_inserted} new events`)
 

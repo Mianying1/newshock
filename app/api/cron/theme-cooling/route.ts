@@ -12,13 +12,14 @@ export async function GET(request: NextRequest) {
   const { data: themes, error } = await supabaseAdmin
     .from('themes')
     .select('id, name, status, first_event_at')
-    .in('status', ['active', 'cooling'])
+    .in('status', ['active', 'cooling', 'archived'])
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
   let refreshed = 0
   let coolingSet = 0
   let archived = 0
+  const revived: { id: string; name: string }[] = []
 
   for (const theme of themes ?? []) {
     const { data: events } = await supabaseAdmin
@@ -47,7 +48,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Status transitions
-    if (theme.status === 'active' && daysSinceLast >= 30) {
+    if (theme.status === 'archived' && daysSinceLast < 30) {
+      updates.status = 'active'
+      revived.push({ id: theme.id, name: theme.name })
+    } else if (theme.status === 'active' && daysSinceLast >= 30) {
       updates.status = 'cooling'
       coolingSet++
     } else if (theme.status === 'cooling' && daysSinceLast >= 60) {
@@ -64,6 +68,8 @@ export async function GET(request: NextRequest) {
     refreshed,
     cooling_set: coolingSet,
     archived,
-    message: `${refreshed} themes refreshed, ${coolingSet} set to cooling, ${archived} archived`,
+    revived_count: revived.length,
+    revived,
+    message: `${refreshed} themes refreshed, ${coolingSet} set to cooling, ${archived} archived, ${revived.length} revived`,
   })
 }

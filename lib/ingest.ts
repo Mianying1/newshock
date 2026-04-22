@@ -1,13 +1,11 @@
 import { supabaseAdmin } from './supabase-admin'
 import { fetchAllSources, FetchedNews, SourceResult } from './news-fetcher'
 import { filterDuplicates, filterOldDuplicates } from './news-dedupe'
-import { classifyPendingEvents, ClassifySummary } from './classifier'
 import { NewsSlot } from './news-sources'
 
 export interface IngestOptions {
   slot?: NewsSlot
   per_source_limit?: number
-  classify?: boolean  // default true
 }
 
 export interface IngestResult {
@@ -17,11 +15,10 @@ export interface IngestResult {
   skipped_duplicates: number
   sources: SourceResult[]
   duration_ms: number
-  classification?: ClassifySummary
 }
 
 export async function runIngest(options: IngestOptions = {}): Promise<IngestResult> {
-  const { slot, per_source_limit, classify = true } = options
+  const { slot, per_source_limit } = options
   const start = Date.now()
 
   console.log(`[ingest] Starting ingest slot=${slot ?? 'all'} per_source_limit=${per_source_limit ?? 'none'}`)
@@ -85,14 +82,6 @@ export async function runIngest(options: IngestOptions = {}): Promise<IngestResu
     console.log('[ingest] Nothing new to insert')
   }
 
-  // 6. Classify newly inserted events
-  let classification: ClassifySummary | undefined
-  if (classify && new_inserted > 0) {
-    console.log(`[ingest] Running classifier on ${new_inserted} new events`)
-    classification = await classifyPendingEvents({ limit: new_inserted, rate_limit: 5 })
-    console.log(`[ingest] Classification done: ${JSON.stringify(classification)}`)
-  }
-
   const duration_ms = Date.now() - start
 
   return {
@@ -102,6 +91,5 @@ export async function runIngest(options: IngestOptions = {}): Promise<IngestResu
     skipped_duplicates,
     sources: sourceResults,
     duration_ms,
-    classification,
   }
 }

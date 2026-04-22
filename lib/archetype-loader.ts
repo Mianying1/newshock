@@ -27,6 +27,7 @@ export interface ActiveTheme {
   last_active_at: string
   theme_strength_score: number
   institutional_awareness: string
+  status: string
 }
 
 export async function loadActiveArchetypes(): Promise<Archetype[]> {
@@ -45,12 +46,12 @@ export async function loadActiveArchetypes(): Promise<Archetype[]> {
   return (data ?? []) as unknown as Archetype[]
 }
 
-export async function loadActiveThemes(days = 30): Promise<ActiveTheme[]> {
+export async function loadActiveThemes(days = 90): Promise<ActiveTheme[]> {
   const cutoff = new Date(Date.now() - days * 86400 * 1000).toISOString()
   const { data, error } = await supabaseAdmin
     .from('themes')
-    .select('id, name, archetype_id, summary, last_active_at, theme_strength_score, institutional_awareness')
-    .eq('status', 'active')
+    .select('id, name, archetype_id, summary, last_active_at, theme_strength_score, institutional_awareness, status')
+    .in('status', ['active', 'cooling', 'exploratory_candidate', 'archived'])
     .gt('last_active_at', cutoff)
     .order('last_active_at', { ascending: false })
 
@@ -86,7 +87,7 @@ export function formatActiveThemesForPrompt(themes: ActiveTheme[]): string {
     .map(
       (t) =>
         `- id=${t.id}\n` +
-        `  name="${t.name}" | archetype=${t.archetype_id ?? 'exploratory'} | strength=${t.theme_strength_score}\n` +
+        `  name="${t.name}" | archetype=${t.archetype_id ?? 'exploratory'} | status=${t.status} | strength=${t.theme_strength_score}\n` +
         `  last_active=${t.last_active_at.slice(0, 10)} | summary: ${t.summary ?? '(none)'}`
     )
     .join('\n')
