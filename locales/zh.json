@@ -243,7 +243,25 @@
     "stage_bar_mid": "{stage} 阶段 · 活跃中",
     "stage_bar_early": "{stage} 阶段 · 积累中",
     "since": "自 {date}",
-    "est_horizon": "预期时长 {label}"
+    "est_horizon": "预期时长 {label}",
+    "view_all": "查看全部 {count} 个主题 →"
+  },
+  "themes_list": {
+    "title": "全部主题",
+    "sub": "浏览 Newshock 跟踪的全部主题 · 可按状态筛选或排序",
+    "filter_active": "活跃",
+    "filter_cooling": "降温",
+    "filter_archived": "归档",
+    "filter_all": "全部",
+    "sort_label": "排序",
+    "sort_strength": "强度",
+    "sort_recent": "近期活跃",
+    "sort_created": "创建时间",
+    "count": "{n} 个主题",
+    "empty": "该筛选下暂无主题",
+    "strength": "强度",
+    "events": "{n} 条事件",
+    "back": "← 雷达"
   },
   "curator": {
     "title": "策展信号",

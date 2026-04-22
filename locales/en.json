@@ -243,7 +243,25 @@
     "stage_bar_mid": "{stage} stage · active",
     "stage_bar_early": "{stage} stage · building",
     "since": "Since {date}",
-    "est_horizon": "est. horizon {label}"
+    "est_horizon": "est. horizon {label}",
+    "view_all": "View all {count} themes →"
+  },
+  "themes_list": {
+    "title": "All Themes",
+    "sub": "Browse every theme tracked by Newshock. Filter by status or sort.",
+    "filter_active": "Active",
+    "filter_cooling": "Cooling",
+    "filter_archived": "Archived",
+    "filter_all": "All",
+    "sort_label": "Sort",
+    "sort_strength": "Strength",
+    "sort_recent": "Recently Active",
+    "sort_created": "Created",
+    "count": "{n} themes",
+    "empty": "No themes in this filter.",
+    "strength": "str",
+    "events": "{n} events",
+    "back": "← Radar"
   },
   "curator": {
     "title": "Curated Signal",

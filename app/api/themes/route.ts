@@ -4,13 +4,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const category = searchParams.get('category')
   const awareness = searchParams.get('awareness')
+  const statusParam = searchParams.get('status')
+  const limitParam = searchParams.get('limit')
+
+  const statuses = statusParam
+    ? statusParam.split(',').map((s) => s.trim()).filter(Boolean)
+    : undefined
 
   try {
     const result = await buildThemeRadar({
       include_exploratory: false,
       category_filter: category ? [category] : undefined,
       awareness_filter: awareness ? [awareness] : undefined,
-      limit: 50,
+      statuses,
+      limit: limitParam ? Math.min(parseInt(limitParam, 10) || 50, 200) : 50,
     })
     return Response.json(result)
   } catch (err: unknown) {

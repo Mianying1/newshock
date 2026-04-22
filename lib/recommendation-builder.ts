@@ -248,18 +248,22 @@ export async function buildThemeRadar(options: {
   awareness_filter?: string[]
   category_filter?: string[]
   limit?: number
+  statuses?: string[]
 } = {}): Promise<{ themes: ThemeRadarItem[]; summary: ThemeRadarSummary }> {
   const {
     include_exploratory = false,
     awareness_filter,
     category_filter,
     limit = 50,
+    statuses,
   } = options
 
   // Build status filter
-  const statusValues = include_exploratory
-    ? ['active', 'exploratory_candidate']
-    : ['active']
+  const statusValues = statuses && statuses.length > 0
+    ? statuses
+    : include_exploratory
+      ? ['active', 'exploratory_candidate']
+      : ['active']
 
   let query = supabaseAdmin
     .from('themes')

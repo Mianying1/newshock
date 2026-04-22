@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import useSWR from 'swr'
 import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
@@ -95,7 +96,7 @@ export default function HomePage() {
 
   const activeThemes = themes.filter((th) => th.status !== 'archived')
   const totalThemes = activeThemes.length
-  const visibleThemes = activeThemes.slice(0, 6)
+  const visibleThemes = activeThemes.slice(0, 12)
   const narrativesCount = overview?.narratives_count ?? 0
   const eventsWeek = overview?.events_7d ?? 0
   const headerDate = useHeaderDate(locale)
@@ -170,6 +171,25 @@ export default function HomePage() {
               {visibleThemes.map((theme) => (
                 <ActiveThemeCard key={theme.id} theme={theme} />
               ))}
+            </div>
+          )}
+
+          {totalThemes > visibleThemes.length && (
+            <div style={{ textAlign: 'center', padding: '20px 0 8px' }}>
+              <Link
+                href="/themes"
+                style={{
+                  fontSize: 13,
+                  color: 'var(--ink-2)',
+                  textDecoration: 'none',
+                  padding: '8px 16px',
+                  border: '1px solid var(--line-2)',
+                  borderRadius: 999,
+                  display: 'inline-block',
+                }}
+              >
+                {t('active_themes.view_all', { count: totalThemes })}
+              </Link>
             </div>
           )}
 
