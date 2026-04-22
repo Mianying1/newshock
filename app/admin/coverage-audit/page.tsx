@@ -136,15 +136,41 @@ export default function CoverageAuditPage() {
           typical_tickers: spec.suggested_tickers.map((s) => ({ symbol: s })),
           confidence_level: 'medium',
           notes: `Created from coverage audit ${latest.report_date}. Reasoning: ${spec.reasoning}`,
+          spawn_theme: {
+            name_zh: spec.name_zh,
+            description_zh: spec.description_zh,
+            priority: spec.priority,
+            suggested_tickers: spec.suggested_tickers,
+            covers_unmatched_events: spec.covers_unmatched_events ?? [],
+            report_id: latest.id,
+          },
         }),
       })
       const result = await res.json()
       if (res.ok && (result.ok || result.id)) {
+        const themeBits: string[] = []
+        if (result.theme_id) themeBits.push(`theme ${String(result.theme_id).slice(0, 8)}`)
+        if (typeof result.recs_count === 'number') themeBits.push(`${result.recs_count} recs`)
+        if (typeof result.events_linked === 'number' && result.events_linked > 0) {
+          themeBits.push(`${result.events_linked} events linked`)
+        }
+        const failed: string[] = Array.isArray(result.failed_tickers) ? result.failed_tickers : []
+        const failedSuffix = failed.length > 0 ? ` · skipped tickers: ${failed.join(', ')}` : ''
+        const successMsg = themeBits.length > 0
+          ? `Archetype + ${themeBits.join(', ')} created${failedSuffix}`
+          : `Archetype created${result.spawn_error ? ` · spawn failed: ${result.spawn_error}` : ''}`
         await recordAction(key, latest.id, 'archetype_created', {
           index,
           archetype_id: result.id ?? slug,
           name: spec.name,
+          theme_id: result.theme_id ?? null,
+          recs_count: result.recs_count ?? null,
+          events_linked: result.events_linked ?? null,
+          failed_tickers: failed,
+          spawn_error: result.spawn_error ?? null,
         })
+        setMessage(successMsg)
+        setTimeout(() => setMessage(null), 8000)
       } else {
         setMessage(`Create failed: ${result.error ?? `HTTP ${res.status}`}`)
         setTimeout(() => setMessage(null), 6000)

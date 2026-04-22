@@ -411,3 +411,21 @@ B 阶段 · 前端 UI (Next.js + Tailwind, 主题雷达 + 详情页)
 - 无 exec_sql RPC, 无 pg 直连, 无法做 ALTER TABLE via JS client
 - 文件存储 git-tracked, 易 review, 易 migrate
 - v1.5 升级时可一次性 UPDATE theme_archetypes SET playbook = '...'::jsonb
+
+## 2026-04-22 Phase 2 · Coverage Audit → Theme spawn (Plan Y)
+
+**决策**: 管理员在 `/admin/coverage-audit` 点 "Create Archetype" 时，除了插入 `theme_archetypes`，同时生成一条 `themes` 行和 `theme_recommendations` 记录；并回填 `covers_unmatched_events` 里 `trigger_theme_id IS NULL` 的事件。
+
+**实现**:
+- 新函数 `spawnThemeFromArchetype(archetypeId, spec, reportId?)` 位于 `lib/archetype-pipeline.ts`
+- POST `/api/admin/archetypes` 增加 `spawn_theme` payload，插档后自动调用 spawn
+- `themes` 表新增 `source TEXT DEFAULT 'sonnet_classifier'` + `coverage_audit_report_id UUID REFERENCES coverage_audit_reports(id)`
+- Priority → tier 映射: high→1, medium→2, low→3
+- Exposure direction 默认 `uncertain`（审计阶段无足够信息判断 benefits/headwind）
+
+**依据**:
+- 路径 A (管道审慎补全) 与路径 B (宽松分类器 + 事后清理) 的协同：audit 补档 + spawn theme 让新批准立刻对用户可见，而不是等下一次相关事件触发
+- 不复用 `handleNewTheme`：它的契约绑定单一 eventId，不适合无 event 或多 event 场景
+- Audit 产出的 archetype 可能包含 DB 外 ticker → 校验失败的 ticker 作为 `failed_tickers` 返回给 UI 提示，不写入 ticker_candidates（避免污染该表，这些是管理员提案而非分类器提案）
+
+**测试**: 本地 tsx 脚本对 prod Supabase 跑完整 flow，6 项断言全绿（source / report_id / 4 recs / tier=1 / failed ticker 过滤 / status active），执行后清理。

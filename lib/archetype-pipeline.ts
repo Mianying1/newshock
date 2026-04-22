@@ -314,6 +314,131 @@ export async function fetchMissingTickerLogos(
   return { succeeded, failed }
 }
 
+// ─── Spawn theme from coverage-audit archetype ────────────────────────────────
+
+export interface SpawnArchetypeSpec {
+  name: string
+  name_zh?: string | null
+  description?: string | null
+  description_zh?: string | null
+  category: string
+  priority: 'high' | 'medium' | 'low'
+  suggested_tickers: string[]
+  covers_unmatched_events?: string[]
+}
+
+export interface SpawnThemeResult {
+  theme_id: string
+  recs_count: number
+  events_linked: number
+  failed_tickers: string[]
+}
+
+function priorityToTier(priority: 'high' | 'medium' | 'low'): 1 | 2 | 3 {
+  if (priority === 'high') return 1
+  if (priority === 'medium') return 2
+  return 3
+}
+
+export async function spawnThemeFromArchetype(
+  archetypeId: string,
+  spec: SpawnArchetypeSpec,
+  reportId?: string | null
+): Promise<SpawnThemeResult> {
+  const { data: arch, error: archErr } = await supabaseAdmin
+    .from('theme_archetypes')
+    .select('id, is_active')
+    .eq('id', archetypeId)
+    .maybeSingle()
+  if (archErr) throw new Error(`archetype lookup: ${archErr.message}`)
+  if (!arch) throw new Error(`archetype ${archetypeId} not found`)
+  if (!arch.is_active) throw new Error(`archetype ${archetypeId} is not active`)
+
+  const proposed = Array.from(
+    new Set((spec.suggested_tickers ?? []).map((s) => s.toUpperCase().trim()).filter(Boolean))
+  )
+
+  let validSet = new Set<string>()
+  if (proposed.length > 0) {
+    const { data: tickerRows } = await supabaseAdmin
+      .from('tickers')
+      .select('symbol')
+      .in('symbol', proposed)
+    validSet = new Set<string>((tickerRows ?? []).map((r: { symbol: string }) => r.symbol))
+  }
+  const validTickers = proposed.filter((s) => validSet.has(s))
+  const failedTickers = proposed.filter((s) => !validSet.has(s))
+
+  const nowIso = new Date().toISOString()
+  const { data: newTheme, error: themeErr } = await supabaseAdmin
+    .from('themes')
+    .insert({
+      archetype_id: archetypeId,
+      name: spec.name,
+      name_zh: spec.name_zh ?? null,
+      summary: spec.description ?? null,
+      summary_zh: spec.description_zh ?? null,
+      status: 'active',
+      institutional_awareness: 'early',
+      theme_strength_score: 55,
+      event_count: 0,
+      first_seen_at: nowIso,
+      last_active_at: nowIso,
+      source: 'coverage_audit',
+      coverage_audit_report_id: reportId ?? null,
+    })
+    .select('id')
+    .single()
+
+  if (themeErr || !newTheme) {
+    throw new Error(`theme insert failed: ${themeErr?.message}`)
+  }
+  const themeId = newTheme.id as string
+
+  const tier = priorityToTier(spec.priority)
+  let recsCount = 0
+  if (validTickers.length > 0) {
+    const recs = validTickers.map((symbol) => ({
+      theme_id: themeId,
+      ticker_symbol: symbol,
+      tier,
+      role_reasoning: null,
+      role_reasoning_zh: null,
+      exposure_direction: 'uncertain',
+    }))
+    const { error: recErr } = await supabaseAdmin.from('theme_recommendations').insert(recs)
+    if (recErr) {
+      console.warn(`[spawn] theme_recommendations insert warning: ${recErr.message}`)
+    } else {
+      recsCount = recs.length
+    }
+  }
+
+  let eventsLinked = 0
+  const eventIds = (spec.covers_unmatched_events ?? []).filter(Boolean)
+  if (eventIds.length > 0) {
+    const { data: linked, error: linkErr } = await supabaseAdmin
+      .from('events')
+      .update({ trigger_theme_id: themeId })
+      .in('id', eventIds)
+      .is('trigger_theme_id', null)
+      .select('id')
+    if (linkErr) {
+      console.warn(`[spawn] event backfill warning: ${linkErr.message}`)
+    } else {
+      eventsLinked = linked?.length ?? 0
+      if (eventsLinked > 0) {
+        await supabaseAdmin
+          .from('themes')
+          .update({ event_count: eventsLinked })
+          .eq('id', themeId)
+      }
+    }
+  }
+
+  return { theme_id: themeId, recs_count: recsCount, events_linked: eventsLinked, failed_tickers: failedTickers }
+}
+
 export async function runArchetypePipeline(
   archetypeId: string,
   tickerSymbols: string[],

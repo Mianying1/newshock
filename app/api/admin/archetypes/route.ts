@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { spawnThemeFromArchetype } from '@/lib/archetype-pipeline'
 
 interface CreateBody {
   id: string
@@ -12,6 +13,14 @@ interface CreateBody {
   typical_duration_days_max?: number | null
   confidence_level?: 'high' | 'medium' | 'low'
   notes?: string
+  spawn_theme?: {
+    name_zh?: string | null
+    description_zh?: string | null
+    priority?: 'high' | 'medium' | 'low'
+    suggested_tickers?: string[]
+    covers_unmatched_events?: string[]
+    report_id?: string | null
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -56,5 +65,42 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  if (body.spawn_theme) {
+    try {
+      const spawn = await spawnThemeFromArchetype(
+        data.id,
+        {
+          name: body.name,
+          name_zh: body.spawn_theme.name_zh ?? null,
+          description: body.description ?? null,
+          description_zh: body.spawn_theme.description_zh ?? null,
+          category: body.category,
+          priority: body.spawn_theme.priority ?? 'medium',
+          suggested_tickers: body.spawn_theme.suggested_tickers ?? (body.typical_tickers ?? []).map((t) => t.symbol),
+          covers_unmatched_events: body.spawn_theme.covers_unmatched_events ?? [],
+        },
+        body.spawn_theme.report_id ?? null
+      )
+      return Response.json({
+        ok: true,
+        id: data.id,
+        theme_id: spawn.theme_id,
+        recs_count: spawn.recs_count,
+        events_linked: spawn.events_linked,
+        failed_tickers: spawn.failed_tickers,
+      })
+    } catch (e) {
+      return Response.json(
+        {
+          ok: true,
+          id: data.id,
+          spawn_error: e instanceof Error ? e.message : String(e),
+        },
+        { status: 207 }
+      )
+    }
+  }
+
   return Response.json({ ok: true, id: data.id })
 }
