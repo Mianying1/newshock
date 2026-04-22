@@ -33,9 +33,7 @@ export interface EconomicDimensionScore extends DimensionScore {
     payems_3mo_avg: number | null
     core_pce_yoy: number | null
     core_cpi_yoy: number | null
-    ism_pmi: number | null
     wage_growth_yoy: number | null
-    lei_yoy: number | null
   }
 }
 
@@ -58,8 +56,6 @@ export const FRED_SERIES = {
   CPILFESL: 'CPILFESL',
   WAGES: 'CES0500000003',
   FEDFUNDS: 'FEDFUNDS',
-  ISM: 'MANEMP',
-  LEI: 'USSLIND',
   HY_OAS: 'BAMLH0A0HYM2',
   T10Y2Y: 'T10Y2Y',
   VIX: 'VIXCLS',
@@ -169,9 +165,7 @@ function scoreEconomic(series: {
   payems: FREDObservation[]
   corePCE: FREDObservation[]
   coreCPI: FREDObservation[]
-  ism: FREDObservation[]
   wages: FREDObservation[]
-  lei: FREDObservation[]
 }): EconomicDimensionScore {
   const unrate = latest(series.unrate)?.value ?? null
   const payemsChanges = payrollsMonthOverMonth(series.payems)
@@ -181,25 +175,21 @@ function scoreEconomic(series: {
       : null
   const corePceYoy = yoyChange(series.corePCE)
   const coreCpiYoy = yoyChange(series.coreCPI)
-  const ism = latest(series.ism)?.value ?? null
   const wageYoy = yoyChange(series.wages)
-  const leiYoy = yoyChange(series.lei)
 
   const jobsStable = unrate !== null && unrate < 4.5 && (payems3moAvg === null || payems3moAvg > 50_000)
   const inflationCooling = corePceYoy !== null && corePceYoy < 3.0
   const inflationRising = corePceYoy !== null && corePceYoy > 4.0
-  const pmiHealthy = ism === null ? true : ism > 50
-  const pmiWeak = ism !== null && ism < 48
   const jobsBad = unrate !== null && (unrate >= 4.5 || (payems3moAvg !== null && payems3moAvg < 50_000))
 
   let score: 0 | 1 | 2 = 1
-  if (jobsBad || inflationRising || pmiWeak) score = 0
-  else if (jobsStable && inflationCooling && pmiHealthy) score = 2
+  if (jobsBad || inflationRising) score = 0
+  else if (jobsStable && inflationCooling) score = 2
 
   const pieces: string[] = []
   if (unrate !== null) pieces.push(`UNRATE ${unrate.toFixed(1)}%`)
   if (corePceYoy !== null) pieces.push(`Core PCE ${corePceYoy.toFixed(1)}%`)
-  if (ism !== null) pieces.push(`ISM/MANEMP ${ism.toFixed(1)}`)
+  if (wageYoy !== null) pieces.push(`Wage ${wageYoy.toFixed(1)}%`)
   const reasoning = pieces.join(' · ') || 'insufficient data'
 
   return {
@@ -211,9 +201,7 @@ function scoreEconomic(series: {
       payems_3mo_avg: payems3moAvg,
       core_pce_yoy: corePceYoy,
       core_cpi_yoy: coreCpiYoy,
-      ism_pmi: ism,
       wage_growth_yoy: wageYoy,
-      lei_yoy: leiYoy,
     },
   }
 }
@@ -271,9 +259,7 @@ export interface RegimeInputs {
   payems: FREDObservation[]
   corePCE: FREDObservation[]
   coreCPI: FREDObservation[]
-  ism: FREDObservation[]
   wages: FREDObservation[]
-  lei: FREDObservation[]
   hyOas: FREDObservation[]
   t10y2y: FREDObservation[]
   vix: FREDObservation[]
@@ -288,9 +274,7 @@ export function computeRegimeScores(inputs: RegimeInputs): RegimeScores {
     payems: inputs.payems,
     corePCE: inputs.corePCE,
     coreCPI: inputs.coreCPI,
-    ism: inputs.ism,
     wages: inputs.wages,
-    lei: inputs.lei,
   })
   const credit = scoreCredit(inputs.hyOas, inputs.t10y2y)
   const sentiment = scoreSentiment(inputs.vix, inputs.manual)
@@ -324,9 +308,7 @@ export async function updateRegimeSnapshot(
     payems,
     corePCE,
     coreCPI,
-    ism,
     wages,
-    lei,
     hyOas,
     t10y2y,
     vix,
@@ -336,9 +318,7 @@ export async function updateRegimeSnapshot(
     fetchFREDIndicator(FRED_SERIES.PAYEMS),
     fetchFREDIndicator(FRED_SERIES.PCEPILFE),
     fetchFREDIndicator(FRED_SERIES.CPILFESL),
-    fetchFREDIndicator(FRED_SERIES.ISM),
     fetchFREDIndicator(FRED_SERIES.WAGES),
-    fetchFREDIndicator(FRED_SERIES.LEI),
     fetchFREDIndicator(FRED_SERIES.HY_OAS),
     fetchFREDIndicator(FRED_SERIES.T10Y2Y),
     fetchFREDIndicator(FRED_SERIES.VIX),
@@ -350,9 +330,7 @@ export async function updateRegimeSnapshot(
     upsertSeries('PAYEMS', payems),
     upsertSeries('CORE_PCE', corePCE),
     upsertSeries('CORE_CPI', coreCPI),
-    upsertSeries('ISM', ism),
     upsertSeries('WAGES', wages),
-    upsertSeries('LEI', lei),
     upsertSeries('HY_OAS', hyOas),
     upsertSeries('T10Y2Y', t10y2y),
     upsertSeries('VIX', vix),
@@ -365,9 +343,7 @@ export async function updateRegimeSnapshot(
     payems,
     corePCE,
     coreCPI,
-    ism,
     wages,
-    lei,
     hyOas,
     t10y2y,
     vix,
@@ -383,9 +359,7 @@ export async function updateRegimeSnapshot(
       payems: latest(payems),
       core_pce_yoy: yoyChange(corePCE),
       core_cpi_yoy: yoyChange(coreCPI),
-      ism: latest(ism),
       wages_yoy: yoyChange(wages),
-      lei_yoy: yoyChange(lei),
       hy_oas: latest(hyOas),
       t10y2y: latest(t10y2y),
       vix: latest(vix),
