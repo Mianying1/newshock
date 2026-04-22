@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
+import { anthropic, MODEL_HAIKU } from '@/lib/anthropic'
 
 export const maxDuration = 120
 
@@ -53,7 +53,7 @@ Return JSON only:
 [{"title": "...", "title_zh": "...", "description": "1-2 sentences", "description_zh": "1-2 句中文概述", "related_theme_ids": ["uuid1", "uuid2"], "rank": 1}]`
 
   const response = await anthropic.messages.create({
-    model: MODEL_SONNET,
+    model: MODEL_HAIKU,
     max_tokens: 3500,
     temperature: 0,
     messages: [{ role: 'user', content: NARRATIVE_PROMPT }],

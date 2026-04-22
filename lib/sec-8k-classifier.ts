@@ -1,4 +1,4 @@
-import { anthropic, MODEL_SONNET } from './anthropic'
+import { anthropic, MODEL_HAIKU } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import {
   SEC8KContext,
@@ -112,7 +112,7 @@ export async function classify8KEvent(
 
   try {
     const response = await anthropic.messages.create({
-      model: MODEL_SONNET,
+      model: MODEL_HAIKU,
       max_tokens: 400,
       system: SYSTEM_PROMPT,
       messages: [
