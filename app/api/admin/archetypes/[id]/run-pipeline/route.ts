@@ -5,14 +5,15 @@ import { runArchetypePipeline } from '@/lib/archetype-pipeline'
 export const maxDuration = 60
 
 export async function POST(
-  _req: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const force = request.nextUrl.searchParams.get('force') === 'true'
 
   const { data: arch, error } = await supabaseAdmin
     .from('theme_archetypes')
-    .select('id, pipeline_status')
+    .select('id, pipeline_status, category, playbook')
     .eq('id', id)
     .maybeSingle()
 
@@ -21,18 +22,21 @@ export async function POST(
     return Response.json({ error: 'pipeline already running' }, { status: 409 })
   }
 
-  // Collect tickers associated with this archetype's category so logo fetch has a scope.
-  // Fallback: any recommendation-candidate ticker in the archetype's sector that is missing a logo.
-  const { data: cat } = await supabaseAdmin
-    .from('theme_archetypes')
-    .select('category')
-    .eq('id', id)
-    .single()
+  if (!force && arch.pipeline_status === 'ready') {
+    return Response.json({
+      ok: true,
+      archetype_id: id,
+      skipped: true,
+      pipeline_status: 'ready',
+      message: 'Already ready. Use ?force=true to regenerate.',
+    })
+  }
 
+  // Collect tickers missing logos in the archetype's sector.
   const { data: tickerRows } = await supabaseAdmin
     .from('tickers')
     .select('symbol')
-    .eq('sector', cat?.category ?? '')
+    .eq('sector', arch.category ?? '')
     .is('logo_url', null)
 
   const symbols = (tickerRows ?? []).map((r) => r.symbol as string)
@@ -47,15 +51,24 @@ export async function POST(
     })
     .eq('id', id)
 
-  void runArchetypePipeline(id, symbols).catch((e) => {
+  try {
+    await runArchetypePipeline(id, symbols, { force })
+  } catch (e) {
     console.error(`[run-pipeline] crashed for ${id}:`, e)
-  })
+  }
+
+  const { data: finalArch } = await supabaseAdmin
+    .from('theme_archetypes')
+    .select('pipeline_status, pipeline_error')
+    .eq('id', id)
+    .single()
 
   return Response.json({
     ok: true,
     archetype_id: id,
-    pipeline_status: 'pending',
+    pipeline_status: finalArch?.pipeline_status ?? 'unknown',
+    pipeline_error: finalArch?.pipeline_error ?? null,
     ticker_symbols_queued: symbols.length,
-    message: 'Pipeline restarted in background.',
+    force,
   })
 }

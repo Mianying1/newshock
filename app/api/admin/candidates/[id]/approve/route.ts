@@ -93,16 +93,32 @@ export async function POST(
     .update({ status: 'approved', reviewed_at: new Date().toISOString() })
     .eq('id', id)
 
-  // Fire-and-forget async pipeline. Caught errors are logged inside runArchetypePipeline.
-  void runArchetypePipeline(cand.proposed_archetype_id as string, allSymbols).catch((e) => {
+  // Await pipeline inline — void Promises are killed on Vercel serverless after response.
+  // maxDuration=60 covers playbook (~20s) + logos (5 tickers * 0.2s).
+  try {
+    await runArchetypePipeline(cand.proposed_archetype_id as string, allSymbols)
+  } catch (e) {
     console.error(`[approve] pipeline crashed for ${cand.proposed_archetype_id}:`, e)
-  })
+    // pipeline internally writes pipeline_status on terminal states; don't overwrite
+  }
+
+  const { data: finalArch } = await supabaseAdmin
+    .from('theme_archetypes')
+    .select('pipeline_status, pipeline_error')
+    .eq('id', cand.proposed_archetype_id)
+    .single()
+
+  const finalStatus = finalArch?.pipeline_status ?? 'unknown'
 
   return Response.json({
     ok: true,
     archetype_id: cand.proposed_archetype_id,
     new_tickers: newTickerCount,
-    pipeline_status: 'pending',
-    message: 'Approved. Pipeline started in background (~30s).',
+    pipeline_status: finalStatus,
+    pipeline_error: finalArch?.pipeline_error ?? null,
+    message:
+      finalStatus === 'ready'
+        ? 'Approved and pipeline completed.'
+        : `Approved but pipeline ${finalStatus}.`,
   })
 }

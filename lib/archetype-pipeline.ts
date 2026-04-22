@@ -128,15 +128,27 @@ async function callSonnetForPlaybook(arch: PlaybookArchetypeInput): Promise<unkn
 }
 
 export async function generateArchetypePlaybook(
-  archetypeId: string
-): Promise<{ success: boolean; error?: string; playbook?: unknown }> {
+  archetypeId: string,
+  options: { force?: boolean } = {}
+): Promise<{ success: boolean; error?: string; playbook?: unknown; skipped?: boolean }> {
   const { data: arch, error } = await supabaseAdmin
     .from('theme_archetypes')
-    .select('id, name, description, category')
+    .select('id, name, description, category, pipeline_status, playbook')
     .eq('id', archetypeId)
     .single()
 
   if (error || !arch) return { success: false, error: 'archetype not found' }
+
+  if (
+    !options.force &&
+    arch.pipeline_status === 'ready' &&
+    arch.playbook &&
+    typeof arch.playbook === 'object' &&
+    Object.keys(arch.playbook as Record<string, unknown>).length > 0
+  ) {
+    console.log(`[skip] ${archetypeId} already ready`)
+    return { success: true, skipped: true, playbook: arch.playbook }
+  }
 
   let playbook: unknown
   try {
@@ -213,7 +225,8 @@ export async function fetchMissingTickerLogos(
 
 export async function runArchetypePipeline(
   archetypeId: string,
-  tickerSymbols: string[]
+  tickerSymbols: string[],
+  options: { force?: boolean } = {}
 ): Promise<void> {
   await supabaseAdmin
     .from('theme_archetypes')
@@ -225,7 +238,7 @@ export async function runArchetypePipeline(
   const errors: string[] = []
 
   try {
-    const r = await generateArchetypePlaybook(archetypeId)
+    const r = await generateArchetypePlaybook(archetypeId, { force: options.force })
     if (r.success) playbookSuccess = true
     else errors.push(`playbook: ${r.error}`)
   } catch (e) {
