@@ -94,6 +94,11 @@
     "now_marker": "NOW",
     "no_catalysts": "No trigger events yet",
     "today": "today",
+    "events_today": "Today",
+    "events_yesterday": "Yesterday",
+    "events_this_week": "This Week",
+    "events_last_week": "Last Week",
+    "events_older": "Earlier",
     "back": "← Back",
     "loading": "Loading...",
     "error": "Something went wrong, please try again later"

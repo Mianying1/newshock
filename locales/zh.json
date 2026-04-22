@@ -94,6 +94,11 @@
     "now_marker": "当前",
     "no_catalysts": "暂无触发事件记录",
     "today": "今天",
+    "events_today": "今天",
+    "events_yesterday": "昨天",
+    "events_this_week": "本周",
+    "events_last_week": "上周",
+    "events_older": "更早",
     "back": "← 返回",
     "loading": "Loading...",
     "error": "出错了, 稍后重试"
