@@ -7,6 +7,7 @@ import { TickerBadge } from '@/components/TickerBadge'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
 import { pickField } from '@/lib/useField'
+import { getDisplayPublisher } from '@/lib/source-display'
 import { STAGE_COLORS } from '@/lib/utils'
 import type { TickerScores } from '@/lib/ticker-scoring'
 
@@ -364,8 +365,8 @@ export default function TickerDetailPage() {
                         <p className="text-sm text-zinc-900">{e.headline}</p>
                       )}
                       <p className="text-xs text-zinc-400 mt-0.5 flex flex-wrap gap-1 items-center">
-                        {e.source_name && <span>{e.source_name}</span>}
-                        {e.source_name && <span>·</span>}
+                        <span>{getDisplayPublisher(e.source_name, e.source_url)}</span>
+                        <span>·</span>
                         <span>
                           {daysAgo === 0
                             ? t('theme_detail.today')
