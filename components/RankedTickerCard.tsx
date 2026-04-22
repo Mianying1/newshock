@@ -7,14 +7,12 @@ import type { TickerScores } from '@/lib/ticker-scoring'
 interface Props {
   ticker: TickerScores
   rank: number
-  primaryKey: 'thematic' | 'momentum' | 'potential' | 'composite'
+  primaryKey: 'thematic' | 'potential'
 }
 
 const SCORE_KEYS: Record<Props['primaryKey'], keyof TickerScores> = {
   thematic: 'thematic_score',
-  momentum: 'momentum_score',
   potential: 'potential_score',
-  composite: 'composite_score',
 }
 
 export default function RankedTickerCard({ ticker, rank, primaryKey }: Props) {
@@ -62,10 +60,6 @@ export default function RankedTickerCard({ ticker, rank, primaryKey }: Props) {
             <span>
               {t('tickers_ranked.score_thematic')}{' '}
               <span className="font-mono text-zinc-700">{ticker.thematic_score.toFixed(1)}</span>
-            </span>
-            <span>
-              {t('tickers_ranked.score_momentum')}{' '}
-              <span className="font-mono text-zinc-700">{ticker.momentum_score.toFixed(1)}</span>
             </span>
             <span>
               {t('tickers_ranked.score_potential')}{' '}

@@ -7,9 +7,7 @@ export interface TickerScores {
   sector: string | null
   logo_url: string | null
   thematic_score: number
-  momentum_score: number
   potential_score: number
-  composite_score: number
   themes_count: number
   recent_events_7d: number
   recent_events_30d: number
@@ -22,6 +20,7 @@ interface ThemeRow {
   status: string
   archetype_id: string | null
   first_seen_at: string
+  last_active_at: string | null
   days_hot: number | null
 }
 
@@ -51,10 +50,16 @@ interface TickerRow {
   logo_url: string | null
 }
 
-const TIER_WEIGHTS: Record<number, number> = { 1: 3, 2: 1.5, 3: 0.5 }
+const TIER_WEIGHTS: Record<number, number> = { 1: 3, 2: 1.5 }
 const RECENT_ARCHETYPE_WINDOW_DAYS = 30
+const ACTIVE_WINDOW_DAYS = 30
+const LONG_TERM_MIN_DAYS = 365
+const EARLY_STAGE_RATIO = 0.25
 
 export async function computeTickerScores(): Promise<TickerScores[]> {
+  const now = Date.now()
+  const cutoff = new Date(now - ACTIVE_WINDOW_DAYS * 86400000).toISOString()
+
   const [tickersRes, recsRes, themesRes, archsRes, eventsRes] = await Promise.all([
     supabaseAdmin
       .from('tickers')
@@ -64,15 +69,16 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       .select('theme_id, ticker_symbol, tier'),
     supabaseAdmin
       .from('themes')
-      .select('id, name, status, archetype_id, first_seen_at, days_hot')
-      .in('status', ['active', 'cooling', 'exploratory_candidate']),
+      .select('id, name, status, archetype_id, first_seen_at, last_active_at, days_hot')
+      .in('status', ['active', 'cooling'])
+      .gte('last_active_at', cutoff),
     supabaseAdmin
       .from('theme_archetypes')
       .select('id, category, typical_duration_days_min, typical_duration_days_max, created_at'),
     supabaseAdmin
       .from('events')
       .select('trigger_theme_id, event_date')
-      .gte('event_date', new Date(Date.now() - 30 * 86400000).toISOString()),
+      .gte('event_date', new Date(now - 30 * 86400000).toISOString()),
   ])
 
   const tickers = (tickersRes.data ?? []) as TickerRow[]
@@ -87,8 +93,6 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
   const archMap = new Map<string, ArchetypeRow>()
   for (const a of archs) archMap.set(a.id, a)
 
-  // Count events per theme, last 7d and 30d
-  const now = Date.now()
   const sevenDaysAgo = now - 7 * 86400000
   const eventsByTheme7: Record<string, number> = {}
   const eventsByTheme30: Record<string, number> = {}
@@ -101,7 +105,6 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
     }
   }
 
-  // Group recs by ticker, filtering to scored-eligible themes
   const recsByTicker = new Map<string, RecRow[]>()
   for (const r of recs) {
     if (!themeMap.has(r.theme_id)) continue
@@ -117,57 +120,55 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
     if (!tickerRecs || tickerRecs.length === 0) continue
 
     let thematic = 0
+    let potential = 0
     let events7 = 0
     let events30 = 0
-    const activeAndCoolingThemes = new Set<string>()
-    const exploratoryThemes = new Set<string>()
-    const earlyStageThemes = new Set<string>()
-    const recentArchetypeBonus = new Set<string>()
+    const qualifyingThemes = new Set<string>()
     const categoryFreq: Record<string, number> = {}
 
     for (const r of tickerRecs) {
+      if (r.tier !== 1 && r.tier !== 2) continue
       const theme = themeMap.get(r.theme_id)
       if (!theme) continue
 
-      thematic += TIER_WEIGHTS[r.tier] ?? 0
+      const tierWeight = TIER_WEIGHTS[r.tier] ?? 0
+      const themeEvents7 = eventsByTheme7[theme.id] ?? 0
+      const themeEvents30 = eventsByTheme30[theme.id] ?? 0
+      events7 += themeEvents7
+      events30 += themeEvents30
+      qualifyingThemes.add(theme.id)
 
-      events7 += eventsByTheme7[theme.id] ?? 0
-      events30 += eventsByTheme30[theme.id] ?? 0
+      const thematicBoost = 1 + Math.min(1, themeEvents7 * 0.2)
+      thematic += tierWeight * thematicBoost
 
-      if (theme.status === 'active' || theme.status === 'cooling') {
-        activeAndCoolingThemes.add(theme.id)
-      }
-      if (theme.status === 'exploratory_candidate') {
-        exploratoryThemes.add(theme.id)
-      }
-
-      const arch = theme.archetype_id ? archMap.get(theme.archetype_id) : null
+      const arch = theme.archetype_id ? archMap.get(theme.archetype_id) ?? null : null
       if (arch?.category) {
         categoryFreq[arch.category] = (categoryFreq[arch.category] ?? 0) + 1
       }
+
       if (arch) {
-        const archAgeDays = (now - new Date(arch.created_at).getTime()) / 86400000
-        if (archAgeDays <= RECENT_ARCHETYPE_WINDOW_DAYS) {
-          recentArchetypeBonus.add(theme.id)
+        const isLongTerm = (arch.typical_duration_days_min ?? 0) >= LONG_TERM_MIN_DAYS
+        if (isLongTerm) {
+          const stage = calcPlaybookStage(
+            theme.first_seen_at,
+            arch.typical_duration_days_min,
+            arch.typical_duration_days_max
+          )
+          const ceiling = arch.typical_duration_days_max ?? 0
+          const ratio = ceiling > 0 && theme.days_hot !== null ? theme.days_hot / ceiling : 1
+          const archAgeDays = (now - new Date(arch.created_at).getTime()) / 86400000
+          const isNewArchetype = archAgeDays <= RECENT_ARCHETYPE_WINDOW_DAYS
+          const isEarly = stage === 'early' || ratio < EARLY_STAGE_RATIO || isNewArchetype
+
+          if (isEarly) {
+            const stageMult = stage === 'early' ? 1.5 : 1.0
+            potential += tierWeight * stageMult + (isNewArchetype ? 2 : 0)
+          }
         }
-        const stage = calcPlaybookStage(
-          theme.first_seen_at,
-          arch.typical_duration_days_min,
-          arch.typical_duration_days_max
-        )
-        if (stage === 'early') earlyStageThemes.add(theme.id)
       }
     }
 
-    const momentum =
-      activeAndCoolingThemes.size * 2 + events7 * 1 + events30 * 0.5
-
-    const potential =
-      exploratoryThemes.size * 2 +
-      earlyStageThemes.size * 1.5 +
-      recentArchetypeBonus.size * 3
-
-    const composite = thematic * 0.4 + momentum * 0.4 + potential * 0.2
+    if (thematic === 0 && potential === 0) continue
 
     let dominantCategory: string | null = null
     let maxFreq = 0
@@ -184,10 +185,8 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       sector: tk.sector,
       logo_url: tk.logo_url,
       thematic_score: round1(thematic),
-      momentum_score: round1(momentum),
       potential_score: round1(potential),
-      composite_score: round1(composite),
-      themes_count: activeAndCoolingThemes.size + exploratoryThemes.size,
+      themes_count: qualifyingThemes.size,
       recent_events_7d: events7,
       recent_events_30d: events30,
       dominant_category: dominantCategory,

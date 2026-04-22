@@ -179,8 +179,7 @@ export default function TickerDetailPage() {
           <span className="font-semibold text-lg">{t('homepage.title')}</span>
           <nav className="flex items-center gap-4 text-sm">
             <Link href="/" className="text-zinc-400 hover:text-zinc-900">{t('nav.themes')}</Link>
-            <Link href="/tickers/ranked" className="text-zinc-400 hover:text-zinc-900">{t('nav_tickers.ranked')}</Link>
-            <Link href="/hot-tickers" className="text-zinc-400 hover:text-zinc-900">{t('nav_tickers.chokepoints')}</Link>
+            <Link href="/tickers" className="text-zinc-400 hover:text-zinc-900">{t('nav_tickers.hot_tickers')}</Link>
             <LocaleToggle />
           </nav>
         </div>
@@ -208,11 +207,9 @@ export default function TickerDetailPage() {
             <p className="text-sm text-zinc-500">{ticker.sector}</p>
           )}
           {scores && (
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="mt-4 grid grid-cols-2 gap-3 max-w-sm">
               <ScoreBox label={t('ticker_detail.thematic_score')} value={scores.thematic_score} accent="emerald" />
-              <ScoreBox label={t('ticker_detail.momentum_score')} value={scores.momentum_score} accent="amber" />
               <ScoreBox label={t('ticker_detail.potential_score')} value={scores.potential_score} accent="blue" />
-              <ScoreBox label={t('ticker_detail.composite_score')} value={scores.composite_score} accent="zinc" />
             </div>
           )}
           {scores && (
