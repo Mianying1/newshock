@@ -14,7 +14,6 @@ interface StreamEvent {
   source_name: string | null
   source_url: string | null
   event_date: string
-  published_at: string | null
   theme_id: string | null
   theme_name: string | null
   theme_name_zh: string | null
@@ -97,8 +96,7 @@ export function EventStream() {
             const publisher = getDisplayPublisher(e.source_name, e.source_url)
             const srcCls = SRC_CLASS[publisher] ?? ''
             const themeName = pickField(locale, e.theme_name, e.theme_name_zh)
-            const timeRef = e.published_at ?? e.event_date
-            const timeAgo = formatRelativeTime(timeRef, t, locale)
+            const timeAgo = formatRelativeTime(e.event_date, t, locale)
 
             const headlineContent = e.source_url ? (
               <a

@@ -9,7 +9,6 @@ interface EventRow {
   source_name: string | null
   source_url: string | null
   event_date: string
-  published_at: string | null
   created_at: string
   trigger_theme_id: string | null
 }
@@ -27,11 +26,16 @@ export async function GET(request: NextRequest) {
     Math.max(1, Number(request.nextUrl.searchParams.get('limit') ?? '8'))
   )
 
-  const { data: events } = await supabaseAdmin
+  const { data: events, error } = await supabaseAdmin
     .from('events')
-    .select('id, headline, source_name, source_url, event_date, published_at, created_at, trigger_theme_id')
+    .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id')
     .order('event_date', { ascending: false })
     .limit(limit * 3)
+
+  if (error) {
+    console.error('[api/events/recent] supabase error', error)
+    return Response.json({ events: [], unmatched_count: 0, limit, error: error.message }, { status: 500 })
+  }
 
   const rows = (events ?? []) as EventRow[]
   const themeIds = Array.from(
@@ -55,7 +59,6 @@ export async function GET(request: NextRequest) {
       source_name: e.source_name,
       source_url: e.source_url,
       event_date: e.event_date,
-      published_at: e.published_at,
       theme_id: theme?.id ?? null,
       theme_name: theme?.name ?? null,
       theme_name_zh: theme?.name_zh ?? null,
