@@ -7,13 +7,14 @@ import RecommendationTier from '@/components/RecommendationTier'
 import CatalystList from '@/components/CatalystList'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
+import { pickField } from '@/lib/useField'
 import { STAGE_COLORS } from '@/lib/utils'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
 
 export default function ThemeDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [theme, setTheme] = useState<ThemeRadarItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -63,13 +64,18 @@ export default function ThemeDetailPage() {
           <div className="space-y-8">
             {/* Theme header */}
             <div>
-              <h1 className="text-3xl font-semibold text-zinc-900 mb-2">{theme.name}</h1>
+              <h1 className="text-3xl font-semibold text-zinc-900 mb-2">
+                {pickField(locale, theme.name, theme.name_zh)}
+              </h1>
               <p className="text-sm text-zinc-500 mb-3">
                 {formatCategoryLabel(theme.category)} · {theme.days_active} {t('theme_detail.days')} · strength {theme.theme_strength_score}
               </p>
-              {theme.summary && (
-                <p className="text-zinc-700 leading-relaxed">{theme.summary}</p>
-              )}
+              {(() => {
+                const summary = pickField(locale, theme.summary, theme.summary_zh)
+                return summary ? (
+                  <p className="text-zinc-700 leading-relaxed">{summary}</p>
+                ) : null
+              })()}
             </div>
 
             {/* Catalysts */}
@@ -105,7 +111,10 @@ export default function ThemeDetailPage() {
 
             {/* Playbook section */}
             {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (() => {
-              const pb = theme.archetype_playbook!
+              const pb =
+                (locale === 'zh' && theme.archetype_playbook_zh?.historical_cases?.length
+                  ? theme.archetype_playbook_zh
+                  : theme.archetype_playbook) as NonNullable<typeof theme.archetype_playbook>
               const daysMax = pb.typical_duration_days_approx?.[1] || 90
               const hotProgressPercent = Math.min(100, Math.round((theme.days_hot / daysMax) * 100))
               const isCooling = theme.status === 'cooling'

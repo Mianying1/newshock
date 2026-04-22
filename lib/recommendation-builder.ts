@@ -25,18 +25,24 @@ function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | nul
 interface ThemeRow {
   id: string
   name: string
+  name_zh: string | null
   archetype_id: string | null
   status: string
   institutional_awareness: string
   theme_strength_score: number
   classification_confidence: number
   summary: string | null
+  summary_zh: string | null
   first_seen_at: string
   last_active_at: string
   first_event_at: string | null
   days_hot: number | null
   event_count: number
-  theme_archetypes: { category: string; playbook: ArchetypePlaybook | null } | null
+  theme_archetypes: {
+    category: string
+    playbook: ArchetypePlaybook | null
+    playbook_zh: ArchetypePlaybook | null
+  } | null
 }
 
 interface TickerInfo {
@@ -50,6 +56,7 @@ interface RecRow {
   ticker_symbol: string
   tier: number
   role_reasoning: string | null
+  role_reasoning_zh: string | null
   exposure_direction: string | null
   added_at: string
   tickers: TickerInfo | TickerInfo[] | null
@@ -68,7 +75,7 @@ interface EventRow {
 async function fetchRecommendations(themeId: string): Promise<ThemeRecommendation[]> {
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
-    .select('ticker_symbol, tier, role_reasoning, exposure_direction, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
+    .select('ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, added_at, tickers(company_name, sector, market_cap_usd_b, logo_url)')
     .eq('theme_id', themeId)
     .order('tier')
     .order('ticker_symbol')
@@ -90,6 +97,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       tier: r.tier as 1 | 2 | 3,
       exposure_direction: direction,
       role_reasoning: r.role_reasoning ?? '',
+      role_reasoning_zh: r.role_reasoning_zh ?? null,
       added_at: r.added_at,
     }
   })
@@ -147,11 +155,13 @@ function buildItem(
   const daysSinceLast = Math.max(0, Math.floor((Date.now() - lastEventDate.getTime()) / 86400000))
 
   const archetype_playbook = row.theme_archetypes?.playbook ?? null
+  const archetype_playbook_zh = row.theme_archetypes?.playbook_zh ?? null
   const playbook_stage = computePlaybookStage(daysHot, archetype_playbook)
 
   return {
     id: row.id,
     name: row.name,
+    name_zh: row.name_zh ?? null,
     category: row.theme_archetypes?.category ?? 'exploratory',
     archetype_id: row.archetype_id,
     is_exploratory: row.status === 'exploratory_candidate',
@@ -160,6 +170,7 @@ function buildItem(
     theme_strength_score: row.theme_strength_score,
     classification_confidence: row.classification_confidence ?? 50,
     summary: row.summary ?? '',
+    summary_zh: row.summary_zh ?? null,
     first_seen_at: row.first_seen_at,
     last_active_at: row.last_active_at,
     days_active: daysActive,
@@ -171,6 +182,7 @@ function buildItem(
     recommendations: recs,
     catalysts,
     archetype_playbook,
+    archetype_playbook_zh,
     playbook_stage,
   }
 }
@@ -198,10 +210,10 @@ export async function buildThemeRadar(options: {
   let query = supabaseAdmin
     .from('themes')
     .select(
-      'id, name, archetype_id, status, institutional_awareness, ' +
-      'theme_strength_score, classification_confidence, summary, ' +
+      'id, name, name_zh, archetype_id, status, institutional_awareness, ' +
+      'theme_strength_score, classification_confidence, summary, summary_zh, ' +
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
-      'theme_archetypes(category, playbook)'
+      'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
     .order('theme_strength_score', { ascending: false })

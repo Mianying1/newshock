@@ -6,17 +6,20 @@ import Link from 'next/link'
 import { TickerBadge } from '@/components/TickerBadge'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
+import { pickField } from '@/lib/useField'
 import { STAGE_COLORS } from '@/lib/utils'
 import type { TickerScores } from '@/lib/ticker-scoring'
 
 interface ThemeResult {
   id: string
   name: string
+  name_zh: string | null
   status: string
   category: string | null
   tier: number
   exposure_direction: string
   role_reasoning: string
+  role_reasoning_zh: string | null
   first_seen_at: string
   days_hot: number
   days_active: number
@@ -34,6 +37,7 @@ interface EventItem {
   event_date: string
   theme_id: string | null
   theme_name: string | null
+  theme_name_zh: string | null
 }
 
 interface ExitSignal {
@@ -246,11 +250,13 @@ export default function TickerDetailPage() {
                 const statusKey = STATUS_KEY[th.status] ?? 'theme_card.status_active'
                 const dirKey = DIRECTION_KEY[th.exposure_direction] ?? DIRECTION_KEY.uncertain
                 const dirColor = DIRECTION_COLOR[th.exposure_direction] ?? DIRECTION_COLOR.uncertain
+                const themeName = pickField(locale, th.name, th.name_zh)
+                const reasoning = pickField(locale, th.role_reasoning, th.role_reasoning_zh)
                 return (
                   <div key={th.id} className="border border-zinc-200 rounded-lg p-3 hover:border-zinc-400 transition">
                     <div className="flex items-start justify-between gap-3">
                       <Link href={`/themes/${th.id}`} className="text-sm font-medium text-blue-600 hover:underline">
-                        {th.name}
+                        {themeName}
                       </Link>
                       <span className={`text-xs px-2 py-0.5 rounded border ${dirColor} shrink-0`}>
                         {t(dirKey)}
@@ -271,9 +277,9 @@ export default function TickerDetailPage() {
                         </>
                       )}
                     </div>
-                    {th.role_reasoning && (
+                    {reasoning && (
                       <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                        {th.role_reasoning}
+                        {reasoning}
                       </p>
                     )}
                   </div>
@@ -300,20 +306,21 @@ export default function TickerDetailPage() {
                 const widthPct = ((endTime - startTime) / timelineSpan) * 100
                 const nowPct = ((now - timelineMinStart) / timelineSpan) * 100
                 const barColor = STAGE_COLORS[th.playbook_stage] ?? 'bg-zinc-300'
+                const themeName = pickField(locale, th.name, th.name_zh)
                 return (
                   <div key={th.id} className="flex items-center gap-2">
                     <Link
                       href={`/themes/${th.id}`}
                       className="text-xs text-blue-600 hover:underline w-36 truncate shrink-0"
-                      title={th.name}
+                      title={themeName}
                     >
-                      {th.name}
+                      {themeName}
                     </Link>
                     <div className="flex-1 relative h-3 bg-zinc-50 rounded">
                       <div
                         className={`absolute top-0 h-full rounded ${barColor} opacity-70`}
                         style={{ left: `${leftPct}%`, width: `${Math.max(2, widthPct)}%` }}
-                        title={`${th.name} · ${th.days_active}d / ~${ceiling}d`}
+                        title={`${themeName} · ${th.days_active}d / ~${ceiling}d`}
                       />
                       <div
                         className="absolute top-0 h-full w-0.5 bg-zinc-900"
@@ -371,7 +378,7 @@ export default function TickerDetailPage() {
                               href={`/themes/${e.theme_id}`}
                               className="text-blue-500 hover:underline"
                             >
-                              {e.theme_name}
+                              {pickField(locale, e.theme_name, e.theme_name_zh)}
                             </Link>
                           </>
                         )}

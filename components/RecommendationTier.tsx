@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import type { ThemeRecommendation, ExposureDirection } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
+import { pickField } from '@/lib/useField'
 import { TickerBadge } from '@/components/TickerBadge'
 
 const DIRECTION_CONFIG: Record<ExposureDirection, { icon: string; color: string; labelKey: string }> = {
@@ -18,7 +19,7 @@ export default function RecommendationTier({
   tier: 1 | 2 | 3
   recommendations: ThemeRecommendation[]
 }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const tierKeys: Record<number, string> = {
     1: 'theme_detail.tier1',
@@ -37,6 +38,7 @@ export default function RecommendationTier({
         {recommendations.map((r) => {
           const dir = DIRECTION_CONFIG[r.exposure_direction] ?? DIRECTION_CONFIG.uncertain
           const showDirection = r.exposure_direction !== 'uncertain'
+          const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
           return (
             <div key={r.ticker_symbol}>
               <div className="flex items-center gap-2 flex-wrap">
@@ -55,8 +57,8 @@ export default function RecommendationTier({
                   </span>
                 )}
               </div>
-              {r.role_reasoning && r.role_reasoning.trim().length > 0 ? (
-                <p className="text-sm text-zinc-500 mt-0.5 ml-9">{r.role_reasoning}</p>
+              {reasoning.trim().length > 0 ? (
+                <p className="text-sm text-zinc-500 mt-0.5 ml-9">{reasoning}</p>
               ) : (
                 <p className="text-xs text-zinc-400 italic mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
               )}

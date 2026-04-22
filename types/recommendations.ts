@@ -9,6 +9,7 @@ export interface ThemeRecommendation {
   tier: 1 | 2 | 3
   exposure_direction: ExposureDirection
   role_reasoning: string
+  role_reasoning_zh: string | null
   added_at: string
 }
 
@@ -69,6 +70,7 @@ export type PlaybookStage = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
 export interface ThemeRadarItem {
   id: string
   name: string
+  name_zh: string | null
   category: string
   archetype_id: string | null
   is_exploratory: boolean
@@ -77,6 +79,7 @@ export interface ThemeRadarItem {
   theme_strength_score: number
   classification_confidence: number
   summary: string
+  summary_zh: string | null
   first_seen_at: string
   last_active_at: string
   days_active: number
@@ -88,6 +91,7 @@ export interface ThemeRadarItem {
   recommendations: ThemeRecommendation[]
   catalysts: CatalystEvent[]
   archetype_playbook: ArchetypePlaybook | null
+  archetype_playbook_zh: ArchetypePlaybook | null
   playbook_stage: PlaybookStage
 }
 

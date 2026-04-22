@@ -17,6 +17,7 @@ interface ArchetypeRow {
 interface ThemeRow {
   id: string
   name: string
+  name_zh: string | null
   status: string
   first_seen_at: string
   days_hot: number | null
@@ -29,6 +30,7 @@ interface RecRow {
   tier: number
   exposure_direction: string | null
   role_reasoning: string | null
+  role_reasoning_zh: string | null
 }
 
 interface EventRow {
@@ -59,7 +61,7 @@ export async function GET(
 
   const { data: recs } = await supabaseAdmin
     .from('theme_recommendations')
-    .select('theme_id, tier, exposure_direction, role_reasoning')
+    .select('theme_id, tier, exposure_direction, role_reasoning, role_reasoning_zh')
     .eq('ticker_symbol', upper)
 
   const recRows = (recs ?? []) as RecRow[]
@@ -77,7 +79,7 @@ export async function GET(
 
   const { data: themes } = await supabaseAdmin
     .from('themes')
-    .select('id, name, status, first_seen_at, days_hot, theme_strength_score, archetype_id')
+    .select('id, name, name_zh, status, first_seen_at, days_hot, theme_strength_score, archetype_id')
     .in('id', recThemeIds)
     .in('status', ['active', 'cooling', 'exploratory_candidate'])
 
@@ -108,11 +110,13 @@ export async function GET(
       return {
         id: t.id,
         name: t.name,
+        name_zh: t.name_zh ?? null,
         status: t.status,
         category: arch?.category ?? null,
         tier: rec?.tier ?? 3,
         exposure_direction: rec?.exposure_direction ?? 'uncertain',
         role_reasoning: rec?.role_reasoning ?? '',
+        role_reasoning_zh: rec?.role_reasoning_zh ?? null,
         first_seen_at: t.first_seen_at,
         days_hot: t.days_hot ?? 0,
         days_active: daysActive,
@@ -139,18 +143,22 @@ export async function GET(
         .limit(30)
     : { data: [] }
 
-  const themeNameMap: Record<string, string> = {}
-  for (const t of themeResults) themeNameMap[t.id] = t.name
+  const themeNameMap: Record<string, { name: string; name_zh: string | null }> = {}
+  for (const t of themeResults) themeNameMap[t.id] = { name: t.name, name_zh: t.name_zh }
 
-  const recentEvents = ((events ?? []) as EventRow[]).map((e) => ({
-    id: e.id,
-    headline: e.headline,
-    source_name: e.source_name,
-    source_url: e.source_url,
-    event_date: e.event_date,
-    theme_id: e.trigger_theme_id,
-    theme_name: e.trigger_theme_id ? themeNameMap[e.trigger_theme_id] ?? null : null,
-  }))
+  const recentEvents = ((events ?? []) as EventRow[]).map((e) => {
+    const match = e.trigger_theme_id ? themeNameMap[e.trigger_theme_id] ?? null : null
+    return {
+      id: e.id,
+      headline: e.headline,
+      source_name: e.source_name,
+      source_url: e.source_url,
+      event_date: e.event_date,
+      theme_id: e.trigger_theme_id,
+      theme_name: match?.name ?? null,
+      theme_name_zh: match?.name_zh ?? null,
+    }
+  })
 
   const exitSignalSet = new Map<string, { signal: string; themes: string[] }>()
   for (const t of themeResults) {

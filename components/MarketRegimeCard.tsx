@@ -2,6 +2,7 @@
 import useSWR from 'swr'
 import { useState } from 'react'
 import { useI18n } from '@/lib/i18n-context'
+import { pickField } from '@/lib/useField'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -15,13 +16,21 @@ interface RegimeSnapshot {
   sentiment_score: number
   total_score: number
   regime_label: string
+  regime_label_zh: string | null
   configuration_guidance: string
+  configuration_guidance_zh: string | null
   earnings_reasoning: string | null
+  earnings_reasoning_zh: string | null
   valuation_reasoning: string | null
+  valuation_reasoning_zh: string | null
   fed_reasoning: string | null
+  fed_reasoning_zh: string | null
   economic_reasoning: string | null
+  economic_reasoning_zh: string | null
   credit_reasoning: string | null
+  credit_reasoning_zh: string | null
   sentiment_reasoning: string | null
+  sentiment_reasoning_zh: string | null
   raw_data: Record<string, unknown> | null
 }
 
@@ -142,7 +151,7 @@ function DimensionRow({
 }
 
 export function MarketRegimeCard() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [expanded, setExpanded] = useState<string | null>(null)
   const { data } = useSWR<{ snapshot: RegimeSnapshot | null }>('/api/regime/current', fetcher)
 
@@ -162,12 +171,12 @@ export function MarketRegimeCard() {
       : 'bg-rose-700'
 
   const dims: Array<{ key: string; score: number; reasoning: string | null }> = [
-    { key: 'earnings', score: snap.earnings_score, reasoning: snap.earnings_reasoning },
-    { key: 'valuation', score: snap.valuation_score, reasoning: snap.valuation_reasoning },
-    { key: 'fed', score: snap.fed_score, reasoning: snap.fed_reasoning },
-    { key: 'economic', score: snap.economic_score, reasoning: snap.economic_reasoning },
-    { key: 'credit', score: snap.credit_score, reasoning: snap.credit_reasoning },
-    { key: 'sentiment', score: snap.sentiment_score, reasoning: snap.sentiment_reasoning },
+    { key: 'earnings', score: snap.earnings_score, reasoning: pickField(locale, snap.earnings_reasoning, snap.earnings_reasoning_zh) },
+    { key: 'valuation', score: snap.valuation_score, reasoning: pickField(locale, snap.valuation_reasoning, snap.valuation_reasoning_zh) },
+    { key: 'fed', score: snap.fed_score, reasoning: pickField(locale, snap.fed_reasoning, snap.fed_reasoning_zh) },
+    { key: 'economic', score: snap.economic_score, reasoning: pickField(locale, snap.economic_reasoning, snap.economic_reasoning_zh) },
+    { key: 'credit', score: snap.credit_score, reasoning: pickField(locale, snap.credit_reasoning, snap.credit_reasoning_zh) },
+    { key: 'sentiment', score: snap.sentiment_score, reasoning: pickField(locale, snap.sentiment_reasoning, snap.sentiment_reasoning_zh) },
   ]
 
   return (

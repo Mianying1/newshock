@@ -4,10 +4,12 @@ import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { formatRelativeTime } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
+import { useField } from '@/lib/useField'
 import { TickerBadge } from '@/components/TickerBadge'
 
 export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
   const { t, locale } = useI18n()
+  const themeName = useField(theme, 'name')
   const tier1 = theme.recommendations.filter((r) => r.tier === 1)
   const tier2 = theme.recommendations.filter((r) => r.tier === 2)
   const visible = [...tier1, ...tier2].slice(0, 6)
@@ -55,7 +57,7 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
   return (
     <Link href={`/themes/${theme.id}`} className="block py-5 hover:bg-zinc-50 transition-colors">
       {/* Row 1: Title */}
-      <p className="text-xl font-semibold text-zinc-900 mb-1.5">{theme.name}</p>
+      <p className="text-xl font-semibold text-zinc-900 mb-1.5">{themeName}</p>
 
       {/* Row 2: Category + Status badges */}
       <div className="flex items-center gap-1.5 mb-1.5">
