@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { spawnThemeFromArchetype } from '@/lib/archetype-pipeline'
 
+export const maxDuration = 300
+
 interface CreateBody {
   id: string
   name: string
@@ -89,6 +91,10 @@ export async function POST(request: NextRequest) {
         recs_count: spawn.recs_count,
         events_linked: spawn.events_linked,
         failed_tickers: spawn.failed_tickers,
+        enrich_ok: spawn.enrich_ok,
+        enrich_error: spawn.enrich_error ?? null,
+        enrich_kept: spawn.enrich_kept ?? null,
+        enrich_removed: spawn.enrich_removed ?? null,
       })
     } catch (e) {
       return Response.json(

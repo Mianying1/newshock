@@ -154,6 +154,11 @@ export default function CoverageAuditPage() {
         if (typeof result.events_linked === 'number' && result.events_linked > 0) {
           themeBits.push(`${result.events_linked} events linked`)
         }
+        if (result.enrich_ok === true && typeof result.enrich_kept === 'number') {
+          themeBits.push(`enriched ${result.enrich_kept} tickers`)
+        } else if (result.enrich_ok === false && result.enrich_error) {
+          themeBits.push(`enrich failed (${String(result.enrich_error).slice(0, 50)})`)
+        }
         const failed: string[] = Array.isArray(result.failed_tickers) ? result.failed_tickers : []
         const failedSuffix = failed.length > 0 ? ` · skipped tickers: ${failed.join(', ')}` : ''
         const successMsg = themeBits.length > 0

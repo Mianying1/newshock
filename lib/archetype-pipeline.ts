@@ -2,6 +2,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { supabaseAdmin } from './supabase-admin'
 import { anthropic } from './anthropic'
+import { enrichThemeRecommendations } from './theme-enrichment'
 
 const PLAYBOOK_MODEL = 'claude-sonnet-4-6'
 
@@ -332,6 +333,10 @@ export interface SpawnThemeResult {
   recs_count: number
   events_linked: number
   failed_tickers: string[]
+  enrich_ok: boolean
+  enrich_error?: string
+  enrich_kept?: number
+  enrich_removed?: number
 }
 
 function priorityToTier(priority: 'high' | 'medium' | 'low'): 1 | 2 | 3 {
@@ -436,7 +441,37 @@ export async function spawnThemeFromArchetype(
     }
   }
 
-  return { theme_id: themeId, recs_count: recsCount, events_linked: eventsLinked, failed_tickers: failedTickers }
+  let enrichOk = false
+  let enrichError: string | undefined
+  let enrichKept: number | undefined
+  let enrichRemoved: number | undefined
+
+  if (recsCount > 0) {
+    try {
+      const enriched = await enrichThemeRecommendations(themeId)
+      enrichOk = enriched.ok
+      enrichError = enriched.error
+      enrichKept = enriched.kept_tickers.length
+      enrichRemoved = enriched.removed_tickers.length
+      if (!enriched.ok) {
+        console.warn(`[spawn] enrich failed for ${themeId}: ${enriched.error}`)
+      }
+    } catch (e) {
+      enrichError = e instanceof Error ? e.message : String(e)
+      console.warn(`[spawn] enrich threw for ${themeId}: ${enrichError}`)
+    }
+  }
+
+  return {
+    theme_id: themeId,
+    recs_count: recsCount,
+    events_linked: eventsLinked,
+    failed_tickers: failedTickers,
+    enrich_ok: enrichOk,
+    enrich_error: enrichError,
+    enrich_kept: enrichKept,
+    enrich_removed: enrichRemoved,
+  }
 }
 
 export async function runArchetypePipeline(
