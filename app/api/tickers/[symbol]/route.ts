@@ -1,6 +1,44 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { calcPlaybookStage } from '@/lib/time-utils'
+import { computeTickerScores } from '@/lib/ticker-scoring'
+
+export const maxDuration = 60
+export const dynamic = 'force-dynamic'
+
+interface ArchetypeRow {
+  id: string
+  category: string | null
+  typical_duration_days_min: number | null
+  typical_duration_days_max: number | null
+  playbook: unknown
+}
+
+interface ThemeRow {
+  id: string
+  name: string
+  status: string
+  first_seen_at: string
+  days_hot: number | null
+  theme_strength_score: number | null
+  archetype_id: string | null
+}
+
+interface RecRow {
+  theme_id: string
+  tier: number
+  exposure_direction: string | null
+  role_reasoning: string | null
+}
+
+interface EventRow {
+  id: string
+  event_date: string
+  headline: string
+  source_name: string | null
+  source_url: string | null
+  trigger_theme_id: string | null
+}
 
 export async function GET(
   _request: NextRequest,
@@ -9,83 +47,136 @@ export async function GET(
   const { symbol } = await params
   const upper = symbol.toUpperCase()
 
-  // Step 1: Ticker base info
-  const { data: ticker, error: tickerErr } = await supabaseAdmin
+  const { data: ticker } = await supabaseAdmin
     .from('tickers')
     .select('symbol, company_name, sector, logo_url')
     .eq('symbol', upper)
     .single()
 
-  if (tickerErr || !ticker) {
+  if (!ticker) {
     return Response.json({ error: 'Ticker not found' }, { status: 404 })
   }
 
-  // Step 2: Active theme recommendations for this ticker
   const { data: recs } = await supabaseAdmin
     .from('theme_recommendations')
     .select('theme_id, tier, exposure_direction, role_reasoning')
     .eq('ticker_symbol', upper)
 
-  const recThemeIds = Array.from(new Set((recs ?? []).map((r) => r.theme_id)))
+  const recRows = (recs ?? []) as RecRow[]
+  const recThemeIds = Array.from(new Set(recRows.map((r) => r.theme_id)))
 
-  // Step 3: Fetch active themes with archetype data
-  const { data: themes } = recThemeIds.length > 0
+  if (recThemeIds.length === 0) {
+    return Response.json({
+      ticker,
+      scores: null,
+      themes: [],
+      recent_events: [],
+      exit_signals: [],
+    })
+  }
+
+  const { data: themes } = await supabaseAdmin
+    .from('themes')
+    .select('id, name, status, first_seen_at, days_hot, theme_strength_score, archetype_id')
+    .in('id', recThemeIds)
+    .in('status', ['active', 'cooling', 'exploratory_candidate'])
+
+  const themeRows = (themes ?? []) as ThemeRow[]
+  const archIds = Array.from(
+    new Set(themeRows.map((t) => t.archetype_id).filter((x): x is string => Boolean(x)))
+  )
+
+  const { data: archs } = archIds.length > 0
     ? await supabaseAdmin
-        .from('themes')
-        .select('id, name, status, first_seen_at, theme_archetypes(category, typical_duration_days_min, typical_duration_days_max)')
-        .in('id', recThemeIds)
-        .eq('status', 'active')
+        .from('theme_archetypes')
+        .select('id, category, typical_duration_days_min, typical_duration_days_max, playbook')
+        .in('id', archIds)
     : { data: [] }
 
-  const recByTheme: Record<string, { tier: number; exposure_direction: string; role_reasoning: string }> = {}
-  for (const r of recs ?? []) recByTheme[r.theme_id] = r
+  const archMap = new Map<string, ArchetypeRow>()
+  for (const a of (archs ?? []) as ArchetypeRow[]) archMap.set(a.id, a)
 
-  const themeResults = (themes ?? []).map((t) => {
-    const arch = t.theme_archetypes as unknown as { category: string; typical_duration_days_min: number | null; typical_duration_days_max: number | null } | null
-    const daysActive = Math.floor((Date.now() - new Date(t.first_seen_at).getTime()) / 86400000)
-    const rec = recByTheme[t.id]
-    return {
-      id: t.id,
-      name: t.name,
-      category: arch?.category ?? 'unknown',
-      exposure_direction: rec?.exposure_direction ?? 'uncertain',
-      tier: rec?.tier ?? 3,
-      reasoning: rec?.role_reasoning ?? '',
-      days_active: daysActive,
-      playbook_stage: calcPlaybookStage(
-        t.first_seen_at,
-        arch?.typical_duration_days_min ?? null,
-        arch?.typical_duration_days_max ?? null
-      ),
-    }
-  })
+  const recByTheme = new Map<string, RecRow>()
+  for (const r of recRows) recByTheme.set(r.theme_id, r)
 
-  // Step 4: Recent events from those themes
+  const now = Date.now()
+  const themeResults = themeRows
+    .map((t) => {
+      const arch = t.archetype_id ? archMap.get(t.archetype_id) ?? null : null
+      const rec = recByTheme.get(t.id)
+      const daysActive = Math.floor((now - new Date(t.first_seen_at).getTime()) / 86400000)
+      return {
+        id: t.id,
+        name: t.name,
+        status: t.status,
+        category: arch?.category ?? null,
+        tier: rec?.tier ?? 3,
+        exposure_direction: rec?.exposure_direction ?? 'uncertain',
+        role_reasoning: rec?.role_reasoning ?? '',
+        first_seen_at: t.first_seen_at,
+        days_hot: t.days_hot ?? 0,
+        days_active: daysActive,
+        theme_strength_score: t.theme_strength_score ?? 0,
+        typical_duration_days_min: arch?.typical_duration_days_min ?? null,
+        typical_duration_days_max: arch?.typical_duration_days_max ?? null,
+        playbook_stage: calcPlaybookStage(
+          t.first_seen_at,
+          arch?.typical_duration_days_min ?? null,
+          arch?.typical_duration_days_max ?? null
+        ),
+      }
+    })
+    .sort((a, b) => b.theme_strength_score - a.theme_strength_score)
+
   const activeThemeIds = themeResults.map((t) => t.id)
+
   const { data: events } = activeThemeIds.length > 0
     ? await supabaseAdmin
         .from('events')
-        .select('id, headline, source_name, event_date, trigger_theme_id')
+        .select('id, event_date, headline, source_name, source_url, trigger_theme_id')
         .in('trigger_theme_id', activeThemeIds)
         .order('event_date', { ascending: false })
-        .limit(5)
+        .limit(30)
     : { data: [] }
 
   const themeNameMap: Record<string, string> = {}
   for (const t of themeResults) themeNameMap[t.id] = t.name
 
-  const recentEvents = (events ?? []).map((e) => ({
+  const recentEvents = ((events ?? []) as EventRow[]).map((e) => ({
     id: e.id,
     headline: e.headline,
-    source: e.source_name,
+    source_name: e.source_name,
+    source_url: e.source_url,
     event_date: e.event_date,
     theme_id: e.trigger_theme_id,
-    theme_name: e.trigger_theme_id ? (themeNameMap[e.trigger_theme_id] ?? null) : null,
+    theme_name: e.trigger_theme_id ? themeNameMap[e.trigger_theme_id] ?? null : null,
   }))
+
+  const exitSignalSet = new Map<string, { signal: string; themes: string[] }>()
+  for (const t of themeResults) {
+    const arch = t.id ? themeRows.find((th) => th.id === t.id) : null
+    const archId = arch?.archetype_id
+    const archetype = archId ? archMap.get(archId) : null
+    const playbook = archetype?.playbook as { exit_signals?: string[] } | undefined
+    const signals = playbook?.exit_signals ?? []
+    for (const s of signals) {
+      const key = s.toLowerCase().trim()
+      if (!exitSignalSet.has(key)) {
+        exitSignalSet.set(key, { signal: s, themes: [t.name] })
+      } else {
+        exitSignalSet.get(key)!.themes.push(t.name)
+      }
+    }
+  }
+
+  const allScores = await computeTickerScores()
+  const scoreRow = allScores.find((s) => s.symbol === upper) ?? null
 
   return Response.json({
     ticker,
+    scores: scoreRow,
     themes: themeResults,
     recent_events: recentEvents,
+    exit_signals: Array.from(exitSignalSet.values()),
   })
 }

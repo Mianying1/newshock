@@ -40,7 +40,8 @@ export default function HotTickersPage() {
           <span className="font-semibold text-lg">{t('homepage.title')}</span>
           <nav className="flex items-center gap-4 text-sm">
             <Link href="/" className="text-zinc-400 hover:text-zinc-900">{t('nav.themes')}</Link>
-            <span className="text-zinc-900 font-medium">{t('nav.hot_tickers')}</span>
+            <Link href="/tickers/ranked" className="text-zinc-400 hover:text-zinc-900">{t('nav_tickers.ranked')}</Link>
+            <span className="text-zinc-900 font-medium">{t('nav_tickers.chokepoints')}</span>
             <LocaleToggle />
           </nav>
         </div>

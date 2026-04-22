@@ -30,13 +30,15 @@ export default function HotTickerCard({ ticker }: { ticker: HotTicker }) {
   return (
     <div className="py-4">
       <div className="flex items-center gap-2 mb-1">
-        <TickerBadge
-          symbol={ticker.ticker_symbol}
-          name={ticker.company_name}
-          logoUrl={ticker.logo_url}
-          size="lg"
-          showName
-        />
+        <Link href={`/tickers/${ticker.ticker_symbol}`} className="hover:opacity-80 transition">
+          <TickerBadge
+            symbol={ticker.ticker_symbol}
+            name={ticker.company_name}
+            logoUrl={ticker.logo_url}
+            size="lg"
+            showName
+          />
+        </Link>
       </div>
 
       <p className="text-sm text-zinc-500 mb-2 ml-11">

@@ -68,8 +68,20 @@ export function MarketNarratives() {
             <div className="flex items-center justify-between text-[10px] text-zinc-400">
               <span>{t('narratives.tickers', { n: n.aggregate_ticker_count ?? 0 })}</span>
               {(n.top_chokepoint_tickers?.length ?? 0) > 0 && (
-                <span className="font-mono">
-                  {n.top_chokepoint_tickers!.slice(0, 3).join(' · ')}
+                <span className="font-mono flex gap-1">
+                  {n.top_chokepoint_tickers!.slice(0, 3).map((sym, idx) => (
+                    <span key={sym}>
+                      <Link
+                        href={`/tickers/${sym}`}
+                        className="text-zinc-500 hover:text-zinc-900 hover:underline"
+                      >
+                        {sym}
+                      </Link>
+                      {idx < Math.min(2, n.top_chokepoint_tickers!.length - 1) && (
+                        <span className="text-zinc-400 ml-1">·</span>
+                      )}
+                    </span>
+                  ))}
                 </span>
               )}
             </div>

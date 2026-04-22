@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import type { ThemeRecommendation, ExposureDirection } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { TickerBadge } from '@/components/TickerBadge'
@@ -39,13 +40,15 @@ export default function RecommendationTier({
           return (
             <div key={r.ticker_symbol}>
               <div className="flex items-center gap-2 flex-wrap">
-                <TickerBadge
-                  symbol={r.ticker_symbol}
-                  name={r.company_name}
-                  logoUrl={r.logo_url}
-                  size="md"
-                  showName
-                />
+                <Link href={`/tickers/${r.ticker_symbol}`} className="hover:opacity-80 transition">
+                  <TickerBadge
+                    symbol={r.ticker_symbol}
+                    name={r.company_name}
+                    logoUrl={r.logo_url}
+                    size="md"
+                    showName
+                  />
+                </Link>
                 {showDirection && (
                   <span className={`text-xs font-medium ${dir.color}`}>
                     {dir.icon} {t(dir.labelKey)}

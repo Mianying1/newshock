@@ -39,8 +39,11 @@ export default function HomePage() {
           <span className="font-semibold text-lg">{t('homepage.title')}</span>
           <nav className="flex items-center gap-4 text-sm">
             <span className="text-zinc-900 font-medium">{t('nav.themes')}</span>
+            <Link href="/tickers/ranked" className="text-zinc-400 hover:text-zinc-900">
+              {t('nav_tickers.ranked')}
+            </Link>
             <Link href="/hot-tickers" className="text-zinc-400 hover:text-zinc-900">
-              {t('nav.hot_tickers')}
+              {t('nav_tickers.chokepoints')}
             </Link>
             <LocaleToggle />
           </nav>
