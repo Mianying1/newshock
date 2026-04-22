@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useI18n } from '@/lib/i18n-context'
+import { formatMinutesAgo } from '@/lib/utils'
 
 interface FreshnessData {
-  age_label: string
+  age_minutes: number
   is_stale: boolean
 }
 
 export default function DataFreshnessIndicator() {
+  const { t } = useI18n()
   const [data, setData] = useState<FreshnessData | null>(null)
 
   useEffect(() => {
@@ -17,12 +20,13 @@ export default function DataFreshnessIndicator() {
       .catch(() => null)
   }, [])
 
-  if (!data) return null
+  if (!data || typeof data.age_minutes !== 'number') return null
+
+  const label = formatMinutesAgo(data.age_minutes, t)
 
   return (
     <span className={data.is_stale ? 'text-red-600' : 'text-zinc-400'}>
-      数据更新于 {data.age_label}
-      {data.is_stale ? ' (可能延迟)' : ''}
+      {t('homepage.updated', { time: label })}
     </span>
   )
 }

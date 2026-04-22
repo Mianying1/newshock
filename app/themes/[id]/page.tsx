@@ -156,14 +156,16 @@ export default function ThemeDetailPage() {
                           {isCooling && (
                             <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
                               <div className="font-medium text-amber-900 mb-1">
-                                Hot phase frozen at {theme.days_hot} days
+                                {t('theme_detail.cooling_banner_title', { n: theme.days_hot })}
                               </div>
                               <div className="text-amber-700 text-xs mb-2">
-                                Last event: {theme.days_since_last_event} days ago.{' '}
-                                Archive in {Math.max(0, 60 - theme.days_since_last_event)} days if no new events.
+                                {t('theme_detail.cooling_archive_hint', {
+                                  n: theme.days_since_last_event,
+                                  m: Math.max(0, 60 - theme.days_since_last_event),
+                                })}
                               </div>
                               <div className="flex justify-between text-[10px] text-amber-600 mb-0.5">
-                                <span>Cooling</span>
+                                <span>{t('theme_detail.cooling_label')}</span>
                                 <span>{theme.days_since_last_event}d / 60d</span>
                               </div>
                               <div className="h-1 bg-amber-100 rounded-full overflow-hidden">
@@ -202,7 +204,7 @@ export default function ThemeDetailPage() {
                               <div>
                                 <span className="text-zinc-500">📊 {t('timeline.maturity')}: </span>
                                 <span className="font-medium">{maturityLabel[rwt.current_maturity_estimate] ?? rwt.current_maturity_estimate}</span>
-                                <span className="text-zinc-400 ml-2 text-xs">(based on real-world timeline)</span>
+                                <span className="text-zinc-400 ml-2 text-xs">{t('theme_detail.based_on_real_timeline')}</span>
                               </div>
                             </>
                           )}
@@ -230,6 +232,10 @@ export default function ThemeDetailPage() {
                       </div>
                     )
                   })()}
+
+                  <p className="text-[11px] text-zinc-400 italic mb-3">
+                    ℹ {t('theme_detail.ai_source_hint')}
+                  </p>
 
                   <div className="mb-6">
                     <h3 className="text-sm font-medium mb-2">{t('theme_detail.historical_cases')}:</h3>

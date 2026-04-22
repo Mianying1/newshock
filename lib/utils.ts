@@ -1,18 +1,50 @@
-export function formatRelativeTime(dateString: string): string {
+type TFunc = (key: string, vars?: Record<string, string | number>) => string
+
+export function formatRelativeTime(
+  dateString: string,
+  t?: TFunc,
+  locale: 'en' | 'zh' = 'zh'
+): string {
   const now = Date.now()
   const then = new Date(dateString).getTime()
   const diffMs = now - then
+  const diffMinutes = diffMs / (1000 * 60)
   const diffHours = diffMs / (1000 * 60 * 60)
   const diffDays = diffHours / 24
+
+  if (t) {
+    if (diffMinutes < 1) return t('relative_time.just_now')
+    if (diffMinutes < 60) return t('relative_time.minutes_ago', { n: Math.floor(diffMinutes) })
+    if (diffHours < 24) return t('relative_time.hours_ago', { n: Math.floor(diffHours) })
+    if (diffDays < 7) return t('relative_time.days_ago', { n: Math.floor(diffDays) })
+    if (diffDays < 30) return t('relative_time.weeks_ago', { n: Math.floor(diffDays / 7) })
+    return new Date(dateString).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+      month: 'numeric',
+      day: 'numeric',
+    })
+  }
 
   if (diffHours < 1) return '刚刚更新'
   if (diffHours < 24) return `${Math.floor(diffHours)}h ago`
   if (diffDays < 7) return `${Math.floor(diffDays)} 天前`
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} 周前`
-  return new Date(dateString).toLocaleDateString('zh-CN', {
+  return new Date(dateString).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
     month: 'numeric',
     day: 'numeric',
   })
+}
+
+export function formatMinutesAgo(
+  minutes: number,
+  t: TFunc
+): string {
+  if (minutes < 1) return t('relative_time.just_now')
+  if (minutes < 60) return t('relative_time.minutes_ago', { n: Math.floor(minutes) })
+  const hours = minutes / 60
+  if (hours < 24) return t('relative_time.hours_ago', { n: Math.floor(hours) })
+  const days = hours / 24
+  if (days < 7) return t('relative_time.days_ago', { n: Math.floor(days) })
+  return t('relative_time.weeks_ago', { n: Math.floor(days / 7) })
 }
 
 export const STAGE_LABELS: Record<string, string> = {

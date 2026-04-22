@@ -7,11 +7,34 @@
   "homepage": {
     "title": "Newshock",
     "subtitle": "Information only, not investment advice",
-    "updated": "Updated {time}"
+    "updated": "Updated {time}",
+    "overview_active": "Active",
+    "overview_cooling": "Cooling",
+    "overview_recs": "Recommendations",
+    "overview_updated": "Updated {label}",
+    "overview_last_ingest": "Last ingest {label}"
+  },
+  "relative_time": {
+    "just_now": "just now",
+    "minutes_ago": "{n} min ago",
+    "hours_ago": "{n}h ago",
+    "days_ago": "{n}d ago",
+    "weeks_ago": "{n}w ago"
   },
   "theme_card": {
     "events": "{n} events",
     "active_days": "Active for {n} days",
+    "updated_label": "updated {label}",
+    "hot_days_short": "Hot {n}d",
+    "tracked_days_short": "tracked {n}d",
+    "cooling_label": "Cooling",
+    "to_archive": "{n}d / 60d to archive",
+    "status_active": "Active",
+    "status_cooling": "Cooling",
+    "status_archived": "Archived",
+    "status_exploratory": "Exploratory",
+    "since_short": "since {date}",
+    "stage_prefix": "Stage",
     "history_window": "Historical window {label}",
     "stage_early": "early",
     "stage_mid": "mid",
@@ -59,6 +82,11 @@
     "direction_uncertain": "Uncertain",
     "disclaimer_playbook": "Based on Claude AI training data estimation. Not precise market measurement. Future versions will calibrate with actual price data.",
     "disclaimer_observation": "Observational analysis only. Not prediction or investment advice.",
+    "ai_source_hint": "AI-generated content below. Source text is in English.",
+    "cooling_banner_title": "Hot phase frozen at {n} days",
+    "cooling_archive_hint": "Last event: {n} days ago. Archive in {m} days if no new events.",
+    "cooling_label": "Cooling",
+    "based_on_real_timeline": "(based on real-world timeline)",
     "back": "← Back",
     "loading": "Loading...",
     "error": "Something went wrong, please try again later"

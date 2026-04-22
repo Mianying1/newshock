@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ThemeCard from '@/components/ThemeCard'
 import DataFreshnessIndicator from '@/components/DataFreshnessIndicator'
+import OverviewStrip from '@/components/OverviewStrip'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { MarketNarratives } from '@/components/MarketNarratives'
 import { useI18n } from '@/lib/i18n-context'
@@ -53,6 +54,8 @@ export default function HomePage() {
             <DataFreshnessIndicator />
           </p>
         </div>
+
+        <OverviewStrip />
 
         <MarketNarratives />
 
