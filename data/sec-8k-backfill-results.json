@@ -1,0 +1,1239 @@
+{
+  "before": {
+    "with_ticker": 0,
+    "with_theme": 0
+  },
+  "after": {
+    "match_archetype": 7,
+    "exploratory": 0,
+    "irrelevant": 67,
+    "error": 12,
+    "parse_failed": 3,
+    "with_ticker": 75
+  },
+  "itemDist": {
+    "5.02": 23,
+    "9.01": 63,
+    "7.01": 22,
+    "8.01": 25,
+    "1.01": 23,
+    "2.02": 8,
+    "5.03": 11,
+    "2.03": 11,
+    "2.01": 4,
+    "3.01": 6,
+    "3.03": 5,
+    "5.01": 2,
+    "5.08": 1,
+    "5.07": 2,
+    "3.02": 15,
+    "1.02": 1
+  },
+  "archetypeHits": {
+    "rare_earth_national_security": 3,
+    "ai_datacenter_power_demand": 1,
+    "ai_drug_design_validation": 1,
+    "space_infrastructure_commercialization": 1,
+    "defense_buildup": 1
+  },
+  "decisions": [
+    {
+      "id": "8ef2406d-03d0-43c6-aa4e-76dea15951dc",
+      "headline": "8-K - SafeSpace Global Corp (0001584693) (Filer)",
+      "action": "irrelevant",
+      "ticker": "SSGC",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election is routine corporate governance with no thematic investing relevance for SafeSpace Global Corp."
+    },
+    {
+      "id": "269d016d-ccf2-4c2a-8c15-c349688f1b8e",
+      "headline": "8-K - Zoomcar Holdings, Inc. (0001854275) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ZCAR",
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Small-cap mobility company filing routine 8.01 'Other Events' with no disclosed material that connects to any thematic investment archetype."
+    },
+    {
+      "id": "79330fb2-9d2e-4739-9d6c-bee7f32d2ac4",
+      "headline": "8-K - Trilogy Metals Inc. (0001543418) (Filer)",
+      "action": "match_archetype",
+      "ticker": "TMQ",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": "rare_earth_national_security",
+      "reasoning": "Trilogy Metals develops Alaska copper/zinc projects and 7.01 Reg FD disclosures often preview material developments in critical mineral supply relevant to Western strategic security."
+    },
+    {
+      "id": "2a14e97b-5251-4be1-892e-c1ee5cb67f13",
+      "headline": "8-K - Reborn Coffee, Inc. (0001707910) (Filer)",
+      "action": "irrelevant",
+      "ticker": "REBN",
+      "items": [
+        "1.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap coffee company filing 1.01 material agreement is routine corporate activity with no thematic relevance to technology, energy, defense, or macro investment archetypes."
+    },
+    {
+      "id": "8192d3a9-c1dd-4844-88ad-f4953296b8f6",
+      "headline": "8-K - Neuraxis, INC (0001933567) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NRXS",
+      "items": [
+        "2.02"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 2.02 earnings release from small-cap Neuraxis (NRXS) is routine financial reporting with no thematic relevance."
+    },
+    {
+      "id": "fda058a5-417b-4278-842d-07fa598039e6",
+      "headline": "8-K - Digital Brands Group, Inc. (0001668010) (Filer)",
+      "action": "irrelevant",
+      "ticker": "DBGI",
+      "items": [
+        "1.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Digital Brands Group is a small-cap apparel company; Item 1.01 material agreements for fashion brands lack thematic relevance to technology, energy, defense, or macro investment archetypes."
+    },
+    {
+      "id": "deb354a0-452b-45b7-b658-08cd0efb941f",
+      "headline": "8-K - HYCROFT MINING HOLDING CORP (0001718405) (Filer)",
+      "action": "match_archetype",
+      "ticker": "HYMC",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": "rare_earth_national_security",
+      "reasoning": "Hycroft Mining's Regulation FD disclosure likely relates to their rare earth/critical minerals development, directly relevant to Western supply chain security initiatives."
+    },
+    {
+      "id": "034b8066-46bd-4fff-a8d1-d494135e8454",
+      "headline": "8-K - LIVEPERSON INC (0001102993) (Filer)",
+      "action": "irrelevant",
+      "ticker": "LPSN",
+      "items": [
+        "1.01",
+        "5.03",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "LivePerson is a conversational AI software company; Item 1.01 material agreements and 5.03 bylaw amendments are routine corporate actions without thematic relevance to the provided archetypes."
+    },
+    {
+      "id": "56972c57-c9cc-498f-9f9c-d261e29959df",
+      "headline": "8-K - Antares Strategic Credit Fund (0001993402) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "1.01",
+        "2.03",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Credit fund entering off-balance-sheet arrangement lacks thematic relevance to technology, industrial, or policy-driven investment archetypes."
+    },
+    {
+      "id": "c81bfbd2-8529-4d3f-8ece-567c96a9591a",
+      "headline": "8-K - CVB FINANCIAL CORP (0000354647) (Filer)",
+      "action": "irrelevant",
+      "ticker": "CVBF",
+      "items": [
+        "2.01",
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Regional bank completing an acquisition (2.01) and board changes (5.02) is routine M&A without thematic relevance to any investment archetype."
+    },
+    {
+      "id": "7b640455-7c80-4645-bb74-6e5a1ef24904",
+      "headline": "8-K - HERITAGE COMMERCE CORP (0001053352) (Filer)",
+      "action": "irrelevant",
+      "ticker": "HTBK",
+      "items": [
+        "2.01",
+        "3.01",
+        "3.03",
+        "5.01",
+        "5.02",
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Regional bank acquisition (5.01 change of control) is routine M&A consolidation with no thematic investment relevance."
+    },
+    {
+      "id": "97279705-64f1-48ee-88f0-ac4214c63850",
+      "headline": "8-K - Churchill Downs Inc (0000020212) (Filer)",
+      "action": "irrelevant",
+      "ticker": "CHDN",
+      "items": [
+        "5.07"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "[pre-filter] Only routine items (5.07): shareholder votes / exhibits / nominations. Not market-moving."
+    },
+    {
+      "id": "6d8ebfc0-da16-43b7-aea8-31b4eeee0ecc",
+      "headline": "8-K - BullFrog AI Holdings, Inc. (0001829247) (Filer)",
+      "action": "irrelevant",
+      "ticker": "BFRG",
+      "items": [
+        "5.08",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "[pre-filter] Only routine items (5.08,9.01): shareholder votes / exhibits / nominations. Not market-moving."
+    },
+    {
+      "id": "9d5f032b-dfb7-4e53-977d-eb00f7119f65",
+      "headline": "8-K - Trulieve Cannabis Corp. (0001754195) (Filer)",
+      "action": "irrelevant",
+      "ticker": "TCNNF",
+      "items": [
+        "5.02"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director/officer change at a cannabis company is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "66248757-afc3-4820-8662-2db3f9628598",
+      "headline": "8-K - SOCIETY PASS INCORPORATED. (0001817511) (Filer)",
+      "action": "error",
+      "ticker": "SOPA",
+      "items": [
+        "3.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7AZfpAqErpLwn34KGA\"}"
+    },
+    {
+      "id": "9637c928-edd4-4699-adaf-b496c224a91d",
+      "headline": "8-K/A - MICROVISION, INC. (0000065770) (Filer)",
+      "action": "parse_failed",
+      "ticker": null,
+      "items": [],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "headline parse failed"
+    },
+    {
+      "id": "d5846660-de8b-42be-9090-412983c9782d",
+      "headline": "8-K - NKGen Biotech, Inc. (0001845459) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "1.01",
+        "2.03",
+        "3.02",
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small private biotech company filing routine corporate actions (material agreement, equity sales, bylaws amendment) with no indicators of thematic relevance to investment archetypes."
+    },
+    {
+      "id": "2d7f9db6-8e34-44f5-bb79-4bb17e7ad93e",
+      "headline": "8-K - Journey Medical Corp (0001867066) (Filer)",
+      "action": "irrelevant",
+      "ticker": "DERM",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Journey Medical Corp (DERM) is a small dermatology pharmaceutical company; Item 8.01 filings are typically routine press releases or disclosures with no material thematic investing implications."
+    },
+    {
+      "id": "dab832ac-0334-4575-a270-a90304d94f4c",
+      "headline": "8-K - INDEPENDENT BANK CORP /MI/ (0000039311) (Filer)",
+      "action": "irrelevant",
+      "ticker": "IBCP",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 7.01 Regulation FD Disclosure from a regional Michigan bank is routine investor relations communication with no thematic investing relevance."
+    },
+    {
+      "id": "ec449d89-c124-4f37-91ff-241bd1f2642d",
+      "headline": "8-K - NETSTREIT Corp. (0001798100) (Filer)",
+      "action": "error",
+      "ticker": "NTST",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7CSEPThBeUcFi1RZS9\"}"
+    },
+    {
+      "id": "b984c3eb-1854-4447-a3a2-a5b6573aa031",
+      "headline": "8-K - SURF AIR MOBILITY INC. (0001936224) (Filer)",
+      "action": "irrelevant",
+      "ticker": "SRFM",
+      "items": [
+        "1.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap electric aviation company routine material agreement with no clear thematic investment relevance across available archetypes."
+    },
+    {
+      "id": "0ce4742c-1ddf-4e31-989d-0d1a52117c2b",
+      "headline": "8-K - Laird Superfood, Inc. (0001650696) (Filer)",
+      "action": "irrelevant",
+      "ticker": "LSF",
+      "items": [
+        "1.02",
+        "2.02",
+        "3.03",
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap food/beverage company routine corporate housekeeping (contract termination, earnings, director changes) with no thematic relevance to provided investment archetypes."
+    },
+    {
+      "id": "a5f81733-d3db-4ac1-a916-8783c4c59273",
+      "headline": "8-K - Assertio Holdings, Inc. (0001808665) (Filer)",
+      "action": "error",
+      "ticker": "ASRT",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7D3FoUbkJbFeNXzMjr\"}"
+    },
+    {
+      "id": "c721b493-dfd8-4e2c-b136-2c75cc531b3c",
+      "headline": "8-K - Serina Therapeutics, Inc. (0001708599) (Filer)",
+      "action": "irrelevant",
+      "ticker": "SER",
+      "items": [
+        "5.02",
+        "5.03"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Routine executive/director change (5.02) and bylaws amendment (5.03) at a small-cap biotech with no material strategic development disclosed."
+    },
+    {
+      "id": "ad658cc5-3e5d-4fe2-b800-ba1b25d93e94",
+      "headline": "8-K - Allied Gaming & Entertainment Inc. (0001708341) (Filer)",
+      "action": "irrelevant",
+      "ticker": "AGAE",
+      "items": [
+        "3.01",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 3.01 (listing transfer) is routine corporate housekeeping for a small-cap gaming/entertainment company, not thematically relevant to provided investment archetypes."
+    },
+    {
+      "id": "985cb537-2d99-48db-a068-045893f6efab",
+      "headline": "8-K - Driven Brands Holdings Inc. (0001804745) (Filer)",
+      "action": "irrelevant",
+      "ticker": "DRVN",
+      "items": [
+        "2.02",
+        "3.01",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Driven Brands (auto services franchisor) filing routine earnings disclosure (2.02) with listing/FD items; no thematic investment relevance to provided archetypes."
+    },
+    {
+      "id": "752fcdbf-f69e-40ed-8ecd-5e07c3dca36a",
+      "headline": "8-K - Cycurion, Inc. (0001868419) (Filer)",
+      "action": "error",
+      "ticker": "CYCU",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7FVA5xSFJct96WVQ56\"}"
+    },
+    {
+      "id": "6b637dbc-f7d8-46a4-bffc-41dc55a89a27",
+      "headline": "8-K - Laser Photonics Corp (0001807887) (Filer)",
+      "action": "irrelevant",
+      "ticker": "LASE",
+      "items": [
+        "3.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 3.01 is a listing standards or transfer of listing event, which is routine corporate housekeeping unrelated to thematic investment drivers."
+    },
+    {
+      "id": "798b6aea-4ac3-462c-9a5a-2a49637a2955",
+      "headline": "8-K - Pyrophyte Acquisition Corp. (0001848756) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Pyrophyte Acquisition Corp is a SPAC filing item 8.01 with no material corporate event details provided that connect to any thematic investment archetype."
+    },
+    {
+      "id": "12e423b5-7b3c-4eba-90ce-ff53b1ee6e22",
+      "headline": "8-K - Pacific Oak Strategic Opportunity REIT, Inc. (0001452936) (Filer)",
+      "action": "irrelevant",
+      "ticker": "PCOK",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 7.01 Regulation FD Disclosure for a small REIT is routine investor relations communication, not a material thematic event."
+    },
+    {
+      "id": "68ca0ee8-3c81-4499-a8d4-e2820cc2cbc8",
+      "headline": "8-K - SOUNDHOUND AI, INC. (0001840856) (Filer)",
+      "action": "match_archetype",
+      "ticker": "SOUN",
+      "items": [
+        "1.01",
+        "3.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": "ai_datacenter_power_demand",
+      "reasoning": "SoundHound AI (voice AI company) filing 1.01 material agreement with 3.02 equity issuance likely signals strategic partnership or financing related to AI infrastructure expansion."
+    },
+    {
+      "id": "d59563a8-3d5a-4214-b372-64760d112016",
+      "headline": "8-K - Modular Medical, Inc. (0001074871) (Filer)",
+      "action": "irrelevant",
+      "ticker": "MODD",
+      "items": [
+        "1.01",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap medical device company routine material agreement (1.01) lacks sufficient scale or thematic connection to merit exploratory or archetype match."
+    },
+    {
+      "id": "9af81161-2291-4b2f-84fb-546409c68088",
+      "headline": "8-K - UNITED FIRE GROUP INC (0000101199) (Filer)",
+      "action": "irrelevant",
+      "ticker": "UFCS",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "United Fire Group is a regional property-casualty insurer; Item 8.01 for such companies typically covers routine investor relations updates with no thematic investment relevance."
+    },
+    {
+      "id": "c6bfd086-7c92-470f-8e5b-c71b443ee14c",
+      "headline": "8-K - NORTHERN TRUST CORP (0000073124) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NTRS",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 7.01 Regulation FD Disclosure for a financial services company is typically routine investor relations material with no thematic connection to provided technology, energy, or geopolitical archetypes."
+    },
+    {
+      "id": "fe0b718d-7ff1-4d9e-ad17-91c58b661daf",
+      "headline": "8-K - HORTON D R INC /DE/ (0000882184) (Filer)",
+      "action": "irrelevant",
+      "ticker": "DHI",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "D.R. Horton 2.02 earnings results filing is routine quarterly financial reporting with no material thematic investing relevance."
+    },
+    {
+      "id": "206357c4-8289-4ad8-a9f5-e42859ecb09d",
+      "headline": "8-K - PCS Edventures!, Inc. (0001122020) (Filer)",
+      "action": "irrelevant",
+      "ticker": "PCSV",
+      "items": [
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.03 bylaws amendment at a small-cap educational technology company is routine corporate housekeeping with no thematic investment relevance."
+    },
+    {
+      "id": "5fb03fea-0c2f-4906-b31d-4503310f9657",
+      "headline": "8-K - ROBERT HALF INC. (0000315213) (Filer)",
+      "action": "irrelevant",
+      "ticker": "RHI",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election at a staffing services company is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "9aa5dc77-95d3-468c-bec1-e7051a20dd38",
+      "headline": "8-K - Federal Home Loan Bank of Des Moines (0001325814) (Filer)",
+      "action": "error",
+      "ticker": null,
+      "items": [
+        "2.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7MbyGr81deN2LimUXA\"}"
+    },
+    {
+      "id": "2446c65f-a8f0-4621-8abc-7bbf0635a327",
+      "headline": "8-K - COMMUNITY BANCORP /VT (0000718413) (Filer)",
+      "action": "irrelevant",
+      "ticker": "CMTV",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 2.02 earnings release for a small community bank (CMTV) is routine financial reporting with no thematic investing relevance."
+    },
+    {
+      "id": "6f4581db-46bf-4696-ae8f-b7ce23fe0914",
+      "headline": "8-K - Federal Home Loan Bank of Dallas (0001331757) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "2.03"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Federal Home Loan Bank creating off-balance-sheet arrangement is routine financial institution housekeeping with no thematic investment relevance."
+    },
+    {
+      "id": "463fc556-bd93-4407-a029-ad96971145e3",
+      "headline": "8-K - Federal Home Loan Bank of Pittsburgh (0001330399) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "2.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Federal Home Loan Bank item 2.03 off-balance-sheet arrangement is routine financial institution corporate activity unrelated to thematic investing."
+    },
+    {
+      "id": "024bd99c-65d7-427f-8c7c-29ffb9f3a522",
+      "headline": "8-K - MUELLER INDUSTRIES INC (0000089439) (Filer)",
+      "action": "irrelevant",
+      "ticker": "MLI",
+      "items": [
+        "2.02",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Mueller Industries is filing routine quarterly earnings results (Item 2.02), which does not constitute a material corporate event relevant to thematic investing archetypes."
+    },
+    {
+      "id": "769c9ce3-3e89-44d7-84eb-28f6dfc048e2",
+      "headline": "8-K - OLD SECOND BANCORP INC (0000357173) (Filer)",
+      "action": "irrelevant",
+      "ticker": "OSBC",
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Old Second Bancorp is a small regional bank holding company; an 8.01 Other Events filing is likely routine investor relations content with no thematic relevance to any provided archetype."
+    },
+    {
+      "id": "3e1d3b17-ec12-4979-975c-98a9093bc142",
+      "headline": "8-K - WARRIOR MET COAL, INC. (0001691303) (Filer)",
+      "action": "irrelevant",
+      "ticker": "HCC",
+      "items": [
+        "5.02",
+        "5.07",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Routine corporate governance filing (director election and shareholder vote results) with no material thematic investing relevance."
+    },
+    {
+      "id": "7ef159d7-d928-47f0-8caa-cd6041f66e65",
+      "headline": "8-K - TEREX CORP (0000097216) (Filer)",
+      "action": "irrelevant",
+      "ticker": "TEX",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Terex is an industrial equipment manufacturer; Item 8.01 filings are often routine updates (press releases, presentations) with no material thematic relevance to the provided archetypes."
+    },
+    {
+      "id": "0faf4619-3380-4964-8db4-11e4717d2c93",
+      "headline": "8-K - LIBERTY STAR URANIUM & METALS CORP. (0001172178) (Filer)",
+      "action": "irrelevant",
+      "ticker": "LBSR",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Small-cap uranium/metals exploration company filing routine 8.01 'Other Events' with no material corporate development connecting to any active archetype."
+    },
+    {
+      "id": "f10178d5-61d9-4cd2-82c2-ccbf9095a766",
+      "headline": "8-K - Federal Home Loan Bank of Chicago (0001331451) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "2.03"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Federal Home Loan Bank off-balance-sheet arrangement is routine government-sponsored enterprise financial structuring with no thematic investment connection."
+    },
+    {
+      "id": "ef172056-bd32-42bd-ab3b-1ae8a673d93e",
+      "headline": "8-K - MainStreet Bancshares, Inc. (0001693577) (Filer)",
+      "action": "irrelevant",
+      "ticker": "MNSB",
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "MainStreet Bancshares is a small community bank filing an 8.01 'Other Events' item, almost certainly routine corporate disclosure with no thematic relevance to investment archetypes."
+    },
+    {
+      "id": "e6c8b726-485e-43ac-844e-a393443e8689",
+      "headline": "8-K - MILESTONE SCIENTIFIC INC. (0000855683) (Filer)",
+      "action": "irrelevant",
+      "ticker": "MLSS",
+      "items": [
+        "1.01",
+        "3.02",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap medical device company's routine equity issuance (3.02) and material agreement (1.01) lack thematic relevance to active investment archetypes."
+    },
+    {
+      "id": "0d955030-dfaa-4ead-860a-e7cccfdd4c6b",
+      "headline": "8-K - AMERISERV FINANCIAL INC /PA/ (0000707605) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ASRV",
+      "items": [
+        "2.02",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Regional bank (AmeriServ Financial) reporting routine quarterly earnings results (2.02) with no material developments connecting to any thematic investment archetype."
+    },
+    {
+      "id": "a5fe4d79-dac4-4a08-a693-c02a30b6dc4a",
+      "headline": "8-K - MMEX Resources Corp (0001440799) (Filer)",
+      "action": "irrelevant",
+      "ticker": "MMEX",
+      "items": [
+        "3.02"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Routine unregistered equity sale (3.02) by micro-cap MMEX Resources with no material connection to any thematic archetype."
+    },
+    {
+      "id": "2d189924-a757-4187-8fad-9011b9a45035",
+      "headline": "8-K/A - Anterix Inc. (0001304492) (Filer)",
+      "action": "parse_failed",
+      "ticker": null,
+      "items": [],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "headline parse failed"
+    },
+    {
+      "id": "72fa5679-98ff-4c87-ba53-318777f2c098",
+      "headline": "8-K - Greenpro Capital Corp. (0001597846) (Filer)",
+      "action": "irrelevant",
+      "ticker": "GRNQ",
+      "items": [
+        "1.01",
+        "3.02",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap (GRNQ) 1.01/3.02 filing appears to be routine private equity issuance without thematic relevance to provided investment archetypes."
+    },
+    {
+      "id": "ebdb7bd1-966a-4817-9874-5ff21a607175",
+      "headline": "8-K - QHSLab, Inc. (0000856984) (Filer)",
+      "action": "irrelevant",
+      "ticker": "USAQ",
+      "items": [
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 7.01 Regulation FD Disclosure is typically routine investor relations material that does not constitute a material corporate event qualifying for thematic investment relevance."
+    },
+    {
+      "id": "be005b7f-e34c-411d-9aa6-2d1f91efd59e",
+      "headline": "8-K - NEWMARK GROUP, INC. (0001690680) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NMRK",
+      "items": [
+        "1.01",
+        "2.03",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Newmark is a commercial real estate services firm; Item 1.01/2.03/8.01 filings are routine corporate transactions with no thematic relevance to provided tech/defense/energy archetypes."
+    },
+    {
+      "id": "3bdf7480-7032-4bcd-9a6b-9a448abf6914",
+      "headline": "8-K - MINERALRITE Corp (0001096296) (Filer)",
+      "action": "irrelevant",
+      "ticker": "RITE",
+      "items": [
+        "7.01",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "MineralRite Corp is a small-cap mineral exploration company filing routine 7.01/8.01 Reg FD disclosure items, which typically involve investor presentations or corporate updates without material thematic relevance."
+    },
+    {
+      "id": "d9ef644c-75d7-42d4-b325-112fad7b9fc2",
+      "headline": "8-K - Celularity Inc (0001752828) (Filer)",
+      "action": "error",
+      "ticker": "CELU",
+      "items": [
+        "1.01",
+        "2.03",
+        "3.03",
+        "5.02",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7Xz37A4Bmm169ACEKN\"}"
+    },
+    {
+      "id": "edc7fd0d-a4cd-48ac-9b3a-25e89530e6ff",
+      "headline": "8-K - Federal Home Loan Bank of Indianapolis (0001331754) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "2.03"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 2.03 filing by a Federal Home Loan Bank is routine financial institution off-balance-sheet arrangement disclosure with no thematic investing relevance."
+    },
+    {
+      "id": "ec929857-c13c-4ac7-84fa-57ee6ed3f103",
+      "headline": "8-K - Erasca, Inc. (0001761918) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ERAS",
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Erasca is a small-cap oncology biotech; Item 8.01 filings are typically routine corporate updates with no material thematic relevance to existing archetypes."
+    },
+    {
+      "id": "6798106b-6fe0-4eb0-bbbb-24b7689ac125",
+      "headline": "8-K - Archimedes Tech SPAC Partners II Co. (0002028516) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ATII",
+      "items": [
+        "1.01",
+        "3.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "SPAC filing routine Material Definitive Agreement (likely business combination/merger) and unregistered equity sales, not thematically relevant corporate development."
+    },
+    {
+      "id": "c524ce22-6de6-49d2-86ba-3362b48ec59d",
+      "headline": "8-K - Apple Inc. (0000320193) (Filer)",
+      "action": "irrelevant",
+      "ticker": "AAPL",
+      "items": [
+        "5.02"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election at Apple is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "2a343490-eb75-405e-a2cc-a2ed22329eee",
+      "headline": "8-K - AMERIGUARD SECURITY SERVICES, INC. (0001514443) (Filer)",
+      "action": "irrelevant",
+      "ticker": "AGSS",
+      "items": [
+        "1.01",
+        "3.02"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Small-cap security services company executing routine private placement equity financing—no thematic relevance to any investment archetype."
+    },
+    {
+      "id": "58043ea9-bb5a-4e67-a0e4-56fd5f65021d",
+      "headline": "8-K - NewHold Investment Corp IV (0002099767) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NHIV",
+      "items": [
+        "1.01",
+        "3.02",
+        "5.02",
+        "5.03",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "NewHold Investment Corp IV is a SPAC filing routine de-SPAC transaction items (1.01 merger agreement, 3.02 PIPE, 5.02/5.03 governance changes) with no material thematic connection to any investment archetype."
+    },
+    {
+      "id": "23aba7cf-2bc2-4b05-b6e7-de9cc3c1cd23",
+      "headline": "8-K - AEHR TEST SYSTEMS (0001040470) (Filer)",
+      "action": "error",
+      "ticker": "AEHR",
+      "items": [
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7bhCh9z6sYH4iZyxT5\"}"
+    },
+    {
+      "id": "56bf40fa-6ae6-4b42-b1c1-da755fa6d113",
+      "headline": "8-K - Allbirds, Inc. (0001653909) (Filer)",
+      "action": "irrelevant",
+      "ticker": "BIRD",
+      "items": [
+        "1.01",
+        "2.03",
+        "3.02",
+        "7.01",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Routine capital restructuring of a struggling small-cap consumer footwear company (Items 1.01/2.03/3.02) with no thematic relevance to any archetype."
+    },
+    {
+      "id": "4d7c1663-7112-4646-9746-a7addde98c18",
+      "headline": "8-K - FOXO TECHNOLOGIES INC. (0001812360) (Filer)",
+      "action": "irrelevant",
+      "ticker": "FOXO",
+      "items": [
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.03 bylaws amendment with exhibits is routine corporate housekeeping with no material thematic connection."
+    },
+    {
+      "id": "35566a9d-19b3-42e1-ae22-94e5a45ee155",
+      "headline": "8-K - AB Private Lending Fund (0001982701) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "3.02",
+        "7.01",
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Private lending fund routine capital raising (3.02 unregistered equity sale) is standard closed-end fund housekeeping with no thematic investment relevance."
+    },
+    {
+      "id": "523b9937-c43b-43c8-8969-a1a94c9bd132",
+      "headline": "8-K - First Tracks Biotherapeutics, Inc. (0002091349) (Filer)",
+      "action": "error",
+      "ticker": "TRAX",
+      "items": [
+        "1.01",
+        "2.01",
+        "3.02",
+        "3.03",
+        "5.01",
+        "5.02",
+        "5.03",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7dX82Kp9gLHWipjsCg\"}"
+    },
+    {
+      "id": "2f188978-7c37-486c-90c9-80f9f68b4cbe",
+      "headline": "8-K - KINGSTONE COMPANIES, INC. (0000033992) (Filer)",
+      "action": "irrelevant",
+      "ticker": "KINS",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election at a small insurance company is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "b41b5f42-e2bb-4827-aa06-e1d4a6011a1a",
+      "headline": "8-K - ANAPTYSBIO, INC (0001370053) (Filer)",
+      "action": "match_archetype",
+      "ticker": "ANAB",
+      "items": [
+        "1.01",
+        "2.01",
+        "5.02",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": "ai_drug_design_validation",
+      "reasoning": "Biotech company's 1.01/2.01 material agreement and acquisition likely relates to computational drug platform validation, aligning with AI-driven drug discovery consolidation trends."
+    },
+    {
+      "id": "8032915f-0e05-482f-8b13-7ddd075d006f",
+      "headline": "8-K - Sidus Space Inc. (0001879726) (Filer)",
+      "action": "match_archetype",
+      "ticker": "SIDU",
+      "items": [
+        "1.01",
+        "8.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": "space_infrastructure_commercialization",
+      "reasoning": "Material definitive agreement (1.01) from a space infrastructure company during period of rapid commercial satellite deployment and launch cost declines."
+    },
+    {
+      "id": "26d647bb-3240-4101-9385-3737a0c5cbff",
+      "headline": "8-K/A - Phunware, Inc. (0001665300) (Filer)",
+      "action": "parse_failed",
+      "ticker": null,
+      "items": [],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "headline parse failed"
+    },
+    {
+      "id": "b97a27bb-4b07-4c24-b160-c5f2b113b843",
+      "headline": "8-K - OneMedNet Corp (0001849380) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ONMD",
+      "items": [
+        "3.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 3.01 listing standards/transfer of listing for a small-cap company (OneMedNet Corp) is routine corporate housekeeping without thematic relevance."
+    },
+    {
+      "id": "f132f886-5ca5-4bfd-a658-a94720c2dc33",
+      "headline": "8-K - USA Rare Earth, Inc. (0001970622) (Filer)",
+      "action": "match_archetype",
+      "ticker": "USAR",
+      "items": [
+        "1.01",
+        "3.02",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": "rare_earth_national_security",
+      "reasoning": "Material definitive agreement by a U.S. rare earth company directly aligns with Western supply security policies for critical strategic minerals."
+    },
+    {
+      "id": "ada00e78-aeaf-4ea4-96ff-10f0f3e67b14",
+      "headline": "8-K - Westlake Chemical Partners LP (0001604665) (Filer)",
+      "action": "error",
+      "ticker": "WLKP",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7gcChWM8eq2fFvffGZ\"}"
+    },
+    {
+      "id": "27d63295-02f3-4ca5-9f93-e5c2249c4e6a",
+      "headline": "8-K - Snap Inc (0001564408) (Filer)",
+      "action": "irrelevant",
+      "ticker": "SNAP",
+      "items": [
+        "5.02"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "3c109c73-c754-4b2c-883f-034445cc03b7",
+      "headline": "8-K - NRC HEALTH (0000070487) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NRC",
+      "items": [
+        "5.02",
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Routine corporate governance filing (director election and bylaw amendments) with no material thematic investment implications."
+    },
+    {
+      "id": "8cc9e8a5-6695-4603-b157-ab283841c1b1",
+      "headline": "8-K - WESTLAKE CORP (0001262823) (Filer)",
+      "action": "irrelevant",
+      "ticker": "WLK",
+      "items": [
+        "5.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Westlake Corp (chemicals/plastics manufacturer) filing 5.02 director departure/election and 7.01 Reg FD disclosure is routine corporate governance with no material thematic relevance."
+    },
+    {
+      "id": "b0851988-c8e8-460c-bf00-1b9d5052094e",
+      "headline": "8-K - Blue Owl Real Estate Net Lease Trust (0001944366) (Filer)",
+      "action": "error",
+      "ticker": null,
+      "items": [
+        "3.02",
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7iQW3dCsSAnME2QAfD\"}"
+    },
+    {
+      "id": "7c3d7bf1-ec48-4412-8e94-97a3fc709627",
+      "headline": "8-K - Shutterstock, Inc. (0001549346) (Filer)",
+      "action": "irrelevant",
+      "ticker": "SSTK",
+      "items": [
+        "8.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 8.01 (Other Events) for a digital content marketplace company without specific material details does not plausibly connect to any thematic archetype."
+    },
+    {
+      "id": "2c9a2743-da81-498e-89f7-d1206cc6b6ae",
+      "headline": "8-K - AEVEX Corp. (0002096300) (Filer)",
+      "action": "match_archetype",
+      "ticker": "AVEX",
+      "items": [
+        "1.01",
+        "3.02",
+        "3.03",
+        "5.02",
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": "defense_buildup",
+      "reasoning": "AEVEX Corp. (defense/intelligence contractor) filing multiple material items including definitive agreement, equity sales, and director changes suggests M&A or significant capital raise tied to defense contracting expansion."
+    },
+    {
+      "id": "0789cf46-47b0-42de-9bbc-ef875eac36ec",
+      "headline": "8-K - BLUE RIDGE BANKSHARES, INC. (0000842717) (Filer)",
+      "action": "irrelevant",
+      "ticker": "BRBS",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.02 director departure/election at a small regional bank is routine corporate governance with no thematic investment relevance."
+    },
+    {
+      "id": "adf9775c-fca1-4c7b-a901-c0af6c4a2775",
+      "headline": "8-K - CID Holdco, Inc. (0002033770) (Filer)",
+      "action": "irrelevant",
+      "ticker": "DAIC",
+      "items": [
+        "1.01",
+        "2.03",
+        "3.02",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "3.02 unregistered equity sales combined with off-balance-sheet arrangement and material agreement is routine corporate financing activity without thematic investment relevance."
+    },
+    {
+      "id": "46d26ba3-aa78-4ace-82aa-8a71a1babc90",
+      "headline": "8-K - Alpha Cognition Inc. (0001655923) (Filer)",
+      "action": "error",
+      "ticker": "ACOG",
+      "items": [
+        "5.02",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7kEEDchCNTfejRbakC\"}"
+    },
+    {
+      "id": "f272054c-7d89-40ee-ae04-55fa204f7cc2",
+      "headline": "8-K - Aldeyra Therapeutics, Inc. (0001341235) (Filer)",
+      "action": "error",
+      "ticker": "ALDX",
+      "items": [
+        "5.02"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "sonnet error: 429 {\"type\":\"error\",\"error\":{\"type\":\"rate_limit_error\",\"message\":\"This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: db09a24b-539c-4821-84cb-9dbb5d52363a, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"},\"request_id\":\"req_011CaJ7kGkGwEvN8Tsoi2Drw\"}"
+    },
+    {
+      "id": "90b41d7b-b80c-41b6-b9b6-6659b95201f7",
+      "headline": "8-K - ALASKA AIR GROUP, INC. (0000766421) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ALK",
+      "items": [
+        "1.01",
+        "2.02",
+        "7.01",
+        "9.01"
+      ],
+      "materiality": "high",
+      "archetype_id": null,
+      "reasoning": "Alaska Air routine quarterly earnings (2.02) and material agreement (1.01) are airline-sector operational items with no thematic investing relevance to provided archetypes."
+    },
+    {
+      "id": "056b86e9-33cd-48c9-8a47-17b95032881a",
+      "headline": "8-K - NEKTAR THERAPEUTICS (0000906709) (Filer)",
+      "action": "irrelevant",
+      "ticker": "NKTR",
+      "items": [
+        "7.01"
+      ],
+      "materiality": "medium",
+      "archetype_id": null,
+      "reasoning": "Item 7.01 Regulation FD Disclosure from a small-cap biotech is routine investor communication, not a material corporate event connecting to thematic investment archetypes."
+    },
+    {
+      "id": "83094eee-c774-4dd9-82c6-7d78a9f08b05",
+      "headline": "8-K - IIOT-OXYS, Inc. (0001290658) (Filer)",
+      "action": "irrelevant",
+      "ticker": "ITOX",
+      "items": [
+        "5.03",
+        "9.01"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Item 5.03 bylaws amendment is routine corporate housekeeping with no thematic investing relevance."
+    },
+    {
+      "id": "4adec696-121f-43e1-a1b0-95312f8b20c0",
+      "headline": "8-K - MidCap Apollo Institutional Private Lending (0002006758) (Filer)",
+      "action": "irrelevant",
+      "ticker": null,
+      "items": [
+        "5.02"
+      ],
+      "materiality": "low",
+      "archetype_id": null,
+      "reasoning": "Routine director departure/election (5.02) at a private lending fund with no thematic investment relevance."
+    }
+  ]
+}

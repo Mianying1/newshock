@@ -1,7 +1,10 @@
 import pLimit from 'p-limit'
 import { anthropic, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
-import { isSecFiling, SEC_DEFER_REASONING } from './sec-filter'
+import { isSecFiling } from './sec-filter'
+import { resolve8KContext } from './sec-8k-parser'
+import { classify8KEvent, applyDecision, buildArchetypeBlock } from './sec-8k-classifier'
+import { loadActiveArchetypes } from './archetype-loader'
 import { getMatcherContext, invalidateMatcherCache } from './theme-matcher'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -11,11 +14,12 @@ interface EventRow {
   headline: string
   raw_content: string | null
   source_name: string | null
+  source_url: string | null
   event_date: string | null
   mentioned_tickers: string[] | null
 }
 
-type ThemeAction = 'strengthen_existing' | 'new_from_archetype' | 'new_exploratory' | 'irrelevant' | 'deferred_sec' | 'error'
+type ThemeAction = 'strengthen_existing' | 'new_from_archetype' | 'new_exploratory' | 'irrelevant' | 'sec_8k_match' | 'sec_8k_exploratory' | 'sec_8k_irrelevant' | 'error'
 
 interface DecisionTrace {
   step0_relevant?: 'yes' | 'no'
@@ -823,15 +827,39 @@ async function handleNewTheme(
 
 export async function generateTheme(event: EventRow): Promise<GenerationResult> {
   if (isSecFiling(event)) {
-    await supabaseAdmin
-      .from('events')
-      .update({ classifier_reasoning: SEC_DEFER_REASONING })
-      .eq('id', event.id)
+    const context = await resolve8KContext(event)
+    if (!context) {
+      await supabaseAdmin
+        .from('events')
+        .update({ classifier_reasoning: '[8-K parse failed] headline or submissions lookup failed' })
+        .eq('id', event.id)
+      return {
+        event_id: event.id,
+        action: 'sec_8k_irrelevant',
+        reasoning: '8-K parse failed',
+        confidence: 0,
+        tickers_created: 0,
+        novel_tickers_skipped: [],
+      }
+    }
+    const archetypes = await loadActiveArchetypes()
+    const archetypesBlock = buildArchetypeBlock(archetypes)
+    const decision = await classify8KEvent(event, context, archetypesBlock)
+    await applyDecision(decision)
+    const action: ThemeAction =
+      decision.action === 'match_archetype'
+        ? 'sec_8k_match'
+        : decision.action === 'exploratory'
+        ? 'sec_8k_exploratory'
+        : decision.action === 'error'
+        ? 'error'
+        : 'sec_8k_irrelevant'
     return {
       event_id: event.id,
-      action: 'deferred_sec',
-      reasoning: SEC_DEFER_REASONING,
-      confidence: 0,
+      action,
+      archetype_id: decision.archetype_id,
+      reasoning: decision.reasoning,
+      confidence: decision.materiality === 'high' ? 0.8 : decision.materiality === 'medium' ? 0.5 : 0.3,
       tickers_created: 0,
       novel_tickers_skipped: [],
     }
@@ -935,10 +963,9 @@ export async function generateThemesForPendingEvents(options: {
 
   const { data: events, error } = await supabaseAdmin
     .from('events')
-    .select('id, headline, raw_content, source_name, event_date, mentioned_tickers')
+    .select('id, headline, raw_content, source_name, source_url, event_date, mentioned_tickers')
     .is('trigger_theme_id', null)
     .is('classifier_reasoning', null)
-    .neq('source_name', 'SEC EDGAR 8-K Filings')
     .order('event_date', { ascending: false })
     .limit(limit)
 
@@ -963,20 +990,34 @@ export async function generateThemesForPendingEvents(options: {
 
   console.log(`[theme-generator] Processing ${events.length} pending events (rate_limit=${rate_limit})`)
 
+  const hasSec = events.some((e) => isSecFiling(e))
+  const archetypesBlock = hasSec
+    ? buildArchetypeBlock(await loadActiveArchetypes())
+    : ''
+
   // Single-stage Sonnet — STEP 0 relevance filter merged into Sonnet prompt
   // Concurrency 3 to respect Sonnet rate limits
+  // SEC 8-K events route through dedicated classifier (classify8KEvent + applyDecision)
   const sonnetLimiter = pLimit(rate_limit)
   const sonnetResults = await Promise.all(
     events.map((event) =>
       sonnetLimiter(async () => {
         if (isSecFiling(event)) {
-          return { event: event as EventRow, sonnet: null, secDeferred: true }
+          const row = event as EventRow
+          const context = await resolve8KContext(row)
+          if (!context) {
+            console.log(`[8-K] ${row.id.slice(0, 8)} parse_failed: ${row.headline.slice(0, 60)}`)
+            return { event: row, sonnet: null, sec: { action: 'parse_failed' as const } }
+          }
+          const decision = await classify8KEvent(row, context, archetypesBlock)
+          console.log(`[8-K] ${row.id.slice(0, 8)} [${decision.items.join(',')}] ${decision.action} ${decision.archetype_id ?? ''}`)
+          return { event: row, sonnet: null, sec: { action: decision.action, decision } }
         }
         const sonnet = await sonnetIdentifyTheme(event as EventRow)
         const dt = sonnet.decision_trace
         const s0 = dt.step0_relevant ?? 'yes'
         console.log(`[sonnet] ${event.id.slice(0, 8)} → ${sonnet.action} (conf=${sonnet.classification_confidence}) s0=${s0} s1=${dt.step1_investable} s2=${dt.step2_archetype_match} s3=${dt.step3_existing_theme}`)
-        return { event: event as EventRow, sonnet, secDeferred: false }
+        return { event: event as EventRow, sonnet, sec: null }
       })
     )
   )
@@ -998,14 +1039,37 @@ export async function generateThemesForPendingEvents(options: {
   }
   const exploratoryDetails: GenerateSummary['exploratory_details'] = []
 
-  for (const { event, sonnet, secDeferred } of sonnetResults) {
-    if (secDeferred || !sonnet) {
-      await supabaseAdmin
-        .from('events')
-        .update({ classifier_reasoning: SEC_DEFER_REASONING })
-        .eq('id', event.id)
+  for (const { event, sonnet, sec } of sonnetResults) {
+    if (sec) {
+      try {
+        if (sec.action === 'parse_failed') {
+          await supabaseAdmin
+            .from('events')
+            .update({ classifier_reasoning: '[8-K parse failed] headline or submissions lookup failed' })
+            .eq('id', event.id)
+          counts.irrelevant++
+        } else if (sec.action === 'error') {
+          await supabaseAdmin
+            .from('events')
+            .update({ classifier_reasoning: `[8-K error] ${sec.decision.reasoning}` })
+            .eq('id', event.id)
+          counts.errors++
+        } else {
+          await applyDecision(sec.decision)
+          if (sec.action === 'match_archetype') {
+            counts.strengthen_existing++
+          } else {
+            counts.irrelevant++
+          }
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err)
+        console.error(`[theme-generator] 8-K DB error for ${event.id}: ${msg}`)
+        counts.errors++
+      }
       continue
     }
+    if (!sonnet) continue
     try {
       if (sonnet.action === 'irrelevant') {
         console.log(`  [IRRELEVANT] "${event.headline.slice(0, 60)}" reason="${sonnet.reasoning.slice(0, 80)}"`)
