@@ -52,14 +52,19 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
         <div className="text-xs text-zinc-500 mt-1">
           {dtype === 'bounded' && (() => {
             const daysMax = pb.typical_duration_days_approx?.[1] || 0
-            const progressPercent = daysMax > 0
-              ? Math.min(100, Math.round((theme.days_active / daysMax) * 100))
+            const isCooling = theme.status === 'cooling'
+            // Hot progress uses days_hot (frozen when cooling), not days_active
+            const hotProgressPercent = daysMax > 0
+              ? Math.min(100, Math.round((theme.days_hot / daysMax) * 100))
               : 0
             const stageColor = STAGE_COLORS[theme.playbook_stage] ?? 'bg-zinc-300'
+            const coolProgressPercent = Math.min(100, Math.max(0,
+              Math.round(((theme.days_since_last_event - 30) / 30) * 100)
+            ))
             return (
               <>
                 <div className="flex items-center gap-1 flex-wrap">
-                  <span>⏱ {t('theme_card.history_window', { label: pb.typical_duration_label })} · {t('theme_card.active_days', { n: theme.days_active })}</span>
+                  <span>⏱ {t('theme_card.history_window', { label: pb.typical_duration_label })} · {t('theme_card.active_days', { n: theme.days_hot })}</span>
                   {theme.playbook_stage !== 'unknown' && (
                     <span>({stageLabel[theme.playbook_stage]})</span>
                   )}
@@ -70,9 +75,23 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
                     <span className="text-red-600">· 超出历史区间</span>
                   )}
                 </div>
-                {progressPercent > 0 && (
+                {hotProgressPercent > 0 && (
                   <div className="h-1 bg-zinc-100 rounded-full overflow-hidden mt-1.5">
-                    <div className={`h-full ${stageColor} transition-all`} style={{ width: `${progressPercent}%` }} />
+                    <div className={`h-full ${stageColor} transition-all`} style={{ width: `${hotProgressPercent}%` }} />
+                  </div>
+                )}
+                {isCooling && (
+                  <div className="mt-1">
+                    <div className="flex justify-between text-[10px] text-amber-600 mb-0.5">
+                      <span>Cooling</span>
+                      <span>{theme.days_since_last_event}d / 60d to archive</span>
+                    </div>
+                    <div className="h-0.5 bg-amber-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-amber-500 transition-all"
+                        style={{ width: `${coolProgressPercent}%` }}
+                      />
+                    </div>
                   </div>
                 )}
               </>
@@ -85,7 +104,7 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
             return (
               <div className="space-y-0.5">
                 <div>
-                  📈 {t('duration_type.extended')} · {t('timeline.tracked')}: {theme.days_active} {t('theme_detail.days')}
+                  📈 {t('duration_type.extended')} · {t('timeline.tracked')}: {theme.days_hot} {t('theme_detail.days')}
                 </div>
                 {rwt && (
                   <div className="text-zinc-400">
@@ -99,7 +118,7 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
           {dtype === 'dependent' && (
             <div className="space-y-0.5">
               <div>
-                🔗 {t('duration_type.dependent')} · {t('timeline.this_cycle')}: {theme.days_active} {t('theme_detail.days')}
+                🔗 {t('duration_type.dependent')} · {t('timeline.this_cycle')}: {theme.days_hot} {t('theme_detail.days')}
               </div>
               <div className="text-zinc-400">{t('timeline.dependent_note')}</div>
             </div>

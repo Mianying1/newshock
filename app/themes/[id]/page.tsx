@@ -94,7 +94,11 @@ export default function ThemeDetailPage() {
             {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (() => {
               const pb = theme.archetype_playbook!
               const daysMax = pb.typical_duration_days_approx?.[1] || 90
-              const progressPercent = Math.min(100, Math.round((theme.days_active / daysMax) * 100))
+              const hotProgressPercent = Math.min(100, Math.round((theme.days_hot / daysMax) * 100))
+              const isCooling = theme.status === 'cooling'
+              const coolProgressPercent = Math.min(100, Math.max(0,
+                Math.round(((theme.days_since_last_event - 30) / 30) * 100)
+              ))
               const stageColor = STAGE_COLORS[theme.playbook_stage] ?? 'bg-zinc-300'
               const stageDescKey = `theme_detail.stage_desc_${theme.playbook_stage}`
 
@@ -128,11 +132,11 @@ export default function ThemeDetailPage() {
                         <div className="mt-3 mb-6">
                           <div className="flex justify-between text-xs text-zinc-500 mb-1">
                             <span>0 {t('theme_detail.days')}</span>
-                            <span>{progressPercent}% {t('theme_detail.elapsed')}</span>
+                            <span>{hotProgressPercent}% {t('theme_detail.elapsed')}</span>
                             <span>{daysMax} {t('theme_detail.days')} ({t('theme_detail.typical_ceiling')})</span>
                           </div>
                           <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
-                            <div className={`h-full ${stageColor} transition-all`} style={{ width: `${progressPercent}%` }} />
+                            <div className={`h-full ${stageColor} transition-all`} style={{ width: `${hotProgressPercent}%` }} />
                           </div>
                           {t(stageDescKey) && (
                             <p className="text-xs mt-2 text-zinc-600">{t(stageDescKey)}</p>
@@ -144,11 +148,29 @@ export default function ThemeDetailPage() {
                             </div>
                             <div>
                               <span className="text-zinc-600">{t('theme_detail.active_for')}: </span>
-                              <span className="font-medium">{theme.days_active} {t('theme_detail.days')}</span>
+                              <span className="font-medium">{theme.days_hot} {t('theme_detail.days')}</span>
                               {theme.playbook_stage === 'late' && <span className="text-amber-600 ml-2">{t('theme_detail.near_limit')}</span>}
                               {theme.playbook_stage === 'beyond' && <span className="text-red-600 ml-2">{t('theme_detail.beyond_limit')}</span>}
                             </div>
                           </div>
+                          {isCooling && (
+                            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
+                              <div className="font-medium text-amber-900 mb-1">
+                                Hot phase frozen at {theme.days_hot} days
+                              </div>
+                              <div className="text-amber-700 text-xs mb-2">
+                                Last event: {theme.days_since_last_event} days ago.{' '}
+                                Archive in {Math.max(0, 60 - theme.days_since_last_event)} days if no new events.
+                              </div>
+                              <div className="flex justify-between text-[10px] text-amber-600 mb-0.5">
+                                <span>Cooling</span>
+                                <span>{theme.days_since_last_event}d / 60d</span>
+                              </div>
+                              <div className="h-1 bg-amber-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-amber-500 transition-all" style={{ width: `${coolProgressPercent}%` }} />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )
                     }

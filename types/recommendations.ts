@@ -80,6 +80,8 @@ export interface ThemeRadarItem {
   first_seen_at: string
   last_active_at: string
   days_active: number
+  days_hot: number
+  days_since_last_event: number
   event_count: number
   earliest_event_date: string
   latest_event_date: string

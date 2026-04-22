@@ -10,10 +10,10 @@ import type {
   ExposureDirection,
 } from '@/types/recommendations'
 
-function computePlaybookStage(daysActive: number, playbook: ArchetypePlaybook | null): PlaybookStage {
+function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
   const max = playbook?.typical_duration_days_approx?.[1] ?? 0
   if (!max || max === 0) return 'unknown'
-  const pct = daysActive / max
+  const pct = daysHot / max
   if (pct < 0.3) return 'early'
   if (pct < 0.7) return 'mid'
   if (pct <= 1.0) return 'late'
@@ -33,6 +33,8 @@ interface ThemeRow {
   summary: string | null
   first_seen_at: string
   last_active_at: string
+  first_event_at: string | null
+  days_hot: number | null
   event_count: number
   theme_archetypes: { category: string; playbook: ArchetypePlaybook | null } | null
 }
@@ -136,8 +138,16 @@ function buildItem(
   const startDate = new Date(earliest)
   const daysActive = Math.max(1, Math.floor((Date.now() - startDate.getTime()) / 86400000))
 
+  // days_hot: how long the theme was actively generating events
+  // frozen at (last_event - first_event); falls back to days_active for themes without backfill
+  const daysHot = row.days_hot ?? daysActive
+
+  // days_since_last_event: computed from last_active_at (always current)
+  const lastEventDate = new Date(row.last_active_at)
+  const daysSinceLast = Math.max(0, Math.floor((Date.now() - lastEventDate.getTime()) / 86400000))
+
   const archetype_playbook = row.theme_archetypes?.playbook ?? null
-  const playbook_stage = computePlaybookStage(daysActive, archetype_playbook)
+  const playbook_stage = computePlaybookStage(daysHot, archetype_playbook)
 
   return {
     id: row.id,
@@ -153,6 +163,8 @@ function buildItem(
     first_seen_at: row.first_seen_at,
     last_active_at: row.last_active_at,
     days_active: daysActive,
+    days_hot: daysHot,
+    days_since_last_event: daysSinceLast,
     earliest_event_date: earliest,
     latest_event_date: latest,
     event_count: row.event_count,
@@ -188,7 +200,7 @@ export async function buildThemeRadar(options: {
     .select(
       'id, name, archetype_id, status, institutional_awareness, ' +
       'theme_strength_score, classification_confidence, summary, ' +
-      'first_seen_at, last_active_at, event_count, ' +
+      'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'theme_archetypes(category, playbook)'
     )
     .in('status', statusValues)
@@ -284,7 +296,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
     .select(
       'id, name, archetype_id, status, institutional_awareness, ' +
       'theme_strength_score, classification_confidence, summary, ' +
-      'first_seen_at, last_active_at, event_count, ' +
+      'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'theme_archetypes(category, playbook)'
     )
     .eq('id', themeId)
