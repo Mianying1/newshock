@@ -386,6 +386,7 @@ export async function spawnThemeFromArchetype(
       status: 'active',
       institutional_awareness: 'early',
       theme_strength_score: 55,
+      classification_confidence: 60,
       event_count: 0,
       first_seen_at: nowIso,
       last_active_at: nowIso,
