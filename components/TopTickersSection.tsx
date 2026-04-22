@@ -12,7 +12,7 @@ interface RankedResponse {
   total: number
 }
 
-type ThematicTab = '7d' | '30d' | '90d'
+type ThematicTab = '7d' | '30d'
 type PotentialTab = 'early' | 'mid' | 'all'
 
 function RankRow({
@@ -26,9 +26,6 @@ function RankRow({
 }) {
   const score =
     primaryKey === 'thematic' ? ticker.thematic_score : ticker.potential_score
-  const right = primaryKey === 'thematic'
-    ? { n: ticker.themes_count, unit: 'thm' }
-    : { n: ticker.themes_count, unit: 'thm' }
 
   return (
     <Link href={`/tickers/${ticker.symbol}`} className="rank-row">
@@ -42,8 +39,8 @@ function RankRow({
         <small>/10</small>
       </div>
       <div className="sc" style={{ color: 'var(--ink-3)' }}>
-        {right.n}
-        <small>{right.unit}</small>
+        {ticker.themes_count}
+        <small>thm</small>
       </div>
       <div className="more">›</div>
     </Link>
@@ -53,14 +50,14 @@ function RankRow({
 export function TopTickersSection() {
   const { t } = useI18n()
   const [thematicTab, setThematicTab] = useState<ThematicTab>('7d')
-  const [potentialTab, setPotentialTab] = useState<PotentialTab>('early')
+  const [potentialTab, setPotentialTab] = useState<PotentialTab>('all')
 
-  const { data: thematic } = useSWR<RankedResponse>(
-    '/api/tickers/ranked?sort=thematic&limit=50',
+  const { data: thematic, isLoading: thematicLoading } = useSWR<RankedResponse>(
+    `/api/tickers/ranked?sort=thematic&window=${thematicTab}&limit=50`,
     fetcher
   )
-  const { data: potential } = useSWR<RankedResponse>(
-    '/api/tickers/ranked?sort=potential&limit=50',
+  const { data: potential, isLoading: potentialLoading } = useSWR<RankedResponse>(
+    `/api/tickers/ranked?sort=potential&stage=${potentialTab}&limit=50`,
     fetcher
   )
 
@@ -97,27 +94,26 @@ export function TopTickersSection() {
               >
                 30d
               </button>
-              <button
-                className={thematicTab === '90d' ? 'on' : ''}
-                onClick={() => setThematicTab('90d')}
-              >
-                90d
-              </button>
             </div>
           </div>
           <div>
-            {thematicTop.map((tk, i) => (
-              <RankRow
-                key={tk.symbol}
-                ticker={tk}
-                rank={i + 1}
-                primaryKey="thematic"
-              />
-            ))}
-            {thematicTop.length === 0 && (
+            {thematicLoading && thematicTop.length === 0 ? (
+              <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+                {t('tickers_ranked.loading')}
+              </p>
+            ) : thematicTop.length === 0 ? (
               <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
                 {t('tickers_ranked.no_data')}
               </p>
+            ) : (
+              thematicTop.map((tk, i) => (
+                <RankRow
+                  key={tk.symbol}
+                  ticker={tk}
+                  rank={i + 1}
+                  primaryKey="thematic"
+                />
+              ))
             )}
           </div>
           {thematicTotal > 5 && (
@@ -156,18 +152,23 @@ export function TopTickersSection() {
             </div>
           </div>
           <div>
-            {potentialTop.map((tk, i) => (
-              <RankRow
-                key={tk.symbol}
-                ticker={tk}
-                rank={i + 1}
-                primaryKey="potential"
-              />
-            ))}
-            {potentialTop.length === 0 && (
+            {potentialLoading && potentialTop.length === 0 ? (
+              <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+                {t('tickers_ranked.loading')}
+              </p>
+            ) : potentialTop.length === 0 ? (
               <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
                 {t('tickers_ranked.no_data')}
               </p>
+            ) : (
+              potentialTop.map((tk, i) => (
+                <RankRow
+                  key={tk.symbol}
+                  ticker={tk}
+                  rank={i + 1}
+                  primaryKey="potential"
+                />
+              ))
             )}
           </div>
           {potentialTotal > 5 && (
