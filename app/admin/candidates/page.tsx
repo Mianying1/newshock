@@ -13,6 +13,13 @@ interface SimilarityWarning {
   reason: string
   recommendation: string
 }
+interface EvidenceEvent {
+  id: string
+  headline: string
+  source_name: string | null
+  source_url: string | null
+  event_date: string
+}
 interface Candidate {
   id: string
   proposed_archetype_id: string
@@ -21,6 +28,9 @@ interface Candidate {
   description: string
   initial_tickers: Ticker[]
   recent_events: string[]
+  evidence_event_ids: string[] | null
+  evidence_events: EvidenceEvent[]
+  similar_to_existing: string | null
   why_this_matters: string | null
   estimated_importance: 'high' | 'medium' | 'low'
   scan_date: string
@@ -395,18 +405,54 @@ function CandidateCard({
             </div>
           )}
 
-          {c.recent_events?.length > 0 && (
+          {c.evidence_events?.length > 0 ? (
             <div>
               <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-2">
-                Recent events
+                📰 Evidence events ({c.evidence_events.length})
               </div>
-              <ul className="space-y-1.5">
-                {c.recent_events.map((e, i) => (
-                  <li key={i} className="text-xs text-zinc-600 pl-3 border-l-2 border-zinc-200">
-                    {e}
+              <ul className="space-y-2">
+                {c.evidence_events.map((e) => (
+                  <li key={e.id} className="text-xs pl-3 border-l-2 border-blue-200">
+                    {e.source_url ? (
+                      <a
+                        href={e.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {e.headline}
+                      </a>
+                    ) : (
+                      <span className="text-zinc-800">{e.headline}</span>
+                    )}
+                    <div className="text-zinc-400 mt-0.5">
+                      {e.source_name ?? 'Press'} · {e.event_date}
+                    </div>
                   </li>
                 ))}
               </ul>
+            </div>
+          ) : (
+            c.recent_events?.length > 0 && (
+              <div>
+                <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-2">
+                  Recent events (legacy, no IDs)
+                </div>
+                <ul className="space-y-1.5">
+                  {c.recent_events.map((e, i) => (
+                    <li key={i} className="text-xs text-zinc-600 pl-3 border-l-2 border-zinc-200">
+                      {e}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          )}
+
+          {c.similar_to_existing && (
+            <div className="text-xs p-2 rounded bg-blue-50 border border-blue-200 text-blue-800">
+              🔍 Sonnet flagged similarity to existing archetype:{' '}
+              <code className="bg-white px-1 rounded">{c.similar_to_existing}</code>
             </div>
           )}
 
