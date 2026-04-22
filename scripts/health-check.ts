@@ -98,18 +98,25 @@ async function main() {
   // events table has no processing_status column; use trigger_theme_id as proxy
   const { data: allEvents } = await supabaseAdmin
     .from('events')
-    .select('id, event_date, trigger_theme_id, pattern_id')
+    .select('id, event_date, trigger_theme_id, pattern_id, source_name, classifier_reasoning')
 
   const totalEvents = allEvents?.length || 0
   const linkedEvents = (allEvents || []).filter((e: any) => e.trigger_theme_id).length
-  const orphanEvents = (allEvents || []).filter((e: any) => !e.trigger_theme_id).length
+  const secDeferred = (allEvents || []).filter((e: any) =>
+    !e.trigger_theme_id && e.source_name === 'SEC EDGAR 8-K Filings'
+  ).length
+  const pendingUnclassified = (allEvents || []).filter((e: any) =>
+    !e.trigger_theme_id && !e.classifier_reasoning && e.source_name !== 'SEC EDGAR 8-K Filings'
+  ).length
+  const trueOrphan = (allEvents || []).filter((e: any) =>
+    !e.trigger_theme_id && e.classifier_reasoning && e.source_name !== 'SEC EDGAR 8-K Filings'
+  ).length
 
   const sevenDaysAgo = new Date(now - 7 * 86400000).toISOString()
   const recent7d = (allEvents || []).filter((e: any) =>
     e.event_date && e.event_date >= sevenDaysAgo
   ).length
 
-  // Most recent event date
   const sortedEvents = (allEvents || [])
     .filter((e: any) => e.event_date)
     .sort((a: any, b: any) => b.event_date.localeCompare(a.event_date))
@@ -118,7 +125,13 @@ async function main() {
   console.log('📰 Events')
   console.log(`  Total: ${totalEvents}`)
   console.log(`  Linked to theme: ${linkedEvents}`)
-  console.log(`  Orphan (no theme): ${orphanEvents}`)
+  console.log(`  SEC 8-K deferred: ${secDeferred}`)
+  if (pendingUnclassified > 0) {
+    console.log(`  ⚠️  Pending (unclassified): ${pendingUnclassified}`)
+  }
+  if (trueOrphan > 0) {
+    console.log(`  True orphan (classified, no match): ${trueOrphan}`)
+  }
   console.log(`  Last 7 days: +${recent7d}`)
   console.log(`  Most recent: ${latestEventDate}`)
   console.log()
@@ -183,8 +196,8 @@ async function main() {
     warnings.push(`${chineseArchs.length} Chinese archetype names`)
   if (withoutLogo > 0)
     warnings.push(`${withoutLogo} tickers without logo`)
-  if (orphanEvents > 0)
-    warnings.push(`${orphanEvents} events with no theme link (orphan)`)
+  if (pendingUnclassified > 0)
+    warnings.push(`${pendingUnclassified} events pending classification (run backfill-orphan-events.ts)`)
   const shouldBeCooling = idleThemes.filter((t: any) => t.days_since_last_event >= 30).length
   if (shouldBeCooling > 0)
     warnings.push(`${shouldBeCooling} active themes should be cooling (cron will fix)`)

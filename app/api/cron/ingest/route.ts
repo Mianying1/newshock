@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // Step 2: Run LLM theme pipeline on newly pending events
     const themeResult = await generateThemesForPendingEvents({
-      limit: 50,
+      limit: 150,
       rate_limit: 5,
     })
     console.log(`[cron] Theme gen done: ${themeResult.themes_created} new themes`)
