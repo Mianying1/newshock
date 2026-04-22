@@ -163,6 +163,33 @@
     "tickers": "{n} tickers",
     "themes": "{n} themes"
   },
+  "market_regime": {
+    "title": "Market Regime",
+    "score_suffix": "/12",
+    "guidance_label": "Configuration",
+    "earnings": "Earnings",
+    "valuation": "Valuation",
+    "fed": "Fed policy",
+    "economic": "Economic data",
+    "credit": "Credit",
+    "sentiment": "Sentiment",
+    "sparkline_unavailable": "No history yet",
+    "updated_label": "as of {date}",
+    "regime_label": {
+      "expansion": "Expansion",
+      "neutral_expansion": "Neutral expansion",
+      "watch": "Watch",
+      "stress": "Stress",
+      "bear": "Bear"
+    },
+    "guidance_text": {
+      "maintain_equity": "Maintain equity exposure · balance growth and value",
+      "hold_no_leverage": "Hold positions · avoid leverage · watch single dimensions",
+      "reduce_beta": "Reduce high-beta · add quality and defensives",
+      "heavy_reduce": "Significantly reduce · add cash and gold",
+      "defensive": "Defensive · sell rallies · look for bottom signals"
+    }
+  },
   "duration_type": {
     "bounded": "Bounded cycle",
     "extended": "Multi-year structural",

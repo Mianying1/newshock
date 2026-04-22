@@ -163,6 +163,33 @@
     "tickers": "{n} 只股票",
     "themes": "{n} 个主题"
   },
+  "market_regime": {
+    "title": "市场周期",
+    "score_suffix": "/12",
+    "guidance_label": "配置建议",
+    "earnings": "盈利",
+    "valuation": "估值",
+    "fed": "Fed 政策",
+    "economic": "经济数据",
+    "credit": "信用",
+    "sentiment": "情绪",
+    "sparkline_unavailable": "暂无历史数据",
+    "updated_label": "更新于 {date}",
+    "regime_label": {
+      "expansion": "扩张延续",
+      "neutral_expansion": "中性扩张",
+      "watch": "警觉期",
+      "stress": "压力期",
+      "bear": "熊市"
+    },
+    "guidance_text": {
+      "maintain_equity": "维持 equity 敞口, 成长/价值均衡",
+      "hold_no_leverage": "不减仓, 避免加杠杆, 单项警觉",
+      "reduce_beta": "减持高 beta, 增持质量 + 防御",
+      "heavy_reduce": "大幅减仓, 增持现金 + 黄金",
+      "defensive": "防御, 逢反弹减仓, 寻找底部信号"
+    }
+  },
   "duration_type": {
     "bounded": "有限周期",
     "extended": "长期结构性",

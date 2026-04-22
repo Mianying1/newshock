@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-04-20",
+  "spx_fwd_pe": 20.96,
+  "spx_cape": 30.5,
+  "spx_eps_yoy": 14.1,
+  "spx_eps_revision_trend": "stable",
+  "aaii_bullish": 38,
+  "aaii_bearish": 32,
+  "fed_dot_plot_2026_end": 4.0,
+  "fed_dot_plot_2027_end": 3.25,
+  "fed_next_meeting_cuts_bps": 0,
+  "fed_cycle_stance": "on_hold_with_cuts_ahead"
+}
