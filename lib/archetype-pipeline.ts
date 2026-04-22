@@ -465,6 +465,19 @@ export async function spawnThemeFromArchetype(
     }
   }
 
+  if (recsCount > 0) {
+    try {
+      const { linkEventsToTheme } = await import('./theme-event-linker')
+      const linked = await linkEventsToTheme(themeId)
+      if (linked.confirmed > 0) {
+        console.log(`[spawn] post-link added ${linked.confirmed} events to ${themeId}`)
+        eventsLinked += linked.confirmed
+      }
+    } catch (e) {
+      console.warn(`[spawn] post-link threw: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
   return {
     theme_id: themeId,
     recs_count: recsCount,
