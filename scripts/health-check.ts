@@ -95,34 +95,32 @@ async function main() {
   console.log()
 
   // ===== Events =====
+  // events table has no processing_status column; use trigger_theme_id as proxy
   const { data: allEvents } = await supabaseAdmin
     .from('events')
-    .select('id, processing_status, event_date, trigger_theme_id')
+    .select('id, event_date, trigger_theme_id, pattern_id')
 
   const totalEvents = allEvents?.length || 0
-  const processedEvents = (allEvents || []).filter((e: any) =>
-    e.processing_status === 'processed' || e.trigger_theme_id
-  ).length
-  const deferredEvents = (allEvents || []).filter((e: any) =>
-    e.processing_status === 'deferred'
-  ).length
-  const orphanEvents = (allEvents || []).filter((e: any) =>
-    !e.trigger_theme_id && e.processing_status !== 'deferred'
-  ).length
+  const linkedEvents = (allEvents || []).filter((e: any) => e.trigger_theme_id).length
+  const orphanEvents = (allEvents || []).filter((e: any) => !e.trigger_theme_id).length
 
   const sevenDaysAgo = new Date(now - 7 * 86400000).toISOString()
   const recent7d = (allEvents || []).filter((e: any) =>
     e.event_date && e.event_date >= sevenDaysAgo
   ).length
 
+  // Most recent event date
+  const sortedEvents = (allEvents || [])
+    .filter((e: any) => e.event_date)
+    .sort((a: any, b: any) => b.event_date.localeCompare(a.event_date))
+  const latestEventDate = sortedEvents[0]?.event_date?.slice(0, 10) ?? 'none'
+
   console.log('📰 Events')
   console.log(`  Total: ${totalEvents}`)
-  console.log(`  Processed: ${processedEvents}`)
-  console.log(`  Deferred: ${deferredEvents}`)
-  if (orphanEvents > 0) {
-    console.log(`  ⚠️  Orphan (no theme, not deferred): ${orphanEvents}`)
-  }
+  console.log(`  Linked to theme: ${linkedEvents}`)
+  console.log(`  Orphan (no theme): ${orphanEvents}`)
   console.log(`  Last 7 days: +${recent7d}`)
+  console.log(`  Most recent: ${latestEventDate}`)
   console.log()
 
   // ===== Recommendations =====
@@ -186,7 +184,7 @@ async function main() {
   if (withoutLogo > 0)
     warnings.push(`${withoutLogo} tickers without logo`)
   if (orphanEvents > 0)
-    warnings.push(`${orphanEvents} orphan events`)
+    warnings.push(`${orphanEvents} events with no theme link (orphan)`)
   const shouldBeCooling = idleThemes.filter((t: any) => t.days_since_last_event >= 30).length
   if (shouldBeCooling > 0)
     warnings.push(`${shouldBeCooling} active themes should be cooling (cron will fix)`)
