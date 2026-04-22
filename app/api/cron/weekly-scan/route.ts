@@ -31,6 +31,25 @@ export async function GET(request: NextRequest) {
   const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]
   const thirtyAgo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0]
 
+  // Skip if <10 unmatched events in last 24h — cron now runs weekdays so most
+  // days won't have enough signal to propose a new archetype. Save Sonnet cost.
+  const cutoff24h = new Date(Date.now() - 24 * 3600 * 1000).toISOString()
+  const { count: unmatched24h } = await supabaseAdmin
+    .from('events')
+    .select('id', { count: 'exact', head: true })
+    .is('trigger_theme_id', null)
+    .gte('created_at', cutoff24h)
+
+  if ((unmatched24h ?? 0) < 10) {
+    return Response.json({
+      ok: true,
+      skipped: true,
+      scan_date: now,
+      unmatched_24h: unmatched24h ?? 0,
+      reason: 'Not enough unmatched events in last 24h (<10)',
+    })
+  }
+
   // 1. Existing active archetypes (for dedupe + context)
   const { data: archetypes } = await supabaseAdmin
     .from('theme_archetypes')
