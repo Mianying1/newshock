@@ -64,6 +64,9 @@
     "observational_mapping": "Observational Mapping",
     "pressure_assets": "Pressure Assets",
     "thematic_tool_tooltip": "Also appears in 3+ themes · may be a macro proxy rather than a theme-specific signal",
+    "parent_theme": "Part of",
+    "child_themes": "Subthemes ({count})",
+    "badge_umbrella": "Core",
     "catalyst": "Catalyst",
     "risk": "Risk",
     "exposure_label": "Exposure",
@@ -244,7 +247,10 @@
     "stage_bar_early": "{stage} stage · building",
     "since": "Since {date}",
     "est_horizon": "est. horizon {label}",
-    "view_all": "View all {count} themes →"
+    "view_all": "View all {count} themes →",
+    "core_title": "Core Themes",
+    "subtheme_title": "Subthemes",
+    "expand_subthemes": "View all {count} subthemes →"
   },
   "themes_list": {
     "title": "All Themes",
@@ -253,6 +259,9 @@
     "filter_cooling": "Cooling",
     "filter_archived": "Archived",
     "filter_all": "All",
+    "filter_umbrella": "Core",
+    "filter_subtheme": "Subtheme",
+    "filter_tier_all": "Both",
     "sort_label": "Sort",
     "sort_strength": "Strength",
     "sort_recent": "Recently Active",

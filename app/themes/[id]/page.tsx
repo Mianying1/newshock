@@ -67,9 +67,27 @@ export default function ThemeDetailPage() {
           <div className="space-y-8">
             {/* Theme header */}
             <div>
-              <h1 className="text-3xl font-semibold text-zinc-900 mb-2">
-                {pickField(locale, theme.name, theme.name_zh)}
-              </h1>
+              {theme.parent_theme && (
+                <p className="text-xs text-zinc-500 mb-1">
+                  {t('theme_detail.parent_theme')}:{' '}
+                  <Link
+                    href={`/themes/${theme.parent_theme.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {pickField(locale, theme.parent_theme.name, theme.parent_theme.name_zh)}
+                  </Link>
+                </p>
+              )}
+              <div className="flex items-center gap-2 mb-2">
+                <h1 className="text-3xl font-semibold text-zinc-900">
+                  {pickField(locale, theme.name, theme.name_zh)}
+                </h1>
+                {theme.theme_tier === 'umbrella' && (
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                    {t('theme_detail.badge_umbrella')}
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-zinc-500 mb-3">
                 {formatCategoryLabel(theme.category)} · {theme.days_active} {t('theme_detail.days')} · strength {theme.theme_strength_score}
               </p>
@@ -131,6 +149,31 @@ export default function ThemeDetailPage() {
                 <p className="text-sm text-zinc-400">{t('theme_detail.no_exposure')}</p>
               )}
             </div>
+
+            {/* Child themes (umbrella only) */}
+            {theme.child_themes.length > 0 && (
+              <div>
+                <p className="font-semibold text-zinc-800 mb-3">
+                  ━━ {t('theme_detail.child_themes', { count: theme.child_themes.length })} ━━
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {theme.child_themes.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/themes/${c.id}`}
+                      className="block border border-zinc-200 rounded-lg p-3 hover:bg-zinc-50 transition"
+                    >
+                      <p className="text-sm font-medium text-zinc-900 mb-1">
+                        {pickField(locale, c.name, c.name_zh)}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        strength {c.theme_strength_score} · {t('themes_list.events', { n: c.event_count })}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Playbook section */}
             {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (() => {

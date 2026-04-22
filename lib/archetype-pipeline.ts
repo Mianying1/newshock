@@ -387,6 +387,8 @@ export async function spawnThemeFromArchetype(
       institutional_awareness: 'early',
       theme_strength_score: 55,
       classification_confidence: 60,
+      theme_tier: 'umbrella',
+      parent_theme_id: null,
       event_count: 0,
       first_seen_at: nowIso,
       last_active_at: nowIso,
@@ -474,6 +476,11 @@ export async function spawnThemeFromArchetype(
     enrich_removed: enrichRemoved,
   }
 }
+
+// TODO Phase 2.3 · Weekly theme-tier audit
+// - Downgrade: archived / cooling > 90d umbrella → subtheme
+// - Upgrade: subtheme events_count > 20 cross-month → umbrella candidate
+// - Admin review UI for tier changes
 
 export async function runArchetypePipeline(
   archetypeId: string,

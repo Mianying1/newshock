@@ -64,6 +64,9 @@
     "observational_mapping": "观察性映射",
     "pressure_assets": "受压资产",
     "thematic_tool_tooltip": "该标的也出现在 3+ 个主题 · 可能是宏观泛映射, 而非主题特异信号",
+    "parent_theme": "属于",
+    "child_themes": "子主题 ({count})",
+    "badge_umbrella": "核心",
     "catalyst": "催化事件",
     "risk": "风险",
     "exposure_label": "敞口",
@@ -244,7 +247,10 @@
     "stage_bar_early": "{stage} 阶段 · 积累中",
     "since": "自 {date}",
     "est_horizon": "预期时长 {label}",
-    "view_all": "查看全部 {count} 个主题 →"
+    "view_all": "查看全部 {count} 个主题 →",
+    "core_title": "核心主题",
+    "subtheme_title": "次要主题",
+    "expand_subthemes": "展开 {count} 个次要主题 →"
   },
   "themes_list": {
     "title": "全部主题",
@@ -253,6 +259,9 @@
     "filter_cooling": "降温",
     "filter_archived": "归档",
     "filter_all": "全部",
+    "filter_umbrella": "核心",
+    "filter_subtheme": "次要",
+    "filter_tier_all": "全层级",
     "sort_label": "排序",
     "sort_strength": "强度",
     "sort_recent": "近期活跃",

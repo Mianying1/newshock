@@ -11,6 +11,9 @@ import type {
   MarketCapBand,
   ExposureType,
   ConfidenceBand,
+  ThemeTier,
+  ThemeChildRef,
+  ThemeParentRef,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -44,6 +47,8 @@ interface ThemeRow {
   strategist_reflection: string | null
   strategist_reflection_zh: string | null
   deep_generated_at: string | null
+  theme_tier: ThemeTier | null
+  parent_theme_id: string | null
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -189,7 +194,9 @@ function buildItem(
   row: ThemeRow,
   recs: ThemeRecommendation[],
   catalysts: CatalystEvent[],
-  earliestEventDate: string | null
+  earliestEventDate: string | null,
+  parent: ThemeParentRef | null = null,
+  children: ThemeChildRef[] = []
 ): ThemeRadarItem {
   const earliest = earliestEventDate ?? row.first_seen_at
   const latest = catalysts[0]?.published_at ?? row.last_active_at
@@ -238,6 +245,10 @@ function buildItem(
     strategist_reflection: row.strategist_reflection ?? null,
     strategist_reflection_zh: row.strategist_reflection_zh ?? null,
     deep_generated_at: row.deep_generated_at ?? null,
+    theme_tier: row.theme_tier ?? null,
+    parent_theme_id: row.parent_theme_id ?? null,
+    parent_theme: parent,
+    child_themes: children,
   }
 }
 
@@ -249,6 +260,7 @@ export async function buildThemeRadar(options: {
   category_filter?: string[]
   limit?: number
   statuses?: string[]
+  tier?: ThemeTier
 } = {}): Promise<{ themes: ThemeRadarItem[]; summary: ThemeRadarSummary }> {
   const {
     include_exploratory = false,
@@ -256,6 +268,7 @@ export async function buildThemeRadar(options: {
     category_filter,
     limit = 50,
     statuses,
+    tier,
   } = options
 
   // Build status filter
@@ -272,6 +285,7 @@ export async function buildThemeRadar(options: {
       'theme_strength_score, classification_confidence, summary, summary_zh, ' +
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
+      'theme_tier, parent_theme_id, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
@@ -288,6 +302,10 @@ export async function buildThemeRadar(options: {
 
   if (awareness_filter?.length) {
     query = query.in('institutional_awareness', awareness_filter)
+  }
+
+  if (tier) {
+    query = query.eq('theme_tier', tier)
   }
 
   const { data: rows, error } = await query
@@ -369,6 +387,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'theme_strength_score, classification_confidence, summary, summary_zh, ' +
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
+      'theme_tier, parent_theme_id, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .eq('id', themeId)
@@ -377,11 +396,40 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   if (error || !row) throw new Error(`theme not found: ${themeId}`)
 
   const themeRow = row as unknown as ThemeRow
-  const [recs, catalysts, earliestEventDate] = await Promise.all([
+  const [recs, catalysts, earliestEventDate, parent, children] = await Promise.all([
     fetchRecommendations(themeId),
     fetchCatalysts(themeId, 50),
     fetchEarliestEventDate(themeId),
+    fetchParent(themeRow.parent_theme_id),
+    fetchChildren(themeId),
   ])
 
-  return buildItem(themeRow, recs, catalysts, earliestEventDate)
+  return buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children)
+}
+
+async function fetchParent(parentId: string | null): Promise<ThemeParentRef | null> {
+  if (!parentId) return null
+  const { data } = await supabaseAdmin
+    .from('themes')
+    .select('id, name, name_zh')
+    .eq('id', parentId)
+    .maybeSingle()
+  if (!data) return null
+  return { id: data.id, name: data.name, name_zh: data.name_zh ?? null }
+}
+
+async function fetchChildren(themeId: string): Promise<ThemeChildRef[]> {
+  const { data } = await supabaseAdmin
+    .from('themes')
+    .select('id, name, name_zh, theme_strength_score, event_count')
+    .eq('parent_theme_id', themeId)
+    .in('status', ['active', 'cooling'])
+    .order('theme_strength_score', { ascending: false })
+  return (data ?? []).map((r: { id: string; name: string; name_zh: string | null; theme_strength_score: number; event_count: number }) => ({
+    id: r.id,
+    name: r.name,
+    name_zh: r.name_zh ?? null,
+    theme_strength_score: r.theme_strength_score,
+    event_count: r.event_count,
+  }))
 }

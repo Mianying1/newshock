@@ -12,6 +12,7 @@ import '../radar.css'
 
 type StatusFilter = 'active' | 'cooling' | 'archived' | 'all'
 type SortKey = 'strength' | 'recent' | 'created'
+type TierFilter = 'umbrella' | 'subtheme' | 'all'
 
 const STATUS_FETCH: Record<StatusFilter, string> = {
   active: 'active',
@@ -109,9 +110,17 @@ function ThemeRow({ theme }: { theme: ThemeRadarItem }) {
   )
 }
 
+function readTierFromURL(): TierFilter {
+  if (typeof window === 'undefined') return 'umbrella'
+  const v = new URLSearchParams(window.location.search).get('tier')
+  if (v === 'subtheme' || v === 'all') return v
+  return 'umbrella'
+}
+
 export default function ThemesListPage() {
   const { t } = useI18n()
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('active')
+  const [tierFilter, setTierFilter] = useState<TierFilter>(readTierFromURL)
   const [sort, setSort] = useState<SortKey>('strength')
   const [themes, setThemes] = useState<ThemeRadarItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -124,6 +133,7 @@ export default function ThemesListPage() {
       status: STATUS_FETCH[statusFilter],
       limit: '200',
     })
+    if (tierFilter !== 'all') params.set('tier', tierFilter)
     fetch(`/api/themes?${params.toString()}`)
       .then((r) => {
         if (!r.ok) throw new Error('fetch failed')
@@ -137,7 +147,7 @@ export default function ThemesListPage() {
         setError(true)
         setLoading(false)
       })
-  }, [statusFilter])
+  }, [statusFilter, tierFilter])
 
   const sorted = useMemo(() => {
     const arr = [...themes]
@@ -162,6 +172,12 @@ export default function ThemesListPage() {
     { key: 'cooling', labelKey: 'themes_list.filter_cooling' },
     { key: 'archived', labelKey: 'themes_list.filter_archived' },
     { key: 'all', labelKey: 'themes_list.filter_all' },
+  ]
+
+  const tierButtons: { key: TierFilter; labelKey: string }[] = [
+    { key: 'umbrella', labelKey: 'themes_list.filter_umbrella' },
+    { key: 'subtheme', labelKey: 'themes_list.filter_subtheme' },
+    { key: 'all', labelKey: 'themes_list.filter_tier_all' },
   ]
 
   const sortButtons: { key: SortKey; labelKey: string }[] = [
@@ -210,6 +226,17 @@ export default function ThemesListPage() {
           </div>
 
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', marginBottom: 20 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {tierButtons.map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setTierFilter(f.key)}
+                  style={tierFilter === f.key ? tabActive : tabBase}
+                >
+                  {t(f.labelKey)}
+                </button>
+              ))}
+            </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {filterButtons.map((f) => (
                 <button

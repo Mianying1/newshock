@@ -758,7 +758,7 @@ async function handleNewTheme(
   const validRows = uniqueProposed.filter((x) => validSet.has(x.symbol))
   const skippedRows = uniqueProposed.filter((x) => !validSet.has(x.symbol))
 
-  // Insert theme
+  // Insert theme (always subtheme from ingest path — umbrellas come from coverage_audit)
   const { data: newTheme, error: themeErr } = await supabaseAdmin
     .from('themes')
     .insert({
@@ -771,6 +771,7 @@ async function handleNewTheme(
       institutional_awareness: isExploratory ? 'hidden' : 'early',
       theme_strength_score: isExploratory ? 40 : 55,
       classification_confidence: sonnet.classification_confidence,
+      theme_tier: 'subtheme',
       event_count: 1,
       first_seen_at: new Date().toISOString(),
       last_active_at: new Date().toISOString(),
@@ -783,6 +784,23 @@ async function handleNewTheme(
   }
 
   const themeId = newTheme.id
+
+  // Ask Sonnet to attach an umbrella parent (best-effort; failures leave parent NULL)
+  try {
+    const { classifySubthemeParent } = await import('./theme-tier')
+    const parentResult = await classifySubthemeParent({
+      name: sonnet.theme_name ?? '',
+      summary: sonnet.theme_summary ?? null,
+    })
+    if (parentResult.parent_id) {
+      await supabaseAdmin
+        .from('themes')
+        .update({ parent_theme_id: parentResult.parent_id })
+        .eq('id', themeId)
+    }
+  } catch (e) {
+    console.warn(`[theme-generator] parent classify warn: ${e instanceof Error ? e.message : String(e)}`)
+  }
 
   // Insert recommendations
   if (validRows.length > 0) {

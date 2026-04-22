@@ -95,6 +95,8 @@ export default function HomePage() {
   }, [])
 
   const activeThemes = themes.filter((th) => th.status !== 'archived')
+  const umbrellaThemes = activeThemes.filter((th) => th.theme_tier === 'umbrella')
+  const subthemes = activeThemes.filter((th) => th.theme_tier !== 'umbrella')
   const totalThemes = activeThemes.length
   const visibleThemes = activeThemes.slice(0, 12)
   const narrativesCount = overview?.narratives_count ?? 0
@@ -141,12 +143,9 @@ export default function HomePage() {
           <EventStream />
 
           <div className="sec-label">
-            <span className="l">{t('active_themes.title')}</span>
+            <span className="l">{t('active_themes.core_title')}</span>
             <span className="r">
-              {t('active_themes.showing', { n: visibleThemes.length })}
-              {totalThemes > visibleThemes.length && ` / ${totalThemes}`}
-              {' · '}
-              {t('active_themes.sorted_by_strength')}
+              {t('active_themes.showing', { n: umbrellaThemes.length })}
             </span>
           </div>
 
@@ -166,30 +165,36 @@ export default function HomePage() {
             </p>
           )}
 
-          {visibleThemes.length > 0 && (
+          {umbrellaThemes.length > 0 && (
             <div className="themes-grid">
-              {visibleThemes.map((theme) => (
+              {umbrellaThemes.map((theme) => (
                 <ActiveThemeCard key={theme.id} theme={theme} />
               ))}
             </div>
           )}
 
-          {totalThemes > visibleThemes.length && (
-            <div style={{ textAlign: 'center', padding: '20px 0 8px' }}>
-              <Link
-                href="/themes"
-                style={{
-                  fontSize: 13,
-                  color: 'var(--ink-2)',
-                  textDecoration: 'none',
-                  padding: '8px 16px',
-                  border: '1px solid var(--line-2)',
-                  borderRadius: 999,
-                  display: 'inline-block',
-                }}
-              >
-                {t('active_themes.view_all', { count: totalThemes })}
-              </Link>
+          {subthemes.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <div className="sec-label">
+                <span className="l">{t('active_themes.subtheme_title')}</span>
+                <span className="r">{t('active_themes.showing', { n: subthemes.length })}</span>
+              </div>
+              <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
+                <Link
+                  href="/themes?tier=subtheme"
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--ink-2)',
+                    textDecoration: 'none',
+                    padding: '8px 16px',
+                    border: '1px solid var(--line-2)',
+                    borderRadius: 999,
+                    display: 'inline-block',
+                  }}
+                >
+                  {t('active_themes.expand_subthemes', { count: subthemes.length })}
+                </Link>
+              </div>
             </div>
           )}
 

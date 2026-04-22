@@ -83,6 +83,22 @@ export interface ArchetypePlaybook {
 
 export type PlaybookStage = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
 
+export type ThemeTier = 'umbrella' | 'subtheme'
+
+export interface ThemeChildRef {
+  id: string
+  name: string
+  name_zh: string | null
+  theme_strength_score: number
+  event_count: number
+}
+
+export interface ThemeParentRef {
+  id: string
+  name: string
+  name_zh: string | null
+}
+
 export interface ThemeRadarItem {
   id: string
   name: string
@@ -112,6 +128,10 @@ export interface ThemeRadarItem {
   strategist_reflection: string | null
   strategist_reflection_zh: string | null
   deep_generated_at: string | null
+  theme_tier: ThemeTier | null
+  parent_theme_id: string | null
+  parent_theme: ThemeParentRef | null
+  child_themes: ThemeChildRef[]
 }
 
 export interface ThemeRadarSummary {
