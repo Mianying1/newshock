@@ -188,6 +188,13 @@ Rationale: The system's long-term value depends on discovering new themes outsid
 
 Bias: When archetype confidence is 55-70, prefer new_exploratory over strengthen_existing.
 
+ARCHETYPE BROADNESS WARNING:
+If archetype match is PARTIAL and the archetype description is broad
+(e.g., "crypto_institutional_adoption" covers ETFs + stablecoin regulation +
+corporate BTC treasury + exchange licensing + custody — many subtopics),
+be cautious. PREFER new_from_archetype over forced strengthen.
+Creating specific themes is healthier than over-strengthening broad ones.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 THEME NAMING RULES (mandatory)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -241,38 +248,69 @@ themes in theme_summary for human review.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 3 — EXISTING THEME CONSOLIDATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-DEFAULT: Strengthen existing theme.
-The prior bias of this system was too aggressive in creating new themes —
-most related events should strengthen, not spawn a new theme.
+Decide: strengthen an existing theme OR create a new one?
 
 Check ACTIVE_THEMES (includes active + cooling + exploratory within 90d).
 
-STRENGTHEN (ANY sufficient — lean heavily toward strengthen):
-  ✓ Same archetype_id + last_active_at within 90 days
-  ✓ Different archetype but theme is semantically highly overlapping
-    (e.g. two "DeFi security" themes with different archetypes → merge)
-  ✓ Same entity / geography / mechanism (Iran, EV battery, DeFi exploit,
-    rare-earth export, GLP-1 trial, etc.)
-  ✓ Adds a new angle to an existing theme (new angle ≠ new theme)
+━━ THEME-NAME COHERENCE CHECK (mandatory before strengthen) ━━
 
-Only create a NEW theme when AT LEAST ONE is true:
-  ✗ Completely different entity / geography / mechanism
-  ✗ Same archetype but last_active_at > 90 days (genuinely old theme)
-  ✗ Clearly distinct sub-theme angle (provide concrete justification)
+Before choosing strengthen_existing, you MUST pass this guardrail for
+the target theme. Answer out loud in your decision_trace:
 
-STRENGTHEN examples:
-  • 3rd US chip-export update → existing "US AI Chip Export" theme
-  • 2nd Iran escalation report → existing "Iran Crisis" theme
-  • New DeFi exploit headline + existing "DeFi Security Crisis" → STRENGTHEN
-    (do not spawn "DeFi Security Crisis · <protocol name>")
-  • New LFP fast-charge claim + existing "EV Battery Arms Race"  → STRENGTHEN
-NEW theme only when:
-  • Iran tension when current active theme is Russia sanctions (different entity)
-  • AI compute demand when current theme is AI cooling (different mechanism)
+  "Can this event be naturally described as a new instance / development
+   of THEME_NAME itself — not just an instance of its archetype category?"
 
-If strengthen conditions met → action = "strengthen_existing", set target_theme_id.
-Otherwise → action = "new_from_archetype".
-Reserve new_exploratory for events genuinely outside all existing themes AND archetypes.
+Same-archetype + 14-day window is NOT sufficient justification.
+"Both are crypto news" is NOT sufficient.
+"Adds a new dimension to the archetype" is NOT sufficient.
+
+Strengthen requires theme.name-level alignment on at least TWO of:
+  (a) Core entity overlap (same company / protocol / country / commodity)
+  (b) Same specific sub-topic (payment licensing ≠ ETF flows ≠ treasury buy)
+  (c) Compatible direction (benefits/headwind tilt aligned)
+
+If fewer than two align → do NOT strengthen that theme.
+
+━━ WORKED EXAMPLES ━━
+
+Example 1 — STRENGTHEN OK:
+  Event: "Coinbase clears regulatory hurdle for stablecoin business"
+  Theme: "Coinbase Payment License · Stablecoin Infrastructure"
+  Check: Natural new development of that theme?
+  → YES. Entity=Coinbase (match). Sub-topic=stablecoin regulatory progress (match). Direction=benefits (aligned).
+  → strengthen_existing.
+
+Example 2 — STRENGTHEN WRONG:
+  Event: "Kalshi launches crypto perpetual futures taking on Coinbase"
+  Theme: "Coinbase Payment License · Stablecoin Infrastructure"
+  Check: Natural new development of that theme?
+  → NO. Entity=Kalshi (competitor, not Coinbase). Sub-topic=derivatives (not payment licensing). Direction=headwind for Coinbase.
+  → new_from_archetype (or different existing theme if one fits).
+
+Example 3 — STRENGTHEN WRONG:
+  Event: "Japan institutional investors plan to buy crypto (survey)"
+  Theme: "Coinbase Payment License · Stablecoin Infrastructure"
+  Check: Is this about Coinbase Payment License?
+  → NO. Macro survey, no Coinbase involvement, no payment rails, no licensing.
+  → new_from_archetype.
+
+Example 4 — STRENGTHEN OK:
+  Event: "BlackRock IBIT records $500M daily inflows"
+  Theme: "ETF Institutional Adoption Wave" (hypothetical)
+  Check: ETF flows ARE the theme subject.
+  → YES. Entity=IBIT/BlackRock (match). Sub-topic=ETF inflows (match).
+  → strengthen_existing.
+
+━━ FALLBACK PRIORITY ━━
+
+1. If coherence check passes on some theme → action = "strengthen_existing", set target_theme_id.
+2. Else if archetype_match = "exact" or "partial" → action = "new_from_archetype".
+3. Reserve new_exploratory for events genuinely outside all existing themes AND archetypes.
+
+Batch-dedup note: when multiple events in one batch match the same broad
+archetype but involve disjoint entities / sub-topics, let them split into
+separate themes. Do not collapse distinct sub-topics into one theme just
+because they share an archetype.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 AI INFRASTRUCTURE TICKER REMINDER
