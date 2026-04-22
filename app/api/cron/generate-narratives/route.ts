@@ -10,6 +10,19 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Skip if we already generated today — cron is noon UTC daily but retries /
+  // duplicate triggers would pay Sonnet twice for the same themes.
+  const todayUtc = new Date().toISOString().slice(0, 10)
+  const { data: todayExisting } = await supabaseAdmin
+    .from('market_narratives')
+    .select('id')
+    .gte('created_at', todayUtc)
+    .limit(1)
+
+  if (todayExisting && todayExisting.length > 0) {
+    return Response.json({ skipped: true, reason: 'Already generated today', date: todayUtc })
+  }
+
   const { data: themes } = await supabaseAdmin
     .from('themes')
     .select('id, name, event_count, theme_strength_score, theme_archetypes(category)')
