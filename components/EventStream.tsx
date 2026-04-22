@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n-context'
@@ -23,7 +24,9 @@ interface StreamEvent {
 interface StreamResponse {
   events: StreamEvent[]
   unmatched_count: number
+  matched_count: number
   limit: number
+  mode: 'matched' | 'unmatched' | 'all'
 }
 
 const SRC_CLASS: Record<string, string> = {
@@ -51,8 +54,9 @@ function shortPublisher(name: string): string {
 
 export function EventStream() {
   const { t, locale } = useI18n()
+  const [mode, setMode] = useState<'matched' | 'unmatched'>('matched')
   const { data, error, isLoading } = useSWR<StreamResponse>(
-    '/api/events/recent?limit=8',
+    `/api/events/recent?limit=8&mode=${mode}`,
     fetcher
   )
 
@@ -66,10 +70,26 @@ export function EventStream() {
         <span className="l">{t('event_stream.title')}</span>
         <span className="r">
           {t('event_stream.auto_matched')}
-          {unmatched > 0 && (
+          {mode === 'matched' && unmatched > 0 && (
             <>
               {' · '}
-              <a>{t('event_stream.show_unmatched', { n: unmatched })}</a>
+              <a
+                onClick={() => setMode('unmatched')}
+                style={{ cursor: 'pointer', color: 'var(--link)' }}
+              >
+                {t('event_stream.show_unmatched', { n: unmatched })}
+              </a>
+            </>
+          )}
+          {mode === 'unmatched' && (
+            <>
+              {' · '}
+              <a
+                onClick={() => setMode('matched')}
+                style={{ cursor: 'pointer', color: 'var(--link)' }}
+              >
+                {t('event_stream.show_matched')}
+              </a>
             </>
           )}
         </span>

@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export const dynamic = 'force-dynamic'
 
+type Mode = 'matched' | 'unmatched' | 'all'
+
 interface EventRow {
   id: string
   headline: string
@@ -25,19 +27,40 @@ export async function GET(request: NextRequest) {
     50,
     Math.max(1, Number(request.nextUrl.searchParams.get('limit') ?? '8'))
   )
+  const rawMode = request.nextUrl.searchParams.get('mode')
+  const mode: Mode =
+    rawMode === 'unmatched' || rawMode === 'all' ? rawMode : 'matched'
 
-  const { data: events, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from('events')
     .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id')
     .order('event_date', { ascending: false })
-    .limit(limit * 3)
+    .limit(limit)
 
-  if (error) {
-    console.error('[api/events/recent] supabase error', error)
-    return Response.json({ events: [], unmatched_count: 0, limit, error: error.message }, { status: 500 })
+  if (mode === 'matched') query = query.not('trigger_theme_id', 'is', null)
+  else if (mode === 'unmatched') query = query.is('trigger_theme_id', null)
+
+  const [eventsRes, unmatchedCountRes, matchedCountRes] = await Promise.all([
+    query,
+    supabaseAdmin
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .is('trigger_theme_id', null),
+    supabaseAdmin
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .not('trigger_theme_id', 'is', null),
+  ])
+
+  if (eventsRes.error) {
+    console.error('[api/events/recent] supabase error', eventsRes.error)
+    return Response.json(
+      { events: [], unmatched_count: 0, matched_count: 0, limit, mode, error: eventsRes.error.message },
+      { status: 500 }
+    )
   }
 
-  const rows = (events ?? []) as EventRow[]
+  const rows = (eventsRes.data ?? []) as EventRow[]
   const themeIds = Array.from(
     new Set(rows.map((e) => e.trigger_theme_id).filter((id): id is string => Boolean(id)))
   )
@@ -51,7 +74,7 @@ export async function GET(request: NextRequest) {
     for (const th of (themes ?? []) as ThemeRow[]) themeMap.set(th.id, th)
   }
 
-  const hydrated = rows.slice(0, limit).map((e) => {
+  const hydrated = rows.map((e) => {
     const theme = e.trigger_theme_id ? themeMap.get(e.trigger_theme_id) : null
     return {
       id: e.id,
@@ -66,11 +89,11 @@ export async function GET(request: NextRequest) {
     }
   })
 
-  const unmatched = rows.filter((e) => !e.trigger_theme_id).length
-
   return Response.json({
     events: hydrated,
-    unmatched_count: unmatched,
+    unmatched_count: unmatchedCountRes.count ?? 0,
+    matched_count: matchedCountRes.count ?? 0,
     limit,
+    mode,
   })
 }
