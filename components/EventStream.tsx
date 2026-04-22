@@ -52,10 +52,14 @@ function shortPublisher(name: string): string {
 
 export function EventStream() {
   const { t, locale } = useI18n()
-  const { data } = useSWR<StreamResponse>('/api/events/recent?limit=8', fetcher)
+  const { data, error, isLoading } = useSWR<StreamResponse>(
+    '/api/events/recent?limit=8',
+    fetcher
+  )
 
   const events = data?.events ?? []
   const unmatched = data?.unmatched_count ?? 0
+  const isEmpty = !isLoading && !error && events.length === 0
 
   return (
     <>
@@ -73,11 +77,22 @@ export function EventStream() {
       </div>
 
       <div className="evt-card">
-        {events.length === 0 ? (
+        {isLoading && (
           <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
-            {t('common.no_themes')}
+            {t('event_stream.loading')}
           </div>
-        ) : (
+        )}
+        {error && !isLoading && (
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+            {t('event_stream.error')}
+          </div>
+        )}
+        {isEmpty && (
+          <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
+            {t('event_stream.no_events')}
+          </div>
+        )}
+        {!isLoading && !error && events.length > 0 && (
           events.map((e) => {
             const publisher = getDisplayPublisher(e.source_name, e.source_url)
             const srcCls = SRC_CLASS[publisher] ?? ''

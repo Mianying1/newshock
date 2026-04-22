@@ -213,7 +213,10 @@
     "title": "事件流",
     "auto_matched": "已自动归类",
     "show_unmatched": "显示未归类 ({n})",
-    "no_theme_match": "尚未匹配主题 · 待审核"
+    "no_theme_match": "尚未匹配主题 · 待审核",
+    "loading": "事件加载中…",
+    "no_events": "尚未抓取到事件",
+    "error": "事件流暂不可用"
   },
   "active_themes": {
     "title": "活跃主题",
