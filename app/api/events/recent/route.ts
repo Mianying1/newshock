@@ -13,6 +13,7 @@ interface EventRow {
   event_date: string
   created_at: string
   trigger_theme_id: string | null
+  level_of_impact: 'structure' | 'subtheme' | 'event_only' | null
 }
 
 interface ThemeRow {
@@ -30,15 +31,19 @@ export async function GET(request: NextRequest) {
   const rawMode = request.nextUrl.searchParams.get('mode')
   const mode: Mode =
     rawMode === 'unmatched' || rawMode === 'all' ? rawMode : 'matched'
+  const includeNoise = request.nextUrl.searchParams.get('noise') === '1'
 
   let query = supabaseAdmin
     .from('events')
-    .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id')
+    .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id, level_of_impact')
     .order('event_date', { ascending: false })
     .limit(limit)
 
   if (mode === 'matched') query = query.not('trigger_theme_id', 'is', null)
   else if (mode === 'unmatched') query = query.is('trigger_theme_id', null)
+
+  // Hide isolated / noise events by default; null = legacy event (keep visible)
+  if (!includeNoise) query = query.or('level_of_impact.is.null,level_of_impact.neq.event_only')
 
   const [eventsRes, unmatchedCountRes, matchedCountRes] = await Promise.all([
     query,
@@ -82,6 +87,7 @@ export async function GET(request: NextRequest) {
       source_name: e.source_name,
       source_url: e.source_url,
       event_date: e.event_date,
+      level_of_impact: e.level_of_impact,
       theme_id: theme?.id ?? null,
       theme_name: theme?.name ?? null,
       theme_name_zh: theme?.name_zh ?? null,

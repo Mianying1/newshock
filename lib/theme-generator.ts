@@ -32,6 +32,8 @@ interface DecisionTrace {
   step3_theme_id: string | null
 }
 
+export type LevelOfImpact = 'structure' | 'subtheme' | 'event_only'
+
 interface SonnetThemeResult {
   decision_trace: DecisionTrace
   action: 'strengthen_existing' | 'new_from_archetype' | 'new_exploratory' | 'irrelevant'
@@ -42,6 +44,7 @@ interface SonnetThemeResult {
   theme_summary: string | null
   theme_summary_zh: string | null
   classification_confidence: number
+  level_of_impact: LevelOfImpact | null
   suggested_tickers: { tier1: string[]; tier2: string[]; tier3: string[] }
   ticker_reasoning: Record<string, string>
   ticker_reasoning_zh: Record<string, string>
@@ -501,12 +504,18 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     `  "theme_summary": string | null,\n` +
     `  "theme_summary_zh": string | null,\n` +
     `  "classification_confidence": integer 0-100,\n` +
+    `  "level_of_impact": "structure" | "subtheme" | "event_only",\n` +
     `  "suggested_tickers": { "tier1": [], "tier2": [], "tier3": [] },\n` +
     `  "ticker_reasoning": { "TICKER": "causal role one-liner" },\n` +
     `  "ticker_reasoning_zh": { "TICKER": "中文因果角色一句话描述" },\n` +
     `  "reasoning": "one sentence why this action",\n` +
     `  "why_exploratory_not_strengthen": "If action is strengthen_existing but archetype match was partial, explain why not exploratory. Otherwise null."\n` +
     `}\n\n` +
+    `LEVEL OF IMPACT (required unless action="irrelevant"):\n` +
+    `- structure:  Changes market structure (rare · macro regime shift, Fed pivot, war start, major policy).\n` +
+    `- subtheme:   Strengthens an existing narrative (specific catalyst with clear thematic home).\n` +
+    `- event_only: Isolated news with no broader pattern (earnings beat/miss, one-off PR).\n` +
+    `Set null when action="irrelevant".\n\n` +
     `BILINGUAL OUTPUT RULES:\n` +
     `- theme_name / theme_name_zh: English name + professional Chinese translation. Keep tickers/years/CIK/brand names unchanged.\n` +
     `- theme_summary / theme_summary_zh: both 1-2 concise sentences describing the investable theme.\n` +
@@ -561,6 +570,10 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       theme_summary: json.theme_summary ?? null,
       theme_summary_zh: json.theme_summary_zh ?? null,
       classification_confidence: typeof json.classification_confidence === 'number' ? json.classification_confidence : 50,
+      level_of_impact:
+        json.level_of_impact === 'structure' || json.level_of_impact === 'subtheme' || json.level_of_impact === 'event_only'
+          ? json.level_of_impact
+          : null,
       suggested_tickers: {
         tier1: Array.isArray(json.suggested_tickers?.tier1) ? json.suggested_tickers.tier1 : [],
         tier2: Array.isArray(json.suggested_tickers?.tier2) ? json.suggested_tickers.tier2 : [],
@@ -591,6 +604,7 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
       theme_summary: null,
       theme_summary_zh: null,
       classification_confidence: 0,
+      level_of_impact: null,
       suggested_tickers: { tier1: [], tier2: [], tier3: [] },
       ticker_reasoning: {},
       ticker_reasoning_zh: {},
@@ -679,7 +693,8 @@ function mergeTickers(
 async function handleStrengthenExisting(
   eventId: string,
   themeId: string,
-  reasoning: string
+  reasoning: string,
+  levelOfImpact: LevelOfImpact | null = null
 ): Promise<{ tickers_created: number; novel_tickers_skipped: string[] }> {
   const { data: existing } = await supabaseAdmin
     .from('themes')
@@ -722,7 +737,7 @@ async function handleStrengthenExisting(
 
   await supabaseAdmin
     .from('events')
-    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoning })
+    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoning, level_of_impact: levelOfImpact })
     .eq('id', eventId)
 
   return { tickers_created: 0, novel_tickers_skipped: [] }
@@ -856,7 +871,7 @@ async function handleNewTheme(
 
   await supabaseAdmin
     .from('events')
-    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoningNote })
+    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoningNote, level_of_impact: sonnet.level_of_impact })
     .eq('id', eventId)
 
   invalidateMatcherCache()
@@ -913,7 +928,7 @@ export async function generateTheme(event: EventRow): Promise<GenerationResult> 
     if (sonnet.action === 'irrelevant') {
       await supabaseAdmin
         .from('events')
-        .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${sonnet.reasoning}` })
+        .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${sonnet.reasoning}`, level_of_impact: 'event_only' })
         .eq('id', event.id)
       return {
         event_id: event.id,
@@ -929,7 +944,8 @@ export async function generateTheme(event: EventRow): Promise<GenerationResult> 
       const { tickers_created, novel_tickers_skipped } = await handleStrengthenExisting(
         event.id,
         sonnet.target_theme_id,
-        sonnet.reasoning
+        sonnet.reasoning,
+        sonnet.level_of_impact
       )
       return {
         event_id: event.id,
@@ -1132,7 +1148,7 @@ export async function generateThemesForPendingEvents(options: {
         console.log(`  [IRRELEVANT] "${event.headline.slice(0, 60)}" reason="${sonnet.reasoning.slice(0, 80)}"`)
         await supabaseAdmin
           .from('events')
-          .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${sonnet.reasoning}` })
+          .update({ trigger_theme_id: null, classifier_reasoning: `[irrelevant] ${sonnet.reasoning}`, level_of_impact: 'event_only' })
           .eq('id', event.id)
         counts.irrelevant++
 
@@ -1140,7 +1156,7 @@ export async function generateThemesForPendingEvents(options: {
         const ctx = await getMatcherContext()
         const matchedTheme = ctx.activeThemes.find((t) => t.id === sonnet.target_theme_id)
         console.log(`  [STRENGTHEN] "${event.headline.slice(0, 60)}" → "${matchedTheme?.name ?? sonnet.target_theme_id}"`)
-        await handleStrengthenExisting(event.id, sonnet.target_theme_id, sonnet.reasoning)
+        await handleStrengthenExisting(event.id, sonnet.target_theme_id, sonnet.reasoning, sonnet.level_of_impact)
         counts.strengthen_existing++
 
       } else if (sonnet.action === 'new_from_archetype') {
@@ -1150,7 +1166,7 @@ export async function generateThemesForPendingEvents(options: {
         if (existingBatchThemeId) {
           // Within-batch dedup: redirect to strengthen the already-created theme
           console.log(`[dedup] ${event.id.slice(0, 8)} → strengthen batch theme ${existingBatchThemeId} (archetype=${archetypeKey})`)
-          await handleStrengthenExisting(event.id, existingBatchThemeId, `[batch-dedup] ${sonnet.reasoning}`)
+          await handleStrengthenExisting(event.id, existingBatchThemeId, `[batch-dedup] ${sonnet.reasoning}`, sonnet.level_of_impact)
           counts.strengthen_existing++
         } else {
           console.log(`  [NEW_ARCHETYPE] "${event.headline.slice(0, 60)}" → archetype="${sonnet.archetype_id}"`)

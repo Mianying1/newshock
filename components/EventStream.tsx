@@ -57,8 +57,9 @@ function shortPublisher(name: string): string {
 export function EventStream() {
   const { t, locale } = useI18n()
   const [mode, setMode] = useState<'matched' | 'unmatched'>('matched')
+  const [showNoise, setShowNoise] = useState(false)
   const { data, error, isLoading } = useSWR<StreamResponse>(
-    `/api/events/recent?limit=8&mode=${mode}`,
+    `/api/events/recent?limit=8&mode=${mode}${showNoise ? '&noise=1' : ''}`,
     fetcher
   )
 
@@ -94,6 +95,13 @@ export function EventStream() {
               </a>
             </>
           )}
+          {' · '}
+          <a
+            onClick={() => setShowNoise((v) => !v)}
+            style={{ cursor: 'pointer', color: 'var(--link)' }}
+          >
+            {showNoise ? t('event_stream.hide_noise') : t('event_stream.show_noise')}
+          </a>
         </span>
       </div>
 

@@ -234,6 +234,8 @@
     "auto_matched": "Auto-matched to themes",
     "show_unmatched": "show unmatched ({n})",
     "show_matched": "← show matched",
+    "show_noise": "show all events",
+    "hide_noise": "hide isolated",
     "no_theme_match": "No theme match · queued for review",
     "loading": "Loading events…",
     "no_events": "No events ingested yet",
