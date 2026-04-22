@@ -30,6 +30,7 @@ interface ArchetypeRow {
   typical_duration_days_min: number | null
   typical_duration_days_max: number | null
   created_at: string
+  playbook: unknown
 }
 
 interface RecRow {
@@ -55,6 +56,17 @@ const RECENT_ARCHETYPE_WINDOW_DAYS = 30
 const ACTIVE_WINDOW_DAYS = 30
 const LONG_TERM_MIN_DAYS = 365
 const EARLY_STAGE_RATIO = 0.25
+const COOLING_GRACE_DAYS = 30
+const COOLING_DECAY_DAYS = 30
+
+function coolingFactor(status: string, lastActiveAt: string | null, now: number): number {
+  if (status === 'active') return 1.0
+  if (status !== 'cooling') return 0
+  if (!lastActiveAt) return 1.0
+  const daysSinceLastEvent = (now - new Date(lastActiveAt).getTime()) / 86400000
+  const daysCooling = Math.max(0, daysSinceLastEvent - COOLING_GRACE_DAYS)
+  return Math.max(0, 1 - daysCooling / COOLING_DECAY_DAYS)
+}
 
 export async function computeTickerScores(): Promise<TickerScores[]> {
   const now = Date.now()
@@ -74,7 +86,7 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       .gte('last_active_at', cutoff),
     supabaseAdmin
       .from('theme_archetypes')
-      .select('id, category, typical_duration_days_min, typical_duration_days_max, created_at'),
+      .select('id, category, typical_duration_days_min, typical_duration_days_max, created_at, playbook'),
     supabaseAdmin
       .from('events')
       .select('trigger_theme_id, event_date')
@@ -131,6 +143,9 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       const theme = themeMap.get(r.theme_id)
       if (!theme) continue
 
+      const factor = coolingFactor(theme.status, theme.last_active_at, now)
+      if (factor <= 0) continue
+
       const tierWeight = TIER_WEIGHTS[r.tier] ?? 0
       const themeEvents7 = eventsByTheme7[theme.id] ?? 0
       const themeEvents30 = eventsByTheme30[theme.id] ?? 0
@@ -138,8 +153,8 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       events30 += themeEvents30
       qualifyingThemes.add(theme.id)
 
-      const thematicBoost = 1 + Math.min(1, themeEvents7 * 0.2)
-      thematic += tierWeight * thematicBoost
+      const thematicBoost = 1 + Math.min(1, themeEvents7 * 0.1)
+      thematic += tierWeight * factor * thematicBoost
 
       const arch = theme.archetype_id ? archMap.get(theme.archetype_id) ?? null : null
       if (arch?.category) {
@@ -147,7 +162,11 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       }
 
       if (arch) {
-        const isLongTerm = (arch.typical_duration_days_min ?? 0) >= LONG_TERM_MIN_DAYS
+        const pb = arch.playbook as { duration_type?: string } | null
+        const durationType = pb?.duration_type ?? null
+        const isLongTerm =
+          durationType === 'extended' &&
+          (arch.typical_duration_days_min ?? 0) >= LONG_TERM_MIN_DAYS
         if (isLongTerm) {
           const stage = calcPlaybookStage(
             theme.first_seen_at,
@@ -162,7 +181,7 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
 
           if (isEarly) {
             const stageMult = stage === 'early' ? 1.5 : 1.0
-            potential += tierWeight * stageMult + (isNewArchetype ? 2 : 0)
+            potential += tierWeight * factor * stageMult + (isNewArchetype ? 2 : 0)
           }
         }
       }

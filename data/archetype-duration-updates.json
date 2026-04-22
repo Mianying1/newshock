@@ -1,0 +1,587 @@
+[
+  {
+    "id": "cpo_photonics_rotation",
+    "name": "CPO & Photonics Rotation · Next-Gen Interconnect",
+    "old": {
+      "duration_type": "extended",
+      "min": 180,
+      "max": 540
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year technological infrastructure buildout cycle driven by structural demand for next-generation data center interconnects, not a single catalyst event."
+    }
+  },
+  {
+    "id": "rare_earth_national_security",
+    "name": "Rare Earth Security · Mining Opportunities",
+    "old": {
+      "duration_type": "dependent",
+      "min": 180,
+      "max": 730
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural shift in supply chain strategy requiring development of new mining infrastructure, permitting, and gradual diversification away from Chinese dominance rather than a discrete catalytic event."
+    }
+  },
+  {
+    "id": "onshoring_industrial_policy",
+    "name": "Reshoring & Industrial Policy · CHIPS Act / IRA",
+    "old": {
+      "duration_type": "extended",
+      "min": 180,
+      "max": 730
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Multi-year government industrial policy driving structural capital expenditure cycles across semiconductor manufacturing, clean energy infrastructure, and supply chain repatriation with facilities taking 2-5 years to build and ramp."
+    }
+  },
+  {
+    "id": "critical_component_shortage",
+    "name": "Critical Component Shortages · Upstream Pricing Power",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 270
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "Component shortages are event-driven supply disruptions that resolve as capacity expands or demand normalizes, with the pricing power window closing once supply-demand rebalances within 6-12 months."
+    }
+  },
+  {
+    "id": "water_infrastructure_failure",
+    "name": "Water Infrastructure Crisis",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 1825,
+      "typical_duration_days_max": 3650,
+      "reasoning": "A $600B+ infrastructure replacement cycle over 10 years driven by structural regulatory mandates (EPA 2026), systemic aging infrastructure degradation, and permanent environmental contamination represents a multi-year capital expenditure cycle rather than a bounded event."
+    }
+  },
+  {
+    "id": "ai_inference_chip_race",
+    "name": "AI Inference Chip Arms Race",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural shift in semiconductor architecture as the AI industry matures from training-focused to inference-at-scale deployment, requiring fundamental changes in chip design, fab capacity allocation, and ecosystem development that will play out over 2-5 years."
+    }
+  },
+  {
+    "id": "inflation_surprise_upside",
+    "name": "Inflation Surprise · Inflation-Resistant Assets",
+    "old": {
+      "duration_type": "dependent",
+      "min": 90,
+      "max": 270
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 270,
+      "reasoning": "Inflation surprises are event-driven catalysts triggered by specific CPI/PCE data releases that resolve as markets digest the data and central banks respond over 3-9 months, rather than representing a multi-year structural shift."
+    }
+  },
+  {
+    "id": "hyperscaler_mega_capex",
+    "name": "Hyperscaler Mega Capex · Photonics/Power Infrastructure",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 365
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Multi-year AI datacenter infrastructure buildout representing a structural technological shift, not a single discrete event, with supply chain revaluation occurring across multiple capex cycles and deployment phases."
+    }
+  },
+  {
+    "id": "space_infrastructure_commercialization",
+    "name": "Space Infrastructure Commercialization",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural transformation of the space industry driven by fundamental technological cost reductions and new infrastructure buildout (satellite constellations, launch systems), not a discrete near-term catalyst despite the 90-180 day current duration estimate."
+    }
+  },
+  {
+    "id": "alzheimers_next_gen_therapeutics",
+    "name": "Next-Gen Alzheimer's Therapeutics",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural shift in Alzheimer's R&D paradigm with 8-10 novel mechanisms progressing through late-stage trials, regulatory reviews, and potential commercialization cycles extending 2-5 years, not a single binary catalyst event."
+    }
+  },
+  {
+    "id": "cell_therapy_manufacturing_automation",
+    "name": "Cell Therapy Manufacturing Automation",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This is a structural technological and regulatory transformation requiring multi-year industrialization buildout, manufacturing infrastructure deployment, clinical validation across new indications, and market adoption—not a single approval event but an entire industry paradigm shift."
+    }
+  },
+  {
+    "id": "radioisotope_supply_breakthrough",
+    "name": "Medical Radioisotope Supply Chain",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Building domestic cyclotron/reactor production capacity, establishing supply chains, and awaiting multiple FDA therapy approvals represents a multi-year structural industry transformation, not a single catalyst event."
+    }
+  },
+  {
+    "id": "dollar_strength",
+    "name": "USD Strength · Overseas Revenue Pressure",
+    "old": {
+      "duration_type": "dependent",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "USD strength cycles are event-driven monetary phenomena tied to Fed policy cycles and rate differentials that typically resolve within 6-12 months as central bank policies converge or economic conditions rebalance."
+    }
+  },
+  {
+    "id": "obesity_drug_breakthrough",
+    "name": "GLP-1 / Obesity Drug Breakthrough",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "FDA approvals and clinical trial results are specific, event-driven catalysts that resolve within a defined regulatory timeline of 3-12 months."
+    }
+  },
+  {
+    "id": "us_china_tariff_escalation",
+    "name": "U.S.-China Tariff Escalation · Domestic Substitution",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 365
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "U.S.-China decoupling and domestic substitution represents a multi-year structural shift in supply chains and industrial policy, not a discrete event that resolves quickly."
+    }
+  },
+  {
+    "id": "fed_dovish_pivot",
+    "name": "Fed Dovish Pivot · Small-Cap Biotech / REITs",
+    "old": {
+      "duration_type": "dependent",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "Fed rate-cutting cycles are discrete monetary policy events with defined catalysts (FOMC meetings) and market repricing windows that typically resolve within 6-12 months as rates stabilize and valuations adjust."
+    }
+  },
+  {
+    "id": "defense_buildup",
+    "name": "Defense Buildup & Military Contracts",
+    "old": {
+      "duration_type": "dependent",
+      "min": 90,
+      "max": 240
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Defense buildup represents a multi-year structural shift in government spending priorities and geopolitical alignment, driven by long-term strategic concerns rather than singular catalysts that would resolve in months."
+    }
+  },
+  {
+    "id": "space_solar_power",
+    "name": "Space-Based Solar Power",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Space-based solar power is a structural technological revolution requiring multi-year development of infrastructure, scaling of novel technologies (wireless power transmission, orbital systems), and buildout of commercial deployment capabilities similar to other long-cycle energy transition themes."
+    }
+  },
+  {
+    "id": "utility_scale_battery_inflection",
+    "name": "Grid-Scale Energy Storage Deployment",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural energy transition driven by long-term regulatory incentives (IRA credits), infrastructure buildout cycles, and technology maturation from lithium-ion to next-generation storage chemistries, not a single catalytic event."
+    }
+  },
+  {
+    "id": "energy_transition_acceleration",
+    "name": "Energy Transition Acceleration · AI Power Demand / Nuclear Renaissance",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 365
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural transformation involving SMR commercialization, grid infrastructure buildout, and nuclear supply chain development—all capital-intensive processes requiring 2-5 years to materialize, not a bounded catalyst despite the current 90-365 day tracking window."
+    }
+  },
+  {
+    "id": "consumer_polarization",
+    "name": "Consumer Spending Polarization",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "K-shaped consumer divergence reflects a structural economic cycle driven by persistent wealth inequality and demographic polarization, not a short-term event catalyst."
+    }
+  },
+  {
+    "id": "ai_drug_design_validation",
+    "name": "Computational Drug Design Platform Shift",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural shift in pharmaceutical R&D methodology as AI platforms mature through clinical validation stages and industry-wide adoption occurs, not a single discrete catalyst."
+    }
+  },
+  {
+    "id": "gcc_sovereign_wealth_tech_pivot",
+    "name": "GCC Sovereign Wealth Diversification",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Multi-year infrastructure buildout of AI data centers and semiconductor fabs represents a structural diversification strategy with 3-5 year capital deployment and construction timelines, not a discrete catalyst that resolves within 12 months."
+    }
+  },
+  {
+    "id": "quantum_computing_commercialization",
+    "name": "Quantum Computing Commercialization",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year technological infrastructure buildout cycle where quantum computing transitions from R&D to commercial deployment, requiring sustained enterprise adoption, ecosystem development, and cryptography migration through 2030 NIST mandates - not a single catalyst event."
+    }
+  },
+  {
+    "id": "tungsten_supply_crisis",
+    "name": "Tungsten Supply Crisis",
+    "old": {
+      "duration_type": "dependent",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "Event-driven crisis with specific catalyst (China export restrictions April 2026) that will resolve through emergency stockpiling, mine restarts, and either policy reversal or supply alternatives within 6-12 months."
+    }
+  },
+  {
+    "id": "cdr_corporate_procurement",
+    "name": "Carbon Dioxide Removal Procurement",
+    "old": {
+      "duration_type": "extended",
+      "min": 90,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "This represents a multi-year structural buildout of carbon removal infrastructure driven by evolving tax incentives, scaling procurement commitments, and the commercialization timeline required for nascent DAC and CDR technologies to achieve viable unit economics and deployment at scale."
+    }
+  },
+  {
+    "id": "turnaround_profitability_inflection",
+    "name": "Turnaround Recovery · Multi-Quarter Earnings Inflection",
+    "old": {
+      "duration_type": "bounded",
+      "min": 60,
+      "max": 270
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "Multi-quarter earnings inflection is an event-driven catalyst with specific quarterly earnings reports serving as discrete milestones that resolve the turnaround thesis within 3-4 earnings cycles (9-12 months)."
+    }
+  },
+  {
+    "id": "agriculture_supply_shock",
+    "name": "Agricultural Supply Shock",
+    "old": {
+      "duration_type": "dependent",
+      "min": 60,
+      "max": 120
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 180,
+      "typical_duration_days_max": 365,
+      "reasoning": "Agricultural supply shocks are event-driven disruptions (weather, conflict, trade restrictions) that resolve within one crop cycle or as alternative supplies/planting seasons restore market balance."
+    }
+  },
+  {
+    "id": "ev_supply_chain_shift",
+    "name": "EV Supply Chain Shift",
+    "old": {
+      "duration_type": "extended",
+      "min": 60,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "EV battery supply chain restructuring involves multi-year infrastructure investments, mine development cycles, refining capacity buildout, and gradual policy implementation that characterize a structural industry transition rather than a discrete catalyst."
+    }
+  },
+  {
+    "id": "crypto_institutional_adoption",
+    "name": "Crypto Institutional Adoption",
+    "old": {
+      "duration_type": "extended",
+      "min": 60,
+      "max": 120
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Institutional crypto adoption represents a multi-year structural shift in financial infrastructure and regulatory frameworks, not a single catalyst event, as institutions gradually build systems, navigate evolving regulations, and integrate crypto into treasury operations over years."
+    }
+  },
+  {
+    "id": "nvda_avgo_strategic_investment",
+    "name": "NVDA/AVGO Strategic Investments · Capacity Lock Signals",
+    "old": {
+      "duration_type": "dependent",
+      "min": 60,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Strategic equity investments and capacity-locking agreements are discrete corporate events that trigger immediate repricing across comparables, with market reaction and arbitrage opportunities typically resolving within 3-12 months as terms are disclosed and capacity implications become clear."
+    }
+  },
+  {
+    "id": "taiwan_strait_tension",
+    "name": "Taiwan Strait Tensions · Semiconductor Supply Chain Repricing",
+    "old": {
+      "duration_type": "dependent",
+      "min": 60,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "extended",
+      "typical_duration_days_min": 730,
+      "typical_duration_days_max": 1825,
+      "reasoning": "Semiconductor supply chain diversification and onshoring of fabrication capacity is a multi-year structural shift requiring massive capital investment, geopolitical realignment, and technology transfer that extends far beyond any single tension event."
+    }
+  },
+  {
+    "id": "ai_model_breakthrough",
+    "name": "Paradigm AI Model Breakthrough · Compute Demand Surge",
+    "old": {
+      "duration_type": "dependent",
+      "min": 60,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Each paradigm AI model release is a discrete catalyst event that triggers market revaluation over 3-12 months before being digested, despite occurring within the longer AI infrastructure cycle."
+    }
+  },
+  {
+    "id": "regulatory_greenlight",
+    "name": "Regulatory Green Light · FDA/SEC/FTC Major Approvals",
+    "old": {
+      "duration_type": "bounded",
+      "min": 30,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Regulatory approvals are discrete, identifiable catalysts that trigger immediate market repricing and resolve within 3-12 months as the market digests the reduced overhang and newly accessible opportunities."
+    }
+  },
+  {
+    "id": "china_stimulus",
+    "name": "China Stimulus · Commodity / Industrial Metals Demand",
+    "old": {
+      "duration_type": "dependent",
+      "min": 30,
+      "max": 120
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Discrete government policy announcements (RRR cuts, fiscal stimulus) create specific catalysts that drive commodity demand revisions over a defined period until the stimulus is priced in or market reassesses efficacy."
+    }
+  },
+  {
+    "id": "middle_east_energy_shock",
+    "name": "Middle East Conflict · Oil War Premium",
+    "old": {
+      "duration_type": "bounded",
+      "min": 30,
+      "max": 90
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Geopolitical conflicts in the Middle East are event-driven crises that typically resolve or stabilize within 3-12 months through ceasefire, diplomatic resolution, or market adaptation to new supply realities."
+    }
+  },
+  {
+    "id": "shipping_disruption",
+    "name": "Port/Shipping Disruption · Freight Rates + Repositioning",
+    "old": {
+      "duration_type": "dependent",
+      "min": 30,
+      "max": 90
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 270,
+      "reasoning": "Port disruptions and shipping blockages are specific event-driven catalysts that resolve once routes reopen or alternative logistics are established, typically within 3-9 months."
+    }
+  },
+  {
+    "id": "semi_fab_disruption",
+    "name": "Fab Disruption/Outage · Alternative Capacity Revaluation",
+    "old": {
+      "duration_type": "bounded",
+      "min": 30,
+      "max": 180
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 365,
+      "reasoning": "Fab disruptions are discrete events with specific catalysts (earthquake, fire, accident) that resolve once the affected facility restarts production or alternative capacity absorbs demand, typically within 3-12 months."
+    }
+  },
+  {
+    "id": "macro_risk_regime_shift",
+    "name": "Macro Risk Regime Shift · VIX Spike / Flight to Safety",
+    "old": {
+      "duration_type": "bounded",
+      "min": 14,
+      "max": 90
+    },
+    "new": {
+      "duration_type": "bounded",
+      "typical_duration_days_min": 90,
+      "typical_duration_days_max": 270,
+      "reasoning": "VIX spikes and flight-to-safety rotations are event-driven responses to specific macro shocks that typically resolve as fear subsides and markets stabilize within 3-9 months, shorter than the standard bounded range due to the nature of volatility mean reversion."
+    }
+  }
+]
