@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { runComputeSentimentScore } from '@/scripts/compute-sentiment-score'
+import { runComputeSentimentScore } from '@/lib/compute-sentiment-score'
 
 export const maxDuration = 300
 

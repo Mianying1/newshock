@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { runComputeTickerMaturity } from '@/scripts/compute-ticker-maturity'
+import { runComputeTickerMaturity } from '@/lib/compute-ticker-maturity'
 
 export const maxDuration = 300
 

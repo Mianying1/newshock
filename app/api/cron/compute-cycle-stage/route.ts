@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { runComputeCycleStage } from '@/scripts/compute-cycle-stage'
+import { runComputeCycleStage } from '@/lib/compute-cycle-stage'
 
 export const maxDuration = 300
 

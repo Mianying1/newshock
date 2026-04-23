@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { runComputeTickerType } from '@/scripts/compute-ticker-type'
+import { runComputeTickerType } from '@/lib/compute-ticker-type'
 
 export const maxDuration = 300
 
