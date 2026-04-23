@@ -85,6 +85,13 @@ export type PlaybookStage = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
 
 export type ThemeTier = 'umbrella' | 'subtheme'
 
+export interface ConvictionBreakdown {
+  historical_fit: number
+  evidence_strength: number
+  priced_in_risk: number
+  exit_signal_distance: number
+}
+
 export interface ThemeChildRef {
   id: string
   name: string
@@ -132,6 +139,11 @@ export interface ThemeRadarItem {
   parent_theme_id: string | null
   parent_theme: ThemeParentRef | null
   child_themes: ThemeChildRef[]
+  conviction_score: number | null
+  conviction_breakdown: ConvictionBreakdown | null
+  conviction_reasoning: string | null
+  conviction_reasoning_zh: string | null
+  conviction_generated_at: string | null
 }
 
 export interface ThemeRadarSummary {

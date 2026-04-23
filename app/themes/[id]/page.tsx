@@ -8,9 +8,27 @@ import CatalystList from '@/components/CatalystList'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
 import { pickField } from '@/lib/useField'
-import { STAGE_COLORS } from '@/lib/utils'
+import { STAGE_COLORS, formatRelativeTime } from '@/lib/utils'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
+
+function convictionBand(score: number): 'high' | 'medium' | 'low' {
+  if (score >= 7) return 'high'
+  if (score >= 4) return 'medium'
+  return 'low'
+}
+
+function convictionBarColor(score: number): string {
+  if (score >= 7) return 'bg-emerald-500'
+  if (score >= 4) return 'bg-amber-500'
+  return 'bg-rose-500'
+}
+
+function dimBarColor(v: number): string {
+  if (v >= 7) return 'bg-emerald-400'
+  if (v >= 4) return 'bg-amber-400'
+  return 'bg-rose-400'
+}
 
 export default function ThemeDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -98,6 +116,93 @@ export default function ThemeDetailPage() {
                 ) : null
               })()}
             </div>
+
+            {/* Conviction */}
+            {theme.conviction_score !== null && theme.conviction_breakdown && (() => {
+              const score = theme.conviction_score
+              const b = theme.conviction_breakdown
+              const band = convictionBand(score)
+              const bandLabel = t(`theme_detail.conviction_${band}`)
+              const bandColor =
+                band === 'high'
+                  ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                  : band === 'medium'
+                    ? 'text-amber-700 bg-amber-50 border-amber-200'
+                    : 'text-rose-700 bg-rose-50 border-rose-200'
+              const reasoning = pickField(locale, theme.conviction_reasoning, theme.conviction_reasoning_zh)
+              const dims: Array<{ key: keyof typeof b; labelKey: string; hintKey: string; value: number; inverted?: boolean }> = [
+                { key: 'historical_fit', labelKey: 'theme_detail.historical_fit', hintKey: 'theme_detail.historical_fit_hint', value: b.historical_fit },
+                { key: 'evidence_strength', labelKey: 'theme_detail.evidence_strength', hintKey: 'theme_detail.evidence_strength_hint', value: b.evidence_strength },
+                { key: 'priced_in_risk', labelKey: 'theme_detail.priced_in_risk', hintKey: 'theme_detail.priced_in_risk_hint', value: b.priced_in_risk, inverted: true },
+                { key: 'exit_signal_distance', labelKey: 'theme_detail.exit_signal_distance', hintKey: 'theme_detail.exit_signal_distance_hint', value: b.exit_signal_distance },
+              ]
+              return (
+                <div className="border border-zinc-200 rounded-lg p-4 bg-zinc-50/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-zinc-800">
+                        ━━ {t('theme_detail.conviction_label')} ━━
+                      </span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded border ${bandColor}`}>
+                        {bandLabel}
+                      </span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-semibold text-zinc-900">{score.toFixed(1)}</span>
+                      <span className="text-xs text-zinc-400">/ 10</span>
+                    </div>
+                  </div>
+
+                  <div className="h-2 bg-zinc-100 rounded-full mb-4">
+                    <div
+                      className={`h-full ${convictionBarColor(score)} rounded-full transition-all`}
+                      style={{ width: `${(score / 10) * 100}%` }}
+                    />
+                  </div>
+
+                  <div className="grid gap-2.5 sm:grid-cols-2 mb-4">
+                    {dims.map((d) => {
+                      const displayValue = d.value
+                      const barValue = d.inverted ? 10 - d.value : d.value
+                      return (
+                        <div key={d.key}>
+                          <div className="flex items-center justify-between text-[11px] text-zinc-600 mb-1">
+                            <span title={t(d.hintKey)}>
+                              {t(d.labelKey)}
+                              {d.inverted && <span className="text-zinc-400 ml-1">·↓</span>}
+                            </span>
+                            <span className="text-zinc-500 tabular-nums">{displayValue.toFixed(1)}</span>
+                          </div>
+                          <div className="h-1.5 bg-zinc-100 rounded-full">
+                            <div
+                              className={`h-full ${dimBarColor(barValue)} rounded-full transition-all`}
+                              style={{ width: `${(barValue / 10) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {reasoning && (
+                    <div className="text-sm text-zinc-700 leading-relaxed border-l-2 border-zinc-300 pl-3 mb-3">
+                      {reasoning}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                    <span className="italic">ℹ {t('theme_detail.ai_subjective_disclaimer')}</span>
+                    {theme.conviction_generated_at && (
+                      <span className="whitespace-nowrap ml-3">
+                        {t('theme_detail.conviction_last_computed', {
+                          label: formatRelativeTime(theme.conviction_generated_at, t, locale),
+                        })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Catalysts */}
             <div>

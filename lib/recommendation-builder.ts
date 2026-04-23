@@ -14,6 +14,7 @@ import type {
   ThemeTier,
   ThemeChildRef,
   ThemeParentRef,
+  ConvictionBreakdown,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -49,6 +50,11 @@ interface ThemeRow {
   deep_generated_at: string | null
   theme_tier: ThemeTier | null
   parent_theme_id: string | null
+  conviction_score: number | null
+  conviction_breakdown: ConvictionBreakdown | null
+  conviction_reasoning: string | null
+  conviction_reasoning_zh: string | null
+  conviction_generated_at: string | null
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -249,6 +255,11 @@ function buildItem(
     parent_theme_id: row.parent_theme_id ?? null,
     parent_theme: parent,
     child_themes: children,
+    conviction_score: row.conviction_score ?? null,
+    conviction_breakdown: row.conviction_breakdown ?? null,
+    conviction_reasoning: row.conviction_reasoning ?? null,
+    conviction_reasoning_zh: row.conviction_reasoning_zh ?? null,
+    conviction_generated_at: row.conviction_generated_at ?? null,
   }
 }
 
@@ -286,6 +297,7 @@ export async function buildThemeRadar(options: {
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
+      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
@@ -388,6 +400,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
+      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .eq('id', themeId)
