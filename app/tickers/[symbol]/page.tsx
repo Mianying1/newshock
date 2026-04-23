@@ -46,6 +46,23 @@ interface ExitSignal {
   themes: string[]
 }
 
+interface ArchetypeFit {
+  archetype_id: string
+  archetype_name: string
+  archetype_name_zh: string | null
+  category: string | null
+  category_zh: string | null
+  description: string | null
+  description_zh: string | null
+  fit_score: number
+  exposure_label: 'direct' | 'pressure' | 'secondary' | 'peripheral' | 'uncertain' | null
+  relationship_type: string | null
+  evidence_summary: string | null
+  evidence_summary_zh: string | null
+  data_source: 'ai_generated' | 'fmp_validated' | 'manual'
+  last_validated_at: string | null
+}
+
 interface TickerDetailResponse {
   ticker: {
     symbol: string
@@ -55,8 +72,67 @@ interface TickerDetailResponse {
   }
   scores: TickerScores | null
   themes: ThemeResult[]
+  archetype_fits: ArchetypeFit[]
   recent_events: EventItem[]
   exit_signals: ExitSignal[]
+}
+
+const EXPOSURE_KEY: Record<string, string> = {
+  direct: 'ticker_detail.exposure_direct',
+  pressure: 'ticker_detail.exposure_pressure',
+  secondary: 'ticker_detail.exposure_secondary',
+  peripheral: 'ticker_detail.exposure_peripheral',
+  uncertain: 'ticker_detail.exposure_uncertain',
+}
+
+const EXPOSURE_COLOR: Record<string, string> = {
+  direct: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  pressure: 'bg-amber-50 text-amber-700 border-amber-200',
+  secondary: 'bg-blue-50 text-blue-700 border-blue-200',
+  peripheral: 'bg-zinc-50 text-zinc-600 border-zinc-200',
+  uncertain: 'bg-zinc-50 text-zinc-400 border-zinc-200',
+}
+
+const EXPOSURE_GROUP_ORDER: Array<ArchetypeFit['exposure_label']> = [
+  'direct',
+  'pressure',
+  'secondary',
+  'peripheral',
+  'uncertain',
+]
+
+const SOURCE_KEY: Record<string, string> = {
+  fmp_validated: 'ticker_detail.source_fmp',
+  ai_generated: 'ticker_detail.source_ai',
+  manual: 'ticker_detail.source_manual',
+}
+
+const SOURCE_COLOR: Record<string, string> = {
+  fmp_validated: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+  ai_generated: 'bg-zinc-50 text-zinc-500 border-zinc-200',
+  manual: 'bg-blue-50 text-blue-700 border-blue-200',
+}
+
+function fitScoreColor(s: number): string {
+  if (s >= 8) return 'text-emerald-600'
+  if (s >= 6) return 'text-amber-600'
+  return 'text-zinc-500'
+}
+
+function computeNetPosition(fits: ArchetypeFit[]): {
+  net: 'positive' | 'negative' | 'mixed'
+  convergence: 'convergent' | 'divergent'
+  positive: number
+  negative: number
+} {
+  const positive = fits.filter((f) => f.exposure_label === 'direct').length
+  const negative = fits.filter((f) => f.exposure_label === 'pressure').length
+  let net: 'positive' | 'negative' | 'mixed' = 'mixed'
+  if (positive >= negative + 2) net = 'positive'
+  else if (negative >= positive + 2) net = 'negative'
+  const convergence: 'convergent' | 'divergent' =
+    positive > 0 && negative > 0 ? 'divergent' : 'convergent'
+  return { net, convergence, positive, negative }
 }
 
 const DIRECTION_KEY: Record<string, string> = {
@@ -159,7 +235,15 @@ export default function TickerDetailPage() {
     )
   }
 
-  const { ticker, scores, themes, recent_events, exit_signals } = data
+  const { ticker, scores, themes, archetype_fits, recent_events, exit_signals } = data
+  const fits = archetype_fits ?? []
+  const net = computeNetPosition(fits)
+  const fitsByGroup = new Map<ArchetypeFit['exposure_label'], ArchetypeFit[]>()
+  for (const f of fits) {
+    const k = f.exposure_label
+    if (!fitsByGroup.has(k)) fitsByGroup.set(k, [])
+    fitsByGroup.get(k)!.push(f)
+  }
   const displayedEvents = showAllEvents ? recent_events : recent_events.slice(0, 5)
 
   const timelineMinStart = themes.length > 0
@@ -241,8 +325,118 @@ export default function TickerDetailPage() {
           )}
         </section>
 
+        {fits.length > 0 && (
+          <section className="py-6 border-b border-zinc-100">
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <span className="text-xs uppercase tracking-wide text-zinc-500">{t('ticker_detail.net_position')}</span>
+              <span className={`text-sm font-semibold ${
+                net.net === 'positive' ? 'text-emerald-600' :
+                net.net === 'negative' ? 'text-amber-600' : 'text-zinc-700'
+              }`}>
+                {t(`ticker_detail.net_${net.net}`)}
+              </span>
+              <span className="text-zinc-300">·</span>
+              <span className="text-xs uppercase tracking-wide text-zinc-500">{t('ticker_detail.convergence')}</span>
+              <span className={`text-sm font-semibold ${net.convergence === 'convergent' ? 'text-blue-600' : 'text-zinc-700'}`}>
+                {t(`ticker_detail.${net.convergence}`)}
+              </span>
+            </div>
+            <p className="text-xs text-zinc-500 mt-1">
+              {t('ticker_detail.fit_summary_line', { total: fits.length, positive: net.positive, negative: net.negative })}
+            </p>
+          </section>
+        )}
+
         <section className="py-6 border-b border-zinc-100">
-          <h2 className="text-base font-semibold mb-3">{t('ticker_detail.related_themes')}</h2>
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="text-base font-semibold">
+              {t('ticker_detail.archetype_fit_profile')} ({fits.length})
+            </h2>
+          </div>
+          <p className="text-xs text-zinc-500 mb-3">{t('ticker_detail.archetype_fit_profile_subtitle')}</p>
+          {fits.length === 0 ? (
+            <p className="text-sm text-zinc-400">{t('ticker_detail.no_archetype_fits')}</p>
+          ) : (
+            <div className="space-y-5">
+              {EXPOSURE_GROUP_ORDER.map((grp) => {
+                const rows = fitsByGroup.get(grp)
+                if (!rows || rows.length === 0) return null
+                const grpKey = grp ?? 'uncertain'
+                const grpLabel = t(EXPOSURE_KEY[grpKey] ?? EXPOSURE_KEY.uncertain)
+                return (
+                  <div key={grpKey}>
+                    <div className="text-xs uppercase tracking-wide text-zinc-500 mb-2">
+                      {grpLabel} ({rows.length})
+                    </div>
+                    <div className="space-y-2">
+                      {rows.map((f) => {
+                        const name = pickField(locale, f.archetype_name, f.archetype_name_zh)
+                        const evidence = pickField(locale, f.evidence_summary, f.evidence_summary_zh)
+                        const category = pickField(locale, f.category, f.category_zh)
+                        const expColor = EXPOSURE_COLOR[grpKey] ?? EXPOSURE_COLOR.uncertain
+                        const srcKey = f.data_source
+                        const srcColor = SOURCE_COLOR[srcKey] ?? SOURCE_COLOR.ai_generated
+                        return (
+                          <div key={f.archetype_id} className="border border-zinc-200 rounded-lg p-3 hover:border-zinc-400 transition">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <Link
+                                  href={`/archetypes/${f.archetype_id}`}
+                                  className="text-sm font-medium text-blue-600 hover:underline"
+                                >
+                                  {name}
+                                </Link>
+                                <div className="flex flex-wrap gap-1.5 mt-1 text-[11px]">
+                                  {category && (
+                                    <span className="px-1.5 py-0.5 rounded border border-zinc-200 text-zinc-500">
+                                      {category}
+                                    </span>
+                                  )}
+                                  <span className={`px-1.5 py-0.5 rounded border ${expColor}`}>
+                                    {t(EXPOSURE_KEY[grpKey] ?? EXPOSURE_KEY.uncertain)}
+                                  </span>
+                                  <span className={`px-1.5 py-0.5 rounded border ${srcColor}`}>
+                                    {t(SOURCE_KEY[srcKey] ?? SOURCE_KEY.ai_generated)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="shrink-0 text-right">
+                                <div className={`font-mono text-xl font-semibold ${fitScoreColor(f.fit_score)}`}>
+                                  {f.fit_score.toFixed(1)}
+                                </div>
+                                <div className="text-[10px] uppercase tracking-wide text-zinc-400">
+                                  {t('ticker_detail.fit_score')}
+                                </div>
+                              </div>
+                            </div>
+                            {f.relationship_type && (
+                              <p className="text-xs text-zinc-600 mt-2">
+                                <span className="text-zinc-400">·</span> {f.relationship_type}
+                              </p>
+                            )}
+                            {evidence && (
+                              <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed">
+                                {evidence}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="py-6 border-b border-zinc-100">
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="text-base font-semibold">
+              {t('ticker_detail.active_themes')} ({themes.length})
+            </h2>
+          </div>
+          <p className="text-xs text-zinc-500 mb-3">{t('ticker_detail.active_themes_subtitle')}</p>
           {themes.length === 0 ? (
             <p className="text-sm text-zinc-400">{t('ticker_detail.no_themes')}</p>
           ) : (

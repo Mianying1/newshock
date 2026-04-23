@@ -59,6 +59,8 @@ export async function GET(
     return Response.json({ error: 'Ticker not found' }, { status: 404 })
   }
 
+  const archetypeFits = await fetchArchetypeFits(upper)
+
   const { data: recs } = await supabaseAdmin
     .from('theme_recommendations')
     .select('theme_id, tier, exposure_direction, role_reasoning, role_reasoning_zh')
@@ -72,6 +74,7 @@ export async function GET(
       ticker,
       scores: null,
       themes: [],
+      archetype_fits: archetypeFits,
       recent_events: [],
       exit_signals: [],
     })
@@ -184,7 +187,74 @@ export async function GET(
     ticker,
     scores: scoreRow,
     themes: themeResults,
+    archetype_fits: archetypeFits,
     recent_events: recentEvents,
     exit_signals: Array.from(exitSignalSet.values()),
   })
+}
+
+interface ArchetypeFitRow {
+  archetype_id: string
+  fit_score: number
+  exposure_label: string | null
+  relationship_type: string | null
+  evidence_summary: string | null
+  evidence_summary_zh: string | null
+  data_source: string
+  last_validated_at: string | null
+}
+
+interface FitArchMeta {
+  id: string
+  name: string
+  name_zh: string | null
+  category: string | null
+  category_zh: string | null
+  description: string | null
+  description_zh: string | null
+  is_active: boolean | null
+}
+
+async function fetchArchetypeFits(upper: string) {
+  const { data: fitRows } = await supabaseAdmin
+    .from('ticker_archetype_fit')
+    .select('archetype_id, fit_score, exposure_label, relationship_type, evidence_summary, evidence_summary_zh, data_source, last_validated_at')
+    .eq('ticker_symbol', upper)
+    .order('fit_score', { ascending: false })
+    .limit(25)
+
+  const rows = (fitRows ?? []) as ArchetypeFitRow[]
+  if (rows.length === 0) return []
+
+  const archIds = Array.from(new Set(rows.map((r) => r.archetype_id)))
+  const { data: archs } = await supabaseAdmin
+    .from('theme_archetypes')
+    .select('id, name, name_zh, category, category_zh, description, description_zh, is_active')
+    .in('id', archIds)
+
+  const archMap = new Map<string, FitArchMeta>()
+  for (const a of (archs ?? []) as FitArchMeta[]) archMap.set(a.id, a)
+
+  return rows
+    .map((r) => {
+      const a = archMap.get(r.archetype_id)
+      if (!a || a.is_active === false) return null
+      return {
+        archetype_id: r.archetype_id,
+        archetype_name: a.name,
+        archetype_name_zh: a.name_zh,
+        category: a.category,
+        category_zh: a.category_zh,
+        description: a.description,
+        description_zh: a.description_zh,
+        fit_score: r.fit_score,
+        exposure_label: r.exposure_label,
+        relationship_type: r.relationship_type,
+        evidence_summary: r.evidence_summary,
+        evidence_summary_zh: r.evidence_summary_zh,
+        data_source: r.data_source,
+        last_validated_at: r.last_validated_at,
+      }
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
 }

@@ -253,7 +253,7 @@ export default function AdminTickerGraphPage() {
 
       {isLoading && <p style={{ fontSize: 13 }}>Loading…</p>}
       {error && <p style={{ fontSize: 13, color: '#c00' }}>Failed to load.</p>}
-      {!isLoading && !error && rows.length === 0 && <p style={{ fontSize: 13, color: '#666' }}>No rows.</p>}
+      {!isLoading && !error && (data?.rows ?? []).length === 0 && <p style={{ fontSize: 13, color: '#666' }}>No rows.</p>}
 
       {grouped.map(([archId, { name, category, rows: rs }]) => (
         <section key={archId} style={{ marginBottom: 20, border: '1px solid #eaeaea', borderRadius: 8, overflow: 'hidden' }}>
