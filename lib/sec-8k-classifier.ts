@@ -182,6 +182,10 @@ export async function applyDecision(decision: EightKDecision): Promise<void> {
   const updates: Record<string, unknown> = {
     classifier_reasoning: `${tagPrefix} ${decision.reasoning}`,
     mentioned_tickers: decision.ticker ? [decision.ticker] : null,
+    level_of_impact:
+      decision.action === 'match_archetype' ? 'subtheme' :
+      decision.action === 'exploratory' ? 'subtheme' :
+      'event_only',
   }
 
   if (decision.action === 'match_archetype' && decision.archetype_id) {
