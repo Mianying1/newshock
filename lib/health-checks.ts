@@ -290,6 +290,108 @@ export async function checkConvictionCoverage(): Promise<HealthCheckResult<Convi
 
 // ─── Orchestrator ────────────────────────────────────────────────────────────
 
+export interface ThemeAlerts24hData {
+  total: number
+  critical: number
+  warn: number
+  info: number
+  since: string
+}
+
+export async function checkThemeAlerts24h(): Promise<HealthCheckResult<ThemeAlerts24hData>> {
+  const since = new Date(Date.now() - 24 * HOUR_MS).toISOString()
+  const { data, error } = await supabaseAdmin
+    .from('theme_alerts')
+    .select('severity')
+    .gte('created_at', since)
+
+  if (error) {
+    return {
+      id: 'theme_alerts_24h',
+      status: 'warn',
+      alerts: [`theme_alerts query failed: ${error.message}`],
+      data: { total: 0, critical: 0, warn: 0, info: 0, since },
+    }
+  }
+
+  const counts = { critical: 0, warn: 0, info: 0 }
+  for (const r of (data ?? []) as { severity: string | null }[]) {
+    const s = r.severity ?? 'info'
+    if (s === 'critical' || s === 'warn' || s === 'info') counts[s as keyof typeof counts]++
+  }
+  const total = counts.critical + counts.warn + counts.info
+  const alerts: string[] = []
+  let status: HealthStatus = 'ok'
+  if (counts.critical > 0) {
+    alerts.push(`${counts.critical} critical theme_alert(s) in 24h`)
+    status = 'fail'
+  } else if (counts.warn > 0) {
+    status = 'warn'
+  }
+  return { id: 'theme_alerts_24h', status, alerts, data: { total, ...counts, since } }
+}
+
+export interface SentimentShiftRow {
+  theme_id: string
+  theme_name: string
+  sentiment_score: number | null
+  dominant_sentiment: string | null
+  direction: string | null
+  last_shift_days_ago: number | null
+  computed_at: string | null
+}
+
+export interface SentimentShifts7dData {
+  rows: SentimentShiftRow[]
+  since: string
+}
+
+export async function checkSentimentShifts7d(): Promise<HealthCheckResult<SentimentShifts7dData>> {
+  const since = new Date(Date.now() - 7 * DAY_MS).toISOString()
+  const { data, error } = await supabaseAdmin
+    .from('themes')
+    .select('id, name, sentiment_score, dominant_sentiment, recent_signal_shift, sentiment_computed_at')
+    .gte('sentiment_computed_at', since)
+    .not('recent_signal_shift', 'is', null)
+    .limit(200)
+
+  if (error) {
+    return {
+      id: 'sentiment_shifts_7d',
+      status: 'warn',
+      alerts: [`sentiment query failed: ${error.message}`],
+      data: { rows: [], since },
+    }
+  }
+
+  type RawShift = { direction?: string; last_shift_days_ago?: number } | null
+  const rows: SentimentShiftRow[] = (data ?? [])
+    .map((r) => {
+      const shift = r.recent_signal_shift as RawShift
+      return {
+        theme_id: r.id as string,
+        theme_name: r.name as string,
+        sentiment_score: r.sentiment_score === null || r.sentiment_score === undefined
+          ? null
+          : Number(r.sentiment_score),
+        dominant_sentiment: (r.dominant_sentiment as string | null) ?? null,
+        direction: shift?.direction ?? null,
+        last_shift_days_ago: shift?.last_shift_days_ago ?? null,
+        computed_at: (r.sentiment_computed_at as string | null) ?? null,
+      }
+    })
+    .filter((r) => r.direction && r.direction !== 'balanced' && r.direction !== 'none')
+    .sort((a, b) => Math.abs(b.sentiment_score ?? 0) - Math.abs(a.sentiment_score ?? 0))
+    .slice(0, 5)
+
+  return {
+    id: 'sentiment_shifts_7d',
+    status: 'ok',
+    alerts: [],
+    data: { rows, since },
+  }
+}
+
 export interface AllHealthChecks {
   classifierErrors: HealthCheckResult<ClassifierErrorsData>
   levelOfImpact: HealthCheckResult<CoverageFigure>
@@ -300,6 +402,8 @@ export interface AllHealthChecks {
   pipelineVolume: HealthCheckResult<PipelineVolumeData>
   cronStatus: HealthCheckResult<CronCheckRow[]>
   convictionCoverage: HealthCheckResult<ConvictionCoverageData>
+  themeAlerts24h: HealthCheckResult<ThemeAlerts24hData>
+  sentimentShifts7d: HealthCheckResult<SentimentShifts7dData>
   alerts: string[]
   anyFail: boolean
 }
@@ -313,6 +417,8 @@ export async function runAllHealthChecks(crons: CronEntry[]): Promise<AllHealthC
     pipelineVolume,
     cronStatus,
     convictionCoverage,
+    themeAlerts24h,
+    sentimentShifts7d,
   ] = await Promise.all([
     checkClassifierErrors(),
     checkLevelOfImpactCoverage(),
@@ -321,6 +427,8 @@ export async function runAllHealthChecks(crons: CronEntry[]): Promise<AllHealthC
     checkPipelineVolume(),
     checkCronStatus(crons),
     checkConvictionCoverage(),
+    checkThemeAlerts24h(),
+    checkSentimentShifts7d(),
   ])
 
   const all = [
@@ -331,6 +439,8 @@ export async function runAllHealthChecks(crons: CronEntry[]): Promise<AllHealthC
     pipelineVolume,
     cronStatus,
     convictionCoverage,
+    themeAlerts24h,
+    sentimentShifts7d,
   ]
   const alerts = all.flatMap((r) => r.alerts)
   const anyFail = all.some((r) => r.status === 'fail')
@@ -343,6 +453,8 @@ export async function runAllHealthChecks(crons: CronEntry[]): Promise<AllHealthC
     pipelineVolume,
     cronStatus,
     convictionCoverage,
+    themeAlerts24h,
+    sentimentShifts7d,
     alerts,
     anyFail,
   }

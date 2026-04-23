@@ -68,6 +68,8 @@ export default async function AdminHealthPage() {
   const conviction = health.convictionCoverage.data
   const counter = health.counterEvidence.data
   const alerts = health.alerts
+  const themeAlerts24h = health.themeAlerts24h.data
+  const sentimentShifts = health.sentimentShifts7d.data
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
@@ -249,6 +251,102 @@ export default async function AdminHealthPage() {
               Scope: status=&apos;active&apos; only (design A) · exploratory/cooling/archived themes are not scored.
             </div>
           </div>
+        </section>
+
+        {/* 8. Theme Alerts (24h) */}
+        <section className="border border-zinc-200 bg-white rounded-lg p-4">
+          <h2 className="text-sm font-semibold mb-2">
+            8 · Theme Alerts (24h){' '}
+            {themeAlerts24h.total === 0 ? (
+              <Badge tone="ok">0</Badge>
+            ) : themeAlerts24h.critical > 0 ? (
+              <Badge tone="fail">{themeAlerts24h.total}</Badge>
+            ) : themeAlerts24h.warn > 0 ? (
+              <Badge tone="warn">{themeAlerts24h.total}</Badge>
+            ) : (
+              <Badge tone="info">{themeAlerts24h.total}</Badge>
+            )}
+          </h2>
+          <div className="flex gap-4 text-xs">
+            <span>
+              <span className="text-rose-700">critical</span>:{' '}
+              <span className="tabular-nums">{themeAlerts24h.critical}</span>
+            </span>
+            <span>
+              <span className="text-amber-700">warn</span>:{' '}
+              <span className="tabular-nums">{themeAlerts24h.warn}</span>
+            </span>
+            <span>
+              <span className="text-blue-700">info</span>:{' '}
+              <span className="tabular-nums">{themeAlerts24h.info}</span>
+            </span>
+          </div>
+          <div className="text-[11px] text-zinc-500 mt-2">
+            Cycle stage changes · see /api/theme-alerts for full list.
+          </div>
+        </section>
+
+        {/* 9. Sentiment Shifts (7d top 5) */}
+        <section className="border border-zinc-200 bg-white rounded-lg p-4">
+          <h2 className="text-sm font-semibold mb-2">
+            9 · Sentiment Shifts (7d top 5){' '}
+            <Badge tone={sentimentShifts.rows.length > 0 ? 'info' : 'ok'}>
+              {sentimentShifts.rows.length}
+            </Badge>
+          </h2>
+          {sentimentShifts.rows.length === 0 ? (
+            <p className="text-xs text-zinc-500">
+              No themes with directional shifts in the last 7 days.
+            </p>
+          ) : (
+            <table className="text-xs w-full">
+              <thead>
+                <tr className="text-left text-zinc-500">
+                  <th className="font-normal pb-1">Theme</th>
+                  <th className="font-normal pb-1 text-right">Score</th>
+                  <th className="font-normal pb-1">Dominant</th>
+                  <th className="font-normal pb-1">Direction</th>
+                  <th className="font-normal pb-1 text-right">Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sentimentShifts.rows.map((r) => (
+                  <tr key={r.theme_id} className="border-t border-zinc-100">
+                    <td className="py-1">
+                      <Link
+                        href={`/themes/${r.theme_id}`}
+                        className="text-zinc-800 hover:underline truncate block max-w-[260px]"
+                      >
+                        {r.theme_name}
+                      </Link>
+                    </td>
+                    <td className="py-1 text-right tabular-nums font-mono text-zinc-700">
+                      {r.sentiment_score !== null ? r.sentiment_score.toFixed(2) : '-'}
+                    </td>
+                    <td className="py-1">
+                      <span
+                        className={
+                          r.dominant_sentiment === 'bullish'
+                            ? 'text-emerald-700'
+                            : r.dominant_sentiment === 'bearish'
+                              ? 'text-rose-700'
+                              : 'text-zinc-500'
+                        }
+                      >
+                        {r.dominant_sentiment ?? '-'}
+                      </span>
+                    </td>
+                    <td className="py-1 text-zinc-600 font-mono text-[11px]">
+                      {r.direction ?? '-'}
+                    </td>
+                    <td className="py-1 text-right tabular-nums text-zinc-500">
+                      {r.last_shift_days_ago ?? '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </section>
 
         {/* 7. Counter-Evidence Coverage */}
