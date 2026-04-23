@@ -146,7 +146,7 @@ For genuinely new / no-analog archetypes, still provide duration_type and real_w
 with best-effort estimates. Use 'recently emerging' for approximate_start if unknown.`
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function generatePlaybook(archetype: any, anthropic: any): Promise<Playbook | null> {
+async function generatePlaybook(archetype: any, anthropic: any, model: string): Promise<Playbook | null> {
   const prompt = PLAYBOOK_PROMPT
     .replace('{name}', archetype.name)
     .replace('{description}', archetype.description || '')
@@ -154,7 +154,7 @@ async function generatePlaybook(archetype: any, anthropic: any): Promise<Playboo
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model,
       max_tokens: 3500,
       messages: [{ role: 'user', content: prompt }],
     })
@@ -182,7 +182,7 @@ async function generatePlaybook(archetype: any, anthropic: any): Promise<Playboo
 
 async function main() {
   const { supabaseAdmin } = await import('@/lib/supabase-admin')
-  const { anthropic } = await import('@/lib/anthropic')
+  const { anthropic, MODEL_SONNET } = await import('@/lib/anthropic')
 
   const { data: archetypes } = await supabaseAdmin
     .from('theme_archetypes')
@@ -217,7 +217,7 @@ async function main() {
     }
 
     console.log(`\nProcessing: ${arch.id}`)
-    const playbook = await generatePlaybook(arch, anthropic)
+    const playbook = await generatePlaybook(arch, anthropic, MODEL_SONNET)
 
     if (!playbook) {
       failed++

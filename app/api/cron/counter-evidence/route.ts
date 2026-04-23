@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   const started = Date.now()
-  const result = await classifyAllUnclassified(500)
+  const result = await classifyAllUnclassified(100)
   const elapsedMs = Date.now() - started
 
   return Response.json({

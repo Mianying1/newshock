@@ -118,6 +118,7 @@ const ARCHETYPE_CONFIGS: ArchetypeConfig[] = [
 let supabaseAdmin: any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let anthropic: any
+let MODEL_SONNET: string
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let getStockNewsMultiTicker: any
 
@@ -177,7 +178,7 @@ ${toScore.map((c, i) =>
   ).join('\n\n')}`
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: MODEL_SONNET,
     max_tokens: 4500,
     messages: [{ role: 'user', content: scoringPrompt }],
   })
@@ -357,7 +358,7 @@ async function main() {
 
   // Dynamic imports after dotenv config runs
   ;({ supabaseAdmin } = await import('@/lib/supabase-admin'))
-  ;({ anthropic } = await import('@/lib/anthropic'))
+  ;({ anthropic, MODEL_SONNET } = await import('@/lib/anthropic'))
   ;({ getStockNewsMultiTicker } = await import('@/lib/fmp'))
 
   console.log(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`)

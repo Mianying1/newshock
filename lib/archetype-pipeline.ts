@@ -1,10 +1,8 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { supabaseAdmin } from './supabase-admin'
-import { anthropic } from './anthropic'
+import { anthropic, MODEL_SONNET } from './anthropic'
 import { enrichThemeRecommendations } from './theme-enrichment'
-
-const PLAYBOOK_MODEL = 'claude-sonnet-4-6'
 
 const PLAYBOOK_PROMPT = `You are a financial market historian and structural analyst.
 
@@ -118,7 +116,7 @@ async function callSonnetForPlaybook(arch: PlaybookArchetypeInput): Promise<unkn
     .replace('{category}', arch.category)
 
   const response = await anthropic.messages.create({
-    model: PLAYBOOK_MODEL,
+    model: MODEL_SONNET,
     max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
   })

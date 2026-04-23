@@ -1,4 +1,4 @@
-import { anthropic, MODEL_SONNET } from './anthropic'
+import { anthropic, MODEL_HAIKU } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 
 export interface UmbrellaRef {
@@ -41,7 +41,7 @@ export async function classifySubthemeParent(
     `Respond with ONLY the umbrella number (1-${umbs.length}) or "none". No other text.`
 
   const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
+    model: MODEL_HAIKU,
     max_tokens: 10,
     system,
     messages: [{ role: 'user', content: user }],
