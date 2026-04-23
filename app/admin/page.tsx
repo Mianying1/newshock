@@ -3,6 +3,7 @@ import Link from 'next/link'
 const LINKS: Array<{ href: string; label: string; desc: string }> = [
   { href: '/admin/health', label: 'Health Dashboard', desc: 'Pipeline, crons, coverage, alerts' },
   { href: '/admin/candidates', label: 'Archetype Candidates', desc: 'Weekly scan review queue' },
+  { href: '/admin/angles', label: 'New Angle Candidates', desc: 'Long-horizon angle proposals from events' },
   { href: '/admin/coverage-audit', label: 'Coverage Audit', desc: 'Archetype coverage + suggestions' },
   { href: '/admin/cases', label: 'Historical Cases', desc: 'Case library' },
   { href: '/admin/ticker-graph', label: 'Ticker Graph', desc: 'Ticker ↔ archetype relationships' },
