@@ -13,6 +13,16 @@ type Theme = {
   archetype_id: string | null
   first_event_at: string | null
   created_at: string
+  current_cycle_stage: string | null
+  cycle_stage_computed_at: string | null
+}
+
+type AlertSeverity = 'info' | 'warn' | 'critical'
+
+function severityFor(from: string | null, to: string): AlertSeverity {
+  if (from === 'late' && to === 'exit') return 'critical'
+  if ((from === 'early' && to === 'mid') || (from === 'mid' && to === 'late')) return 'warn'
+  return 'info'
 }
 
 type Archetype = {
@@ -68,7 +78,7 @@ async function main() {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const [themes, archetypes, events] = await Promise.all([
-    fetchAll<Theme>('themes', 'id, name, status, archetype_id, first_event_at, created_at'),
+    fetchAll<Theme>('themes', 'id, name, status, archetype_id, first_event_at, created_at, current_cycle_stage, cycle_stage_computed_at'),
     fetchAll<Archetype>('theme_archetypes', 'id, typical_duration_days_min, typical_duration_days_max, playbook'),
     fetchAll<Event>('events', 'trigger_theme_id, created_at'),
   ])
@@ -91,8 +101,13 @@ async function main() {
   const activeThemes = themes.filter((t) => t.status === 'active')
   console.log(`computing cycle stage for ${activeThemes.length} active themes...`)
 
+  const DEDUP_WINDOW_MS = 24 * 60 * 60 * 1000
   let updated = 0
   let nullCnt = 0
+  let alertsInserted = 0
+  let alertsDeduped = 0
+  let alertsColdStart = 0
+  const alertDistribution: Record<string, number> = { info: 0, warn: 0, critical: 0 }
   const distribution: Record<string, number> = { early: 0, mid: 0, late: 0, exit: 0, null: 0 }
   const detail: Array<{ id: string; name: string; stage: Stage; reason: string; days: number | null; typical_max: number | null; ratio: number | null; snapshot: string | null }> = []
 
@@ -115,9 +130,53 @@ async function main() {
 
     detail.push({ id: theme.id, name: theme.name, stage, reason, days, typical_max: typicalMax, ratio, snapshot })
 
+    const oldStage = theme.current_cycle_stage
+    const changed = oldStage !== null && stage !== null && oldStage !== stage
+
+    if (oldStage === null && stage !== null) alertsColdStart++
+
+    if (changed) {
+      const sinceIso = new Date(now - DEDUP_WINDOW_MS).toISOString()
+      const { data: recent, error: dedupErr } = await supabaseAdmin
+        .from('theme_alerts')
+        .select('id')
+        .eq('theme_id', theme.id)
+        .eq('alert_type', 'stage_change')
+        .eq('from_stage', oldStage)
+        .eq('to_stage', stage)
+        .gte('created_at', sinceIso)
+        .limit(1)
+      if (dedupErr) { console.error(`DEDUP ${theme.id}: ${dedupErr.message}`); process.exit(1) }
+
+      if (recent && recent.length > 0) {
+        alertsDeduped++
+      } else {
+        const severity = severityFor(oldStage, stage as string)
+        const { error: alertErr } = await supabaseAdmin.from('theme_alerts').insert({
+          theme_id: theme.id,
+          alert_type: 'stage_change',
+          from_stage: oldStage,
+          to_stage: stage,
+          reason,
+          ratio,
+          days_since_first_event: days,
+          severity,
+        })
+        if (alertErr) { console.error(`ALERT ${theme.id}: ${alertErr.message}`); process.exit(1) }
+        alertsInserted++
+        alertDistribution[severity]++
+        console.log(`  alert [${severity}] ${theme.name} · ${oldStage} → ${stage} · ratio=${ratio?.toFixed(2) ?? '-'}`)
+      }
+    }
+
     const { error } = await supabaseAdmin
       .from('themes')
-      .update({ current_cycle_stage: stage, cycle_stage_computed_at: nowIso })
+      .update({
+        current_cycle_stage: stage,
+        cycle_stage_computed_at: nowIso,
+        previous_cycle_stage: oldStage,
+        previous_cycle_stage_at: theme.cycle_stage_computed_at,
+      })
       .eq('id', theme.id)
     if (error) {
       console.error(`UPDATE ${theme.id}: ${error.message}`)
@@ -125,6 +184,9 @@ async function main() {
     }
     updated++
   }
+
+  console.log(`\nalerts: inserted=${alertsInserted} · deduped=${alertsDeduped} · cold_start_suppressed=${alertsColdStart}`)
+  console.log(`severity dist: info=${alertDistribution.info} warn=${alertDistribution.warn} critical=${alertDistribution.critical}`)
 
   console.log(`\ndone · ${updated} themes updated · ${nullCnt} null stage`)
   console.log('\ndistribution:')
