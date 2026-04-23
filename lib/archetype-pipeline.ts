@@ -102,14 +102,14 @@ Based on your knowledge of current markets (as of Apr 2026), estimate WHEN this 
 
 For genuinely new archetypes, use 'recently emerging' for approximate_start if unknown.`
 
-interface PlaybookArchetypeInput {
+export interface PlaybookArchetypeInput {
   id: string
   name: string
   description: string | null
   category: string
 }
 
-async function callSonnetForPlaybook(arch: PlaybookArchetypeInput): Promise<unknown | null> {
+export async function callSonnetForPlaybook(arch: PlaybookArchetypeInput): Promise<unknown | null> {
   const prompt = PLAYBOOK_PROMPT
     .replace('{name}', arch.name)
     .replace('{description}', arch.description ?? '')
@@ -183,7 +183,7 @@ export async function generateArchetypePlaybook(
   return { success: true, playbook: playbookEn }
 }
 
-function splitBilingualPlaybook(pb: Record<string, unknown>): {
+export function splitBilingualPlaybook(pb: Record<string, unknown>): {
   playbookEn: Record<string, unknown>
   playbookZh: Record<string, unknown>
 } {
