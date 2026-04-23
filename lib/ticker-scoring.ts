@@ -603,9 +603,11 @@ export async function getLongShortTickers(
 export interface AngleDirectionRow {
   candidate_id: string
   ticker_symbol: string
+  logo_url: string | null
   umbrella_theme_id: string
   umbrella_name: string
   angle_label: string
+  category: string | null
   confidence: number | null
   is_ai_pending: boolean
   last_event_days_ago: number
@@ -629,7 +631,8 @@ export async function getApprovedNewAngles(limit = 50): Promise<AngleDirectionRo
         name,
         theme_strength_score,
         theme_archetypes!inner (
-          duration_type
+          duration_type,
+          category
         )
       )
     `)
@@ -650,7 +653,7 @@ export async function getApprovedNewAngles(limit = 50): Promise<AngleDirectionRo
       id: string
       name: string
       theme_strength_score: number | null
-      theme_archetypes: { duration_type: string | null } | null
+      theme_archetypes: { duration_type: string | null; category: string | null } | null
     } | null
   }
 
@@ -718,6 +721,7 @@ export async function getApprovedNewAngles(limit = 50): Promise<AngleDirectionRo
     if (umbrellaTs === undefined) continue // Filter 3: umbrella has no event in 14d
     const daysAgo = Math.max(0, Math.floor((now - umbrellaTs) / 86400000))
     const umbrellaName = c.themes?.name ?? ''
+    const category = c.themes?.theme_archetypes?.category ?? null
     for (const tk of c.proposed_tickers ?? []) {
       const pairKey = `${tk}|${umbrellaId}`
       const existing = byPair.get(pairKey)
@@ -727,13 +731,31 @@ export async function getApprovedNewAngles(limit = 50): Promise<AngleDirectionRo
         pairKey,
         candidate_id: c.id,
         ticker_symbol: tk,
+        logo_url: null,
         umbrella_theme_id: umbrellaId,
         umbrella_name: umbrellaName,
         angle_label: c.angle_label,
+        category,
         confidence: c.confidence,
         is_ai_pending: c.reviewed_at === null,
         last_event_days_ago: daysAgo,
       })
+    }
+  }
+
+  // Step 6.5 — enrich with logo_url via bulk ticker lookup
+  const uniqTickers = Array.from(new Set(Array.from(byPair.values()).map((t) => t.ticker_symbol)))
+  if (uniqTickers.length > 0) {
+    const { data: tickerRows } = await supabaseAdmin
+      .from('tickers')
+      .select('symbol, logo_url')
+      .in('symbol', uniqTickers)
+    const logoBySymbol = new Map<string, string | null>()
+    for (const t of (tickerRows ?? []) as { symbol: string; logo_url: string | null }[]) {
+      logoBySymbol.set(t.symbol, t.logo_url)
+    }
+    for (const t of byPair.values()) {
+      t.logo_url = logoBySymbol.get(t.ticker_symbol) ?? null
     }
   }
 

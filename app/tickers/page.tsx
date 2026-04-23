@@ -25,13 +25,6 @@ interface AnglesResponse {
   updated_at: string
 }
 
-function tickerTypeTone(t: string | null): TickerRowBadge['tone'] {
-  if (t === 'core_hold') return 'long'
-  if (t === 'short_catalyst') return 'short'
-  if (t === 'golden_leap') return 'long'
-  return 'watch'
-}
-
 export default function TickersPage() {
   const { t } = useI18n()
   const [topTab, setTopTab] = useState<TopTab>('thematic')
@@ -221,17 +214,8 @@ export default function TickersPage() {
                     <div className="space-y-2">
                       {rows.map((tk, i) => {
                         const badges: TickerRowBadge[] = []
-                        if (tk.ticker_type) {
-                          badges.push({
-                            label: t(`ticker_type.${tk.ticker_type}`),
-                            tone: tickerTypeTone(tk.ticker_type),
-                          })
-                        }
-                        if (tk.theme_strength_score !== null) {
-                          badges.push({
-                            label: t('tickers_ranked.theme_strength', { n: tk.theme_strength_score }),
-                            tone: 'neutral',
-                          })
+                        if (tk.category) {
+                          badges.push({ label: t(`categories.${tk.category}`), tone: 'neutral' })
                         }
                         return (
                           <TickerRow
@@ -239,7 +223,7 @@ export default function TickersPage() {
                             href={`/tickers/${tk.symbol}`}
                             rank={i + 1}
                             symbol={tk.symbol}
-                            subtitle={tk.theme_name}
+                            logoUrl={tk.logo_url}
                             rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
                             rightSmall="/10"
                             sentiment={tk.dominant_sentiment as never}
@@ -275,11 +259,13 @@ export default function TickersPage() {
                             tone: 'pending',
                           })
                         }
-                        badges.push({
-                          label: t('top_tickers.recent_days', { days: d.last_event_days_ago }),
-                          tone: 'neutral',
-                          title: d.angle_label,
-                        })
+                        if (d.category) {
+                          badges.push({
+                            label: t(`categories.${d.category}`),
+                            tone: 'neutral',
+                            title: d.angle_label,
+                          })
+                        }
                         const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
                         return (
                           <TickerRow
@@ -287,7 +273,7 @@ export default function TickersPage() {
                             href={`/tickers/${d.ticker_symbol}`}
                             rank={i + 1}
                             symbol={d.ticker_symbol}
-                            subtitle={d.angle_label}
+                            logoUrl={d.logo_url}
                             rightText={confPct !== null ? String(confPct) : undefined}
                             rightSmall={confPct !== null ? '%' : undefined}
                             badges={badges}

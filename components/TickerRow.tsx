@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 
 type BadgeTone = 'long' | 'short' | 'watch' | 'pending' | 'neutral'
@@ -13,6 +14,7 @@ interface Props {
   href: string
   rank?: number
   symbol: string
+  logoUrl?: string | null
   subtitle?: string
   rightText?: string
   rightSmall?: string
@@ -36,10 +38,51 @@ const BADGE_STYLE: Record<BadgeTone, { bg: string; color: string; border: string
   neutral: { bg: '#fafafa', color: '#71717a', border: '#e4e4e7' },
 }
 
+function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: string | null; size?: number }) {
+  const [errored, setErrored] = useState(false)
+  const show = logoUrl && !errored
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        borderRadius: size,
+        background: '#f4f4f5',
+        border: '1px solid #e4e4e7',
+        overflow: 'hidden',
+        flexShrink: 0,
+        fontSize: size <= 20 ? 9 : 10,
+        fontWeight: 600,
+        color: '#71717a',
+        letterSpacing: -0.2,
+      }}
+    >
+      {show ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={logoUrl as string}
+          alt=""
+          width={size}
+          height={size}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={() => setErrored(true)}
+        />
+      ) : (
+        <span>{symbol.slice(0, 2)}</span>
+      )}
+    </span>
+  )
+}
+
 export default function TickerRow({
   href,
   rank,
   symbol,
+  logoUrl,
   subtitle,
   rightText,
   rightSmall,
@@ -53,6 +96,7 @@ export default function TickerRow({
     return (
       <Link href={href} className="rank-row">
         {rank !== undefined && <div className="n">{rank}</div>}
+        <TickerLogo symbol={symbol} logoUrl={logoUrl} size={20} />
         <div style={{ minWidth: 0, flex: 1 }}>
           <div
             className="sym"
@@ -119,6 +163,7 @@ export default function TickerRow({
         {rank !== undefined && (
           <span className="text-sm font-mono text-zinc-400 w-8 shrink-0 mt-1">#{rank}</span>
         )}
+        <TickerLogo symbol={symbol} logoUrl={logoUrl} size={28} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-wrap">

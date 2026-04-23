@@ -19,13 +19,6 @@ interface AnglesResponse {
   total: number
 }
 
-function tickerTypeTone(t: string | null): TickerRowBadge['tone'] {
-  if (t === 'core_hold') return 'long'
-  if (t === 'short_catalyst') return 'short'
-  if (t === 'golden_leap') return 'long'
-  return 'watch'
-}
-
 export function TopTickersSection() {
   const { t } = useI18n()
   const [mode, setMode] = useState<LongShortMode>('long')
@@ -88,11 +81,8 @@ export function TopTickersSection() {
             ) : (
               tickerTop.map((tk, i) => {
                 const badges: TickerRowBadge[] = []
-                if (tk.ticker_type) {
-                  badges.push({
-                    label: t(`ticker_type.${tk.ticker_type}`),
-                    tone: tickerTypeTone(tk.ticker_type),
-                  })
+                if (tk.category) {
+                  badges.push({ label: t(`categories.${tk.category}`), tone: 'neutral' })
                 }
                 return (
                   <TickerRow
@@ -101,7 +91,7 @@ export function TopTickersSection() {
                     href={`/tickers/${tk.symbol}`}
                     rank={i + 1}
                     symbol={tk.symbol}
-                    subtitle={tk.theme_name}
+                    logoUrl={tk.logo_url}
                     rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
                     rightSmall="/10"
                     sentiment={tk.dominant_sentiment as never}
@@ -141,11 +131,13 @@ export function TopTickersSection() {
                 if (d.is_ai_pending) {
                   badges.push({ label: `🤖 ${t('top_tickers.ai_pending')}`, tone: 'pending' })
                 }
-                badges.push({
-                  label: t('top_tickers.recent_days', { days: d.last_event_days_ago }),
-                  tone: 'neutral',
-                  title: d.angle_label,
-                })
+                if (d.category) {
+                  badges.push({
+                    label: t(`categories.${d.category}`),
+                    tone: 'neutral',
+                    title: d.angle_label,
+                  })
+                }
                 const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
                 return (
                   <TickerRow
@@ -154,7 +146,7 @@ export function TopTickersSection() {
                     href={`/tickers/${d.ticker_symbol}`}
                     rank={i + 1}
                     symbol={d.ticker_symbol}
-                    subtitle={d.umbrella_name}
+                    logoUrl={d.logo_url}
                     rightText={confPct !== null ? String(confPct) : undefined}
                     rightSmall={confPct !== null ? '%' : undefined}
                     badges={badges}
