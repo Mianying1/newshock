@@ -276,6 +276,7 @@ export async function computeConvictionForActiveThemes(): Promise<ComputeBatchRe
     .from('themes')
     .select('id, name')
     .eq('status', 'active')
+    .order('conviction_generated_at', { ascending: true, nullsFirst: true })
 
   const ok: ComputeBatchResult['ok'] = []
   const failed: ComputeBatchResult['failed'] = []
