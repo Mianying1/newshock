@@ -210,6 +210,19 @@
   "new_angle": {
     "ai_flag": "AI 待审"
   },
+  "stage_alerts": {
+    "title": "主线状态变化",
+    "window_7d": "近 7 天 · 共 {n} 条",
+    "unseen": "未读",
+    "mark_seen": "标为已读",
+    "severity_critical": "严重",
+    "severity_warn": "注意",
+    "severity_info": "信息",
+    "stage_early": "early",
+    "stage_mid": "mid",
+    "stage_late": "late",
+    "stage_exit": "exit"
+  },
   "ticker_detail": {
     "back": "← 返回",
     "related_themes": "关联主题",

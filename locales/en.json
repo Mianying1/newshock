@@ -210,6 +210,19 @@
   "new_angle": {
     "ai_flag": "AI pending"
   },
+  "stage_alerts": {
+    "title": "Stage Changes",
+    "window_7d": "Past 7d · {n} total",
+    "unseen": "new",
+    "mark_seen": "mark seen",
+    "severity_critical": "critical",
+    "severity_warn": "warn",
+    "severity_info": "info",
+    "stage_early": "early",
+    "stage_mid": "mid",
+    "stage_late": "late",
+    "stage_exit": "exit"
+  },
   "ticker_detail": {
     "back": "← Back",
     "related_themes": "Related Themes",

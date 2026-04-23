@@ -9,6 +9,7 @@ import { MarketNarratives } from '@/components/MarketNarratives'
 import { TopTickersSection } from '@/components/TopTickersSection'
 import { EventStream } from '@/components/EventStream'
 import { ActiveThemeCard } from '@/components/ActiveThemeCard'
+import StageAlertsSection from '@/components/StageAlertsSection'
 import { useI18n } from '@/lib/i18n-context'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import './radar.css'
@@ -135,6 +136,8 @@ export default function HomePage() {
           </div>
 
           <MarketRegimeCard />
+
+          <StageAlertsSection />
 
           <TopTickersSection />
 
