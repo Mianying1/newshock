@@ -36,31 +36,31 @@ async function fetchAll<T>(table: string, cols: string): Promise<T[]> {
   return all
 }
 
-type TickerType = 'core_hold' | 'short_catalyst' | 'golden_leap' | null
+type TickerType = 'core_hold' | 'short_catalyst' | 'golden_leap' | 'watch' | null
 
 function classify(
   score: number | null,
   stage: string | null,
   dt: string | null
 ): TickerType {
+  // no duration_type → true data missing · stay null
   if (dt === null) return null
 
+  // bounded path
   if (dt === 'bounded') {
-    if (stage === 'exit') return null // C4: bounded + exit → null
+    if (stage === 'exit') return 'watch' // window closed · fallback to watch
     return 'short_catalyst'
   }
 
+  // extended / dependent path
   if (dt === 'extended' || dt === 'dependent') {
-    if (stage === null) return null
-    if (stage === 'exit') return null // C2
-    if (score === null) return null
-
-    if (score >= 7 && stage === 'mid') return 'core_hold' // C1: only mid
-    if (score <= 3 && stage === 'early') return 'golden_leap'
-    return null
+    if (score !== null && score >= 7 && stage === 'mid') return 'core_hold'
+    if (score !== null && score <= 3 && (stage === 'early' || stage === 'mid')) return 'golden_leap'
+    return 'watch'
   }
 
-  return null // unknown duration_type
+  // unknown duration_type value · treat as data anomaly · null
+  return null
 }
 
 async function main() {
@@ -79,7 +79,7 @@ async function main() {
 
   console.log(`classifying ${recs.length} recommendations...`)
 
-  const dist: Record<string, number> = { core_hold: 0, short_catalyst: 0, golden_leap: 0, null: 0 }
+  const dist: Record<string, number> = { core_hold: 0, short_catalyst: 0, golden_leap: 0, watch: 0, null: 0 }
   let updated = 0
 
   for (const r of recs) {
@@ -102,7 +102,7 @@ async function main() {
 
   console.log(`\ndone · ${updated} rows updated`)
   console.log('\ndistribution:')
-  for (const k of ['core_hold', 'short_catalyst', 'golden_leap', 'null']) {
+  for (const k of ['core_hold', 'short_catalyst', 'golden_leap', 'watch', 'null']) {
     const pct = ((dist[k] / recs.length) * 100).toFixed(0)
     console.log(`  ${k.padEnd(15)}: ${String(dist[k]).padStart(3)} (${pct}%)`)
   }

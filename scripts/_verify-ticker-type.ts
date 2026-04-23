@@ -46,13 +46,13 @@ async function main() {
   for (const a of archetypes) archById.set(a.id, a)
 
   // Distribution
-  const dist: Record<string, number> = { core_hold: 0, short_catalyst: 0, golden_leap: 0, null: 0 }
+  const dist: Record<string, number> = { core_hold: 0, short_catalyst: 0, golden_leap: 0, watch: 0, null: 0 }
   for (const r of recs) dist[r.ticker_type ?? 'null']++
 
   console.log('=== Ticker Type Verification ===\n')
   console.log(`total recommendations: ${recs.length}`)
   console.log('\ndistribution:')
-  for (const k of ['core_hold', 'short_catalyst', 'golden_leap', 'null']) {
+  for (const k of ['core_hold', 'short_catalyst', 'golden_leap', 'watch', 'null']) {
     const pct = ((dist[k] / recs.length) * 100).toFixed(0)
     console.log(`  ${k.padEnd(15)}: ${String(dist[k]).padStart(3)} (${pct}%)`)
   }
@@ -76,8 +76,12 @@ async function main() {
         violations.push(`short_catalyst: ${r.ticker_symbol}@${t?.name} · stage=${stage} dt=${dt}`)
       }
     } else if (tt === 'golden_leap') {
-      if (!(s !== null && s <= 3 && stage === 'early' && (dt === 'extended' || dt === 'dependent'))) {
+      if (!(s !== null && s <= 3 && (stage === 'early' || stage === 'mid') && (dt === 'extended' || dt === 'dependent'))) {
         violations.push(`golden_leap: ${r.ticker_symbol}@${t?.name} · score=${s} stage=${stage} dt=${dt}`)
+      }
+    } else if (tt === 'watch') {
+      if (dt === null) {
+        violations.push(`watch but dt=null: ${r.ticker_symbol}@${t?.name}`)
       }
     }
   }
@@ -99,7 +103,7 @@ async function main() {
     }
   }
 
-  for (const type of ['core_hold', 'short_catalyst', 'golden_leap']) {
+  for (const type of ['core_hold', 'short_catalyst', 'golden_leap', 'watch']) {
     const rows = recs.filter((r) => r.ticker_type === type).map(enrich)
     if (rows.length === 0) continue
     console.log(`\n${type} (${rows.length}) · first 5:`)
