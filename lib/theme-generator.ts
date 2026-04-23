@@ -6,6 +6,7 @@ import { resolve8KContext } from './sec-8k-parser'
 import { classify8KEvent, applyDecision, buildArchetypeBlock } from './sec-8k-classifier'
 import { loadActiveArchetypes } from './archetype-loader'
 import { getMatcherContext, invalidateMatcherCache } from './theme-matcher'
+import { enrichThemeRecommendations } from './theme-enrichment'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -548,6 +549,8 @@ async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> 
     ],
   })
 
+  console.log('[theme-gen cache]', JSON.stringify(msg.usage))
+
   const text = (msg.content[0] as { type: string; text: string }).text.trim()
   try {
     const json = JSON.parse(text.replace(/```json\n?|\n?```/g, '').trim()) as SonnetThemeResult
@@ -875,6 +878,16 @@ async function handleNewTheme(
     .eq('id', eventId)
 
   invalidateMatcherCache()
+
+  // Fire-and-forget enrich · writes exposure_type/confidence_band/refined reasoning via Sonnet.
+  // Not awaited so ingest returns immediately; failures only log — missed themes get
+  // caught by batch backfill (scripts/enrich-new-umbrellas.ts).
+  if (validRows.length > 0) {
+    enrichThemeRecommendations(themeId).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.warn(`[handleNewTheme] enrich failed for theme ${themeId}: ${msg}`)
+    })
+  }
 
   return { theme_id: themeId, tickers_created: validRows.length, novel_tickers_skipped: skipped }
 }

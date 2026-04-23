@@ -47,7 +47,7 @@ async function fetchThemes(limit: number | null, only: string[] | null) {
   let q = supabaseAdmin
     .from('themes')
     .select('id, name, event_count, status')
-    .eq('status', 'active')
+    .in('status', ['active', 'exploratory_candidate'])
     .order('event_count', { ascending: false })
   if (only && only.length > 0) q = q.in('id', only)
   if (limit) q = q.limit(limit)
