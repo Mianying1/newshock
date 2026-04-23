@@ -5,8 +5,10 @@ export const maxDuration = 30
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
-  const mode = (request.nextUrl.searchParams.get('mode') === 'short' ? 'short' : 'long') as LongShortMode
-  const limitParam = Number(request.nextUrl.searchParams.get('limit') ?? '100')
+  const params = request.nextUrl.searchParams
+  const modeParam = params.get('mode') ?? params.get('tab') ?? 'long'
+  const mode = (modeParam === 'short' ? 'short' : 'long') as LongShortMode
+  const limitParam = Number(params.get('limit') ?? '100')
   const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(200, Math.floor(limitParam)) : 100
 
   try {

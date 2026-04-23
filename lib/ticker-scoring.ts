@@ -576,80 +576,183 @@ export async function getLongShortTickers(
       category: r.themes?.theme_archetypes?.category ?? null,
     }))
 
-  return filtered.slice(0, limit)
+  // Dedup by ticker_symbol — keep the row with the highest ticker_maturity_score.
+  // Filtered is already sorted DESC on maturity_score, so first occurrence wins.
+  const seen = new Set<string>()
+  const deduped: LongShortTickerRow[] = []
+  for (const r of filtered) {
+    if (seen.has(r.symbol)) continue
+    seen.add(r.symbol)
+    deduped.push(r)
+  }
+
+  return deduped.slice(0, limit)
 }
 
 // =============================================================================
-// UX-1 · New angle candidates · approved
+// UX-1 · Long-horizon angle directions (per-ticker rows)
+//
+// Approved new-angle candidates get expanded into one row per (ticker, umbrella).
+// Filters applied:
+//   1. umbrella duration_type ∈ {extended, dependent}  — no bounded cycles
+//   2. umbrella theme_strength_score >= 70             — only strong main lines
+//   3. (ticker, umbrella-family) has an event in last 14 days — freshness
+//   4. per-umbrella cap of 3 tickers                   — cross-umbrella spread
 // =============================================================================
 
-export interface NewAngleCandidateRow {
-  id: string
-  angle_label: string
-  angle_description: string | null
-  proposed_tickers: string[]
-  gap_reasoning: string | null
-  confidence: number | null
-  status: string
-  reviewed_at: string | null
-  created_at: string
+export interface AngleDirectionRow {
+  candidate_id: string
+  ticker_symbol: string
   umbrella_theme_id: string
-  umbrella_theme_name: string
-  umbrella_category: string | null
+  umbrella_name: string
+  angle_label: string
+  confidence: number | null
+  is_ai_pending: boolean
+  last_event_days_ago: number
 }
 
-export async function getApprovedNewAngles(limit = 100): Promise<NewAngleCandidateRow[]> {
-  const { data, error } = await supabaseAdmin
+export async function getApprovedNewAngles(limit = 50): Promise<AngleDirectionRow[]> {
+  const now = Date.now()
+
+  // Step 1 — fetch approved candidates joined to umbrella theme + archetype
+  const { data: candidatesData, error: candErr } = await supabaseAdmin
     .from('new_angle_candidates')
     .select(`
       id,
       angle_label,
-      angle_description,
       proposed_tickers,
-      gap_reasoning,
       confidence,
-      status,
       reviewed_at,
-      created_at,
       umbrella_theme_id,
       themes!inner (
+        id,
         name,
-        theme_archetypes (category)
+        theme_strength_score,
+        theme_archetypes!inner (
+          duration_type
+        )
       )
     `)
     .eq('status', 'approved')
     .order('confidence', { ascending: false })
-    .limit(limit)
+    .limit(500)
 
-  if (error) throw new Error(`getApprovedNewAngles: ${error.message}`)
+  if (candErr) throw new Error(`getApprovedNewAngles: ${candErr.message}`)
 
-  type Row = {
+  type CandidateRow = {
     id: string
     angle_label: string
-    angle_description: string | null
     proposed_tickers: string[] | null
-    gap_reasoning: string | null
     confidence: number | null
-    status: string
     reviewed_at: string | null
-    created_at: string
     umbrella_theme_id: string
-    themes: { name: string; theme_archetypes: { category: string | null } | null } | null
+    themes: {
+      id: string
+      name: string
+      theme_strength_score: number | null
+      theme_archetypes: { duration_type: string | null } | null
+    } | null
   }
 
-  return ((data ?? []) as unknown as Row[]).map((r) => ({
-    id: r.id,
-    angle_label: r.angle_label,
-    angle_description: r.angle_description,
-    proposed_tickers: r.proposed_tickers ?? [],
-    gap_reasoning: r.gap_reasoning,
-    confidence: r.confidence,
-    status: r.status,
-    reviewed_at: r.reviewed_at,
-    created_at: r.created_at,
-    umbrella_theme_id: r.umbrella_theme_id,
-    umbrella_theme_name: r.themes?.name ?? '',
-    umbrella_category: r.themes?.theme_archetypes?.category ?? null,
-  }))
+  const candidates = ((candidatesData ?? []) as unknown as CandidateRow[]).filter((c) => {
+    const strength = c.themes?.theme_strength_score ?? 0
+    const dt = c.themes?.theme_archetypes?.duration_type ?? null
+    return strength >= 70 && (dt === 'extended' || dt === 'dependent')
+  })
+
+  if (candidates.length === 0) return []
+
+  // Step 2 — collect allowed theme ids per umbrella: umbrella + subthemes
+  const umbrellaIdSet = new Set<string>()
+  for (const c of candidates) umbrellaIdSet.add(c.umbrella_theme_id)
+  const umbrellaIds = Array.from(umbrellaIdSet)
+
+  const { data: subthemesData } = await supabaseAdmin
+    .from('themes')
+    .select('id, parent_theme_id')
+    .in('parent_theme_id', umbrellaIds)
+
+  const themeToUmbrella = new Map<string, string>()
+  for (const u of umbrellaIds) themeToUmbrella.set(u, u)
+  for (const s of (subthemesData ?? []) as { id: string; parent_theme_id: string | null }[]) {
+    if (!s.parent_theme_id) continue
+    if (!themeToUmbrella.has(s.parent_theme_id)) continue
+    themeToUmbrella.set(s.id, s.parent_theme_id)
+  }
+
+  // Step 3 — fetch events in last 14 days touching any allowed theme
+  //
+  // Freshness is computed at umbrella-family level: if the umbrella (or any of
+  // its subthemes) had an event in 14d, every proposed ticker on that umbrella
+  // qualifies. `events.mentioned_tickers` is too sparse in practice to filter
+  // per (ticker, umbrella); umbrella-level activity is the usable signal.
+  const cutoff = new Date(now - 14 * 86400000).toISOString()
+  const allThemeIds = Array.from(themeToUmbrella.keys())
+  const { data: eventsData } = await supabaseAdmin
+    .from('events')
+    .select('trigger_theme_id, event_date')
+    .gte('event_date', cutoff)
+    .in('trigger_theme_id', allThemeIds)
+
+  const umbrellaLatestTs = new Map<string, number>()
+  for (const e of (eventsData ?? []) as {
+    trigger_theme_id: string | null
+    event_date: string
+  }[]) {
+    if (!e.trigger_theme_id) continue
+    const umbrella = themeToUmbrella.get(e.trigger_theme_id)
+    if (!umbrella) continue
+    const ts = new Date(e.event_date).getTime()
+    const cur = umbrellaLatestTs.get(umbrella)
+    if (cur === undefined || ts > cur) umbrellaLatestTs.set(umbrella, ts)
+  }
+
+  // Step 4-6 — fan out proposed_tickers, require umbrella to have 14d event,
+  // dedup (ticker, umbrella) by max confidence
+  type Triplet = AngleDirectionRow & { pairKey: string }
+  const byPair = new Map<string, Triplet>()
+
+  for (const c of candidates) {
+    const umbrellaId = c.umbrella_theme_id
+    const umbrellaTs = umbrellaLatestTs.get(umbrellaId)
+    if (umbrellaTs === undefined) continue // Filter 3: umbrella has no event in 14d
+    const daysAgo = Math.max(0, Math.floor((now - umbrellaTs) / 86400000))
+    const umbrellaName = c.themes?.name ?? ''
+    for (const tk of c.proposed_tickers ?? []) {
+      const pairKey = `${tk}|${umbrellaId}`
+      const existing = byPair.get(pairKey)
+      const conf = c.confidence ?? 0
+      if (existing && (existing.confidence ?? 0) >= conf) continue
+      byPair.set(pairKey, {
+        pairKey,
+        candidate_id: c.id,
+        ticker_symbol: tk,
+        umbrella_theme_id: umbrellaId,
+        umbrella_name: umbrellaName,
+        angle_label: c.angle_label,
+        confidence: c.confidence,
+        is_ai_pending: c.reviewed_at === null,
+        last_event_days_ago: daysAgo,
+      })
+    }
+  }
+
+  // Step 7 — per-umbrella cap of 3, global sort by confidence DESC
+  const sorted = Array.from(byPair.values()).sort(
+    (a, b) => (b.confidence ?? 0) - (a.confidence ?? 0)
+  )
+
+  const perUmbrella = new Map<string, number>()
+  const results: AngleDirectionRow[] = []
+  for (const t of sorted) {
+    const cnt = perUmbrella.get(t.umbrella_theme_id) ?? 0
+    if (cnt >= 3) continue
+    perUmbrella.set(t.umbrella_theme_id, cnt + 1)
+    const { pairKey: _pk, ...row } = t
+    results.push(row)
+    if (results.length >= limit) break
+  }
+
+  return results
 }
 

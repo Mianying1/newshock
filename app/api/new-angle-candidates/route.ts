@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const rows = await getApprovedNewAngles(limit)
     return Response.json({
-      candidates: rows,
+      directions: rows,
       total: rows.length,
       limit,
       updated_at: new Date().toISOString(),
