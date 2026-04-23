@@ -295,18 +295,12 @@
   },
   "top_tickers": {
     "title": "头部股票",
-    "thematic_subtitle": "当下热点主题里有活跃催化剂的股票",
-    "potential_subtitle": "长周期结构性主题中仍处早期的股票",
+    "thematic_subtitle": "Long/Short · 按 ticker_maturity_score 排序",
+    "potential_subtitle": "已审核长周期新角度 · 按 confidence 排序",
     "event_driven_hot": "事件驱动 · 热",
     "structural_early": "结构性 · 早期",
-    "show_all_thematic": "查看全部 {n} 只题材股 →",
-    "show_all_potential": "查看全部 {n} 只潜力股 →",
-    "tab_7d": "7d",
-    "tab_30d": "30d",
-    "tab_90d": "90d",
-    "tab_early": "早期",
-    "tab_mid": "中期",
-    "tab_all": "全部"
+    "show_all_thematic": "查看全部 {n} 条 →",
+    "show_all_potential": "查看全部 {n} 条 →"
   },
   "event_stream": {
     "title": "事件流",
