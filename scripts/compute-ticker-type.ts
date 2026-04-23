@@ -9,6 +9,7 @@ type Rec = {
   theme_id: string
   ticker_maturity_score: number | null
   ticker_type: string | null
+  exposure_direction: string | null
 }
 
 type Theme = {
@@ -43,14 +44,16 @@ type TickerType = 'core_hold' | 'short_catalyst' | 'golden_leap' | 'watch' | nul
 function classify(
   score: number | null,
   stage: string | null,
-  dt: string | null
+  dt: string | null,
+  exposure: string | null
 ): TickerType {
   // no duration_type → true data missing · stay null
   if (dt === null) return null
 
-  // bounded path
+  // bounded path · 只推受益方 · 非 benefits 归 watch · Newshock 不推做空
   if (dt === 'bounded') {
     if (stage === 'exit') return 'watch' // window closed · fallback to watch
+    if (exposure !== 'benefits') return 'watch'
     return 'short_catalyst'
   }
 
@@ -74,7 +77,7 @@ export async function runComputeTickerType(): Promise<ComputeTickerTypeStats> {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const [recs, themes, archetypes] = await Promise.all([
-    fetchAll<Rec>('theme_recommendations', 'id, ticker_symbol, theme_id, ticker_maturity_score, ticker_type'),
+    fetchAll<Rec>('theme_recommendations', 'id, ticker_symbol, theme_id, ticker_maturity_score, ticker_type, exposure_direction'),
     fetchAll<Theme>('themes', 'id, archetype_id, current_cycle_stage'),
     fetchAll<Archetype>('theme_archetypes', 'id, duration_type'),
   ])
@@ -92,7 +95,7 @@ export async function runComputeTickerType(): Promise<ComputeTickerTypeStats> {
   for (const r of recs) {
     const t = themeById.get(r.theme_id)
     const a = t?.archetype_id ? archById.get(t.archetype_id) : null
-    const tt = classify(r.ticker_maturity_score, t?.current_cycle_stage ?? null, a?.duration_type ?? null)
+    const tt = classify(r.ticker_maturity_score, t?.current_cycle_stage ?? null, a?.duration_type ?? null, r.exposure_direction ?? null)
 
     dist[tt ?? 'null']++
 
