@@ -295,12 +295,16 @@
   },
   "top_tickers": {
     "title": "Top Tickers",
-    "thematic_subtitle": "Long / Short · sorted by ticker_maturity_score",
-    "potential_subtitle": "Approved long-horizon angles · sorted by confidence",
+    "thematic_title": "Thematic Leaders",
+    "thematic_subtitle": "Mature tickers × current main lines",
+    "potential_title": "Long-term Potential Directions",
+    "potential_subtitle": "Emerging tickers on strong main lines",
     "event_driven_hot": "Event-driven · Hot",
     "structural_early": "Structural · Early",
     "show_all_thematic": "Show all {n} →",
-    "show_all_potential": "Show all {n} →"
+    "show_all_potential": "Show all {n} →",
+    "ai_pending": "AI pending",
+    "recent_days": "{days}d"
   },
   "event_stream": {
     "title": "Event Stream",

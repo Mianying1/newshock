@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import LongShortTickerCard from '@/components/LongShortTickerCard'
-import NewAngleCard from '@/components/NewAngleCard'
+import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
-import type { LongShortTickerRow, NewAngleCandidateRow, LongShortMode } from '@/lib/ticker-scoring'
+import type { LongShortTickerRow, AngleDirectionRow, LongShortMode } from '@/lib/ticker-scoring'
 
 type TopTab = 'thematic' | 'potential'
 
@@ -20,10 +19,17 @@ interface LongShortResponse {
 }
 
 interface AnglesResponse {
-  candidates: NewAngleCandidateRow[]
+  directions: AngleDirectionRow[]
   total: number
   limit: number
   updated_at: string
+}
+
+function tickerTypeTone(t: string | null): TickerRowBadge['tone'] {
+  if (t === 'core_hold') return 'long'
+  if (t === 'short_catalyst') return 'short'
+  if (t === 'golden_leap') return 'long'
+  return 'watch'
 }
 
 export default function TickersPage() {
@@ -41,7 +47,7 @@ export default function TickersPage() {
     let cancelled = false
     setLoading(true)
     setError(false)
-    fetch(`/api/tickers/long-short?mode=${mode}&limit=100`)
+    fetch(`/api/tickers/long-short?tab=${mode}&limit=100`)
       .then((r) => {
         if (!r.ok) throw new Error('fetch failed')
         return r.json()
@@ -95,6 +101,33 @@ export default function TickersPage() {
         t
       )
     : ''
+
+  const thematicBySector = useMemo(() => {
+    if (!longShortData) return []
+    const groups = new Map<string, LongShortTickerRow[]>()
+    for (const row of longShortData.tickers) {
+      const key = row.sector ?? 'Other'
+      const arr = groups.get(key) ?? []
+      arr.push(row)
+      groups.set(key, arr)
+    }
+    return Array.from(groups.entries()).sort(
+      (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])
+    )
+  }, [longShortData])
+
+  const potentialByUmbrella = useMemo(() => {
+    if (!anglesData) return []
+    const groups = new Map<string, AngleDirectionRow[]>()
+    for (const row of anglesData.directions) {
+      const arr = groups.get(row.umbrella_name) ?? []
+      arr.push(row)
+      groups.set(row.umbrella_name, arr)
+    }
+    return Array.from(groups.entries()).sort(
+      (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])
+    )
+  }, [anglesData])
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
@@ -167,7 +200,7 @@ export default function TickersPage() {
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div>
           {loading && <p className="py-10 text-center text-zinc-400">{t('tickers_ranked.loading')}</p>}
           {error && <p className="py-10 text-center text-zinc-400">{t('common.error')}</p>}
 
@@ -180,8 +213,42 @@ export default function TickersPage() {
                     : t('tickers_ranked.no_short_tickers')}
                 </p>
               ) : (
-                longShortData.tickers.map((row, idx) => (
-                  <LongShortTickerCard key={row.symbol} row={row} rank={idx + 1} />
+                thematicBySector.map(([sector, rows]) => (
+                  <section key={sector} className="mt-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">
+                      {sector} · {rows.length}
+                    </h3>
+                    <div className="space-y-2">
+                      {rows.map((tk, i) => {
+                        const badges: TickerRowBadge[] = []
+                        if (tk.ticker_type) {
+                          badges.push({
+                            label: t(`ticker_type.${tk.ticker_type}`),
+                            tone: tickerTypeTone(tk.ticker_type),
+                          })
+                        }
+                        if (tk.theme_strength_score !== null) {
+                          badges.push({
+                            label: t('tickers_ranked.theme_strength', { n: tk.theme_strength_score }),
+                            tone: 'neutral',
+                          })
+                        }
+                        return (
+                          <TickerRow
+                            key={tk.symbol}
+                            href={`/tickers/${tk.symbol}`}
+                            rank={i + 1}
+                            symbol={tk.symbol}
+                            subtitle={tk.theme_name}
+                            rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
+                            rightSmall="/10"
+                            sentiment={tk.dominant_sentiment as never}
+                            badges={badges}
+                          />
+                        )
+                      })}
+                    </div>
+                  </section>
                 ))
               )}
             </>
@@ -189,13 +256,46 @@ export default function TickersPage() {
 
           {!loading && !error && topTab === 'potential' && anglesData && (
             <>
-              {anglesData.candidates.length === 0 ? (
+              {anglesData.directions.length === 0 ? (
                 <p className="py-10 text-center text-zinc-400">
                   {t('tickers_ranked.no_angles')}
                 </p>
               ) : (
-                anglesData.candidates.map((row) => (
-                  <NewAngleCard key={row.id} row={row} />
+                potentialByUmbrella.map(([umbrella, rows]) => (
+                  <section key={umbrella} className="mt-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">
+                      {umbrella} · {rows.length}
+                    </h3>
+                    <div className="space-y-2">
+                      {rows.map((d, i) => {
+                        const badges: TickerRowBadge[] = []
+                        if (d.is_ai_pending) {
+                          badges.push({
+                            label: `🤖 ${t('top_tickers.ai_pending')}`,
+                            tone: 'pending',
+                          })
+                        }
+                        badges.push({
+                          label: t('top_tickers.recent_days', { days: d.last_event_days_ago }),
+                          tone: 'neutral',
+                          title: d.angle_label,
+                        })
+                        const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
+                        return (
+                          <TickerRow
+                            key={`${d.ticker_symbol}-${d.umbrella_theme_id}-${d.candidate_id}`}
+                            href={`/tickers/${d.ticker_symbol}`}
+                            rank={i + 1}
+                            symbol={d.ticker_symbol}
+                            subtitle={d.angle_label}
+                            rightText={confPct !== null ? String(confPct) : undefined}
+                            rightSmall={confPct !== null ? '%' : undefined}
+                            badges={badges}
+                          />
+                        )
+                      })}
+                    </div>
+                  </section>
                 ))
               )}
             </>

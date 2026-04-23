@@ -295,12 +295,16 @@
   },
   "top_tickers": {
     "title": "头部股票",
-    "thematic_subtitle": "Long/Short · 按 ticker_maturity_score 排序",
-    "potential_subtitle": "已审核长周期新角度 · 按 confidence 排序",
+    "thematic_title": "题材股",
+    "thematic_subtitle": "成熟 ticker × 当前主线",
+    "potential_title": "长周期潜力方向",
+    "potential_subtitle": "新涌现 ticker · 强主线新角度",
     "event_driven_hot": "事件驱动 · 热",
     "structural_early": "结构性 · 早期",
     "show_all_thematic": "查看全部 {n} 条 →",
-    "show_all_potential": "查看全部 {n} 条 →"
+    "show_all_potential": "查看全部 {n} 条 →",
+    "ai_pending": "AI 待审",
+    "recent_days": "{days}天"
   },
   "event_stream": {
     "title": "事件流",

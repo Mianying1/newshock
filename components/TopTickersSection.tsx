@@ -3,7 +3,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { useI18n } from '@/lib/i18n-context'
-import type { LongShortTickerRow, NewAngleCandidateRow, LongShortMode } from '@/lib/ticker-scoring'
+import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
+import type { LongShortTickerRow, AngleDirectionRow, LongShortMode } from '@/lib/ticker-scoring'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -14,112 +15,15 @@ interface LongShortResponse {
 }
 
 interface AnglesResponse {
-  candidates: NewAngleCandidateRow[]
+  directions: AngleDirectionRow[]
   total: number
 }
 
-const SENTIMENT_DOT: Record<string, { color: string; glyph: string }> = {
-  bullish: { color: '#10b981', glyph: '●' },
-  mixed: { color: '#a1a1aa', glyph: '●' },
-  bearish: { color: '#f43f5e', glyph: '●' },
-  neutral: { color: '#d4d4d8', glyph: '○' },
-}
-
-const TICKER_TYPE_COLOR: Record<string, string> = {
-  core_hold: '#2563eb',
-  short_catalyst: '#d97706',
-  watch: '#71717a',
-  golden_leap: '#059669',
-}
-
-function TickerRankRow({ row, rank }: { row: LongShortTickerRow; rank: number }) {
-  const { t } = useI18n()
-  const sent = SENTIMENT_DOT[row.dominant_sentiment ?? 'neutral'] ?? SENTIMENT_DOT.neutral
-  const typeColor = row.ticker_type ? TICKER_TYPE_COLOR[row.ticker_type] ?? '#71717a' : null
-  const typeLabel = row.ticker_type ? t(`ticker_type.${row.ticker_type}`) : null
-
-  return (
-    <Link href={`/tickers/${row.symbol}`} className="rank-row">
-      <div className="n">{rank}</div>
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <div className="sym" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>{row.symbol}</span>
-          <span style={{ color: sent.color, fontSize: 11, lineHeight: 1 }} title={row.dominant_sentiment ?? 'neutral'}>
-            {sent.glyph}
-          </span>
-          {typeLabel && (
-            <span
-              style={{
-                fontSize: 9,
-                padding: '1px 5px',
-                borderRadius: 3,
-                border: `1px solid ${typeColor}33`,
-                color: typeColor ?? undefined,
-                background: `${typeColor}14`,
-                fontWeight: 500,
-                textTransform: 'uppercase',
-                letterSpacing: 0.3,
-              }}
-            >
-              {typeLabel}
-            </span>
-          )}
-        </div>
-        <div className="nm" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {row.theme_name}
-        </div>
-      </div>
-      <div className="sc">
-        {row.ticker_maturity_score?.toFixed(1) ?? '-'}
-        <small>/10</small>
-      </div>
-      <div className="more">›</div>
-    </Link>
-  )
-}
-
-function AngleRankRow({ row, rank }: { row: NewAngleCandidateRow; rank: number }) {
-  const { t } = useI18n()
-  const isUnreviewed = row.reviewed_at === null
-  const confPct = row.confidence !== null ? Math.round(row.confidence * 100) : null
-
-  return (
-    <Link href="/tickers" className="rank-row">
-      <div className="n">{rank}</div>
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <div className="sym" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {row.angle_label}
-          </span>
-          {isUnreviewed && (
-            <span
-              style={{
-                fontSize: 9,
-                padding: '1px 5px',
-                borderRadius: 3,
-                border: '1px solid #c4b5fd',
-                color: '#6d28d9',
-                background: '#f5f3ff',
-                fontWeight: 500,
-              }}
-            >
-              🤖 {t('new_angle.ai_flag')}
-            </span>
-          )}
-        </div>
-        <div className="nm" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {row.umbrella_theme_name}
-        </div>
-      </div>
-      {confPct !== null && (
-        <div className="sc">
-          {confPct}
-          <small>%</small>
-        </div>
-      )}
-      <div className="more">›</div>
-    </Link>
-  )
+function tickerTypeTone(t: string | null): TickerRowBadge['tone'] {
+  if (t === 'core_hold') return 'long'
+  if (t === 'short_catalyst') return 'short'
+  if (t === 'golden_leap') return 'long'
+  return 'watch'
 }
 
 export function TopTickersSection() {
@@ -137,7 +41,7 @@ export function TopTickersSection() {
 
   const tickerTop = tickers?.tickers.slice(0, 5) ?? []
   const tickerTotal = tickers?.total ?? 0
-  const angleTop = angles?.candidates.slice(0, 5) ?? []
+  const angleTop = angles?.directions?.slice(0, 5) ?? []
   const angleTotal = angles?.total ?? 0
 
   return (
@@ -152,7 +56,7 @@ export function TopTickersSection() {
         <div className="rank-card">
           <div className="rank-head">
             <div>
-              <div className="rank-title">{t('tickers_ranked.thematic_leaders')}</div>
+              <div className="rank-title">{t('top_tickers.thematic_title')}</div>
               <div className="rank-sub">{t('top_tickers.thematic_subtitle')}</div>
             </div>
             <div className="rank-tabs">
@@ -182,9 +86,29 @@ export function TopTickersSection() {
                   : t('tickers_ranked.no_short_tickers')}
               </p>
             ) : (
-              tickerTop.map((tk, i) => (
-                <TickerRankRow key={`${tk.symbol}-${tk.theme_id}`} row={tk} rank={i + 1} />
-              ))
+              tickerTop.map((tk, i) => {
+                const badges: TickerRowBadge[] = []
+                if (tk.ticker_type) {
+                  badges.push({
+                    label: t(`ticker_type.${tk.ticker_type}`),
+                    tone: tickerTypeTone(tk.ticker_type),
+                  })
+                }
+                return (
+                  <TickerRow
+                    key={tk.symbol}
+                    compact
+                    href={`/tickers/${tk.symbol}`}
+                    rank={i + 1}
+                    symbol={tk.symbol}
+                    subtitle={tk.theme_name}
+                    rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
+                    rightSmall="/10"
+                    sentiment={tk.dominant_sentiment as never}
+                    badges={badges}
+                  />
+                )
+              })
             )}
           </div>
           {tickerTotal > 5 && (
@@ -194,11 +118,11 @@ export function TopTickersSection() {
           )}
         </div>
 
-        {/* New angle candidates card */}
+        {/* Long-term potential directions card */}
         <div className="rank-card">
           <div className="rank-head">
             <div>
-              <div className="rank-title">{t('tickers_ranked.potential_leaders')}</div>
+              <div className="rank-title">{t('top_tickers.potential_title')}</div>
               <div className="rank-sub">{t('top_tickers.potential_subtitle')}</div>
             </div>
           </div>
@@ -212,9 +136,31 @@ export function TopTickersSection() {
                 {t('tickers_ranked.no_angles')}
               </p>
             ) : (
-              angleTop.map((a, i) => (
-                <AngleRankRow key={a.id} row={a} rank={i + 1} />
-              ))
+              angleTop.map((d, i) => {
+                const badges: TickerRowBadge[] = []
+                if (d.is_ai_pending) {
+                  badges.push({ label: `🤖 ${t('top_tickers.ai_pending')}`, tone: 'pending' })
+                }
+                badges.push({
+                  label: t('top_tickers.recent_days', { days: d.last_event_days_ago }),
+                  tone: 'neutral',
+                  title: d.angle_label,
+                })
+                const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
+                return (
+                  <TickerRow
+                    key={`${d.ticker_symbol}-${d.umbrella_theme_id}`}
+                    compact
+                    href={`/tickers/${d.ticker_symbol}`}
+                    rank={i + 1}
+                    symbol={d.ticker_symbol}
+                    subtitle={d.umbrella_name}
+                    rightText={confPct !== null ? String(confPct) : undefined}
+                    rightSmall={confPct !== null ? '%' : undefined}
+                    badges={badges}
+                  />
+                )
+              })
             )}
           </div>
           {angleTotal > 5 && (
