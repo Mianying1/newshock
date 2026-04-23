@@ -164,16 +164,23 @@
     "title": "Hot Tickers",
     "subtitle": "Tickers with live thematic exposure (T1/T2, active within 30d)",
     "tab_thematic": "Thematic",
-    "tab_potential": "Potential",
+    "tab_potential": "Long-Horizon",
+    "subtab_long": "Long",
+    "subtab_short": "Short",
     "thematic_leaders": "Thematic Leaders",
     "potential_leaders": "Long-Horizon Potential",
-    "desc_thematic": "Active + cooling themes only, T1/T2, last 30 days. Recent catalyst flow boosts score.",
-    "desc_potential": "Long-term structural archetypes (≥1y cycle), theme still in early stage, T1/T2.",
+    "desc_thematic_long": "Sorted by ticker_maturity_score · core_hold / watch · long-horizon exposure (extended / dependent)",
+    "desc_thematic_short": "Sorted by ticker_maturity_score · short_catalyst · bounded catalysts only",
+    "desc_potential": "Approved long-horizon new angles · sorted by confidence · 🤖 marks pending human review",
     "score_thematic": "Thematic",
     "score_potential": "Potential",
     "themes_count": "{n} themes",
     "events_7d": "{n} events 7d",
+    "theme_strength": "theme strength {n}",
     "no_data": "No ranked tickers yet",
+    "no_long_tickers": "No qualifying long candidates",
+    "no_short_tickers": "No qualifying short candidates",
+    "no_angles": "No approved long-horizon angles yet",
     "no_potential_title": "Few early-stage structural themes this cycle",
     "no_potential_hint": "Recently approved archetypes worth watching:",
     "no_potential_next": "Next weekly scan: {date}",
@@ -193,6 +200,15 @@
     "sector_fintech": "💰 Fintech",
     "sector_semiconductors": "🔌 Semiconductors",
     "sector_other": "📌 Other"
+  },
+  "ticker_type": {
+    "core_hold": "Core hold",
+    "short_catalyst": "Short catalyst",
+    "watch": "Watch",
+    "golden_leap": "Golden leap"
+  },
+  "new_angle": {
+    "ai_flag": "AI pending"
   },
   "ticker_detail": {
     "back": "← Back",

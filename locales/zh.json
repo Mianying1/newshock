@@ -164,16 +164,23 @@
     "title": "热点股票",
     "subtitle": "当下有活跃主题暴露的股票 (T1/T2, 近 30 天活跃)",
     "tab_thematic": "题材股",
-    "tab_potential": "潜力股",
+    "tab_potential": "长周期潜力股",
+    "subtab_long": "Long",
+    "subtab_short": "Short",
     "thematic_leaders": "题材股",
     "potential_leaders": "长周期潜力股",
-    "desc_thematic": "只算 active/cooling 主题, T1/T2, 近 30 天活跃. 近 7 天催化剂加成.",
-    "desc_potential": "长周期结构性主题 (archetype ≥ 1 年), 主题仍在早期, T1/T2.",
+    "desc_thematic_long": "综合 ticker_maturity_score 排序 · core_hold / watch · 长周期受益 (extended / dependent)",
+    "desc_thematic_short": "综合 ticker_maturity_score 排序 · short_catalyst · 有边界催化剂 (bounded)",
+    "desc_potential": "已审核的长周期新角度 · 按 confidence 排序 · 🤖 标记待人工复核",
     "score_thematic": "题材",
     "score_potential": "潜力",
     "themes_count": "{n} 个主题",
     "events_7d": "近 7 天 {n} 事件",
+    "theme_strength": "主题强度 {n}",
     "no_data": "暂无排行数据",
+    "no_long_tickers": "暂无符合条件的 Long 标的",
+    "no_short_tickers": "暂无符合条件的 Short 标的",
+    "no_angles": "暂无已审核的长周期新角度",
     "no_potential_title": "本阶段早期结构性主题较少",
     "no_potential_hint": "最近新 approve 的 archetype (可作为观察线索):",
     "no_potential_next": "下次 weekly scan: {date}",
@@ -193,6 +200,15 @@
     "sector_fintech": "💰 金融科技",
     "sector_semiconductors": "🔌 半导体",
     "sector_other": "📌 其他"
+  },
+  "ticker_type": {
+    "core_hold": "核心持仓",
+    "short_catalyst": "做空催化",
+    "watch": "观察",
+    "golden_leap": "低位金股"
+  },
+  "new_angle": {
+    "ai_flag": "AI 待审"
   },
   "ticker_detail": {
     "back": "← 返回",

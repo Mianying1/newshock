@@ -462,3 +462,194 @@ export async function getPotentialTickers(
   results.sort((a, b) => b.potential_score - a.potential_score)
   return results.slice(0, limit)
 }
+
+// =============================================================================
+// UX-1 · Long/Short per-(theme, ticker) rows
+// =============================================================================
+
+export type LongShortMode = 'long' | 'short'
+
+export interface LongShortTickerRow {
+  symbol: string
+  company_name: string | null
+  sector: string | null
+  logo_url: string | null
+  ticker_maturity_score: number | null
+  ticker_type: string | null                // core_hold / short_catalyst / watch
+  theme_id: string
+  theme_name: string
+  theme_strength_score: number | null
+  dominant_sentiment: string | null         // bullish / mixed / bearish / neutral
+  sentiment_score: number | null
+  duration_type: string | null              // extended / dependent / bounded
+  category: string | null
+}
+
+export async function getLongShortTickers(
+  mode: LongShortMode,
+  limit = 200
+): Promise<LongShortTickerRow[]> {
+  const wantedTickerTypes = mode === 'long' ? ['core_hold', 'watch'] : ['short_catalyst']
+  const wantedDurationTypes = mode === 'long' ? ['extended', 'dependent'] : ['bounded']
+
+  const { data, error } = await supabaseAdmin
+    .from('theme_recommendations')
+    .select(`
+      ticker_symbol,
+      ticker_maturity_score,
+      ticker_type,
+      theme_id,
+      themes!inner (
+        id,
+        name,
+        status,
+        theme_strength_score,
+        dominant_sentiment,
+        sentiment_score,
+        archetype_id,
+        theme_archetypes!inner (
+          id,
+          category,
+          duration_type
+        )
+      ),
+      tickers!inner (
+        symbol,
+        company_name,
+        sector,
+        logo_url
+      )
+    `)
+    .in('ticker_type', wantedTickerTypes)
+    .not('ticker_maturity_score', 'is', null)
+    .order('ticker_maturity_score', { ascending: false })
+    .limit(500)
+
+  if (error) throw new Error(`getLongShortTickers: ${error.message}`)
+
+  type Row = {
+    ticker_symbol: string
+    ticker_maturity_score: number | null
+    ticker_type: string | null
+    theme_id: string
+    themes: {
+      id: string
+      name: string
+      status: string
+      theme_strength_score: number | null
+      dominant_sentiment: string | null
+      sentiment_score: number | null
+      theme_archetypes: {
+        id: string
+        category: string | null
+        duration_type: string | null
+      } | null
+    } | null
+    tickers: {
+      symbol: string
+      company_name: string | null
+      sector: string | null
+      logo_url: string | null
+    } | null
+  }
+
+  const rows = (data ?? []) as unknown as Row[]
+  const filtered = rows
+    .filter((r) => r.themes?.status === 'active')
+    .filter((r) => {
+      const dt = r.themes?.theme_archetypes?.duration_type ?? null
+      return dt && wantedDurationTypes.includes(dt)
+    })
+    .map((r): LongShortTickerRow => ({
+      symbol: r.ticker_symbol,
+      company_name: r.tickers?.company_name ?? null,
+      sector: r.tickers?.sector ?? null,
+      logo_url: r.tickers?.logo_url ?? null,
+      ticker_maturity_score: r.ticker_maturity_score,
+      ticker_type: r.ticker_type,
+      theme_id: r.theme_id,
+      theme_name: r.themes?.name ?? '',
+      theme_strength_score: r.themes?.theme_strength_score ?? null,
+      dominant_sentiment: r.themes?.dominant_sentiment ?? null,
+      sentiment_score: r.themes?.sentiment_score ?? null,
+      duration_type: r.themes?.theme_archetypes?.duration_type ?? null,
+      category: r.themes?.theme_archetypes?.category ?? null,
+    }))
+
+  return filtered.slice(0, limit)
+}
+
+// =============================================================================
+// UX-1 · New angle candidates · approved
+// =============================================================================
+
+export interface NewAngleCandidateRow {
+  id: string
+  angle_label: string
+  angle_description: string | null
+  proposed_tickers: string[]
+  gap_reasoning: string | null
+  confidence: number | null
+  status: string
+  reviewed_at: string | null
+  created_at: string
+  umbrella_theme_id: string
+  umbrella_theme_name: string
+  umbrella_category: string | null
+}
+
+export async function getApprovedNewAngles(limit = 100): Promise<NewAngleCandidateRow[]> {
+  const { data, error } = await supabaseAdmin
+    .from('new_angle_candidates')
+    .select(`
+      id,
+      angle_label,
+      angle_description,
+      proposed_tickers,
+      gap_reasoning,
+      confidence,
+      status,
+      reviewed_at,
+      created_at,
+      umbrella_theme_id,
+      themes!inner (
+        name,
+        theme_archetypes (category)
+      )
+    `)
+    .eq('status', 'approved')
+    .order('confidence', { ascending: false })
+    .limit(limit)
+
+  if (error) throw new Error(`getApprovedNewAngles: ${error.message}`)
+
+  type Row = {
+    id: string
+    angle_label: string
+    angle_description: string | null
+    proposed_tickers: string[] | null
+    gap_reasoning: string | null
+    confidence: number | null
+    status: string
+    reviewed_at: string | null
+    created_at: string
+    umbrella_theme_id: string
+    themes: { name: string; theme_archetypes: { category: string | null } | null } | null
+  }
+
+  return ((data ?? []) as unknown as Row[]).map((r) => ({
+    id: r.id,
+    angle_label: r.angle_label,
+    angle_description: r.angle_description,
+    proposed_tickers: r.proposed_tickers ?? [],
+    gap_reasoning: r.gap_reasoning,
+    confidence: r.confidence,
+    status: r.status,
+    reviewed_at: r.reviewed_at,
+    created_at: r.created_at,
+    umbrella_theme_id: r.umbrella_theme_id,
+    umbrella_theme_name: r.themes?.name ?? '',
+    umbrella_category: r.themes?.theme_archetypes?.category ?? null,
+  }))
+}
+
