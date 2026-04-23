@@ -1,4 +1,6 @@
 import { config } from 'dotenv'
+import { pathToFileURL } from 'node:url'
+
 config({ path: '.env.local' })
 
 // Thresholds per Phase 3 spec
@@ -74,7 +76,17 @@ function classify(ratio: number | null, snapshot: string | null): { stage: Stage
   return { stage: 'early', reason: `ratio=${ratio.toFixed(2)} · snapshot=${snapshot ?? 'null'}` }
 }
 
-async function main() {
+export interface ComputeCycleStageStats {
+  themes_updated: number
+  null_stage: number
+  distribution: Record<string, number>
+  alerts_inserted: number
+  alerts_deduped: number
+  alerts_cold_start_suppressed: number
+  alert_severity_distribution: Record<string, number>
+}
+
+export async function runComputeCycleStage(): Promise<ComputeCycleStageStats> {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const [themes, archetypes, events] = await Promise.all([
@@ -146,7 +158,7 @@ async function main() {
         .eq('to_stage', stage)
         .gte('created_at', sinceIso)
         .limit(1)
-      if (dedupErr) { console.error(`DEDUP ${theme.id}: ${dedupErr.message}`); process.exit(1) }
+      if (dedupErr) throw new Error(`DEDUP ${theme.id}: ${dedupErr.message}`)
 
       if (recent && recent.length > 0) {
         alertsDeduped++
@@ -162,7 +174,7 @@ async function main() {
           days_since_first_event: days,
           severity,
         })
-        if (alertErr) { console.error(`ALERT ${theme.id}: ${alertErr.message}`); process.exit(1) }
+        if (alertErr) throw new Error(`ALERT ${theme.id}: ${alertErr.message}`)
         alertsInserted++
         alertDistribution[severity]++
         console.log(`  alert [${severity}] ${theme.name} · ${oldStage} → ${stage} · ratio=${ratio?.toFixed(2) ?? '-'}`)
@@ -178,10 +190,7 @@ async function main() {
         previous_cycle_stage_at: theme.cycle_stage_computed_at,
       })
       .eq('id', theme.id)
-    if (error) {
-      console.error(`UPDATE ${theme.id}: ${error.message}`)
-      process.exit(1)
-    }
+    if (error) throw new Error(`UPDATE ${theme.id}: ${error.message}`)
     updated++
   }
 
@@ -204,6 +213,19 @@ async function main() {
       console.log(`  "${s.name}" · days=${s.days} · typical_max=${s.typical_max} · ratio=${s.ratio?.toFixed(2) ?? 'N/A'} · snapshot=${s.snapshot ?? 'null'} · ${s.reason}`)
     }
   }
+
+  return {
+    themes_updated: updated,
+    null_stage: nullCnt,
+    distribution,
+    alerts_inserted: alertsInserted,
+    alerts_deduped: alertsDeduped,
+    alerts_cold_start_suppressed: alertsColdStart,
+    alert_severity_distribution: alertDistribution,
+  }
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (isCli) {
+  runComputeCycleStage().catch((e) => { console.error(e); process.exit(1) })
+}

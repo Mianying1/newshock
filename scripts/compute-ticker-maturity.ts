@@ -1,4 +1,7 @@
 import { config } from 'dotenv'
+import { pathToFileURL } from 'node:url'
+
+// Idempotent: silently no-ops in Next runtime where .env is already loaded
 config({ path: '.env.local' })
 
 const W_ARCHETYPE = 0.30
@@ -54,7 +57,14 @@ function buildNormalizer(values: number[]): (v: number) => number {
   }
 }
 
-async function main() {
+export interface ComputeTickerMaturityStats {
+  scored_count: number
+  updated_rows: number
+  top_5: Array<{ ticker: string; score: number }>
+  bottom_5: Array<{ ticker: string; score: number }>
+}
+
+export async function runComputeTickerMaturity(): Promise<ComputeTickerMaturityStats> {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const [recs, themes, events] = await Promise.all([
@@ -148,17 +158,16 @@ async function main() {
       .from('theme_recommendations')
       .update({ ticker_maturity_score: s.score }, { count: 'exact' })
       .eq('ticker_symbol', s.ticker)
-    if (error) {
-      console.error(`UPDATE ${s.ticker}: ${error.message}`)
-      process.exit(1)
-    }
+    if (error) throw new Error(`UPDATE ${s.ticker}: ${error.message}`)
     updated += count ?? 0
   }
 
   console.log(`\ndone · ${scored.length} tickers · ${updated} rows updated`)
 
-  // Quick sanity samples
   scored.sort((a, b) => b.score - a.score)
+  const top5 = scored.slice(0, 5).map((s) => ({ ticker: s.ticker, score: s.score }))
+  const bottom5 = scored.slice(-5).reverse().map((s) => ({ ticker: s.ticker, score: s.score }))
+
   console.log('\ntop 5:')
   for (const s of scored.slice(0, 5)) {
     console.log(`  ${s.ticker} · score=${s.score.toFixed(2)} · A=${s.archetype_count}/${s.n_archetype.toFixed(1)} T=${s.theme_count_active}/${s.n_theme_active.toFixed(1)} E=${s.event_90d}/${s.n_event_90d.toFixed(1)} S=${s.avg_strength.toFixed(1)}/${s.n_strength.toFixed(1)}`)
@@ -167,6 +176,11 @@ async function main() {
   for (const s of scored.slice(-5).reverse()) {
     console.log(`  ${s.ticker} · score=${s.score.toFixed(2)} · A=${s.archetype_count}/${s.n_archetype.toFixed(1)} T=${s.theme_count_active}/${s.n_theme_active.toFixed(1)} E=${s.event_90d}/${s.n_event_90d.toFixed(1)} S=${s.avg_strength.toFixed(1)}/${s.n_strength.toFixed(1)}`)
   }
+
+  return { scored_count: scored.length, updated_rows: updated, top_5: top5, bottom_5: bottom5 }
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (isCli) {
+  runComputeTickerMaturity().catch((e) => { console.error(e); process.exit(1) })
+}

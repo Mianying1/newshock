@@ -1,4 +1,6 @@
 import { config } from 'dotenv'
+import { pathToFileURL } from 'node:url'
+
 config({ path: '.env.local' })
 
 type Rec = {
@@ -63,7 +65,12 @@ function classify(
   return null
 }
 
-async function main() {
+export interface ComputeTickerTypeStats {
+  updated_rows: number
+  distribution: Record<string, number>
+}
+
+export async function runComputeTickerType(): Promise<ComputeTickerTypeStats> {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const [recs, themes, archetypes] = await Promise.all([
@@ -93,10 +100,7 @@ async function main() {
       .from('theme_recommendations')
       .update({ ticker_type: tt })
       .eq('id', r.id)
-    if (error) {
-      console.error(`UPDATE ${r.id}: ${error.message}`)
-      process.exit(1)
-    }
+    if (error) throw new Error(`UPDATE ${r.id}: ${error.message}`)
     updated++
   }
 
@@ -106,6 +110,11 @@ async function main() {
     const pct = ((dist[k] / recs.length) * 100).toFixed(0)
     console.log(`  ${k.padEnd(15)}: ${String(dist[k]).padStart(3)} (${pct}%)`)
   }
+
+  return { updated_rows: updated, distribution: dist }
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (isCli) {
+  runComputeTickerType().catch((e) => { console.error(e); process.exit(1) })
+}

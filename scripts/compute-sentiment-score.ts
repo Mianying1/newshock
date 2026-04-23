@@ -1,4 +1,6 @@
 import { config } from 'dotenv'
+import { pathToFileURL } from 'node:url'
+
 config({ path: '.env.local' })
 
 const WINDOW_DAYS = 30
@@ -45,7 +47,12 @@ function loiWeight(loi: string | null): number {
   return 1 // null fallback
 }
 
-async function main() {
+export interface ComputeSentimentScoreStats {
+  themes_updated: number
+  distribution: Record<string, number>
+}
+
+export async function runComputeSentimentScore(): Promise<ComputeSentimentScoreStats> {
   const { supabaseAdmin } = await import('../lib/supabase-admin')
 
   const since = new Date(Date.now() - WINDOW_DAYS * 86400 * 1000).toISOString()
@@ -146,7 +153,7 @@ async function main() {
         recent_signal_shift,
       })
       .eq('id', theme.id)
-    if (error) { console.error(`update ${theme.id}: ${error.message}`); process.exit(1) }
+    if (error) throw new Error(`update ${theme.id}: ${error.message}`)
     updated++
 
     if (Math.abs(sentiment) > 3 || dominant === 'bearish' || shiftDirection !== 'none' && shiftDirection !== 'balanced') {
@@ -160,6 +167,11 @@ async function main() {
     const pct = ((dist[k] / updated) * 100).toFixed(0)
     console.log(`  ${k.padEnd(10)} ${String(dist[k]).padStart(3)} (${pct}%)`)
   }
+
+  return { themes_updated: updated, distribution: dist }
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (isCli) {
+  runComputeSentimentScore().catch((e) => { console.error(e); process.exit(1) })
+}

@@ -63,6 +63,22 @@
     {
       "path": "/api/cron/counter-evidence",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/compute-ticker-maturity",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/compute-cycle-stage",
+      "schedule": "5 7 * * *"
+    },
+    {
+      "path": "/api/cron/compute-ticker-type",
+      "schedule": "10 7 * * *"
+    },
+    {
+      "path": "/api/cron/compute-sentiment-score",
+      "schedule": "15 7 * * *"
     }
   ]
 }
