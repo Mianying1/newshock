@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server'
 import { computeConvictionForActiveThemes } from '@/lib/conviction-score'
 
-// ~50 themes × ~10s each, leave headroom for retries
-export const maxDuration = 800
+// Pro plan cap = 300s. ~50 themes × ~5-10s may not finish in one run —
+// rerun or split into slots if batch grows.
+export const maxDuration = 300
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')

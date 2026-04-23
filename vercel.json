@@ -55,6 +55,10 @@
     {
       "path": "/api/cron/refresh-deep-recommendations",
       "schedule": "15 19 * * 1"
+    },
+    {
+      "path": "/api/cron/conviction",
+      "schedule": "0 8 * * 1"
     }
   ]
 }
