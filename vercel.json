@@ -59,6 +59,10 @@
     {
       "path": "/api/cron/conviction",
       "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/cron/counter-evidence",
+      "schedule": "0 9 * * *"
     }
   ]
 }

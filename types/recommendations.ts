@@ -29,6 +29,8 @@ export interface ThemeRecommendation {
   added_at: string
 }
 
+export type EventDirection = 'supports' | 'contradicts' | 'neutral'
+
 export interface CatalystEvent {
   id: string
   headline: string
@@ -36,6 +38,16 @@ export interface CatalystEvent {
   source_url: string
   published_at: string
   days_ago: number
+  supports_or_contradicts: EventDirection | null
+  counter_evidence_reasoning: string | null
+  counter_evidence_reasoning_zh: string | null
+}
+
+export interface CounterEvidenceSummary {
+  supports_count: number
+  contradicts_count: number
+  neutral_count: number
+  last_updated: string
 }
 
 export interface PlaybookHistoricalCase {
@@ -144,6 +156,7 @@ export interface ThemeRadarItem {
   conviction_reasoning: string | null
   conviction_reasoning_zh: string | null
   conviction_generated_at: string | null
+  counter_evidence_summary: CounterEvidenceSummary | null
 }
 
 export interface ThemeRadarSummary {

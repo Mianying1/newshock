@@ -138,7 +138,18 @@
     "exit_signal_distance_hint": "距离主题降温/退出还有多远?",
     "ai_subjective_disclaimer": "AI 基于模式匹配给出的主观评估, 非预测, 不构成投资建议.",
     "conviction_last_computed": "生成于 {label}",
-    "conviction_not_yet": "暂未评分"
+    "conviction_not_yet": "暂未评分",
+    "bull_vs_bear": "证据平衡",
+    "supports": "支持",
+    "contradicts": "反对",
+    "neutral": "中性",
+    "bull_bear_ratio": "多空比",
+    "strong_bull": "强多头叙事",
+    "balanced": "平衡叙事",
+    "bear_warning": "反向证据占上风 · 重新评估主题",
+    "counter_reasoning": "判定原因",
+    "collapse": "收起",
+    "tab_all": "全部"
   },
   "hot_tickers": {
     "subtitle": "被多个主题同时列出的股票",

@@ -15,6 +15,7 @@ import type {
   ThemeChildRef,
   ThemeParentRef,
   ConvictionBreakdown,
+  CounterEvidenceSummary,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -55,6 +56,7 @@ interface ThemeRow {
   conviction_reasoning: string | null
   conviction_reasoning_zh: string | null
   conviction_generated_at: string | null
+  counter_evidence_summary: unknown
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -98,6 +100,9 @@ interface EventRow {
   source_name: string | null
   source_url: string | null
   event_date: string | null
+  supports_or_contradicts: string | null
+  counter_evidence_reasoning: string | null
+  counter_evidence_reasoning_zh: string | null
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
@@ -179,13 +184,14 @@ async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
 async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent[]> {
   const { data, error } = await supabaseAdmin
     .from('events')
-    .select('id, headline, source_name, source_url, event_date')
+    .select('id, headline, source_name, source_url, event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh')
     .eq('trigger_theme_id', themeId)
     .order('event_date', { ascending: false })
     .limit(limit)
 
   if (error) throw new Error(`catalysts fetch failed: ${error.message}`)
 
+  const validDirections = new Set(['supports', 'contradicts', 'neutral'])
   return (data ?? []).map((e: EventRow) => ({
     id: e.id,
     headline: e.headline,
@@ -193,6 +199,11 @@ async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent
     source_url: e.source_url ?? '',
     published_at: e.event_date ?? '',
     days_ago: e.event_date ? calculateDaysAgo(e.event_date) : 0,
+    supports_or_contradicts: validDirections.has(e.supports_or_contradicts ?? '')
+      ? (e.supports_or_contradicts as 'supports' | 'contradicts' | 'neutral')
+      : null,
+    counter_evidence_reasoning: e.counter_evidence_reasoning,
+    counter_evidence_reasoning_zh: e.counter_evidence_reasoning_zh,
   }))
 }
 
@@ -260,7 +271,19 @@ function buildItem(
     conviction_reasoning: row.conviction_reasoning ?? null,
     conviction_reasoning_zh: row.conviction_reasoning_zh ?? null,
     conviction_generated_at: row.conviction_generated_at ?? null,
+    counter_evidence_summary: parseCounterSummary(row.counter_evidence_summary),
   }
+}
+
+function parseCounterSummary(raw: unknown): CounterEvidenceSummary | null {
+  if (!raw || typeof raw !== 'object') return null
+  const r = raw as Record<string, unknown>
+  const s = typeof r.supports_count === 'number' ? r.supports_count : null
+  const c = typeof r.contradicts_count === 'number' ? r.contradicts_count : null
+  const n = typeof r.neutral_count === 'number' ? r.neutral_count : null
+  const lu = typeof r.last_updated === 'string' ? r.last_updated : null
+  if (s === null || c === null || n === null || lu === null) return null
+  return { supports_count: s, contradicts_count: c, neutral_count: n, last_updated: lu }
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -297,7 +320,7 @@ export async function buildThemeRadar(options: {
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
-      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, ' +
+      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
@@ -400,7 +423,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'first_seen_at, last_active_at, first_event_at, days_hot, event_count, ' +
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
-      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, ' +
+      'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .eq('id', themeId)

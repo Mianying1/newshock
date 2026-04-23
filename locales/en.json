@@ -138,7 +138,18 @@
     "exit_signal_distance_hint": "How far from theme cooling / exit?",
     "ai_subjective_disclaimer": "AI-generated assessment based on pattern matching. Not a prediction. Not investment advice.",
     "conviction_last_computed": "Last computed {label}",
-    "conviction_not_yet": "Not yet scored"
+    "conviction_not_yet": "Not yet scored",
+    "bull_vs_bear": "Evidence balance",
+    "supports": "Supports",
+    "contradicts": "Contradicts",
+    "neutral": "Neutral",
+    "bull_bear_ratio": "Bull / Bear ratio",
+    "strong_bull": "Strong bull narrative",
+    "balanced": "Balanced",
+    "bear_warning": "Counter-evidence is dominant — reassess the theme",
+    "counter_reasoning": "Reasoning",
+    "collapse": "Collapse",
+    "tab_all": "All"
   },
   "hot_tickers": {
     "subtitle": "Tickers appearing across multiple themes",

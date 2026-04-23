@@ -1,5 +1,6 @@
 import { anthropic, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
+import { classifyEventDirection, refreshThemeCounterSummary } from './counter-evidence'
 
 interface CandidateEvent {
   id: string
@@ -147,6 +148,20 @@ export async function linkEventsToTheme(themeId: string, lookbackDays = LOOKBACK
       .from('themes')
       .update({ event_count: count ?? updatedCount })
       .eq('id', themeId)
+
+    const classifiedIds = (updated ?? []).map((r: { id: string }) => r.id)
+    for (const eid of classifiedIds) {
+      try {
+        await classifyEventDirection(eid)
+      } catch (err) {
+        console.warn(`[counter-evidence] classify failed for event ${eid}:`, err instanceof Error ? err.message : err)
+      }
+    }
+    try {
+      await refreshThemeCounterSummary(themeId)
+    } catch (err) {
+      console.warn(`[counter-evidence] theme summary refresh failed for ${themeId}:`, err instanceof Error ? err.message : err)
+    }
   }
   return { candidates_found: candidates.length, confirmed: updatedCount, cost_usd: costUsd }
 }

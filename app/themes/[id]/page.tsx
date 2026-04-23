@@ -204,6 +204,80 @@ export default function ThemeDetailPage() {
               )
             })()}
 
+            {/* Bull vs Bear summary */}
+            {theme.counter_evidence_summary && (() => {
+              const s = theme.counter_evidence_summary
+              const total = s.supports_count + s.contradicts_count + s.neutral_count
+              if (total === 0) return null
+              const maxCount = Math.max(s.supports_count, s.contradicts_count, s.neutral_count, 1)
+              const ratio =
+                s.contradicts_count === 0
+                  ? s.supports_count > 0 ? `${s.supports_count}:0` : '—'
+                  : (s.supports_count / s.contradicts_count).toFixed(2) + ':1'
+              const bearWarn = s.contradicts_count > s.supports_count
+              const strongBull = s.supports_count >= s.contradicts_count * 3 && s.supports_count > 0
+              const label = bearWarn
+                ? null
+                : strongBull
+                  ? t('theme_detail.strong_bull')
+                  : t('theme_detail.balanced')
+              const bar = (count: number, colorBg: string) => (
+                <div className="h-1.5 bg-zinc-100 rounded-full">
+                  <div
+                    className={`h-full ${colorBg} rounded-full transition-all`}
+                    style={{ width: `${(count / maxCount) * 100}%` }}
+                  />
+                </div>
+              )
+              return (
+                <div className="border border-zinc-200 rounded-lg p-4 bg-white">
+                  {bearWarn && (
+                    <div className="mb-3 px-3 py-2 bg-rose-50 border border-rose-200 rounded text-xs text-rose-800">
+                      ⚠ {t('theme_detail.bear_warning')}
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-zinc-800">
+                      {t('theme_detail.bull_vs_bear')}
+                    </p>
+                    {label && <span className="text-xs text-zinc-500">{label}</span>}
+                  </div>
+                  <div className="space-y-2.5">
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-emerald-700">
+                          ↑ {t('theme_detail.supports')}
+                        </span>
+                        <span className="text-zinc-500 tabular-nums">{s.supports_count}</span>
+                      </div>
+                      {bar(s.supports_count, 'bg-emerald-500')}
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-rose-700">
+                          ↓ {t('theme_detail.contradicts')}
+                        </span>
+                        <span className="text-zinc-500 tabular-nums">{s.contradicts_count}</span>
+                      </div>
+                      {bar(s.contradicts_count, 'bg-rose-500')}
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-zinc-600">
+                          · {t('theme_detail.neutral')}
+                        </span>
+                        <span className="text-zinc-500 tabular-nums">{s.neutral_count}</span>
+                      </div>
+                      {bar(s.neutral_count, 'bg-zinc-400')}
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-2 border-t border-zinc-100 text-xs text-zinc-500">
+                    {t('theme_detail.bull_bear_ratio')}: <span className="tabular-nums text-zinc-700">{ratio}</span>
+                  </div>
+                </div>
+              )
+            })()}
+
             {/* Catalysts */}
             <div>
               <p className="font-semibold text-zinc-800 mb-3">
