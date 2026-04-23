@@ -169,9 +169,9 @@
     "subtab_short": "Short",
     "thematic_leaders": "题材股",
     "potential_leaders": "长周期潜力股",
-    "desc_thematic_long": "综合 ticker_maturity_score 排序 · core_hold / watch · 长周期受益 (extended / dependent)",
-    "desc_thematic_short": "综合 ticker_maturity_score 排序 · short_catalyst · 有边界催化剂 (bounded)",
-    "desc_potential": "已审核的长周期新角度 · 按 confidence 排序 · 🤖 标记待人工复核",
+    "desc_thematic_long": "成熟 ticker × 长周期主线",
+    "desc_thematic_short": "事件催化的短期机会",
+    "desc_potential": "新涌现 ticker · 强主线新角度",
     "score_thematic": "题材",
     "score_potential": "潜力",
     "themes_count": "{n} 个主题",
@@ -203,7 +203,7 @@
   },
   "ticker_type": {
     "core_hold": "核心持仓",
-    "short_catalyst": "做空催化",
+    "short_catalyst": "短期催化",
     "watch": "观察",
     "golden_leap": "低位金股"
   },

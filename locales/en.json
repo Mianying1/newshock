@@ -169,9 +169,9 @@
     "subtab_short": "Short",
     "thematic_leaders": "Thematic Leaders",
     "potential_leaders": "Long-Horizon Potential",
-    "desc_thematic_long": "Sorted by ticker_maturity_score · core_hold / watch · long-horizon exposure (extended / dependent)",
-    "desc_thematic_short": "Sorted by ticker_maturity_score · short_catalyst · bounded catalysts only",
-    "desc_potential": "Approved long-horizon new angles · sorted by confidence · 🤖 marks pending human review",
+    "desc_thematic_long": "Mature tickers on long-term main lines",
+    "desc_thematic_short": "Event-driven short-term opportunities",
+    "desc_potential": "Emerging tickers on strong main lines",
     "score_thematic": "Thematic",
     "score_potential": "Potential",
     "themes_count": "{n} themes",
@@ -203,7 +203,7 @@
   },
   "ticker_type": {
     "core_hold": "Core hold",
-    "short_catalyst": "Short catalyst",
+    "short_catalyst": "Short-term Catalyst",
     "watch": "Watch",
     "golden_leap": "Golden leap"
   },
