@@ -38,14 +38,7 @@ export const NEWS_SOURCES: NewsSource[] = [
     category: 'asia',
     priority_slots: ['asia_eu'],
   },
-  {
-    id: 'reuters_tech',
-    name: 'Reuters Tech',
-    url: 'https://feeds.reuters.com/reuters/technologyNews',
-    category: 'tech',
-    priority_slots: ['eu_us_mid', 'us_close'],
-  },
-  // Step 5: Diversified sector sources (AgWeb 403 SKIPPED, OilPrice 404 SKIPPED)
+  // Step 5: Diversified sector sources (AgWeb 403 SKIPPED, OilPrice 404 SKIPPED, Reuters Tech feed sunset)
   {
     id: 'fiercepharma',
     name: 'FiercePharma',

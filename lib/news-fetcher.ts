@@ -28,8 +28,23 @@ function extractTickers(text: string): string[] {
   return Array.from(found)
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+function extractText(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'string') return v
+  if (Array.isArray(v)) return v.map(extractText).join(' ')
+  if (typeof v === 'object') {
+    const o = v as Record<string, unknown>
+    if (typeof o._ === 'string') return o._
+    return Object.entries(o)
+      .filter(([k]) => k !== '$')
+      .map(([, val]) => extractText(val))
+      .join(' ')
+  }
+  return ''
+}
+
+function stripHtml(html: unknown): string {
+  return extractText(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
 const parser = new Parser({
@@ -53,7 +68,7 @@ export async function fetchFromSource(source: NewsSource): Promise<{ items: Fetc
     }
 
     for (const item of feed.items) {
-      const headline = stripHtml(item.title ?? '').trim()
+      const headline = stripHtml(item.title).trim()
       const url = item.link ?? ''
       if (!headline || !url) continue
 
