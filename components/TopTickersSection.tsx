@@ -80,10 +80,9 @@ export function TopTickersSection() {
               </p>
             ) : (
               tickerTop.map((tk, i) => {
-                const badges: TickerRowBadge[] = []
-                if (tk.category) {
-                  badges.push({ label: t(`categories.${tk.category}`), tone: 'neutral' })
-                }
+                const rightBadge: TickerRowBadge | null = tk.category
+                  ? { label: t(`categories.${tk.category}`) }
+                  : null
                 return (
                   <TickerRow
                     key={tk.symbol}
@@ -95,7 +94,7 @@ export function TopTickersSection() {
                     rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
                     rightSmall="/10"
                     sentiment={tk.dominant_sentiment as never}
-                    badges={badges}
+                    rightBadge={rightBadge}
                   />
                 )
               })
@@ -127,17 +126,17 @@ export function TopTickersSection() {
               </p>
             ) : (
               angleTop.map((d, i) => {
-                const badges: TickerRowBadge[] = []
+                const inlineBadges: TickerRowBadge[] = []
                 if (d.is_ai_pending) {
-                  badges.push({ label: `🤖 ${t('top_tickers.ai_pending')}`, tone: 'pending' })
+                  inlineBadges.push({ label: '🤖' })
                 }
-                if (d.category) {
-                  badges.push({
-                    label: t(`categories.${d.category}`),
-                    tone: 'neutral',
-                    title: d.angle_label,
-                  })
-                }
+                inlineBadges.push({
+                  label: `📰 ${t('top_tickers.recent_days', { days: d.last_event_days_ago })}`,
+                  title: d.angle_label,
+                })
+                const rightBadge: TickerRowBadge | null = d.category
+                  ? { label: t(`categories.${d.category}`), title: d.angle_label }
+                  : null
                 const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
                 return (
                   <TickerRow
@@ -149,7 +148,8 @@ export function TopTickersSection() {
                     logoUrl={d.logo_url}
                     rightText={confPct !== null ? String(confPct) : undefined}
                     rightSmall={confPct !== null ? '%' : undefined}
-                    badges={badges}
+                    inlineBadges={inlineBadges}
+                    rightBadge={rightBadge}
                   />
                 )
               })
