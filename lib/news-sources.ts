@@ -67,4 +67,33 @@ export const NEWS_SOURCES: NewsSource[] = [
     category: 'ev',
     priority_slots: ['eu_us_mid', 'us_close'],
   },
+  // Step 6: US aggregate sources (AP Business RSS returns HTML — SKIPPED)
+  {
+    id: 'cnbc_top',
+    name: 'CNBC Top News',
+    url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147',
+    category: 'general_news',
+    priority_slots: ['asia_eu', 'eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'yahoo_finance',
+    name: 'Yahoo Finance',
+    url: 'https://finance.yahoo.com/news/rssindex',
+    category: 'general_news',
+    priority_slots: ['asia_eu', 'eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'marketwatch_top',
+    name: 'MarketWatch Top Stories',
+    url: 'https://feeds.marketwatch.com/marketwatch/topstories/',
+    category: 'general_news',
+    priority_slots: ['eu_us_mid', 'us_close'],
+  },
+  {
+    id: 'seeking_alpha',
+    name: 'Seeking Alpha Market News',
+    url: 'https://seekingalpha.com/market_currents.xml',
+    category: 'general_news',
+    priority_slots: ['asia_eu', 'eu_us_mid', 'us_close'],
+  },
 ]
