@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import {
-  Button,
   Card,
   Col,
+  ConfigProvider,
   Flex,
   Progress,
   Row,
   Space,
   Tag,
   Typography,
+  theme,
 } from 'antd'
 import {
   ArrowRightOutlined,
@@ -19,10 +20,12 @@ import {
 } from '@ant-design/icons'
 import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
+import { useThemeMode } from '@/lib/providers'
 import { useField, useJsonField } from '@/lib/useField'
 import { arrowColor } from '@/lib/category-colors'
 import { formatRelativeTime } from '@/lib/utils'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { HorizonBadge } from '@/components/shared/HorizonBadge'
 import {
   generateWhyNow,
   getExpectedDuration,
@@ -34,6 +37,7 @@ import {
 import { getEvents48h } from '@/lib/theme-priority'
 
 const { Title, Text, Paragraph } = Typography
+const { useToken } = theme
 
 interface TopNarrativeCardProps {
   theme: ThemeRadarItem
@@ -55,7 +59,16 @@ interface RankTone {
   accentBorder: string
 }
 
-function rankTone(rank: number): RankTone {
+function rankTone(rank: number, isDark: boolean): RankTone {
+  if (isDark) {
+    if (rank === 0) {
+      return { accent: '#D49285', accentBg: 'rgba(200, 122, 107, 0.14)', accentBorder: 'rgba(200, 122, 107, 0.32)' }
+    }
+    if (rank === 1) {
+      return { accent: '#D4A862', accentBg: 'rgba(200, 154, 82, 0.14)', accentBorder: 'rgba(200, 154, 82, 0.32)' }
+    }
+    return { accent: '#B5C272', accentBg: 'rgba(143, 160, 88, 0.14)', accentBorder: 'rgba(143, 160, 88, 0.32)' }
+  }
   if (rank === 0) {
     return { accent: '#8B3A2E', accentBg: '#FAF1ED', accentBorder: '#E8D5CC' }
   }
@@ -67,6 +80,10 @@ function rankTone(rank: number): RankTone {
 
 export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardProps) {
   const { t, locale } = useI18n()
+  const { token } = useToken()
+  const { mode } = useThemeMode()
+  const isDark = mode === 'dark'
+  const whyNowAmber = isDark ? '#D4A862' : '#8B5A00'
   const themeName = useField(th, 'name')
   const altName = locale === 'zh' ? th.name : th.name_zh
   const summary = useField(th, 'summary')
@@ -83,7 +100,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
 
   const whyNowReasons = generateWhyNow(th)
   const rankGlyph = RANK_GLYPH[rank] ?? `#${rank + 1}`
-  const tone = rankTone(rank)
+  const tone = rankTone(rank, isDark)
   const stage = getStageReadout(th.playbook_stage)
 
   if (variant === 'hero') {
@@ -105,9 +122,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           hoverable
           styles={{ body: { padding: 20 } }}
           style={{
-            background: '#FFFFFF',
-            borderColor: '#E8E2D5',
-            boxShadow: '0 1px 3px rgba(31, 28, 25, 0.04)',
+            background: token.colorBgContainer,
+            borderColor: token.colorBorder,
+            boxShadow: token.boxShadowTertiary,
           }}
         >
           {/* 1 · Top badges row */}
@@ -116,7 +133,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               <Tag
                 style={{
                   background: tone.accent,
-                  color: '#FFFFFF',
+                  color: token.colorTextLightSolid,
                   border: 'none',
                   fontSize: 12,
                   fontWeight: 600,
@@ -153,7 +170,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               margin: '16px 0 2px',
               fontSize: 28,
               fontWeight: 600,
-              color: '#1F1C19',
+              color: token.colorText,
               lineHeight: 1.25,
               letterSpacing: '-0.01em',
             }}
@@ -161,7 +178,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             {themeName}
           </Title>
           {altName && (
-            <Text style={{ fontSize: 14, color: '#8C8A85', display: 'block' }}>{altName}</Text>
+            <Text style={{ fontSize: 14, color: token.colorTextTertiary, display: 'block' }}>{altName}</Text>
           )}
 
           {/* Category + meta */}
@@ -170,9 +187,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               <Tag
                 style={{
                   margin: 0,
-                  background: '#FAFAFA',
-                  color: '#595959',
-                  border: '1px solid #E8E2D5',
+                  background: token.colorFillAlter,
+                  color: token.colorTextSecondary,
+                  border: `1px solid ${token.colorBorder}`,
                   fontSize: 12,
                   padding: '2px 10px',
                   borderRadius: 4,
@@ -182,13 +199,14 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 {categoryLabel}
               </Tag>
             )}
-            <Text style={{ fontSize: 12, color: '#8C8A85' }}>
+            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
+            <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
               {t('theme_card.events', { n: th.event_count })}
             </Text>
             {timeAgo && (
               <>
-                <Text style={{ fontSize: 12, color: '#A8A196' }}>·</Text>
-                <Text style={{ fontSize: 12, color: '#8C8A85' }}>{timeAgo}</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>·</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{timeAgo}</Text>
               </>
             )}
           </Space>
@@ -198,7 +216,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             <Paragraph
               style={{
                 fontSize: 13,
-                color: '#5C4A1E',
+                color: token.colorTextSecondary,
                 lineHeight: 1.6,
                 marginTop: 0,
                 marginBottom: 14,
@@ -240,7 +258,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   <Text
                     style={{
                       fontSize: 12,
-                      color: '#8C8A85',
+                      color: token.colorTextTertiary,
                       lineHeight: 1.55,
                       display: 'block',
                       marginTop: 6,
@@ -257,7 +275,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           <Card
             size="small"
             style={{
-              background: '#FAFAFA',
+              background: token.colorFillAlter,
               border: 'none',
               marginBottom: 14,
             }}
@@ -265,7 +283,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           >
             <Row gutter={20} align="middle">
               <Col xs={24} sm={8}>
-                <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+                <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
                   {t('narratives.lifecycle_stage')}
                 </Text>
                 <Title
@@ -280,24 +298,24 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 >
                   {t(stage.bigKey)}
                 </Title>
-                <Text style={{ fontSize: 10, color: '#8C8A85', fontWeight: 600, letterSpacing: '0.1em' }}>
+                <Text style={{ fontSize: 10, color: token.colorTextTertiary, fontWeight: 600, letterSpacing: '0.1em' }}>
                   {t(stage.transitionKey)}
                 </Text>
               </Col>
               <Col xs={24} sm={16}>
                 <Flex justify="space-between" align="baseline">
-                  <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                     {t('narratives.current_progress')}
                   </Text>
-                  <Text style={{ fontSize: 12, color: '#8C8A85' }}>
+                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
                     {t('narratives.day_of_expected', { days: th.days_hot, total: expectedDays })}
                   </Text>
                 </Flex>
                 <Flex align="baseline" gap={6} style={{ marginTop: 4 }}>
-                  <Text style={{ fontSize: 22, fontWeight: 600, color: '#1F1C19', lineHeight: 1 }}>
+                  <Text style={{ fontSize: 22, fontWeight: 600, color: token.colorText, lineHeight: 1 }}>
                     {t('narratives.day_short', { days: th.days_hot })}
                   </Text>
-                  <Text style={{ fontSize: 12, color: '#8C8A85' }}>
+                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
                     / ~{expectedDays} {t('narratives.days_suffix_short')}
                   </Text>
                 </Flex>
@@ -306,8 +324,8 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   showInfo={false}
                   size="small"
                   strokeLinecap="square"
-                  strokeColor="#1F1C19"
-                  trailColor="#E8E2D5"
+                  strokeColor={token.colorText}
+                  trailColor={token.colorBorder}
                   style={{ marginTop: 8, marginBottom: 0 }}
                 />
               </Col>
@@ -319,53 +337,53 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             gutter={16}
             style={{
               paddingBottom: 12,
-              borderBottom: '1px solid #E8E2D5',
+              borderBottom: `1px solid ${token.colorBorder}`,
               marginBottom: 14,
               marginLeft: 0,
               marginRight: 0,
             }}
           >
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.strength_label')}
               </Text>
               <Flex align="baseline" gap={3} style={{ marginTop: 4 }}>
                 <Text style={{ fontSize: 22, fontWeight: 600, color: tone.accent, lineHeight: 1 }}>
                   {Math.round(th.theme_strength_score)}
                 </Text>
-                <Text style={{ fontSize: 11, color: '#8C8A85' }}>/100</Text>
+                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>/100</Text>
               </Flex>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.events_48h')}
               </Text>
               <Flex align="baseline" gap={3} style={{ marginTop: 4 }}>
-                <Text style={{ fontSize: 22, fontWeight: 600, color: '#1F1C19', lineHeight: 1 }}>
+                <Text style={{ fontSize: 22, fontWeight: 600, color: token.colorText, lineHeight: 1 }}>
                   {events48h}
                 </Text>
-                <Text style={{ fontSize: 11, color: '#8C8A85' }}>
+                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
                   {events48h === 1 ? t('narratives.event_unit') : t('narratives.events_unit')}
                 </Text>
               </Flex>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.urgency_label')}
               </Text>
-              <Text style={{ fontSize: 16, fontWeight: 600, color: '#1F1C19', display: 'block', marginTop: 6 }}>
+              <Text style={{ fontSize: 16, fontWeight: 600, color: token.colorText, display: 'block', marginTop: 6 }}>
                 {t(urgency.labelKey)}
               </Text>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.tickers_label')}
               </Text>
               <Flex align="baseline" gap={4} style={{ marginTop: 4 }}>
-                <Text style={{ fontSize: 22, fontWeight: 600, color: '#1F1C19', lineHeight: 1 }}>
+                <Text style={{ fontSize: 22, fontWeight: 600, color: token.colorText, lineHeight: 1 }}>
                   {tickerCount}
                 </Text>
-                <Text style={{ fontSize: 11, color: '#8C8A85' }}>
+                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
                   {t('narratives.tickers_unit')}
                 </Text>
               </Flex>
@@ -374,82 +392,91 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
 
           {/* 6 · Related tickers */}
           <div style={{ marginBottom: 14 }}>
-            <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
               {t('narratives.related_tickers')}
             </Text>
-            <Space wrap size={[6, 6]}>
-              {heroTickers.map((r) => {
-                const arrow = directionArrow(r.exposure_direction)
-                return (
-                  <Tag
-                    key={r.ticker_symbol}
-                    style={{
-                      background: '#FAFAFA',
-                      color: '#1F1C19',
-                      border: '1px solid #E8E2D5',
-                      fontSize: 12,
-                      fontWeight: 500,
-                      padding: '3px 10px',
-                      margin: 0,
-                      borderRadius: 4,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5,
-                    }}
-                  >
-                    ${r.ticker_symbol}
-                    {arrow && <span style={{ color: arrow.color, fontSize: 10 }}>{arrow.glyph}</span>}
-                  </Tag>
-                )
-              })}
-              {heroOverflow > 0 && (
-                <Text style={{ fontSize: 12, color: '#8C8A85' }}>+{heroOverflow} {t('narratives.more_suffix')}</Text>
-              )}
-            </Space>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Tag: {
+                    defaultBg: token.colorFillAlter,
+                    defaultColor: token.colorText,
+                  },
+                },
+              }}
+            >
+              <Space wrap size={[6, 6]}>
+                {heroTickers.map((r) => {
+                  const arrow = directionArrow(r.exposure_direction)
+                  return (
+                    <Tag
+                      key={r.ticker_symbol}
+                      style={{
+                        borderColor: token.colorBorder,
+                        fontSize: 12,
+                        fontWeight: 500,
+                        padding: '3px 10px',
+                        margin: 0,
+                        borderRadius: 4,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                      }}
+                    >
+                      ${r.ticker_symbol}
+                      {arrow && <span style={{ color: arrow.color, fontSize: 10 }}>{arrow.glyph}</span>}
+                    </Tag>
+                  )
+                })}
+                {heroOverflow > 0 && (
+                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>+{heroOverflow} {t('narratives.more_suffix')}</Text>
+                )}
+              </Space>
+            </ConfigProvider>
           </div>
 
           {/* 7 · Why Now (single line, neutral bg + amber border) */}
           {primaryWhyNow && (
             <div
               style={{
-                background: '#FAFAFA',
-                borderLeft: '3px solid #8B5A00',
+                background: token.colorFillAlter,
+                borderLeft: `3px solid ${whyNowAmber}`,
                 padding: '8px 12px',
                 marginBottom: 14,
                 borderRadius: 4,
               }}
             >
-              <Text style={{ fontSize: 10, color: '#8B5A00', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: whyNowAmber, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.why_now')}
               </Text>
-              <Text style={{ fontSize: 13, color: '#1F1C19', display: 'block', marginTop: 2, lineHeight: 1.5 }}>
+              <Text style={{ fontSize: 13, color: token.colorText, display: 'block', marginTop: 2, lineHeight: 1.5 }}>
                 · {t(primaryWhyNow.key, primaryWhyNow.params)}
               </Text>
             </div>
           )}
 
-          {/* 8 · CTA */}
-          <Button
-            type="primary"
-            icon={<FileTextOutlined />}
-            block
-            size="middle"
+          {/* 8 · CTA (visual only — parent Link handles navigation) */}
+          <div
+            role="presentation"
             style={{
-              background: '#1F1C19',
-              borderColor: '#1F1C19',
+              background: token.colorText,
+              border: `1px solid ${token.colorText}`,
+              borderRadius: token.borderRadius,
               height: 42,
+              width: '100%',
               fontSize: 13,
               fontWeight: 500,
-              color: '#FFFFFF',
+              color: token.colorBgContainer,
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 8,
             }}
           >
+            <FileTextOutlined />
             <span>{t('narratives.view_full_analysis')}</span>
             <ArrowRightOutlined style={{ fontSize: 12 }} />
-          </Button>
+          </div>
         </Card>
       </Link>
     )
@@ -477,8 +504,8 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
         }}
         style={{
           height: '100%',
-          background: '#FFFFFF',
-          borderColor: '#F0F0F0',
+          background: token.colorBgContainer,
+          borderColor: token.colorBorderSecondary,
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -505,7 +532,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               margin: 0,
               fontSize: 16,
               fontWeight: 600,
-              color: '#1F1C19',
+              color: token.colorText,
               lineHeight: 1.35,
             }}
             ellipsis={{ rows: 2 }}
@@ -519,7 +546,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 margin: '8px 0 0',
                 fontSize: 13,
                 lineHeight: 1.6,
-                color: '#5C4A1E',
+                color: token.colorTextSecondary,
               }}
               ellipsis={{ rows: 2 }}
             >
@@ -532,9 +559,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               <Tag
                 style={{
                   margin: 0,
-                  background: '#FAFAFA',
-                  color: '#595959',
-                  border: '1px solid #E8E2D5',
+                  background: token.colorFillAlter,
+                  color: token.colorTextSecondary,
+                  border: `1px solid ${token.colorBorder}`,
                   fontSize: 12,
                   padding: '2px 10px',
                   borderRadius: 4,
@@ -544,13 +571,14 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 {categoryLabel}
               </Tag>
             )}
-            <Text style={{ fontSize: 12, color: '#8C8A85' }}>
+            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} size="small" />
+            <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
               {t('theme_card.events', { n: th.event_count })}
             </Text>
             {timeAgo && (
               <>
-                <Text style={{ fontSize: 12, color: '#A8A196' }}>·</Text>
-                <Text style={{ fontSize: 12, color: '#8C8A85' }}>{timeAgo}</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>·</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{timeAgo}</Text>
               </>
             )}
           </Flex>
@@ -565,9 +593,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   <span
                     key={r.ticker_symbol}
                     style={{
-                      backgroundColor: '#FAFAFA',
-                      color: '#1F1C19',
-                      border: '1px solid #E8E2D5',
+                      backgroundColor: token.colorFillAlter,
+                      color: token.colorText,
+                      border: `1px solid ${token.colorBorder}`,
                       fontSize: 11,
                       fontWeight: 500,
                       padding: '2px 8px',
@@ -586,7 +614,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 )
               })}
               {overflow > 0 && (
-                <Text style={{ fontSize: 11, color: '#8C8A85' }}>+{overflow} {t('narratives.more_suffix')}</Text>
+                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>+{overflow} {t('narratives.more_suffix')}</Text>
               )}
             </Flex>
           )}
@@ -596,9 +624,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               style={{
                 marginBottom: 12,
                 padding: '8px 10px',
-                background: '#FAFAFA',
+                background: token.colorFillAlter,
                 borderRadius: 4,
-                borderLeft: '2px solid #8B5A00',
+                borderLeft: `2px solid ${whyNowAmber}`,
               }}
             >
               <Text
@@ -606,7 +634,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   display: 'block',
                   fontSize: 10,
                   fontWeight: 600,
-                  color: '#8B5A00',
+                  color: whyNowAmber,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   marginBottom: 4,
@@ -620,7 +648,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   style={{
                     display: 'block',
                     fontSize: 12,
-                    color: '#1F1C19',
+                    color: token.colorText,
                     lineHeight: 1.5,
                   }}
                 >
@@ -635,25 +663,25 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             showInfo={false}
             size="small"
             strokeLinecap="square"
-            strokeColor="#1F1C19"
-            trailColor="#E8E2D5"
+            strokeColor={token.colorText}
+            trailColor={token.colorBorder}
             style={{ marginBottom: 6 }}
           />
           <Flex justify="space-between" align="center">
             <Flex align="center" gap={6}>
-              <Text style={{ fontSize: 11, color: '#1F1C19', fontWeight: 600 }}>
+              <Text style={{ fontSize: 11, color: token.colorText, fontWeight: 600 }}>
                 {t(stage.bigKey)}
               </Text>
-              <Text style={{ fontSize: 10, color: '#8C8A85', fontWeight: 600, letterSpacing: '0.08em' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, fontWeight: 600, letterSpacing: '0.08em' }}>
                 / {t(stage.transitionKey)}
               </Text>
             </Flex>
             <span style={{ lineHeight: 1 }}>
-              <Text style={{ fontSize: 11, fontWeight: 500, color: '#1F1C19' }}>
+              <Text style={{ fontSize: 11, fontWeight: 500, color: token.colorText }}>
                 {th.days_hot}d
               </Text>
               {expectedDays > 0 && (
-                <Text style={{ fontSize: 10, color: '#A8A196', marginLeft: 4 }}>
+                <Text style={{ fontSize: 10, color: token.colorTextQuaternary, marginLeft: 4 }}>
                   / ~{expectedDays}d
                 </Text>
               )}

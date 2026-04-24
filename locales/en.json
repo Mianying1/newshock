@@ -287,7 +287,9 @@
   },
   "topbar": {
     "search_placeholder": "Search themes, tickers, events…",
-    "search_soon": "SOON"
+    "search_soon": "SOON",
+    "switch_dark": "Switch to dark mode",
+    "switch_light": "Switch to light mode"
   },
   "radar": {
     "today_on_radar": "Today on the Radar",
@@ -421,6 +423,11 @@
     "high": "High Focus",
     "medium": "Medium Focus",
     "low": "Low Focus"
+  },
+  "horizon": {
+    "short": "Short-term",
+    "medium": "Medium-term",
+    "long": "Long-term"
   },
   "whynow": {
     "events_48h": "{count} catalysts in last 48h",

@@ -287,7 +287,9 @@
   },
   "topbar": {
     "search_placeholder": "搜索主题 / 股票 / 事件…",
-    "search_soon": "即将上线"
+    "search_soon": "即将上线",
+    "switch_dark": "切换到暗色模式",
+    "switch_light": "切换到亮色模式"
   },
   "radar": {
     "today_on_radar": "今日雷达",
@@ -421,6 +423,11 @@
     "high": "高度关注",
     "medium": "中度关注",
     "low": "低度关注"
+  },
+  "horizon": {
+    "short": "短期",
+    "medium": "中期",
+    "long": "长期"
   },
   "whynow": {
     "events_48h": "过去 48 小时 {count} 个催化事件",

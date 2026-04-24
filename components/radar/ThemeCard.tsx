@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Card, Flex, Progress, Tag, Typography } from 'antd'
+import { Card, Flex, Progress, Tag, Typography, theme } from 'antd'
 import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { useField, useJsonField } from '@/lib/useField'
@@ -9,8 +9,10 @@ import { stageColor } from '@/lib/design-tokens'
 import { categoryTone, arrowColor } from '@/lib/category-colors'
 import { formatRelativeTime } from '@/lib/utils'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { HorizonBadge } from '@/components/shared/HorizonBadge'
 
 const { Title, Text, Paragraph } = Typography
+const { useToken } = theme
 
 interface ThemeCardProps {
   theme: ThemeRadarItem
@@ -33,6 +35,7 @@ const STAGE_LABEL_KEY: Record<string, string> = {
 
 export function ThemeCard({ theme: th }: ThemeCardProps) {
   const { t, locale } = useI18n()
+  const { token } = useToken()
   const themeName = useField(th, 'name')
   const summary = useField(th, 'summary')
   const pb = useJsonField<ThemeRadarItem, ArchetypePlaybook>(th, 'archetype_playbook')
@@ -76,8 +79,8 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
         }}
         style={{
           height: 320,
-          background: '#FFFFFF',
-          borderColor: '#F0F0F0',
+          background: token.colorBgContainer,
+          borderColor: token.colorBorderSecondary,
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -88,7 +91,7 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 margin: 0,
                 fontSize: 16,
                 fontWeight: 600,
-                color: '#1F1C19',
+                color: token.colorText,
                 lineHeight: 1.35,
               }}
               ellipsis={{ rows: 2 }}
@@ -106,7 +109,7 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 margin: '8px 0 0',
                 fontSize: 13,
                 lineHeight: 1.6,
-                color: '#5C4A1E',
+                color: token.colorTextSecondary,
               }}
               ellipsis={{ rows: 2 }}
             >
@@ -129,13 +132,14 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 {categoryLabel}
               </Tag>
             )}
-            <Text style={{ fontSize: 12, color: '#8C8A85' }}>
+            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} size="small" />
+            <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
               {t('theme_card.events', { n: th.event_count })}
             </Text>
             {timeAgo && (
               <>
-                <Text style={{ fontSize: 12, color: '#A8A196' }}>·</Text>
-                <Text style={{ fontSize: 12, color: '#8C8A85' }}>{timeAgo}</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>·</Text>
+                <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{timeAgo}</Text>
               </>
             )}
           </Flex>
@@ -151,9 +155,9 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                   <span
                     key={r.ticker_symbol}
                     style={{
-                      backgroundColor: '#FAFAFA',
-                      color: '#1F1C19',
-                      border: '1px solid #E8E2D5',
+                      backgroundColor: token.colorFillAlter,
+                      color: token.colorText,
+                      border: `1px solid ${token.colorBorder}`,
                       fontSize: 11,
                       fontWeight: 500,
                       padding: '2px 8px',
@@ -172,7 +176,7 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 )
               })}
               {overflow > 0 && (
-                <Text style={{ fontSize: 11, color: '#8C8A85' }}>
+                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
                   +{overflow} more
                 </Text>
               )}
@@ -183,8 +187,8 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
             showInfo={false}
             size="small"
             strokeLinecap="square"
-            strokeColor="#1F1C19"
-            trailColor="#E8E2D5"
+            strokeColor={token.colorText}
+            trailColor={token.colorBorder}
             style={{ marginBottom: 6 }}
           />
           <Flex justify="space-between" align="center">
@@ -198,22 +202,22 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                   display: 'inline-block',
                 }}
               />
-              <Text style={{ fontSize: 11, color: '#5C4A1E', fontWeight: 500, textTransform: 'lowercase' }}>
+              <Text style={{ fontSize: 11, color: token.colorTextSecondary, fontWeight: 500, textTransform: 'lowercase' }}>
                 {stageText || t('theme_card.stage_mid')}
               </Text>
               {statusText && (
                 <>
-                  <Text style={{ fontSize: 11, color: '#A8A196' }}>·</Text>
-                  <Text style={{ fontSize: 11, color: '#8C8A85', textTransform: 'lowercase' }}>{statusText}</Text>
+                  <Text style={{ fontSize: 11, color: token.colorTextQuaternary }}>·</Text>
+                  <Text style={{ fontSize: 11, color: token.colorTextTertiary, textTransform: 'lowercase' }}>{statusText}</Text>
                 </>
               )}
             </Flex>
             <span style={{ lineHeight: 1 }}>
-              <Text style={{ fontSize: 11, fontWeight: 500, color: '#1F1C19' }}>
+              <Text style={{ fontSize: 11, fontWeight: 500, color: token.colorText }}>
                 {th.days_hot}d
               </Text>
               {expectedDays > 0 && (
-                <Text style={{ fontSize: 10, color: '#A8A196', marginLeft: 4 }}>
+                <Text style={{ fontSize: 10, color: token.colorTextQuaternary, marginLeft: 4 }}>
                   / ~{expectedDays}d {t('theme_card.expected')}
                 </Text>
               )}
@@ -221,10 +225,10 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
           </Flex>
           {(sinceDate || durationLabel) && (
             <Flex justify="space-between" align="center" style={{ marginTop: 6 }}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.02em' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
                 {sinceDate ? t('theme_card.since_short', { date: sinceDate }) : ''}
               </Text>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.02em' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
                 {durationLabel ? `${t('theme_card.expected_duration')} ${durationLabel}` : ''}
               </Text>
             </Flex>
