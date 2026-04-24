@@ -153,7 +153,12 @@ export default function HomePage() {
           </Header>
 
           <Content style={{ padding: '0 28px 40px' }}>
-            <div style={{ padding: '34px 2px 8px' }}>
+            <div
+              style={{
+                padding: '34px 2px 20px',
+                borderBottom: `1px solid ${token.colorSplit}`,
+              }}
+            >
               <Title
                 level={1}
                 style={{
