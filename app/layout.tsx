@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { ConfigProvider } from 'antd'
 import "./globals.css";
 import { I18nProvider } from '@/lib/i18n-context'
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { instrumentSerif, inter, jetbrainsMono } from '@/lib/fonts'
+import { newshockTheme } from '@/lib/design-tokens'
 
 export const metadata: Metadata = {
   title: 'Newshock',
@@ -25,11 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <I18nProvider>{children}</I18nProvider>
+    <html
+      lang="en"
+      className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="antialiased">
+        <AntdRegistry>
+          <ConfigProvider theme={newshockTheme}>
+            <I18nProvider>{children}</I18nProvider>
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   );
