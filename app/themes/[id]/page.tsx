@@ -11,6 +11,7 @@ import {
   Input,
   Layout,
   Progress,
+  Segmented,
   Space,
   Tag,
   Typography,
@@ -328,13 +329,15 @@ export default function ThemeDetailPage() {
               {(() => {
                 const summary = pickField(locale, theme.summary, theme.summary_zh)
                 return summary ? (
-                  <div className="td-sec">
+                  <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
                       title={t('sections.theme_thesis_title')}
                       subtitle={t('sections.theme_thesis_subtitle')}
                     />
-                    <p style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.65 }}>{summary}</p>
+                    <Text style={{ display: 'block', fontSize: 14, color: token.colorTextSecondary, lineHeight: 1.65 }}>
+                      {summary}
+                    </Text>
                   </div>
                 ) : null
               })()}
@@ -648,43 +651,97 @@ export default function ThemeDetailPage() {
                 const bearWarn = s.contradicts_count > s.supports_count
                 const strongBull = s.supports_count >= s.contradicts_count * 3 && s.supports_count > 0
                 const label = bearWarn ? null : strongBull ? t('theme_detail.strong_bull') : t('theme_detail.balanced')
+                const rows = [
+                  { key: 'sup', color: token.colorSuccess, label: t('theme_detail.supports'), count: s.supports_count },
+                  { key: 'con', color: token.colorError, label: t('theme_detail.contradicts'), count: s.contradicts_count },
+                  { key: 'neu', color: token.colorTextQuaternary, label: t('theme_detail.neutral'), count: s.neutral_count },
+                ]
                 return (
-                  <div className="td-sec">
+                  <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
                       title={t('sections.theme_evidence_title')}
                       subtitle={t('sections.theme_evidence_subtitle')}
                     />
-                    <div className="td-card">
-                      {bearWarn && <div className="td-bb-warn">⚠ {t('theme_detail.bear_warning')}</div>}
-                      <div className="td-bb">
-                        <div className="td-bb-row">
-                          <span className="lbl"><span className="dot" style={{ background: '#7A8C5C' }} />{t('theme_detail.supports')}</span>
-                          <div className="track"><div className="f sup" style={{ width: `${(s.supports_count / maxCount) * 100}%` }} /></div>
-                          <span className="v">{s.supports_count}</span>
+                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
+                      {bearWarn && (
+                        <div
+                          style={{
+                            background: token.colorErrorBg,
+                            border: `1px solid ${token.colorErrorBorder}`,
+                            color: token.colorErrorText,
+                            padding: '8px 12px',
+                            borderRadius: token.borderRadius,
+                            fontSize: 12,
+                            marginBottom: 12,
+                          }}
+                        >
+                          ⚠ {t('theme_detail.bear_warning')}
                         </div>
-                        <div className="td-bb-row">
-                          <span className="lbl"><span className="dot" style={{ background: '#B8453A' }} />{t('theme_detail.contradicts')}</span>
-                          <div className="track"><div className="f con" style={{ width: `${(s.contradicts_count / maxCount) * 100}%` }} /></div>
-                          <span className="v">{s.contradicts_count}</span>
-                        </div>
-                        <div className="td-bb-row">
-                          <span className="lbl"><span className="dot" style={{ background: 'var(--ink-4)' }} />{t('theme_detail.neutral')}</span>
-                          <div className="track"><div className="f neu" style={{ width: `${(s.neutral_count / maxCount) * 100}%` }} /></div>
-                          <span className="v">{s.neutral_count}</span>
-                        </div>
+                      )}
+                      <div style={{ display: 'grid', rowGap: 10 }}>
+                        {rows.map((r) => (
+                          <div
+                            key={r.key}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '100px 1fr 36px',
+                              gap: 12,
+                              alignItems: 'center',
+                              fontSize: 12,
+                            }}
+                          >
+                            <Flex align="center" gap={6} style={{ color: token.colorTextSecondary }}>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: r.color }} />
+                              {r.label}
+                            </Flex>
+                            <Progress
+                              percent={(r.count / maxCount) * 100}
+                              strokeColor={r.color}
+                              trailColor={token.colorFillSecondary}
+                              showInfo={false}
+                              size={['100%', 4]}
+                              strokeLinecap="square"
+                            />
+                            <Text
+                              style={{
+                                fontFamily: token.fontFamilyCode,
+                                color: token.colorTextSecondary,
+                                textAlign: 'right',
+                              }}
+                            >
+                              {r.count}
+                            </Text>
+                          </div>
+                        ))}
                       </div>
-                      <div className="td-bb-foot">
-                        <span>{t('theme_detail.bull_bear_ratio')}: <span style={{ fontFamily: 'inherit', color: 'var(--ink)' }}>{ratio}</span></span>
-                        {label && <span>{label}</span>}
-                      </div>
-                    </div>
+                      <Flex
+                        justify="space-between"
+                        gap={12}
+                        wrap
+                        style={{
+                          marginTop: 14,
+                          paddingTop: 10,
+                          borderTop: `1px solid ${token.colorSplit}`,
+                          fontSize: 11,
+                          color: token.colorTextTertiary,
+                        }}
+                      >
+                        <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                          {t('theme_detail.bull_bear_ratio')}:{' '}
+                          <Text style={{ fontFamily: token.fontFamilyCode, color: token.colorText, fontSize: 11 }}>{ratio}</Text>
+                        </Text>
+                        {label && (
+                          <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>{label}</Text>
+                        )}
+                      </Flex>
+                    </Card>
                   </div>
                 )
               })()}
 
               {/* Trigger Events */}
-              <div className="td-sec">
+              <div style={{ marginTop: 32 }}>
                 <SectionHeader
                   index={nextIdx()}
                   title={t('sections.theme_events_title')}
@@ -692,33 +749,45 @@ export default function ThemeDetailPage() {
                   meta={`${catalysts.length}`}
                 />
                 {catalysts.length === 0 ? (
-                  <p style={{ fontSize: 12, color: 'var(--ink-4)' }}>{t('theme_detail.no_catalysts')}</p>
+                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+                    {t('theme_detail.no_catalysts')}
+                  </Text>
                 ) : (
                   <>
                     {hasDirection && (
-                      <div className="td-evts-tabs">
-                        {(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => {
-                          const labelKey = k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`
-                          const count = eventCounts[k]
-                          return (
-                            <button key={k} onClick={() => setEventTab(k)} className={eventTab === k ? 'on' : ''}>
-                              {t(labelKey)} {count}
-                            </button>
-                          )
-                        })}
-                      </div>
+                      <Segmented
+                        size="small"
+                        value={eventTab}
+                        onChange={(v) => setEventTab(v as EventTab)}
+                        options={(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => ({
+                          label: `${t(k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`)} ${eventCounts[k]}`,
+                          value: k,
+                        }))}
+                        style={{ marginBottom: 14 }}
+                      />
                     )}
 
                     {GROUP_ORDER.map((key) => {
                       const items = groupedEvents.get(key)
                       if (!items || items.length === 0) return null
                       return (
-                        <div key={key} className="td-evt-grp">
-                          <div className="td-evt-grp-head">
-                            <span>{t(GROUP_LABEL[key])}</span>
-                            <span>{items.length}</span>
-                          </div>
-                          {items.map((c) => {
+                        <div key={key} style={{ marginBottom: 18 }}>
+                          <Flex
+                            align="center"
+                            gap={8}
+                            style={{
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 10,
+                              letterSpacing: '0.14em',
+                              textTransform: 'uppercase',
+                              color: token.colorTextTertiary,
+                              marginBottom: 8,
+                            }}
+                          >
+                            <span style={{ fontWeight: 600 }}>{t(GROUP_LABEL[key])}</span>
+                            <span style={{ color: token.colorTextQuaternary, fontWeight: 400 }}>{items.length}</span>
+                          </Flex>
+                          {items.map((c, idx) => {
                             const publisher = getDisplayPublisher(c.source_name, c.source_url)
                             const reasoning = pickField(
                               locale,
@@ -726,29 +795,96 @@ export default function ThemeDetailPage() {
                               c.counter_evidence_reasoning_zh,
                             )
                             const isExp = expanded.has(c.id)
+                            const dir = dirDot(c.supports_or_contradicts)
+                            const dotColor =
+                              dir === 'sup' ? token.colorSuccess
+                              : dir === 'con' ? token.colorError
+                              : token.colorTextQuaternary
                             return (
-                              <div key={c.id} className="td-evt">
-                                <div className={`dot ${dirDot(c.supports_or_contradicts)}`} />
+                              <div
+                                key={c.id}
+                                style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: '14px 1fr',
+                                  gap: 10,
+                                  padding: '8px 0',
+                                  borderBottom: idx === items.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                  fontSize: 12.5,
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: '50%',
+                                    marginTop: 7,
+                                    background: dotColor,
+                                  }}
+                                />
                                 <div>
                                   {c.source_url ? (
-                                    <a href={c.source_url} target="_blank" rel="noopener noreferrer">{c.headline}</a>
+                                    <a
+                                      href={c.source_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: token.colorText, textDecoration: 'none' }}
+                                    >
+                                      {c.headline}
+                                    </a>
                                   ) : (
-                                    <span style={{ color: 'var(--ink)' }}>{c.headline}</span>
+                                    <span style={{ color: token.colorText }}>{c.headline}</span>
                                   )}
-                                  <div className="sub">
+                                  <Flex
+                                    align="center"
+                                    gap={6}
+                                    wrap
+                                    style={{
+                                      fontSize: 10.5,
+                                      color: token.colorTextQuaternary,
+                                      marginTop: 3,
+                                    }}
+                                  >
                                     <span>{publisher}</span>
                                     <span>·</span>
-                                    <span>{c.days_ago === 0 ? t('theme_detail.today') : t('relative_time.days_ago', { n: c.days_ago })}</span>
+                                    <span>
+                                      {c.days_ago === 0
+                                        ? t('theme_detail.today')
+                                        : t('relative_time.days_ago', { n: c.days_ago })}
+                                    </span>
                                     {reasoning && (
                                       <>
                                         <span>·</span>
-                                        <button onClick={() => toggleExpand(c.id)}>
+                                        <button
+                                          onClick={() => toggleExpand(c.id)}
+                                          style={{
+                                            border: 'none',
+                                            background: 'transparent',
+                                            padding: 0,
+                                            color: token.colorTextTertiary,
+                                            fontSize: 'inherit',
+                                            cursor: 'pointer',
+                                            textDecoration: 'underline',
+                                          }}
+                                        >
                                           {isExp ? t('theme_detail.collapse') : t('theme_detail.counter_reasoning')}
                                         </button>
                                       </>
                                     )}
-                                  </div>
-                                  {isExp && reasoning && <div className="rsn">{reasoning}</div>}
+                                  </Flex>
+                                  {isExp && reasoning && (
+                                    <div
+                                      style={{
+                                        fontSize: 12,
+                                        color: token.colorTextSecondary,
+                                        fontStyle: 'italic',
+                                        marginTop: 4,
+                                        paddingLeft: 10,
+                                        borderLeft: `2px solid ${token.colorBorderSecondary}`,
+                                      }}
+                                    >
+                                      {reasoning}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )
@@ -758,29 +894,43 @@ export default function ThemeDetailPage() {
                     })}
 
                     {filteredEvents.length > 8 && (
-                      <button
+                      <Button
+                        type="link"
+                        size="small"
                         onClick={() => setShowAllEvents((v) => !v)}
-                        style={{ marginTop: 8, fontSize: 12, color: 'var(--link)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        style={{ padding: 0, marginTop: 4, fontSize: 12 }}
                       >
-                        {showAllEvents ? t('theme_detail.collapse_events') : t('theme_detail.view_all_events', { n: filteredEvents.length })}
-                      </button>
+                        {showAllEvents
+                          ? t('theme_detail.collapse_events')
+                          : t('theme_detail.view_all_events', { n: filteredEvents.length })}
+                      </Button>
                     )}
                   </>
                 )}
-                <p style={{ fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', fontStyle: 'italic', marginTop: 12, letterSpacing: '0.04em' }}>
+                <Text
+                  style={{
+                    display: 'block',
+                    fontFamily: token.fontFamilyCode,
+                    fontSize: 10,
+                    color: token.colorTextQuaternary,
+                    fontStyle: 'italic',
+                    marginTop: 14,
+                    letterSpacing: '0.06em',
+                  }}
+                >
                   ℹ {t('theme_detail.ai_source_hint')}
-                </p>
+                </Text>
               </div>
 
               {/* Exposure Mapping */}
-              <div className="td-sec">
+              <div style={{ marginTop: 32 }}>
                 <SectionHeader
                   index={nextIdx()}
                   title={t('sections.theme_exposure_title')}
                   subtitle={t('sections.theme_exposure_subtitle')}
                 />
                 {recs.length === 0 && (
-                  <p style={{ fontSize: 12, color: 'var(--ink-4)' }}>{t('theme_detail.no_exposure')}</p>
+                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{t('theme_detail.no_exposure')}</Text>
                 )}
 
                 <ExposureGroup title={t('theme_detail.direct_exposure')} items={directRecs} />
@@ -792,21 +942,39 @@ export default function ThemeDetailPage() {
 
               {/* Subthemes */}
               {theme.child_themes.length > 0 && (
-                <div className="td-sec">
+                <div style={{ marginTop: 32 }}>
                   <SectionHeader
                     index={nextIdx()}
                     title={t('sections.theme_subthemes_title')}
                     subtitle={t('sections.theme_subthemes_subtitle')}
                     meta={`${theme.child_themes.length}`}
                   />
-                  <div className="td-subs">
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                      gap: 10,
+                    }}
+                  >
                     {theme.child_themes.map((c) => (
-                      <Link key={c.id} href={`/themes/${c.id}`} className="td-sub">
-                        <div className="nm">{pickField(locale, c.name, c.name_zh)}</div>
-                        <div className="sub" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <FocusLevelBadge strength={c.theme_strength_score} />
-                          <span>· {t('themes_list.events', { n: c.event_count })}</span>
-                        </div>
+                      <Link
+                        key={c.id}
+                        href={`/themes/${c.id}`}
+                        style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+                      >
+                        <Card
+                          size="small"
+                          hoverable
+                          styles={{ body: { padding: '11px 14px' } }}
+                        >
+                          <Text strong style={{ display: 'block', fontSize: 13, color: token.colorText, marginBottom: 4 }}>
+                            {pickField(locale, c.name, c.name_zh)}
+                          </Text>
+                          <Flex align="center" gap={6} style={{ fontSize: 10.5, color: token.colorTextQuaternary, letterSpacing: '0.04em' }}>
+                            <FocusLevelBadge strength={c.theme_strength_score} />
+                            <span>· {t('themes_list.events', { n: c.event_count })}</span>
+                          </Flex>
+                        </Card>
                       </Link>
                     ))}
                   </div>
@@ -836,100 +1004,213 @@ export default function ThemeDetailPage() {
                   return dim
                 }
 
+                const sublabelStyle: React.CSSProperties = {
+                  fontFamily: token.fontFamilyCode,
+                  fontSize: 10,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: token.colorTextTertiary,
+                  margin: '14px 0 8px',
+                }
                 return (
-                  <div className="td-sec">
+                  <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
                       title={t('sections.theme_playbook_title')}
                       subtitle={t('sections.theme_playbook_subtitle')}
                     />
 
-                    <p style={{ fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', marginBottom: 10, fontStyle: 'italic' }}>
+                    <Text
+                      style={{
+                        display: 'block',
+                        fontFamily: token.fontFamilyCode,
+                        fontSize: 10,
+                        color: token.colorTextQuaternary,
+                        letterSpacing: '0.06em',
+                        marginBottom: 10,
+                        fontStyle: 'italic',
+                      }}
+                    >
                       ℹ {t('theme_detail.disclaimer_playbook')}
-                    </p>
+                    </Text>
 
-                    <div className="td-sublabel">{t('theme_detail.historical_cases')}</div>
-                    <div className="td-cases">
+                    <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                        gap: 10,
+                      }}
+                    >
                       {pb.historical_cases.map((c, i) => (
-                        <div key={i} className="td-case">
-                          <div className="nm">{c.name}</div>
-                          <div className="row">{c.approximate_duration}</div>
-                          <div className="row pm">Peak {c.peak_move}</div>
-                        </div>
+                        <Card key={i} size="small" styles={{ body: { padding: '10px 12px' } }}>
+                          <Text strong style={{ display: 'block', fontSize: 12.5, color: token.colorText, marginBottom: 4 }}>
+                            {c.name}
+                          </Text>
+                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextTertiary }}>
+                            {c.approximate_duration}
+                          </Text>
+                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextSecondary }}>
+                            Peak {c.peak_move}
+                          </Text>
+                        </Card>
                       ))}
                     </div>
 
                     {(visibleDiffs.length > 0 || validSims.length > 0 || ttd?.observation) && (
-                      <>
-                        <div style={{ marginTop: 18 }} className="td-ttd-panel">
-                          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 4 }}>
-                            {t('theme_detail.this_time_different')}
-                          </div>
+                      <Card
+                        size="small"
+                        styles={{ body: { padding: '16px 18px' } }}
+                        style={{
+                          marginTop: 18,
+                          background: token.colorFillAlter,
+                          borderColor: token.colorBorderSecondary,
+                        }}
+                      >
+                        <Text strong style={{ display: 'block', fontSize: 15, color: token.colorText, marginBottom: 2 }}>
+                          {t('theme_detail.this_time_different')}
+                        </Text>
 
-                          {visibleDiffs.length > 0 && (
-                            <>
-                              <div className="td-sublabel">{t('theme_detail.structural_differences')}</div>
-                              <div className="td-diffs">
-                                {visibleDiffs.map((d, i) => {
-                                  const arrow = d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '⇅'
-                                  const arrowCls = d.direction === 'may_extend' ? 'up' : d.direction === 'may_shorten' ? 'down' : 'unc'
-                                  return (
-                                    <div key={i} className="td-diff">
-                                      <div className="td-diff-head">
-                                        <span className={`arr ${arrowCls}`}>{arrow}</span>
-                                        <span className="dim">{dimGroup(d.dimension)}</span>
-                                        <span className={`conf ${d.confidence === 'high' ? 'high' : 'med'}`}>{d.confidence}</span>
-                                      </div>
-                                      <div className="desc">{d.description}</div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                              {!showAllDiffs && hiddenCount > 0 && (
-                                <button
-                                  onClick={() => setShowAllDiffs(true)}
-                                  style={{ marginTop: 8, fontSize: 11, color: 'var(--ink-3)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
-                                >
-                                  {t('theme_detail.show_all_diffs')} ({hiddenCount} {t('theme_detail.more_medium_conf')})
-                                </button>
-                              )}
-                            </>
-                          )}
-
-                          {validSims.length > 0 && (
-                            <>
-                              <div className="td-sublabel">{t('theme_detail.similarities')}</div>
-                              <ul style={{ fontSize: 12.5, color: 'var(--ink-2)', listStyle: 'none', padding: 0, margin: 0 }}>
-                                {validSims.map((s, i) => (
-                                  <li key={i} style={{ padding: '3px 0' }}>
-                                    <span style={{ color: 'var(--ink-4)', marginRight: 6 }}>=</span>
-                                    <span style={{ color: 'var(--ink-3)' }}>{s.dimension}:</span> {s.description}
-                                  </li>
-                                ))}
-                              </ul>
-                            </>
-                          )}
-
-                          {ttd?.observation && (
-                            <div style={{ marginTop: 12, fontSize: 12.5, fontStyle: 'italic', color: 'var(--ink-2)', lineHeight: 1.6 }}>
-                              {t('theme_detail.observation')}: {ttd.observation}
+                        {visibleDiffs.length > 0 && (
+                          <>
+                            <div style={sublabelStyle}>{t('theme_detail.structural_differences')}</div>
+                            <div
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                                gap: 10,
+                              }}
+                            >
+                              {visibleDiffs.map((d, i) => {
+                                const arrow = d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '⇅'
+                                const arrColor =
+                                  d.direction === 'may_extend' ? token.colorSuccess
+                                  : d.direction === 'may_shorten' ? token.colorError
+                                  : token.colorTextTertiary
+                                const confTone = d.confidence === 'high'
+                                  ? { color: token.colorSuccessText, background: token.colorSuccessBg }
+                                  : { color: token.colorWarningText, background: token.colorWarningBg }
+                                return (
+                                  <Card key={i} size="small" styles={{ body: { padding: '10px 12px' } }}>
+                                    <Flex align="center" gap={6} style={{ marginBottom: 5 }}>
+                                      <span style={{ fontSize: 13, lineHeight: 1, color: arrColor }}>{arrow}</span>
+                                      <Text strong style={{ fontSize: 12, color: token.colorText, textTransform: 'capitalize' }}>
+                                        {dimGroup(d.dimension)}
+                                      </Text>
+                                      <Tag
+                                        style={{
+                                          margin: 0,
+                                          marginLeft: 'auto',
+                                          fontSize: 9.5,
+                                          padding: '0 6px',
+                                          border: 'none',
+                                          letterSpacing: '0.08em',
+                                          textTransform: 'uppercase',
+                                          fontFamily: token.fontFamilyCode,
+                                          ...confTone,
+                                        }}
+                                      >
+                                        {d.confidence}
+                                      </Tag>
+                                    </Flex>
+                                    <Text style={{ fontSize: 11.5, color: token.colorTextSecondary, lineHeight: 1.5 }}>
+                                      {d.description}
+                                    </Text>
+                                  </Card>
+                                )
+                              })}
                             </div>
-                          )}
+                            {!showAllDiffs && hiddenCount > 0 && (
+                              <Button
+                                type="link"
+                                size="small"
+                                onClick={() => setShowAllDiffs(true)}
+                                style={{
+                                  padding: 0,
+                                  marginTop: 8,
+                                  fontSize: 11,
+                                  color: token.colorTextTertiary,
+                                }}
+                              >
+                                {t('theme_detail.show_all_diffs')} ({hiddenCount} {t('theme_detail.more_medium_conf')})
+                              </Button>
+                            )}
+                          </>
+                        )}
 
-                          <div style={{ marginTop: 10, fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', fontStyle: 'italic' }}>
-                            ⚠ {t('theme_detail.disclaimer_observation')}
-                          </div>
-                        </div>
-                      </>
+                        {validSims.length > 0 && (
+                          <>
+                            <div style={sublabelStyle}>{t('theme_detail.similarities')}</div>
+                            <ul style={{ fontSize: 12.5, color: token.colorTextSecondary, listStyle: 'none', padding: 0, margin: 0 }}>
+                              {validSims.map((s, i) => (
+                                <li key={i} style={{ padding: '3px 0' }}>
+                                  <span style={{ color: token.colorTextQuaternary, marginRight: 6 }}>=</span>
+                                  <span style={{ color: token.colorTextTertiary }}>{s.dimension}:</span> {s.description}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+
+                        {ttd?.observation && (
+                          <Text
+                            style={{
+                              display: 'block',
+                              marginTop: 12,
+                              fontSize: 12.5,
+                              fontStyle: 'italic',
+                              color: token.colorTextSecondary,
+                              lineHeight: 1.6,
+                            }}
+                          >
+                            {t('theme_detail.observation')}: {ttd.observation}
+                          </Text>
+                        )}
+
+                        <Text
+                          style={{
+                            display: 'block',
+                            marginTop: 10,
+                            fontFamily: token.fontFamilyCode,
+                            fontSize: 10,
+                            color: token.colorTextQuaternary,
+                            letterSpacing: '0.06em',
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          ⚠ {t('theme_detail.disclaimer_observation')}
+                        </Text>
+                      </Card>
                     )}
 
                     {(pb.exit_signals?.length ?? 0) > 0 && (
                       <>
-                        <div className="td-sublabel" style={{ marginTop: 22 }}>{t('theme_detail.exit_signals')}</div>
-                        <div className="td-exits">
+                        <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.exit_signals')}</div>
+                        <div style={{ display: 'grid', rowGap: 4 }}>
                           {pb.exit_signals.map((s, i) => (
-                            <div key={i} className="td-exit">
-                              <span className="bl">{String(i + 1).padStart(2, '0')}</span>
+                            <div
+                              key={i}
+                              style={{
+                                display: 'flex',
+                                gap: 10,
+                                fontSize: 12.5,
+                                color: token.colorTextSecondary,
+                                padding: '7px 0',
+                                borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color: token.colorTextQuaternary,
+                                  fontFamily: token.fontFamilyCode,
+                                  fontSize: 10.5,
+                                  width: 18,
+                                  flexShrink: 0,
+                                  paddingTop: 2,
+                                }}
+                              >
+                                {String(i + 1).padStart(2, '0')}
+                              </span>
                               <span>{s}</span>
                             </div>
                           ))}
@@ -1003,58 +1284,181 @@ function ExposureGroup({
   variant?: 'default' | 'pressure' | 'headwind'
 }) {
   const { t, locale } = useI18n()
+  const { token } = useToken()
   if (items.length === 0) return null
+
+  const wrapperStyle: React.CSSProperties =
+    variant === 'headwind'
+      ? {
+          background: token.colorErrorBg,
+          border: `1px solid ${token.colorErrorBorder}`,
+          borderRadius: token.borderRadius,
+          padding: '14px 16px',
+          marginBottom: 16,
+        }
+      : variant === 'pressure'
+      ? {
+          background: token.colorWarningBg,
+          border: `1px solid ${token.colorWarningBorder}`,
+          borderRadius: token.borderRadius,
+          padding: '14px 16px',
+          marginBottom: 16,
+        }
+      : { marginBottom: 20 }
+
+  const titleColor =
+    variant === 'headwind' ? token.colorErrorText
+    : variant === 'pressure' ? token.colorWarningText
+    : token.colorTextSecondary
+
   return (
-    <div className={`td-expos-group ${variant}`}>
-      <div className="td-expos-group-title">
-        <span>{title}</span>
-        <span className="n">· {items.length}</span>
-      </div>
-      {items.map((r) => {
-        const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
-        const exposure = pickField(locale, r.business_exposure, r.business_exposure_zh)
-        const catalyst = pickField(locale, r.catalyst, r.catalyst_zh)
-        const risk = pickField(locale, r.risk, r.risk_zh)
-        const capLabel = r.market_cap_band === 'small' ? t('theme_detail.cap_small')
-          : r.market_cap_band === 'mid' ? t('theme_detail.cap_mid')
-          : r.market_cap_band === 'large' ? t('theme_detail.cap_large')
-          : null
-        const confColor =
-          r.confidence_band === 'high' ? { color: '#3F5A28', background: '#DDE6D4' }
-          : r.confidence_band === 'medium' ? { color: '#6E5A27', background: '#EEE6D2' }
-          : { color: 'var(--ink-3)', background: 'var(--bg-sunk)' }
-        return (
-          <div key={r.ticker_symbol} className="td-rec">
-            <div className="td-rec-head">
-              <Link href={`/tickers/${r.ticker_symbol}`} className="td-rec-sym">${r.ticker_symbol}</Link>
-              {r.company_name && r.company_name !== r.ticker_symbol && (
-                <span className="td-rec-name">{r.company_name}</span>
-              )}
-              <div className="td-rec-badges">
-                {r.is_thematic_tool && (
-                  <span title={t('theme_detail.thematic_tool_tooltip')} className="tag" style={{ background: '#EEE0F0', color: '#7B4D8C', borderColor: '#E1CDE4' }}>💎</span>
+    <div style={wrapperStyle}>
+      <Flex
+        align="center"
+        gap={6}
+        style={{
+          fontFamily: token.fontFamilyCode,
+          fontSize: 10,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: titleColor,
+          marginBottom: 10,
+        }}
+      >
+        <span style={{ fontWeight: 600 }}>{title}</span>
+        <span style={{ color: token.colorTextQuaternary, fontWeight: 400 }}>· {items.length}</span>
+      </Flex>
+      <Space direction="vertical" size={8} style={{ width: '100%' }}>
+        {items.map((r) => {
+          const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
+          const exposure = pickField(locale, r.business_exposure, r.business_exposure_zh)
+          const catalyst = pickField(locale, r.catalyst, r.catalyst_zh)
+          const risk = pickField(locale, r.risk, r.risk_zh)
+          const capLabel = r.market_cap_band === 'small' ? t('theme_detail.cap_small')
+            : r.market_cap_band === 'mid' ? t('theme_detail.cap_mid')
+            : r.market_cap_band === 'large' ? t('theme_detail.cap_large')
+            : null
+          const confTone =
+            r.confidence_band === 'high'
+              ? { color: token.colorSuccessText, background: token.colorSuccessBg }
+              : r.confidence_band === 'medium'
+              ? { color: token.colorWarningText, background: token.colorWarningBg }
+              : { color: token.colorTextTertiary, background: token.colorFillTertiary }
+          return (
+            <Card
+              key={r.ticker_symbol}
+              size="small"
+              styles={{ body: { padding: '12px 14px' } }}
+            >
+              <Flex align="center" gap={8} wrap style={{ marginBottom: reasoning.trim() ? 6 : 0 }}>
+                <Link
+                  href={`/tickers/${r.ticker_symbol}`}
+                  style={{
+                    fontFamily: token.fontFamilyCode,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    color: token.colorText,
+                    textDecoration: 'none',
+                  }}
+                >
+                  ${r.ticker_symbol}
+                </Link>
+                {r.company_name && r.company_name !== r.ticker_symbol && (
+                  <Text style={{ fontSize: 11.5, color: token.colorTextTertiary }}>{r.company_name}</Text>
                 )}
-                {r.confidence_band && (
-                  <span className="mark" style={{ ...confColor, borderColor: 'transparent' }}>{r.confidence_band}</span>
-                )}
-                {capLabel && <span style={{ fontSize: 10, color: 'var(--ink-4)' }}>{capLabel}</span>}
-              </div>
-            </div>
-            {reasoning.trim().length > 0 && <div className="td-rec-body">{reasoning}</div>}
-            <div className="td-rec-meta">
-              {exposure.trim().length > 0 && (
-                <div><span className="k">{t('theme_detail.exposure_label')}</span>{exposure}</div>
+                <Flex gap={6} align="center" style={{ marginLeft: 'auto' }}>
+                  {r.is_thematic_tool && (
+                    <Tag
+                      title={t('theme_detail.thematic_tool_tooltip')}
+                      style={{
+                        margin: 0,
+                        fontSize: 10,
+                        padding: '0 6px',
+                        background: token.colorFillSecondary,
+                        border: 'none',
+                        color: token.colorText,
+                      }}
+                    >
+                      💎
+                    </Tag>
+                  )}
+                  {r.confidence_band && (
+                    <Tag
+                      style={{
+                        margin: 0,
+                        fontSize: 10,
+                        padding: '0 6px',
+                        border: 'none',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        fontFamily: token.fontFamilyCode,
+                        ...confTone,
+                      }}
+                    >
+                      {r.confidence_band}
+                    </Tag>
+                  )}
+                  {capLabel && (
+                    <Text style={{ fontSize: 10, color: token.colorTextQuaternary }}>{capLabel}</Text>
+                  )}
+                </Flex>
+              </Flex>
+              {reasoning.trim().length > 0 && (
+                <Text style={{ display: 'block', fontSize: 12.5, lineHeight: 1.55, color: token.colorTextSecondary }}>
+                  {reasoning}
+                </Text>
               )}
-              {catalyst.trim().length > 0 && (
-                <div><span className="k" style={{ color: '#506238' }}>{t('theme_detail.catalyst')}</span>{catalyst}</div>
+              {(exposure.trim() || catalyst.trim() || risk.trim()) && (
+                <div style={{ marginTop: 6, display: 'grid', rowGap: 3, fontSize: 11, color: token.colorTextTertiary }}>
+                  {exposure.trim().length > 0 && (
+                    <div>
+                      <MetaKey token={token}>{t('theme_detail.exposure_label')}</MetaKey>
+                      {exposure}
+                    </div>
+                  )}
+                  {catalyst.trim().length > 0 && (
+                    <div>
+                      <MetaKey token={token} color={token.colorSuccessText}>{t('theme_detail.catalyst')}</MetaKey>
+                      {catalyst}
+                    </div>
+                  )}
+                  {risk.trim().length > 0 && (
+                    <div>
+                      <MetaKey token={token} color={token.colorErrorText}>{t('theme_detail.risk')}</MetaKey>
+                      {risk}
+                    </div>
+                  )}
+                </div>
               )}
-              {risk.trim().length > 0 && (
-                <div><span className="k" style={{ color: '#8A3A32' }}>{t('theme_detail.risk')}</span>{risk}</div>
-              )}
-            </div>
-          </div>
-        )
-      })}
+            </Card>
+          )
+        })}
+      </Space>
     </div>
+  )
+}
+
+function MetaKey({
+  children,
+  token,
+  color,
+}: {
+  children: React.ReactNode
+  token: ReturnType<typeof useToken>['token']
+  color?: string
+}) {
+  return (
+    <span
+      style={{
+        fontFamily: token.fontFamilyCode,
+        fontSize: 10,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        color: color ?? token.colorTextQuaternary,
+        marginRight: 6,
+      }}
+    >
+      {children}
+    </span>
   )
 }
