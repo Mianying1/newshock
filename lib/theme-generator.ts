@@ -7,6 +7,7 @@ import { classify8KEvent, applyDecision, buildArchetypeBlock } from './sec-8k-cl
 import { loadActiveArchetypes } from './archetype-loader'
 import { getMatcherContext, invalidateMatcherCache } from './theme-matcher'
 import { enrichThemeRecommendations } from './theme-enrichment'
+import { computeThemeStrength } from './compute-theme-strength'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -705,9 +706,22 @@ async function handleStrengthenExisting(
     .eq('id', themeId)
     .single()
 
+  // Attach event first so it's included when recomputing strength
+  await supabaseAdmin
+    .from('events')
+    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoning, level_of_impact: levelOfImpact })
+    .eq('id', eventId)
+
   if (existing) {
     const newEventCount = (existing.event_count ?? 0) + 1
-    const newStrength = Math.min(100, (existing.theme_strength_score ?? 50) + 2)
+
+    const { data: themeEvents } = await supabaseAdmin
+      .from('events')
+      .select('event_date, level_of_impact, source_name')
+      .eq('trigger_theme_id', themeId)
+      .not('event_date', 'is', null)
+
+    const { strength: newStrength } = computeThemeStrength(themeEvents ?? [])
 
     await supabaseAdmin
       .from('themes')
@@ -719,7 +733,6 @@ async function handleStrengthenExisting(
       })
       .eq('id', themeId)
 
-    // Auto-promote exploratory → active when it has earned attention
     if (existing.status === 'exploratory_candidate' && (newEventCount >= 3 || newStrength >= 55)) {
       await supabaseAdmin
         .from('themes')
@@ -728,7 +741,6 @@ async function handleStrengthenExisting(
       console.log(`  [promote] ${themeId}: exploratory_candidate → active (events=${newEventCount}, strength=${newStrength})`)
     }
 
-    // Revive archived / cooling themes on fresh strengthen
     if (existing.status === 'archived' || existing.status === 'cooling') {
       await supabaseAdmin
         .from('themes')
@@ -737,11 +749,6 @@ async function handleStrengthenExisting(
       console.log(`  [revive] ${themeId}: ${existing.status} → active`)
     }
   }
-
-  await supabaseAdmin
-    .from('events')
-    .update({ trigger_theme_id: themeId, classifier_reasoning: reasoning, level_of_impact: levelOfImpact })
-    .eq('id', eventId)
 
   return { tickers_created: 0, novel_tickers_skipped: [] }
 }
