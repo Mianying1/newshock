@@ -1,10 +1,56 @@
 'use client'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 
 export interface TickerRowBadge {
-  label: string
+  label: ReactNode
   title?: string
+}
+
+export function NewspaperIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+      <path d="M18 14h-8" />
+      <path d="M15 18h-5" />
+      <path d="M10 6h8v4h-8V6Z" />
+    </svg>
+  )
+}
+
+export function BotIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M12 8V4H8" />
+      <rect width="16" height="12" x="4" y="8" rx="2" />
+      <path d="M2 14h2" />
+      <path d="M20 14h2" />
+      <path d="M15 13v2" />
+      <path d="M9 13v2" />
+    </svg>
+  )
 }
 
 interface Props {
@@ -27,9 +73,18 @@ const SENTIMENT_DOT: Record<string, { color: string; glyph: string }> = {
   neutral: { color: '#d4d4d8', glyph: '○' },
 }
 
+function symbolBg(symbol: string): string {
+  // deterministic muted palette · consistent per-ticker
+  const palette = ['#52525b', '#57534e', '#475569', '#4b5563', '#5b6670', '#6b6158']
+  let h = 0
+  for (let i = 0; i < symbol.length; i++) h = (h * 31 + symbol.charCodeAt(i)) | 0
+  return palette[Math.abs(h) % palette.length]
+}
+
 function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: string | null; size?: number }) {
   const [errored, setErrored] = useState(false)
   const show = logoUrl && !errored
+  const initials = symbol.slice(0, Math.min(3, symbol.length))
   return (
     <span
       aria-hidden
@@ -40,13 +95,13 @@ function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: 
         width: size,
         height: size,
         borderRadius: size,
-        background: '#f4f4f5',
-        border: '1px solid #e4e4e7',
+        background: show ? '#ffffff' : symbolBg(symbol),
+        border: show ? '1px solid #e4e4e7' : 'none',
         overflow: 'hidden',
         flexShrink: 0,
-        fontSize: size <= 20 ? 9 : 10,
+        fontSize: size <= 20 ? 8 : 9,
         fontWeight: 600,
-        color: '#71717a',
+        color: show ? '#71717a' : '#ffffff',
         letterSpacing: -0.2,
       }}
     >
@@ -57,17 +112,18 @@ function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: 
           alt=""
           width={size}
           height={size}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#ffffff' }}
           onError={() => setErrored(true)}
+          referrerPolicy="no-referrer"
         />
       ) : (
-        <span>{symbol.slice(0, 2)}</span>
+        <span>{initials}</span>
       )}
     </span>
   )
 }
 
-function SectorBadge({ label, title }: { label: string; title?: string }) {
+function SectorBadge({ label, title }: { label: ReactNode; title?: string }) {
   return (
     <span
       title={title}
@@ -144,9 +200,12 @@ export default function TickerRow({
         )}
         {inlineBadges?.map((b, i) => (
           <span
-            key={`${b.label}-${i}`}
+            key={i}
             title={b.title}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 3,
               fontSize: 11,
               color: '#71717a',
               fontWeight: 400,

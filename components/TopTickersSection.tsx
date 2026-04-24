@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { useI18n } from '@/lib/i18n-context'
-import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
+import TickerRow, { type TickerRowBadge, NewspaperIcon, BotIcon } from '@/components/TickerRow'
 import type { LongShortTickerRow, AngleDirectionRow, LongShortMode } from '@/lib/ticker-scoring'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -128,10 +128,15 @@ export function TopTickersSection() {
               angleTop.map((d, i) => {
                 const inlineBadges: TickerRowBadge[] = []
                 if (d.is_ai_pending) {
-                  inlineBadges.push({ label: '🤖' })
+                  inlineBadges.push({ label: <BotIcon />, title: t('top_tickers.ai_pending') })
                 }
                 inlineBadges.push({
-                  label: `📰 ${t('top_tickers.recent_days', { days: d.last_event_days_ago })}`,
+                  label: (
+                    <>
+                      <NewspaperIcon />
+                      {t('top_tickers.recent_days', { days: d.last_event_days_ago })}
+                    </>
+                  ),
                   title: d.angle_label,
                 })
                 const rightBadge: TickerRowBadge | null = d.category

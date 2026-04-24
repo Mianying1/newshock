@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
+import TickerRow, { type TickerRowBadge, NewspaperIcon, BotIcon } from '@/components/TickerRow'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
@@ -253,10 +253,15 @@ export default function TickersPage() {
                       {rows.map((d, i) => {
                         const inlineBadges: TickerRowBadge[] = []
                         if (d.is_ai_pending) {
-                          inlineBadges.push({ label: '🤖' })
+                          inlineBadges.push({ label: <BotIcon />, title: t('top_tickers.ai_pending') })
                         }
                         inlineBadges.push({
-                          label: `📰 ${t('top_tickers.recent_days', { days: d.last_event_days_ago })}`,
+                          label: (
+                            <>
+                              <NewspaperIcon />
+                              {t('top_tickers.recent_days', { days: d.last_event_days_ago })}
+                            </>
+                          ),
                           title: d.angle_label,
                         })
                         const rightBadge: TickerRowBadge | null = d.category
