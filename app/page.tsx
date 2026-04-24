@@ -8,11 +8,11 @@ import {
   Card,
   Col,
   Empty,
+  Flex,
   Input,
   Layout,
   Row,
   Segmented,
-  Space,
   Spin,
   Typography,
   theme,
@@ -164,16 +164,34 @@ export default function HomePage() {
               >
                 {t('radar.today_on_radar')}
               </Title>
-              <Space size={10} wrap style={{ marginTop: 8, fontSize: 12.5, color: token.colorTextTertiary }}>
-                {headerDate && <Text style={{ color: token.colorTextTertiary, fontSize: 12.5 }}>{headerDate}</Text>}
-                {headerDate && <Text style={{ color: token.colorTextQuaternary }}>·</Text>}
-                <Badge color={token.colorSuccess} />
-                <Text style={{ color: token.colorTextTertiary, fontSize: 12.5 }}>{t('radar.narratives_count', { n: narrativesCount })}</Text>
-                <Text style={{ color: token.colorTextQuaternary }}>·</Text>
-                <Text style={{ color: token.colorTextTertiary, fontSize: 12.5 }}>{t('radar.active_themes_count', { n: totalThemes })}</Text>
-                <Text style={{ color: token.colorTextQuaternary }}>·</Text>
-                <Text style={{ color: token.colorTextTertiary, fontSize: 12.5 }}>{t('radar.events_scanned_7d', { n: eventsWeek })}</Text>
-              </Space>
+              <Flex align="center" justify="space-between" wrap gap={16} style={{ marginTop: 12 }}>
+                <Flex align="center" gap={20} wrap>
+                  <Flex align="center" gap={8}>
+                    <Badge color={token.colorSuccess} />
+                    <Text style={{ fontSize: 13, color: token.colorTextSecondary, fontWeight: 500 }}>
+                      {t('radar.narratives_count', { n: narrativesCount })}
+                    </Text>
+                  </Flex>
+                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
+                    {t('radar.active_themes_count', { n: totalThemes })}
+                  </Text>
+                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
+                    {t('radar.events_scanned_7d', { n: eventsWeek })}
+                  </Text>
+                </Flex>
+                {headerDate && (
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: token.colorTextQuaternary,
+                      fontFamily: token.fontFamilyCode,
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    {headerDate}
+                  </Text>
+                )}
+              </Flex>
             </div>
 
             <Row gutter={[24, 24]} style={{ marginTop: 8 }}>

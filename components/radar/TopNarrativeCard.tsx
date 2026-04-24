@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import {
-  Alert,
   Button,
   Card,
   Col,
@@ -16,7 +15,6 @@ import {
 import {
   ArrowRightOutlined,
   FileTextOutlined,
-  NodeIndexOutlined,
   WarningFilled,
 } from '@ant-design/icons'
 import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
@@ -122,7 +120,8 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   border: 'none',
                   fontSize: 12,
                   fontWeight: 600,
-                  padding: '4px 12px',
+                  lineHeight: '20px',
+                  padding: '0 12px',
                   margin: 0,
                   letterSpacing: '0.08em',
                 }}
@@ -135,7 +134,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   color: tone.accent,
                   border: 'none',
                   fontSize: 12,
-                  padding: '3px 10px',
+                  fontWeight: 500,
+                  lineHeight: '20px',
+                  padding: '0 12px',
                   margin: 0,
                 }}
               >
@@ -209,28 +210,48 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           )}
 
           {/* 3 · Stage Alert (dark-rust left border) */}
-          <Alert
-            showIcon
-            icon={<WarningFilled style={{ color: tone.accent }} />}
-            message={
-              <Text style={{ fontSize: 14, fontWeight: 500, color: tone.accent }}>
-                {alertHeadline}
-              </Text>
-            }
-            description={
-              exitSignal ? (
-                <Text style={{ fontSize: 12, color: '#8C8A85', lineHeight: 1.5 }}>{exitSignal}</Text>
-              ) : undefined
-            }
+          <div
             style={{
               background: tone.accentBg,
               border: `1px solid ${tone.accentBorder}`,
               borderLeft: `4px solid ${tone.accent}`,
               borderRadius: 4,
-              padding: '8px 12px',
+              padding: '12px 14px',
               marginBottom: 14,
             }}
-          />
+          >
+            <Flex gap={10} align="flex-start">
+              <WarningFilled
+                style={{ color: tone.accent, fontSize: 14, marginTop: 3, flexShrink: 0 }}
+              />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: tone.accent,
+                    display: 'block',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {alertHeadline}
+                </Text>
+                {exitSignal && (
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: '#8C8A85',
+                      lineHeight: 1.55,
+                      display: 'block',
+                      marginTop: 6,
+                    }}
+                  >
+                    {exitSignal}
+                  </Text>
+                )}
+              </div>
+            </Flex>
+          </div>
 
           {/* 4 · Stage + Progress (2-col neutral panel) */}
           <Card
@@ -351,59 +372,41 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             </Col>
           </Row>
 
-          {/* 6 · Tickers + graph CTA */}
-          <Row gutter={12} align="middle" style={{ marginBottom: 14 }}>
-            <Col flex="1" style={{ minWidth: 0 }}>
-              <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
-                {t('narratives.related_tickers')}
-              </Text>
-              <Space wrap size={[6, 6]}>
-                {heroTickers.map((r) => {
-                  const arrow = directionArrow(r.exposure_direction)
-                  return (
-                    <Tag
-                      key={r.ticker_symbol}
-                      style={{
-                        background: '#FAFAFA',
-                        color: '#1F1C19',
-                        border: '1px solid #E8E2D5',
-                        fontSize: 12,
-                        fontWeight: 500,
-                        padding: '3px 10px',
-                        margin: 0,
-                        borderRadius: 4,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 5,
-                      }}
-                    >
-                      ${r.ticker_symbol}
-                      {arrow && <span style={{ color: arrow.color, fontSize: 10 }}>{arrow.glyph}</span>}
-                    </Tag>
-                  )
-                })}
-                {heroOverflow > 0 && (
-                  <Text style={{ fontSize: 12, color: '#8C8A85' }}>+{heroOverflow} {t('narratives.more_suffix')}</Text>
-                )}
-              </Space>
-            </Col>
-            <Col flex="none">
-              <Button
-                icon={<NodeIndexOutlined />}
-                size="middle"
-                style={{
-                  border: '1px solid #E8E2D5',
-                  background: '#FFFFFF',
-                  color: '#1F1C19',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  height: 34,
-                }}
-              >
-                {t('narratives.view_full_map')}
-              </Button>
-            </Col>
-          </Row>
+          {/* 6 · Related tickers */}
+          <div style={{ marginBottom: 14 }}>
+            <Text style={{ fontSize: 10, color: '#8C8A85', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+              {t('narratives.related_tickers')}
+            </Text>
+            <Space wrap size={[6, 6]}>
+              {heroTickers.map((r) => {
+                const arrow = directionArrow(r.exposure_direction)
+                return (
+                  <Tag
+                    key={r.ticker_symbol}
+                    style={{
+                      background: '#FAFAFA',
+                      color: '#1F1C19',
+                      border: '1px solid #E8E2D5',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      padding: '3px 10px',
+                      margin: 0,
+                      borderRadius: 4,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    ${r.ticker_symbol}
+                    {arrow && <span style={{ color: arrow.color, fontSize: 10 }}>{arrow.glyph}</span>}
+                  </Tag>
+                )
+              })}
+              {heroOverflow > 0 && (
+                <Text style={{ fontSize: 12, color: '#8C8A85' }}>+{heroOverflow} {t('narratives.more_suffix')}</Text>
+              )}
+            </Space>
+          </div>
 
           {/* 7 · Why Now (single line, neutral bg + amber border) */}
           {primaryWhyNow && (
