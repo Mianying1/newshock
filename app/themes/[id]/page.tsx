@@ -3,9 +3,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import {
+  Breadcrumb,
+  Button,
+  Flex,
+  Input,
+  Layout,
+  Space,
+  Tag,
+  Typography,
+  theme as antdTheme,
+} from 'antd'
+import { MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
-import { LocaleToggle } from '@/components/LocaleToggle'
 import { useI18n } from '@/lib/i18n-context'
+import { useThemeMode } from '@/lib/providers'
 import { pickField } from '@/lib/useField'
 import { formatRelativeTime } from '@/lib/utils'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
@@ -17,8 +29,13 @@ import type {
   ThemeRecommendation,
 } from '@/types/recommendations'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { SectionHeader } from '@/components/shared/SectionHeader'
 import { stageColor as getStageColor } from '@/lib/design-tokens'
 import '../../radar.css'
+
+const { Title, Text } = Typography
+const { Header, Content } = Layout
+const { useToken } = antdTheme
 
 type EventTab = 'all' | EventDirection
 type EventGroup = 'today' | 'yesterday' | 'this_week' | 'last_week' | 'older'
@@ -59,7 +76,9 @@ function dirDot(d: EventDirection | null): string {
 
 export default function ThemeDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { t, locale } = useI18n()
+  const { t, locale, setLocale } = useI18n()
+  const { token } = useToken()
+  const { mode, toggle } = useThemeMode()
   const [theme, setTheme] = useState<ThemeRadarItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -132,95 +151,187 @@ export default function ThemeDetailPage() {
     <div className="radar-page">
       <div className="app">
         <Sidebar />
-        <main className="main">
-          <div className="topbar">
-            <div className="search is-disabled">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              <span className="ph">{t('topbar.search_placeholder')}</span>
-              <span className="soon">{t('topbar.search_soon')}</span>
-            </div>
-            <LocaleToggle />
-          </div>
+        <Layout style={{ background: 'transparent' }}>
+          <Header
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 30,
+              height: 52,
+              padding: '10px 28px',
+              background: 'var(--topbar-bg)',
+              backdropFilter: 'saturate(160%) blur(16px)',
+              WebkitBackdropFilter: 'saturate(160%) blur(16px)',
+              borderBottom: `1px solid ${token.colorBorder}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <Input
+              disabled
+              prefix={<SearchOutlined />}
+              placeholder={t('topbar.search_placeholder')}
+              suffix={
+                <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: token.colorTextQuaternary }}>
+                  {t('topbar.search_soon')}
+                </Text>
+              }
+              style={{ flex: 1 }}
+            />
+            <Space.Compact className="topbar-actions">
+              <Button
+                className="topbar-iconbtn"
+                type="default"
+                aria-label={t('topbar.toggle_locale')}
+                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
+              >
+                <span key={locale} className="topbar-iconbtn-inner">
+                  {locale === 'en' ? 'EN' : '中'}
+                </span>
+              </Button>
+              <Button
+                className="topbar-iconbtn"
+                type="default"
+                aria-label={t(mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark')}
+                icon={
+                  <span key={mode} className="topbar-iconbtn-inner">
+                    {mode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+                  </span>
+                }
+                onClick={toggle}
+              />
+            </Space.Compact>
+          </Header>
 
-          {loading && (
-            <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
-              {t('theme_detail.loading')}
-            </p>
-          )}
-          {error && (
-            <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
-              {t('theme_detail.error')}
-            </p>
-          )}
+          <Content style={{ padding: '0 28px 40px' }}>
+            {loading && (
+              <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: token.colorTextQuaternary }}>
+                {t('theme_detail.loading')}
+              </p>
+            )}
+            {error && (
+              <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: token.colorTextQuaternary }}>
+                {t('theme_detail.error')}
+              </p>
+            )}
 
-          {theme && (
-            <>
-              <div className="crumbs">
-                <Link href="/">{t('sidebar.radar')}</Link>
-                <span className="sep">›</span>
-                <Link href="/themes">{t('sidebar.themes')}</Link>
-                <span className="sep">›</span>
-                <span className="cur">{pickField(locale, theme.name, theme.name_zh)}</span>
-              </div>
+            {theme && (() => {
+              const themeName = pickField(locale, theme.name, theme.name_zh)
+              let secCounter = 0
+              const nextIdx = () => String(++secCounter).padStart(2, '0')
+              return (
+              <>
+                <Breadcrumb
+                  style={{ margin: '20px 0 4px', fontSize: 12 }}
+                  items={[
+                    { title: <Link href="/">{t('sidebar.radar')}</Link> },
+                    { title: <Link href="/themes">{t('sidebar.themes')}</Link> },
+                    { title: themeName },
+                  ]}
+                />
 
-              <header className="td-head">
-                <div>
-                  <div className="cat">
-                    <span className="tag">{formatCategoryLabel(theme.category)}</span>
+                <div style={{ padding: '20px 2px 24px', borderBottom: `1px solid ${token.colorSplit}` }}>
+                  <Flex align="center" gap={10} wrap style={{ marginBottom: 14 }}>
+                    <Tag
+                      style={{
+                        margin: 0,
+                        background: token.colorFillAlter,
+                        color: token.colorTextSecondary,
+                        border: `1px solid ${token.colorBorder}`,
+                        fontSize: 12,
+                        fontWeight: 500,
+                        padding: '2px 10px',
+                        borderRadius: 4,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {formatCategoryLabel(theme.category)}
+                    </Tag>
                     {theme.theme_tier === 'umbrella' && (
-                      <span className="tag">{t('theme_detail.badge_umbrella')}</span>
+                      <Tag
+                        style={{
+                          margin: 0,
+                          background: token.colorFillAlter,
+                          color: token.colorTextSecondary,
+                          border: `1px solid ${token.colorBorder}`,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          padding: '2px 10px',
+                          borderRadius: 4,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {t('theme_detail.badge_umbrella')}
+                      </Tag>
                     )}
                     {theme.parent_theme && (
-                      <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+                      <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
                         {t('theme_detail.parent_theme')}{' '}
-                        <Link href={`/themes/${theme.parent_theme.id}`} style={{ color: 'var(--link)', textDecoration: 'none' }}>
+                        <Link href={`/themes/${theme.parent_theme.id}`} style={{ color: token.colorLink, textDecoration: 'none' }}>
                           {pickField(locale, theme.parent_theme.name, theme.parent_theme.name_zh)}
                         </Link>
-                      </span>
+                      </Text>
                     )}
-                  </div>
-                  <h1 className="td-title">{pickField(locale, theme.name, theme.name_zh)}</h1>
-                  {locale === 'en' && theme.name_zh && (
-                    <div className="td-title-zh">{theme.name_zh}</div>
-                  )}
-                  {locale === 'zh' && theme.name_zh && (
-                    <div className="td-title-zh" style={{ fontStyle: 'italic' }}>
-                      {theme.name}
+                  </Flex>
+
+                  <Flex align="flex-start" justify="space-between" gap={24} wrap>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <Flex align="flex-start" gap={14} wrap>
+                        <Title
+                          level={1}
+                          style={{
+                            margin: 0,
+                            fontSize: 32,
+                            fontWeight: 600,
+                            letterSpacing: '-0.02em',
+                            lineHeight: 1.2,
+                            color: token.colorText,
+                          }}
+                        >
+                          {themeName}
+                        </Title>
+                        <span style={{ paddingTop: 10 }}>
+                          <FocusLevelBadge strength={theme.theme_strength_score} />
+                        </span>
+                      </Flex>
+                      {locale === 'en' && theme.name_zh && (
+                        <Text style={{ display: 'block', marginTop: 8, fontSize: 14, color: token.colorTextTertiary }}>
+                          {theme.name_zh}
+                        </Text>
+                      )}
+                      {locale === 'zh' && theme.name_zh && (
+                        <Text style={{ display: 'block', marginTop: 8, fontSize: 14, color: token.colorTextTertiary, fontStyle: 'italic' }}>
+                          {theme.name}
+                        </Text>
+                      )}
                     </div>
-                  )}
+
+                    <Flex gap={28} align="flex-start" style={{ paddingTop: 4 }}>
+                      <KPICell label="Strength" value={theme.theme_strength_score} token={token} />
+                      {theme.conviction_score !== null && (
+                        <KPICell
+                          label="Conviction"
+                          value={`${theme.conviction_score >= 5 ? '+' : ''}${theme.conviction_score.toFixed(1)}`}
+                          token={token}
+                          tone={theme.conviction_score >= 5 ? 'up' : 'down'}
+                        />
+                      )}
+                      <KPICell label="Events" value={theme.event_count} token={token} />
+                    </Flex>
+                  </Flex>
                 </div>
-                <div className="td-meta">
-                  <div className="td-meta-cell">
-                    <div className="lbl">Strength</div>
-                    <div className="num">{theme.theme_strength_score}</div>
-                  </div>
-                  {theme.conviction_score !== null && (
-                    <div className="td-meta-cell">
-                      <div className="lbl">Conviction</div>
-                      <div className={`num ${theme.conviction_score >= 5 ? 'up' : 'down'}`}>
-                        {theme.conviction_score >= 5 ? '+' : ''}{theme.conviction_score.toFixed(1)}
-                      </div>
-                    </div>
-                  )}
-                  <div className="td-meta-cell">
-                    <div className="lbl">Events</div>
-                    <div className="num">{theme.event_count}</div>
-                  </div>
-                </div>
-              </header>
 
               {/* Summary */}
               {(() => {
                 const summary = pickField(locale, theme.summary, theme.summary_zh)
                 return summary ? (
                   <div className="td-sec">
-                    <h2 className="td-sec-title">
-                      Thesis <span className="td-sec-title-zh">主题陈述</span>
-                    </h2>
-                    <hr className="td-sec-rule" />
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.theme_thesis_title')}
+                      subtitle={t('sections.theme_thesis_subtitle')}
+                    />
                     <p style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.65 }}>{summary}</p>
                   </div>
                 ) : null
@@ -246,10 +357,11 @@ export default function ThemeDetailPage() {
 
                 return (
                   <div className="td-sec">
-                    <h2 className="td-sec-title">
-                      Lifespan <span className="td-sec-title-zh">生命周期</span>
-                    </h2>
-                    <hr className="td-sec-rule" />
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.theme_lifespan_title')}
+                      subtitle={t('sections.theme_lifespan_subtitle')}
+                    />
                     <div className="td-card">
                       <div className="td-lifespan">
                         <div className="ticks">
@@ -306,10 +418,11 @@ export default function ThemeDetailPage() {
                 ]
                 return (
                   <div className="td-sec">
-                    <h2 className="td-sec-title">
-                      Conviction <span className="td-sec-title-zh">确信度 · 4 维度</span>
-                    </h2>
-                    <hr className="td-sec-rule" />
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.theme_conviction_title')}
+                      subtitle={t('sections.theme_conviction_subtitle')}
+                    />
                     <div className="td-card">
                       <div className="td-score-row">
                         <div>
@@ -373,10 +486,11 @@ export default function ThemeDetailPage() {
                 const label = bearWarn ? null : strongBull ? t('theme_detail.strong_bull') : t('theme_detail.balanced')
                 return (
                   <div className="td-sec">
-                    <h2 className="td-sec-title">
-                      Evidence balance <span className="td-sec-title-zh">多空证据</span>
-                    </h2>
-                    <hr className="td-sec-rule" />
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.theme_evidence_title')}
+                      subtitle={t('sections.theme_evidence_subtitle')}
+                    />
                     <div className="td-card">
                       {bearWarn && <div className="td-bb-warn">⚠ {t('theme_detail.bear_warning')}</div>}
                       <div className="td-bb">
@@ -407,10 +521,12 @@ export default function ThemeDetailPage() {
 
               {/* Trigger Events */}
               <div className="td-sec">
-                <h2 className="td-sec-title">
-                  Trigger Events <span className="td-sec-title-zh">触发事件 · {catalysts.length}</span>
-                </h2>
-                <hr className="td-sec-rule" />
+                <SectionHeader
+                  index={nextIdx()}
+                  title={t('sections.theme_events_title')}
+                  subtitle={t('sections.theme_events_subtitle')}
+                  meta={`${catalysts.length}`}
+                />
                 {catalysts.length === 0 ? (
                   <p style={{ fontSize: 12, color: 'var(--ink-4)' }}>{t('theme_detail.no_catalysts')}</p>
                 ) : (
@@ -494,10 +610,11 @@ export default function ThemeDetailPage() {
 
               {/* Exposure Mapping */}
               <div className="td-sec">
-                <h2 className="td-sec-title">
-                  Exposure Mapping <span className="td-sec-title-zh">暴露映射 · Direct / Observational</span>
-                </h2>
-                <hr className="td-sec-rule" />
+                <SectionHeader
+                  index={nextIdx()}
+                  title={t('sections.theme_exposure_title')}
+                  subtitle={t('sections.theme_exposure_subtitle')}
+                />
                 {recs.length === 0 && (
                   <p style={{ fontSize: 12, color: 'var(--ink-4)' }}>{t('theme_detail.no_exposure')}</p>
                 )}
@@ -512,10 +629,12 @@ export default function ThemeDetailPage() {
               {/* Subthemes */}
               {theme.child_themes.length > 0 && (
                 <div className="td-sec">
-                  <h2 className="td-sec-title">
-                    Subthemes <span className="td-sec-title-zh">子主题 · {theme.child_themes.length}</span>
-                  </h2>
-                  <hr className="td-sec-rule" />
+                  <SectionHeader
+                    index={nextIdx()}
+                    title={t('sections.theme_subthemes_title')}
+                    subtitle={t('sections.theme_subthemes_subtitle')}
+                    meta={`${theme.child_themes.length}`}
+                  />
                   <div className="td-subs">
                     {theme.child_themes.map((c) => (
                       <Link key={c.id} href={`/themes/${c.id}`} className="td-sub">
@@ -555,10 +674,11 @@ export default function ThemeDetailPage() {
 
                 return (
                   <div className="td-sec">
-                    <h2 className="td-sec-title">
-                      Historical Playbook <span className="td-sec-title-zh">历史 Playbook</span>
-                    </h2>
-                    <hr className="td-sec-rule" />
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.theme_playbook_title')}
+                      subtitle={t('sections.theme_playbook_subtitle')}
+                    />
 
                     <p style={{ fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', marginBottom: 10, fontStyle: 'italic' }}>
                       ℹ {t('theme_detail.disclaimer_playbook')}
@@ -656,12 +776,54 @@ export default function ThemeDetailPage() {
                 )
               })()}
 
-              <div className="td-disc">
-                {t('common.disclaimer_footer')}
-              </div>
-            </>
-          )}
-        </main>
+                <div style={{ marginTop: 40, padding: '16px 0', fontSize: 11, color: token.colorTextQuaternary, textAlign: 'center', letterSpacing: '0.02em' }}>
+                  {t('common.disclaimer_footer')}
+                </div>
+              </>
+              )
+            })()}
+          </Content>
+        </Layout>
+      </div>
+    </div>
+  )
+}
+
+interface KPICellProps {
+  label: string
+  value: string | number
+  token: ReturnType<typeof useToken>['token']
+  tone?: 'up' | 'down'
+}
+
+function KPICell({ label, value, token, tone }: KPICellProps) {
+  const color = tone === 'up' ? token.colorSuccess : tone === 'down' ? token.colorError : token.colorText
+  return (
+    <div>
+      <div
+        style={{
+          fontFamily: token.fontFamilyCode,
+          fontSize: 10,
+          fontWeight: 600,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: token.colorTextQuaternary,
+          marginBottom: 6,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: token.fontFamilyCode,
+          fontSize: 22,
+          fontWeight: 600,
+          color,
+          lineHeight: 1,
+          letterSpacing: '-0.01em',
+        }}
+      >
+        {value}
       </div>
     </div>
   )
