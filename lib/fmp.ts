@@ -77,6 +77,59 @@ export async function getStockNewsMultiTicker(
   return allNews.slice(0, totalLimit)
 }
 
+/**
+ * Keyword-only FMP news helper.
+ * NOTE: FMP stock-latest feed only covers last 4-6 hours with pagination.
+ * API caps out at ~100 pages (Maximum Quota) before reaching 90 days back.
+ * Not suitable for historical backfill (90+ days).
+ * Kept for potential future use (realtime keyword monitoring).
+ */
+export async function getStockNewsByKeywords(
+  keywords: string[],
+  totalLimit: number = 300,
+  maxPages: number = 60,
+  daysBack: number = 90,
+): Promise<FMPNewsItem[]> {
+  if (keywords.length === 0) return []
+  const lowered = keywords.map((k) => k.toLowerCase())
+  const cutoff = Date.now() - daysBack * 86400000
+  const out: FMPNewsItem[] = []
+  const seen = new Set<string>()
+  let emptyStreak = 0
+  let hitCutoff = false
+
+  for (let page = 0; page < maxPages; page++) {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: '100',
+      apikey: process.env.FMP_API_KEY!,
+    })
+    const res = await fetch(`${FMP_BASE}/news/stock-latest?${params}`)
+    if (!res.ok) throw new Error(`FMP stock-latest p${page}: ${res.status}`)
+    const data = (await res.json()) as FMPNewsItem[]
+    if (!Array.isArray(data) || data.length === 0) {
+      if (++emptyStreak >= 2) break
+      continue
+    }
+    emptyStreak = 0
+
+    for (const item of data) {
+      if (seen.has(item.url)) continue
+      seen.add(item.url)
+      const ts = new Date(item.publishedDate ?? '').getTime()
+      if (Number.isFinite(ts) && ts < cutoff) { hitCutoff = true; continue }
+      const text = ((item.title ?? '') + ' ' + (item.text ?? '')).toLowerCase()
+      if (!lowered.some((kw) => text.includes(kw))) continue
+      out.push(item)
+    }
+
+    if (out.length >= totalLimit) break
+    if (hitCutoff) break  // page walked past daysBack cutoff → further pages are older
+    await new Promise((r) => setTimeout(r, 200))
+  }
+  return out.slice(0, totalLimit)
+}
+
 export async function getGeneralNews(
   page: number = 0,
   limit: number = 20
