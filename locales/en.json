@@ -484,6 +484,16 @@
     "extended_note": "Multi-year structural theme — stage based on real-world timeline",
     "since": "since"
   },
+  "themes": {
+    "section_title": "All Themes",
+    "tracking_today": "{shown} / {total} themes",
+    "no_results": "No themes match these filters"
+  },
+  "filter": {
+    "all": "All",
+    "horizon": "Horizon",
+    "category": "Category"
+  },
   "categories": {
     "geopolitics": "Geopolitics",
     "geopolitical": "Geopolitics",

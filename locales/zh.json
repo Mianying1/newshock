@@ -484,6 +484,16 @@
     "extended_note": "长期结构性主题, 阶段判断基于现实时长",
     "since": "since"
   },
+  "themes": {
+    "section_title": "全部主题",
+    "tracking_today": "显示 {shown} / 共 {total} 个主题",
+    "no_results": "没有主题符合当前筛选"
+  },
+  "filter": {
+    "all": "全部",
+    "horizon": "时限",
+    "category": "类别"
+  },
   "categories": {
     "geopolitics": "地缘",
     "geopolitical": "地缘",

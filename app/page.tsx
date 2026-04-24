@@ -24,7 +24,7 @@ import { MarketRegimeCard } from '@/components/MarketRegimeCard'
 import { TopTickersSection } from '@/components/TopTickersSection'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { TodayTopNarratives } from '@/components/radar/TodayTopNarratives'
-import { SecondaryThemeGrid } from '@/components/radar/SecondaryThemeGrid'
+import { SecondaryThemesWithFilter } from '@/components/radar/SecondaryThemesWithFilter'
 import { EventStreamCompact } from '@/components/radar/EventStreamCompact'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
@@ -104,8 +104,8 @@ export default function HomePage() {
 
   const secondaryThemes = activeThemes
     .filter((th) => !top3Ids.has(th.id))
+    .filter((th) => th.status === 'active' || th.status === 'cooling')
     .sort((a, b) => b.theme_strength_score - a.theme_strength_score)
-    .slice(0, 8)
 
   const narrativesCount = overview?.narratives_count ?? 0
   const eventsWeek = overview?.events_7d ?? 0
@@ -263,7 +263,7 @@ export default function HomePage() {
                         </Link>
                       }
                     />
-                    <SecondaryThemeGrid themes={secondaryThemes} />
+                    <SecondaryThemesWithFilter themes={secondaryThemes} />
                   </>
                 )}
               </Col>
