@@ -587,7 +587,7 @@
 .radar-page .rb-track {
   height: 6px;
   background: var(--line);
-  border-radius: 3px;
+  border-radius: 999px;
   position: relative;
   overflow: visible;
 }
@@ -596,11 +596,18 @@
   left: 50%;
   top: 0;
   height: 100%;
-  border-radius: 3px;
+  border-radius: 999px;
   background: var(--ink-2);
+  z-index: 1;
 }
-.radar-page .rb-fill.pos { background: linear-gradient(90deg, #A6BB8A, #7A8C5C); }
-.radar-page .rb-fill.neg { background: linear-gradient(270deg, #D59A8B, #B8453A); }
+.radar-page .rb-fill.pos {
+  background: linear-gradient(90deg, #A6BB8A, #7A8C5C);
+  border-radius: 999px;
+}
+.radar-page .rb-fill.neg {
+  background: linear-gradient(270deg, #D59A8B, #B8453A);
+  border-radius: 999px;
+}
 .radar-page .rb-mid {
   position: absolute;
   left: 50%;
@@ -608,6 +615,7 @@
   bottom: -2px;
   width: 1px;
   background: var(--ink-4);
+  z-index: 0;
 }
 .radar-page .rb-val {
   font-family: 'JetBrains Mono', monospace;
