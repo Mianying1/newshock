@@ -106,9 +106,8 @@ function parseEntry(e: Entry, cikMap: Map<string, string>, headerText: string): 
     ? `${filingDate.slice(0, 4)}-${filingDate.slice(4, 6)}-${filingDate.slice(6, 8)}`
     : e.date
   const itemDescriptions = sgmlFieldAll(header, 'ITEM INFORMATION')
-  const headline = itemDescriptions.length
-    ? `${company} files 8-K: ${itemDescriptions.join(' | ')}`
-    : `${company} files 8-K`
+  const cikPadded = e.cik.padStart(10, '0')
+  const headline = `8-K - ${company} (${cikPadded}) (Filer)`
   return {
     event_date: `${filedDateStr}T12:00:00.000Z`,
     headline,
