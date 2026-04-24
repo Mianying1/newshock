@@ -248,6 +248,7 @@
   margin-left: auto;
 }
 
+/* @deprecated Phase 3 P1 · replaced by AntD Segmented in app/page.tsx · safe to delete after full Phase 3 */
 .radar-page .lang-switch {
   display: flex;
   align-items: center;
@@ -274,6 +275,7 @@
   color: var(--bg);
 }
 
+/* @deprecated Phase 3 P1 · replaced by AntD Button type=text in app/page.tsx · safe to delete after full Phase 3 */
 .radar-page .iconbtn {
   width: 28px;
   height: 28px;
@@ -858,6 +860,7 @@
 }
 
 /* ===== Themes ===== */
+/* @deprecated Phase 3 P1 · replaced by AntD Row/Col in app/page.tsx · safe to delete after full Phase 3 */
 .radar-page .themes-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -952,6 +955,7 @@
 }
 
 /* ===== Curator strip ===== */
+/* @deprecated Phase 3 P1 · replaced by components/shared/CuratorStrip · safe to delete after full Phase 3 */
 .radar-page .curator-strip {
   margin-top: 36px;
   padding: 18px 20px;

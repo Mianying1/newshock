@@ -23,6 +23,9 @@ export const newshockTheme: ThemeConfig = {
 
     borderRadius: 8,
 
+    fontSizeHeading1: 26,
+    lineHeightHeading1: 1.1,
+
     fontFamily:
       'var(--font-inter), "PingFang SC", "Source Han Sans CN", "Noto Sans SC", system-ui, -apple-system, sans-serif',
     fontFamilyCode:
