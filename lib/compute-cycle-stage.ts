@@ -30,7 +30,7 @@ type Archetype = {
   playbook: Record<string, unknown> | null
 }
 
-type Event = { trigger_theme_id: string | null; created_at: string }
+type Event = { trigger_theme_id: string | null; event_date: string | null }
 
 async function fetchAll<T>(table: string, cols: string): Promise<T[]> {
   const all: T[] = []
@@ -84,7 +84,7 @@ export async function runComputeCycleStage(): Promise<ComputeCycleStageStats> {
   const [themes, archetypes, events] = await Promise.all([
     fetchAll<Theme>('themes', 'id, name, status, archetype_id, first_event_at, created_at, current_cycle_stage, cycle_stage_computed_at'),
     fetchAll<Archetype>('theme_archetypes', 'id, typical_duration_days_min, typical_duration_days_max, playbook'),
-    fetchAll<Event>('events', 'trigger_theme_id, created_at'),
+    fetchAll<Event>('events', 'trigger_theme_id, event_date'),
   ])
 
   const archById = new Map<string, Archetype>()
@@ -92,8 +92,9 @@ export async function runComputeCycleStage(): Promise<ComputeCycleStageStats> {
 
   const firstEventByTheme = new Map<string, number>()
   for (const e of events) {
-    if (!e.trigger_theme_id) continue
-    const tms = new Date(e.created_at).getTime()
+    if (!e.trigger_theme_id || !e.event_date) continue
+    const tms = new Date(e.event_date).getTime()
+    if (!Number.isFinite(tms)) continue
     const cur = firstEventByTheme.get(e.trigger_theme_id)
     if (cur === undefined || tms < cur) firstEventByTheme.set(e.trigger_theme_id, tms)
   }
