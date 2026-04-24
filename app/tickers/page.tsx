@@ -222,7 +222,6 @@ export default function TickersPage() {
                             href={`/tickers/${tk.symbol}`}
                             rank={i + 1}
                             symbol={tk.symbol}
-                            logoUrl={tk.logo_url}
                             rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
                             rightSmall="/10"
                             sentiment={tk.dominant_sentiment as never}
@@ -274,7 +273,6 @@ export default function TickersPage() {
                             href={`/tickers/${d.ticker_symbol}`}
                             rank={i + 1}
                             symbol={d.ticker_symbol}
-                            logoUrl={d.logo_url}
                             rightText={confPct !== null ? String(confPct) : undefined}
                             rightSmall={confPct !== null ? '%' : undefined}
                             inlineBadges={inlineBadges}

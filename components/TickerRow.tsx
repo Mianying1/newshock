@@ -1,5 +1,5 @@
 'use client'
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import Link from 'next/link'
 
 export interface TickerRowBadge {
@@ -57,7 +57,6 @@ interface Props {
   href: string
   rank?: number
   symbol: string
-  logoUrl?: string | null
   rightText?: string
   rightSmall?: string
   sentiment?: 'bullish' | 'mixed' | 'bearish' | 'neutral' | null
@@ -71,74 +70,6 @@ const SENTIMENT_DOT: Record<string, { color: string; glyph: string }> = {
   mixed: { color: '#a1a1aa', glyph: '●' },
   bearish: { color: '#f43f5e', glyph: '●' },
   neutral: { color: '#d4d4d8', glyph: '○' },
-}
-
-function symbolBg(symbol: string): string {
-  // deterministic muted palette · consistent per-ticker
-  const palette = ['#52525b', '#57534e', '#475569', '#4b5563', '#5b6670', '#6b6158']
-  let h = 0
-  for (let i = 0; i < symbol.length; i++) h = (h * 31 + symbol.charCodeAt(i)) | 0
-  return palette[Math.abs(h) % palette.length]
-}
-
-function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: string | null; size?: number }) {
-  const sources: string[] = []
-  if (logoUrl) sources.push(logoUrl)
-  sources.push(`https://financialmodelingprep.com/image-stock/${symbol}.png`)
-  sources.push(`https://logo.clearbit.com/${symbol.toLowerCase()}.com`)
-
-  const [srcIdx, setSrcIdx] = useState(0)
-  const [failed, setFailed] = useState(false)
-  const showImg = !failed && srcIdx < sources.length
-  const initials = symbol.slice(0, Math.min(3, symbol.length))
-
-  return (
-    <span
-      aria-hidden
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: size,
-        height: size,
-        borderRadius: size,
-        background: showImg ? '#ffffff' : symbolBg(symbol),
-        border: showImg ? '1px solid #e4e4e7' : 'none',
-        overflow: 'hidden',
-        flexShrink: 0,
-        fontSize: size <= 20 ? 8 : 9,
-        fontWeight: 700,
-        color: '#ffffff',
-        letterSpacing: -0.2,
-      }}
-    >
-      {showImg ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={sources[srcIdx]}
-          src={sources[srcIdx]}
-          alt=""
-          width={size}
-          height={size}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#ffffff' }}
-          referrerPolicy="no-referrer"
-          onError={() => {
-            if (srcIdx < sources.length - 1) setSrcIdx(srcIdx + 1)
-            else setFailed(true)
-          }}
-          onLoad={(e) => {
-            const img = e.currentTarget
-            if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-              if (srcIdx < sources.length - 1) setSrcIdx(srcIdx + 1)
-              else setFailed(true)
-            }
-          }}
-        />
-      ) : (
-        <span style={{ color: '#ffffff' }}>{initials}</span>
-      )}
-    </span>
-  )
 }
 
 function SectorBadge({ label, title }: { label: ReactNode; title?: string }) {
@@ -167,7 +98,6 @@ export default function TickerRow({
   href,
   rank,
   symbol,
-  logoUrl,
   rightText,
   rightSmall,
   sentiment,
@@ -176,7 +106,6 @@ export default function TickerRow({
   compact = false,
 }: Props) {
   const sent = sentiment ? SENTIMENT_DOT[sentiment] ?? SENTIMENT_DOT.neutral : null
-  const logoSize = compact ? 20 : 24
 
   return (
     <Link href={href} className="ticker-row">
@@ -194,7 +123,6 @@ export default function TickerRow({
           {rank}
         </span>
       )}
-      <TickerLogo symbol={symbol} logoUrl={logoUrl} size={logoSize} />
       <span
         style={{
           display: 'inline-flex',
