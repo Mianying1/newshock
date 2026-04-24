@@ -302,6 +302,30 @@
   100% { opacity: 1; transform: rotate(0deg) scale(1); }
 }
 
+.radar-page .filter-pill {
+  font-family: inherit;
+  white-space: nowrap;
+}
+.radar-page .filter-pill:hover:not([data-active]) {
+  background: var(--line-2) !important;
+}
+.radar-page .filter-pill:active {
+  transform: scale(0.97);
+}
+.radar-page .filter-pill:focus-visible {
+  outline: 2px solid var(--ink-3);
+  outline-offset: 2px;
+}
+
+.radar-page .filter-lowsignal-toggle:hover {
+  color: var(--ink) !important;
+  background: var(--line-2) !important;
+}
+.radar-page .filter-lowsignal-toggle:focus-visible {
+  outline: 2px solid var(--ink-3);
+  outline-offset: 2px;
+}
+
 /* @deprecated Phase 3 P1 · replaced by AntD Segmented in app/page.tsx · safe to delete after full Phase 3 */
 .radar-page .lang-switch {
   display: flex;

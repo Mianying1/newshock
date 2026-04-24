@@ -17,7 +17,6 @@ import {
   Typography,
   theme,
 } from 'antd'
-import Link from 'next/link'
 import { MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
@@ -254,14 +253,6 @@ export default function HomePage() {
                       index="03"
                       title={t('sections.themes_title')}
                       subtitle={t('sections.themes_subtitle')}
-                      meta={t('sections.themes_meta', { n: secondaryThemes.length })}
-                      action={
-                        <Link href="/themes" style={{ textDecoration: 'none' }}>
-                          <Button type="link" size="small" style={{ padding: 0, height: 'auto' }}>
-                            {t('sections.themes_view_all')}
-                          </Button>
-                        </Link>
-                      }
                     />
                     <SecondaryThemesWithFilter themes={secondaryThemes} />
                   </>

@@ -492,7 +492,14 @@
   "filter": {
     "all": "All",
     "horizon": "Horizon",
-    "category": "Category"
+    "category": "Category",
+    "signal_quality": "Signal",
+    "mature_only": "Mature",
+    "show_all": "All",
+    "show_low_signal": "Include {count} low-signal",
+    "hide_low_signal": "Hide {count} low-signal",
+    "hidden_low_signal": "{count} low-signal themes hidden",
+    "showing_all": "Showing all including low-signal"
   },
   "categories": {
     "geopolitics": "Geopolitics",

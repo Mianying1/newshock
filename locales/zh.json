@@ -492,7 +492,14 @@
   "filter": {
     "all": "全部",
     "horizon": "时限",
-    "category": "类别"
+    "category": "类别",
+    "signal_quality": "信号",
+    "mature_only": "仅成熟",
+    "show_all": "全部",
+    "show_low_signal": "显示 {count} 个弱信号",
+    "hide_low_signal": "隐藏 {count} 个弱信号",
+    "hidden_low_signal": "已隐藏 {count} 个低信号主题",
+    "showing_all": "显示全部 · 含低信号候选"
   },
   "categories": {
     "geopolitics": "地缘",
