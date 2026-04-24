@@ -3,6 +3,9 @@ import { supabaseAdmin } from './supabase-admin'
 const RATIO_MID = 0.3
 const RATIO_LATE = 0.75
 const RATIO_EXIT = 1.5
+// C-v4 · cap snapshot='mid' down to 'early' if theme is still very early in its typical duration.
+// snapshot='late' is protected (策展人判断优先) — no cap applied.
+const RATIO_MID_CAP_FLOOR = 0.1
 
 type Theme = {
   id: string
@@ -62,10 +65,13 @@ function classify(ratio: number | null, snapshot: string | null): { stage: Stage
   if (ratio > RATIO_EXIT) return { stage: 'exit', reason: `ratio=${ratio.toFixed(2)} > ${RATIO_EXIT}` }
 
   if (ratio > RATIO_LATE) return { stage: 'late', reason: `ratio=${ratio.toFixed(2)} > ${RATIO_LATE}` }
-  if (snapshot === 'late') return { stage: 'late', reason: `snapshot=late (ratio=${ratio.toFixed(2)})` }
+  if (snapshot === 'late') return { stage: 'late', reason: `snapshot=late · protected (ratio=${ratio.toFixed(2)})` }
 
   if (ratio > RATIO_MID) return { stage: 'mid', reason: `ratio=${ratio.toFixed(2)} > ${RATIO_MID}` }
-  if (snapshot === 'mid') return { stage: 'mid', reason: `snapshot=mid (ratio=${ratio.toFixed(2)})` }
+  if (snapshot === 'mid') {
+    if (ratio < RATIO_MID_CAP_FLOOR) return { stage: 'early', reason: `snapshot=mid cap→early · ratio=${ratio.toFixed(2)} < ${RATIO_MID_CAP_FLOOR}` }
+    return { stage: 'mid', reason: `snapshot=mid (ratio=${ratio.toFixed(2)})` }
+  }
 
   return { stage: 'early', reason: `ratio=${ratio.toFixed(2)} · snapshot=${snapshot ?? 'null'}` }
 }
