@@ -1,7 +1,11 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Card, Typography } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
+import { SectionTitle } from '@/components/shared/SectionTitle'
+
+const { Text } = Typography
 
 interface ThemeAlertRow {
   id: string
@@ -102,21 +106,26 @@ export default function StageAlertsSection() {
 
   const unseenCount = data.alerts.filter((a) => a.seen_at === null && !seenLocal.has(a.id)).length
 
-  return (
-    <section className="my-6">
-      <div className="sec-label">
-        <span className="l">
-          {t('stage_alerts.title')}
-          {unseenCount > 0 && (
-            <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-rose-50 text-rose-700 border border-rose-200 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-              {unseenCount}
-            </span>
-          )}
+  const titleNode = (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <SectionTitle>{t('stage_alerts.title')}</SectionTitle>
+      {unseenCount > 0 && (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-rose-50 text-rose-700 border border-rose-200 font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+          {unseenCount}
         </span>
-        <span className="r">{t('stage_alerts.window_7d', { n: data.alerts.length })}</span>
-      </div>
-      <div className="space-y-2 mt-2">
+      )}
+    </span>
+  )
+
+  return (
+    <Card
+      size="small"
+      style={{ marginTop: 16 }}
+      title={titleNode}
+      extra={<Text type="secondary" style={{ fontSize: 12 }}>{t('stage_alerts.window_7d', { n: data.alerts.length })}</Text>}
+    >
+      <div className="space-y-2">
         {data.alerts.slice(0, 8).map((alert) => {
           const locallySeen = seenLocal.has(alert.id)
           const isUnseen = alert.seen_at === null && !locallySeen
@@ -171,6 +180,6 @@ export default function StageAlertsSection() {
           )
         })}
       </div>
-    </section>
+    </Card>
   )
 }

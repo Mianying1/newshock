@@ -1,6 +1,11 @@
 'use client'
 import { type ReactNode } from 'react'
 import Link from 'next/link'
+import { Tag, Typography, theme } from 'antd'
+import { RightOutlined } from '@ant-design/icons'
+
+const { Text } = Typography
+const { useToken } = theme
 
 export interface TickerRowBadge {
   label: ReactNode
@@ -60,37 +65,47 @@ interface Props {
   rightText?: string
   rightSmall?: string
   sentiment?: 'bullish' | 'mixed' | 'bearish' | 'neutral' | null
-  inlineBadges?: TickerRowBadge[]     // shown next to symbol (🤖 · 📰)
-  rightBadge?: TickerRowBadge | null  // 灰底浅字 category/sector 标签
+  inlineBadges?: TickerRowBadge[]
+  rightBadge?: TickerRowBadge | null
   compact?: boolean
 }
 
-const SENTIMENT_DOT: Record<string, { color: string; glyph: string }> = {
-  bullish: { color: '#10b981', glyph: '●' },
-  mixed: { color: '#a1a1aa', glyph: '●' },
-  bearish: { color: '#f43f5e', glyph: '●' },
-  neutral: { color: '#d4d4d8', glyph: '○' },
-}
-
-function SectorBadge({ label, title }: { label: ReactNode; title?: string }) {
+function SentimentDot({ sentiment }: { sentiment: Props['sentiment'] }) {
+  const { token } = useToken()
+  if (!sentiment) return null
+  const color =
+    sentiment === 'bullish'
+      ? token.colorSuccess
+      : sentiment === 'bearish'
+        ? token.colorError
+        : sentiment === 'mixed'
+          ? token.colorTextQuaternary
+          : null
+  if (!color) {
+    return (
+      <span
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          border: `1px solid ${token.colorTextQuaternary}`,
+          display: 'inline-block',
+          flexShrink: 0,
+        }}
+      />
+    )
+  }
   return (
     <span
-      title={title}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '2px 8px',
-        borderRadius: 4,
-        background: '#f4f4f5',
-        color: '#71717a',
-        fontSize: 10.5,
-        fontWeight: 500,
-        whiteSpace: 'nowrap',
+        width: 6,
+        height: 6,
+        borderRadius: '50%',
+        background: color,
+        display: 'inline-block',
         flexShrink: 0,
       }}
-    >
-      {label}
-    </span>
+    />
   )
 }
 
@@ -105,72 +120,81 @@ export default function TickerRow({
   rightBadge,
   compact = false,
 }: Props) {
-  const sent = sentiment ? SENTIMENT_DOT[sentiment] ?? SENTIMENT_DOT.neutral : null
+  const { token } = useToken()
 
   return (
     <Link href={href} className="ticker-row">
       {rank !== undefined && (
-        <span
+        <Text
           style={{
             flexShrink: 0,
-            width: 22,
+            width: 20,
             textAlign: 'right',
-            fontFamily: 'JetBrains Mono, monospace',
-            fontSize: 10.5,
-            color: '#a1a1aa',
+            fontFamily: token.fontFamilyCode,
+            fontSize: token.fontSizeSM,
+            color: token.colorTextTertiary,
           }}
         >
           {rank}
-        </span>
+        </Text>
       )}
       <span
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          fontFamily: 'JetBrains Mono, monospace',
-          fontWeight: 600,
-          letterSpacing: '0.02em',
-          color: '#18181b',
-          fontSize: compact ? 13 : 14,
+          gap: 8,
+          minWidth: 0,
         }}
       >
-        <span>{symbol}</span>
-        {sent && (
-          <span
-            style={{ color: sent.color, fontSize: 11, lineHeight: 1 }}
-            title={sentiment ?? 'neutral'}
-          >
-            {sent.glyph}
-          </span>
-        )}
+        <Text
+          style={{
+            fontFamily: token.fontFamilyCode,
+            fontWeight: 600,
+            letterSpacing: '0.02em',
+            color: token.colorText,
+            fontSize: compact ? token.fontSize : token.fontSizeLG,
+          }}
+        >
+          {symbol}
+        </Text>
+        <SentimentDot sentiment={sentiment} />
         {inlineBadges?.map((b, i) => (
-          <span
+          <Text
             key={i}
+            type="secondary"
             title={b.title}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 3,
-              fontSize: 11,
-              color: '#71717a',
-              fontWeight: 400,
+              fontSize: token.fontSizeSM,
               whiteSpace: 'nowrap',
             }}
           >
             {b.label}
-          </span>
+          </Text>
         ))}
       </span>
       <span style={{ flex: 1 }} />
-      {rightBadge && <SectorBadge label={rightBadge.label} title={rightBadge.title} />}
+      {rightBadge && (
+        <Tag
+          title={rightBadge.title}
+          style={{
+            margin: 0,
+            fontSize: token.fontSizeSM,
+            flexShrink: 0,
+          }}
+        >
+          {rightBadge.label}
+        </Tag>
+      )}
       {rightText && (
         <span
           style={{
-            fontFamily: 'JetBrains Mono, monospace',
-            fontSize: 13,
+            fontFamily: token.fontFamilyCode,
+            fontSize: token.fontSize,
             fontWeight: 500,
-            color: '#18181b',
+            color: token.colorText,
             textAlign: 'right',
             flexShrink: 0,
             minWidth: 42,
@@ -178,15 +202,27 @@ export default function TickerRow({
         >
           {rightText}
           {rightSmall && (
-            <small
-              style={{ color: '#a1a1aa', fontWeight: 400, fontSize: 10, marginLeft: 2 }}
+            <Text
+              type="secondary"
+              style={{
+                fontFamily: token.fontFamilyCode,
+                fontSize: token.fontSizeSM,
+                marginLeft: 2,
+                fontWeight: 400,
+              }}
             >
               {rightSmall}
-            </small>
+            </Text>
           )}
         </span>
       )}
-      <span style={{ color: '#d4d4d8', flexShrink: 0, fontSize: 14 }}>›</span>
+      <RightOutlined
+        style={{
+          color: token.colorTextQuaternary,
+          fontSize: 10,
+          flexShrink: 0,
+        }}
+      />
     </Link>
   )
 }

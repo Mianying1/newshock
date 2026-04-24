@@ -3,8 +3,6 @@
  * Scoped under `.radar-page` so other routes keep the existing styling.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 .radar-page {
   --bg: #F4F1EC;
   --bg-elev: #FFFFFF;
@@ -17,24 +15,24 @@
   --line-2: #EFEAE1;
   --line-card: #EAE4D8;
 
-  --accent: #0B5FFF;
-  --link: #2A6BE0;
-  --up: #2E7D4F;
-  --down: #B8453A;
-  --warn: #B77818;
+  --accent: #1F1C19;
+  --link: #1F1C19;
+  --up: #5C6A1E;
+  --down: #8B3A2E;
+  --warn: #A86C00;
 
-  --c-geo: #A0855B;
-  --c-ai: #6B6BAE;
-  --c-supp: #7A8C5C;
-  --c-pha: #8B5CB0;
-  --c-def: #8A7A4B;
-  --c-ene: #B06B3D;
-  --c-mat: #7A6B4A;
+  --c-geo: #A86C00;
+  --c-ai: #8B5A00;
+  --c-supp: #7A5E2E;
+  --c-pha: #5C6A1E;
+  --c-def: #5C5040;
+  --c-ene: #8B4513;
+  --c-mat: #6B5A30;
 
   --radius: 8px;
   --radius-sm: 4px;
 
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--ink);
   font-size: 13px;
@@ -46,11 +44,11 @@
 
 .radar-page .mono,
 .radar-page .mono * {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: inherit;
   font-feature-settings: "tnum", "zero";
 }
 .radar-page .serif {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-weight: 400;
   letter-spacing: -0.01em;
 }
@@ -99,7 +97,7 @@
   line-height: 1.1;
 }
 .radar-page .brand-sub {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   color: var(--ink-3);
   letter-spacing: 0.06em;
@@ -108,13 +106,13 @@
 }
 .radar-page .brand-v {
   margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   color: var(--ink-4);
 }
 
 .radar-page .nav-section {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.14em;
   color: var(--ink-4);
@@ -140,7 +138,7 @@
 }
 .radar-page .nav-item .count {
   margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   color: var(--ink-4);
 }
@@ -214,7 +212,7 @@
   color: var(--ink-3);
 }
 .radar-page .search .kbd {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   background: #E2DCD0;
   color: var(--ink-3);
@@ -236,7 +234,7 @@
   color: var(--ink-4);
 }
 .radar-page .search.is-disabled .soon {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -301,7 +299,7 @@
   padding: 34px 2px 8px;
 }
 .radar-page h1.page-title {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-weight: 600;
   font-size: 26px;
   letter-spacing: -0.02em;
@@ -338,7 +336,7 @@
   margin: 22px 2px 10px;
 }
 .radar-page .sec-label .l {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   letter-spacing: 0.16em;
   color: var(--ink-3);
@@ -383,7 +381,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 11px;
   font-weight: 500;
   padding: 2px 6px 2px 8px;
@@ -407,7 +405,7 @@
 
 /* ===== Source badge ===== */
 .radar-page .src {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -437,10 +435,10 @@
   background: var(--ink-4);
   display: inline-block;
 }
-.radar-page .stage-dot.early { background:#8A9A4A; }
-.radar-page .stage-dot.mid { background:#3D6EB5; }
-.radar-page .stage-dot.late { background:#B5873D; }
-.radar-page .stage-dot.cool { background:#B8453A; }
+.radar-page .stage-dot.early { background:#5C6A1E; }
+.radar-page .stage-dot.mid { background:#A86C00; }
+.radar-page .stage-dot.late { background:#8B3A2E; }
+.radar-page .stage-dot.cool { background:#8B3A2E; }
 
 .radar-page .stage-bar {
   width: 100%;
@@ -470,7 +468,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -498,7 +496,7 @@
   margin-bottom: 14px;
 }
 .radar-page .regime-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -506,14 +504,14 @@
   margin-bottom: 6px;
 }
 .radar-page .regime-score {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 42px;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
 .radar-page .regime-score .unit {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 12px;
   color: var(--ink-3);
   margin-left: 4px;
@@ -620,7 +618,7 @@
   z-index: 0;
 }
 .radar-page .rb-val {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 11px;
   text-align: right;
   color: var(--ink-2);
@@ -670,7 +668,7 @@
   padding: 2px;
   border-radius: 5px;
   font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
 }
 .radar-page .rank-tabs button {
   border: none;
@@ -702,13 +700,13 @@
 }
 .radar-page .rank-row:hover { background: #FBF8F1; }
 .radar-page .rank-row .n {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   color: var(--ink-4);
   text-align: right;
 }
 .radar-page .rank-row .sym {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--ink);
@@ -719,7 +717,7 @@
   margin-top: 1px;
 }
 .radar-page .rank-row .sc {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   text-align: right;
@@ -769,7 +767,7 @@
 .radar-page .narr-top .t-time {
   font-size: 10.5px;
   color: var(--ink-3);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   margin-left: auto;
 }
 .radar-page .narr-title {
@@ -832,7 +830,7 @@
 .radar-page .evt-row:hover { background: #FBF8F1; }
 .radar-page .evt-time {
   color: var(--ink-3);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 11px;
 }
 .radar-page .evt-headline {
@@ -896,7 +894,7 @@
   margin-top: 3px;
 }
 .radar-page .th-evts {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   color: var(--ink-3);
   background: var(--bg-sunk);
@@ -942,7 +940,7 @@
   font-weight: 500;
 }
 .radar-page .th-life-head .mono {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
 }
 .radar-page .th-life-meta {
   display: flex;
@@ -951,7 +949,7 @@
   font-size: 10.5px;
   color: var(--ink-4);
   margin-top: 6px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
 }
 
 /* ===== Curator strip ===== */
@@ -984,7 +982,7 @@
 }
 .radar-page .curator-strip .disclaim {
   margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   color: var(--ink-4);
   letter-spacing: 0.04em;
@@ -995,7 +993,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10.5px;
   letter-spacing: 0.06em;
   color: var(--ink-4);
@@ -1022,7 +1020,7 @@
   margin-bottom: 12px;
 }
 .radar-page .td-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 44px;
   line-height: 1;
   letter-spacing: -0.015em;
@@ -1041,7 +1039,7 @@
   align-items: flex-start;
 }
 .radar-page .td-meta-cell .lbl {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.14em;
   color: var(--ink-4);
@@ -1049,7 +1047,7 @@
   margin-bottom: 4px;
 }
 .radar-page .td-meta-cell .num {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 30px;
   line-height: 1;
   color: var(--ink);
@@ -1062,7 +1060,7 @@
   margin-top: 28px;
 }
 .radar-page .td-sec-title {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 20px;
   line-height: 1.1;
   letter-spacing: -0.005em;
@@ -1116,7 +1114,7 @@
 .radar-page .td-lifespan .ticks {
   display: flex;
   justify-content: space-between;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   color: var(--ink-4);
   letter-spacing: 0.04em;
@@ -1150,7 +1148,7 @@
   color: var(--ink-2);
 }
 .radar-page .td-dim-row .v {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   color: var(--ink);
 }
 .radar-page .td-dim-row .track {
@@ -1169,7 +1167,7 @@
 .radar-page .td-dim-row .fill.down { background: linear-gradient(90deg, #D59A8B, #B8453A); }
 .radar-page .td-dim-row .inv {
   color: var(--ink-4);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   margin-left: 4px;
 }
@@ -1182,13 +1180,13 @@
   margin-bottom: 12px;
 }
 .radar-page .td-score {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 34px;
   line-height: 1;
   color: var(--ink);
 }
 .radar-page .td-score .unit {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 11px;
   color: var(--ink-4);
   letter-spacing: 0.06em;
@@ -1222,7 +1220,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.06em;
   color: var(--ink-4);
@@ -1237,7 +1235,7 @@
 .radar-page .td-bb-row { display: grid; grid-template-columns: 88px 1fr 36px; align-items: center; gap: 10px; font-size: 12px; }
 .radar-page .td-bb-row .lbl { color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
 .radar-page .td-bb-row .lbl .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.radar-page .td-bb-row .v { font-family: 'JetBrains Mono', monospace; color: var(--ink-2); text-align: right; }
+.radar-page .td-bb-row .v { font-family: inherit; color: var(--ink-2); text-align: right; }
 .radar-page .td-bb-row .track { height: 4px; background: var(--line); border-radius: 2px; }
 .radar-page .td-bb-row .track .f { height: 100%; border-radius: 2px; }
 .radar-page .td-bb-row .track .f.sup { background: #7A8C5C; }
@@ -1246,13 +1244,13 @@
 .radar-page .td-bb-foot { border-top: 1px solid var(--line-2); margin-top: 10px; padding-top: 8px; display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); }
 .radar-page .td-bb-warn { background: #F5E8E4; border: 1px solid #E5C7BD; color: #8A3A32; padding: 8px 10px; border-radius: 4px; font-size: 11.5px; margin-bottom: 10px; }
 
-.radar-page .td-evts-tabs { display: flex; gap: 2px; background: var(--bg-sunk); padding: 2px; border-radius: 5px; font-size: 11px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; width: fit-content; }
+.radar-page .td-evts-tabs { display: flex; gap: 2px; background: var(--bg-sunk); padding: 2px; border-radius: 5px; font-size: 11px; font-family: inherit; margin-bottom: 12px; width: fit-content; }
 .radar-page .td-evts-tabs button { border: none; background: transparent; padding: 3px 10px; border-radius: 3px; cursor: pointer; color: var(--ink-3); font-family: inherit; font-size: inherit; }
 .radar-page .td-evts-tabs button.on { background: var(--bg-elev); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
 
 .radar-page .td-evt-grp { margin-bottom: 14px; }
 .radar-page .td-evt-grp-head {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 9.5px;
   letter-spacing: 0.14em;
   color: var(--ink-4);
@@ -1271,7 +1269,7 @@
 .radar-page .td-evt .dot.neu { background: var(--ink-4); }
 .radar-page .td-evt a { color: var(--ink); text-decoration: none; }
 .radar-page .td-evt a:hover { color: var(--link); }
-.radar-page .td-evt .sub { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-4); margin-top: 2px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.radar-page .td-evt .sub { font-family: inherit; font-size: 10.5px; color: var(--ink-4); margin-top: 2px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .radar-page .td-evt .sub button { border: none; background: transparent; padding: 0; color: var(--ink-3); font-family: inherit; font-size: inherit; cursor: pointer; text-decoration: underline; }
 .radar-page .td-evt .rsn { font-size: 12px; color: var(--ink-2); font-style: italic; margin-top: 4px; padding-left: 10px; border-left: 2px solid var(--line-2); }
 
@@ -1279,7 +1277,7 @@
 .radar-page .td-expos-group.headwind { background: #F5E8E4; border: 1px solid #E5C7BD; border-radius: 6px; padding: 12px 14px; }
 .radar-page .td-expos-group.pressure { background: #F1EBD8; border: 1px solid #DFD0A3; border-radius: 6px; padding: 12px 14px; }
 .radar-page .td-expos-group-title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   letter-spacing: 0.14em;
   color: var(--ink-3);
@@ -1295,24 +1293,24 @@
 
 .radar-page .td-rec { background: var(--bg-elev); border: 1px solid var(--line-card); border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; }
 .radar-page .td-rec-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.radar-page .td-rec-sym { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 13px; color: var(--ink); text-decoration: none; }
+.radar-page .td-rec-sym { font-family: inherit; font-weight: 600; font-size: 13px; color: var(--ink); text-decoration: none; }
 .radar-page .td-rec-sym:hover { color: var(--link); }
 .radar-page .td-rec-name { font-size: 11.5px; color: var(--ink-3); }
 .radar-page .td-rec-badges { margin-left: auto; display: flex; gap: 5px; align-items: center; }
 .radar-page .td-rec-body { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
 .radar-page .td-rec-meta { font-size: 11px; color: var(--ink-3); margin-top: 5px; display: grid; gap: 3px; }
-.radar-page .td-rec-meta .k { color: var(--ink-4); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 5px; }
+.radar-page .td-rec-meta .k { color: var(--ink-4); font-family: inherit; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 5px; }
 
 .radar-page .td-subs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
 .radar-page .td-sub { display: block; background: var(--bg-elev); border: 1px solid var(--line-card); border-radius: 6px; padding: 11px 14px; text-decoration: none; color: inherit; }
 .radar-page .td-sub:hover { border-color: #D7CEB8; }
 .radar-page .td-sub .nm { font-weight: 500; font-size: 13px; color: var(--ink); margin-bottom: 3px; }
-.radar-page .td-sub .sub { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.04em; }
+.radar-page .td-sub .sub { font-family: inherit; font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.04em; }
 
 .radar-page .td-cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 8px; }
 .radar-page .td-case { background: var(--bg-elev); border: 1px solid var(--line-card); border-radius: 6px; padding: 10px 12px; }
 .radar-page .td-case .nm { font-weight: 500; font-size: 12.5px; color: var(--ink); margin-bottom: 5px; }
-.radar-page .td-case .row { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.02em; }
+.radar-page .td-case .row { font-family: inherit; font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.02em; }
 .radar-page .td-case .pm { color: var(--ink-2); }
 
 .radar-page .td-diffs { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
@@ -1323,24 +1321,24 @@
 .radar-page .td-diff-head .arr.up { color: var(--up); }
 .radar-page .td-diff-head .arr.down { color: var(--down); }
 .radar-page .td-diff-head .arr.unc { color: var(--ink-3); }
-.radar-page .td-diff-head .conf { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em; padding: 1px 6px; border-radius: 2px; text-transform: uppercase; }
+.radar-page .td-diff-head .conf { margin-left: auto; font-family: inherit; font-size: 9.5px; letter-spacing: 0.08em; padding: 1px 6px; border-radius: 2px; text-transform: uppercase; }
 .radar-page .td-diff-head .conf.high { background: #DDE6D4; color: #3F5A28; }
 .radar-page .td-diff-head .conf.med { background: #EEE6D2; color: #6E5A27; }
 .radar-page .td-diff .desc { font-size: 11.5px; color: var(--ink-2); line-height: 1.5; }
 
 .radar-page .td-ttd-panel { background: #F6F1E4; border: 1px solid #E2D8BE; border-radius: 6px; padding: 14px 16px; }
-.radar-page .td-sublabel { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; margin: 8px 0 6px; }
+.radar-page .td-sublabel { font-family: inherit; font-size: 10px; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; margin: 8px 0 6px; }
 
 .radar-page .td-exits { display: grid; gap: 6px; }
 .radar-page .td-exit { display: flex; gap: 8px; font-size: 12.5px; color: var(--ink-2); padding: 6px 0; border-bottom: 1px solid var(--line-2); }
 .radar-page .td-exit:last-child { border-bottom: none; }
-.radar-page .td-exit .bl { color: var(--ink-4); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; width: 14px; flex-shrink: 0; padding-top: 2px; }
+.radar-page .td-exit .bl { color: var(--ink-4); font-family: inherit; font-size: 10.5px; width: 14px; flex-shrink: 0; padding-top: 2px; }
 
 .radar-page .td-disc {
   margin-top: 36px;
   padding: 14px 0 4px;
   border-top: 1px dashed var(--line);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: inherit;
   font-size: 10px;
   letter-spacing: 0.04em;
   color: var(--ink-4);
@@ -1359,7 +1357,7 @@
 .radar-page .td-cool .sub { font-size: 11px; color: #7A6223; margin-bottom: 6px; }
 .radar-page .td-cool .track { height: 3px; background: #E8D8A8; border-radius: 2px; overflow: hidden; }
 .radar-page .td-cool .track .f { height: 100%; background: #B08A3A; }
-.radar-page .td-cool .meta { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #7A6223; margin-top: 3px; letter-spacing: 0.04em; }
+.radar-page .td-cool .meta { display: flex; justify-content: space-between; font-family: inherit; font-size: 9.5px; color: #7A6223; margin-top: 3px; letter-spacing: 0.04em; }
 
 @media (max-width: 780px) {
   .radar-page .td-head { grid-template-columns: 1fr; }

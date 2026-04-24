@@ -17,14 +17,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-}
-
-h1, h2, h3, h4, h5, h6,
-.ant-typography h1, .ant-typography h2, .ant-typography h3,
-.ant-typography h4, .ant-typography h5, .ant-typography h6,
-h1.ant-typography, h2.ant-typography, h3.ant-typography,
-h4.ant-typography, h5.ant-typography, h6.ant-typography {
-  font-family: var(--font-instrument-serif), "PingFang SC", "Source Han Serif CN", Georgia, serif;
+  font-variant-numeric: tabular-nums;
 }
 
 @layer utilities {
@@ -36,13 +29,13 @@ h4.ant-typography, h5.ant-typography, h6.ant-typography {
 .ticker-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 4px;
-  border-top: 1px solid #f4f4f5;
+  gap: 10px;
+  padding: 10px 8px;
+  border-top: 1px solid #EFEAE0;
   cursor: pointer;
   color: inherit;
   text-decoration: none;
   transition: background 0.12s;
 }
-.ticker-row:hover { background: #fafaf9; }
+.ticker-row:hover { background: #FAF7F1; }
 .ticker-row:first-child { border-top: none; }

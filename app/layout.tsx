@@ -3,7 +3,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import "./globals.css";
 import { I18nProvider } from '@/lib/i18n-context'
-import { instrumentSerif, inter, jetbrainsMono } from '@/lib/fonts'
+import { inter } from '@/lib/fonts'
 import { newshockTheme } from '@/lib/design-tokens'
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={inter.variable}
     >
       <body className="antialiased">
         <AntdRegistry>

@@ -1,8 +1,25 @@
 'use client'
 import useSWR from 'swr'
+import {
+  Col,
+  Divider,
+  Flex,
+  Progress,
+  Row,
+  Statistic,
+  Typography,
+  theme,
+} from 'antd'
 import { useI18n } from '@/lib/i18n-context'
 
+const { Text, Paragraph } = Typography
+const { useToken } = theme
+
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+const SAGE = '#7E8C3F'
+const AMBER = '#B8893A'
+const CRIMSON = '#B8453A'
 
 interface RegimeSnapshot {
   snapshot_date: string
@@ -17,18 +34,6 @@ interface RegimeSnapshot {
   regime_label_zh: string | null
   configuration_guidance: string
   configuration_guidance_zh: string | null
-  earnings_reasoning: string | null
-  earnings_reasoning_zh: string | null
-  valuation_reasoning: string | null
-  valuation_reasoning_zh: string | null
-  fed_reasoning: string | null
-  fed_reasoning_zh: string | null
-  economic_reasoning: string | null
-  economic_reasoning_zh: string | null
-  credit_reasoning: string | null
-  credit_reasoning_zh: string | null
-  sentiment_reasoning: string | null
-  sentiment_reasoning_zh: string | null
 }
 
 const DIMS: { key: string; labelKey: string; scoreField: keyof RegimeSnapshot }[] = [
@@ -40,22 +45,31 @@ const DIMS: { key: string; labelKey: string; scoreField: keyof RegimeSnapshot }[
   { key: 'sentiment', labelKey: 'market_regime.sentiment', scoreField: 'sentiment_score' },
 ]
 
-function verdictClass(label: string) {
+type VerdictKey = 'expansion' | 'stress' | 'bear' | 'neutral'
+
+function verdictKey(label: string): VerdictKey {
   if (label === 'expansion' || label === 'neutral_expansion') return 'expansion'
   if (label === 'stress') return 'stress'
   if (label === 'bear') return 'bear'
-  return ''
+  return 'neutral'
 }
 
-function dimBar(score: number) {
-  if (score === 2) return { cls: 'pos', width: 50, align: 'right' as const, valCls: 'pos' }
-  if (score === 1) return { cls: 'pos', width: 25, align: 'right' as const, valCls: '' }
-  if (score === 0) return { cls: 'neg', width: 50, align: 'left' as const, valCls: 'neg' }
-  return { cls: '', width: 0, align: 'right' as const, valCls: '' }
+function verdictDot(vk: VerdictKey): string {
+  if (vk === 'expansion') return SAGE
+  if (vk === 'stress') return AMBER
+  if (vk === 'bear') return CRIMSON
+  return '#9A9389'
+}
+
+function scoreColor(score: number): string {
+  if (score >= 2) return SAGE
+  if (score <= 0) return CRIMSON
+  return AMBER
 }
 
 export function MarketRegimeCard() {
   const { t } = useI18n()
+  const { token } = useToken()
   const { data } = useSWR<{ snapshot: RegimeSnapshot | null }>(
     '/api/regime/current',
     fetcher
@@ -64,60 +78,157 @@ export function MarketRegimeCard() {
   if (!snap) return null
 
   const pct = (snap.total_score / 12) * 100
-  const verdict = verdictClass(snap.regime_label)
+  const vk = verdictKey(snap.regime_label)
   const note = t(`market_regime.guidance_text.${snap.configuration_guidance}`)
   const regimeLabel = t(`market_regime.regime_label.${snap.regime_label}`)
+  const dotColor = verdictDot(vk)
 
   return (
-    <>
-      <div className="sec-label">
-        <span className="l">{t('market_regime.title')}</span>
-        <span className="r">{t('market_regime.scores_refresh_twice_weekly')}</span>
-      </div>
-      <div className="regime">
-        <div className="regime-head">
-          <div>
-            <div className="regime-label">{t('market_regime.composite')}</div>
-            <div className="regime-score">
-              {snap.total_score}
-              <span className="unit">/12</span>
-            </div>
-            <div className="regime-bar-main">
-              <div className="regime-bar-fill" style={{ width: `${pct}%` }} />
-            </div>
-            <div className="regime-note">{note}</div>
-          </div>
-          <span className={`regime-verdict${verdict ? ' ' + verdict : ''}`}>
-            <span className="dot" />
-            {regimeLabel}
-          </span>
+    <div style={{ padding: '8px 12px 12px' }}>
+      <Flex justify="space-between" align="flex-start" gap={16} wrap>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <Statistic
+            title={t('market_regime.composite')}
+            value={snap.total_score}
+            suffix={
+              <Text type="secondary" style={{ fontSize: token.fontSize, fontWeight: 400 }}>
+                / 12
+              </Text>
+            }
+            valueStyle={{ fontWeight: 500, fontSize: 32, lineHeight: 1 }}
+          />
+          <Progress
+            percent={pct}
+            showInfo={false}
+            size={{ height: 4 }}
+            strokeColor={{ '0%': AMBER, '100%': SAGE }}
+            trailColor={token.colorFillSecondary}
+            style={{ maxWidth: 280, marginTop: 10 }}
+          />
+          <Paragraph
+            type="secondary"
+            style={{
+              margin: '10px 0 0',
+              fontSize: token.fontSize,
+              maxWidth: 460,
+              paddingRight: 12,
+            }}
+          >
+            {note}
+          </Paragraph>
         </div>
 
-        <div className="regime-bars">
-          {DIMS.map((d) => {
-            const score = snap[d.scoreField] as number
-            const bar = dimBar(score)
-            const fillStyle: React.CSSProperties = { width: `${bar.width}%` }
-            if (bar.align === 'left') {
-              fillStyle.left = 'auto'
-              fillStyle.right = '50%'
-            }
-            return (
-              <div className="rb" key={d.key}>
-                <div className="rb-name">{t(d.labelKey)}</div>
-                <div className="rb-track">
-                  <div className="rb-mid" />
-                  <div className={`rb-fill${bar.cls ? ' ' + bar.cls : ''}`} style={fillStyle} />
-                </div>
-                <div className={`rb-val${bar.valCls ? ' ' + bar.valCls : ''}`}>
-                  {score}
-                  <span className="rb-unit">/2</span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </>
+        <Flex
+          align="center"
+          gap={6}
+          style={{
+            padding: '5px 12px 5px 10px',
+            borderRadius: 99,
+            background: token.colorBgContainer,
+            border: `1px solid ${token.colorBorderSecondary}`,
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: dotColor,
+              display: 'inline-block',
+            }}
+          />
+          <Text
+            style={{
+              fontSize: token.fontSizeSM,
+              color: token.colorText,
+              fontWeight: 500,
+              letterSpacing: '0.01em',
+            }}
+          >
+            {regimeLabel}
+          </Text>
+        </Flex>
+      </Flex>
+
+      <Divider style={{ margin: '18px 0 16px' }} />
+
+      <Row gutter={[16, 16]}>
+        {DIMS.map((d) => {
+          const score = snap[d.scoreField] as number
+          return (
+            <Col key={d.key} xs={12} sm={12}>
+              <DimensionCell label={t(d.labelKey)} score={score} />
+            </Col>
+          )
+        })}
+      </Row>
+    </div>
+  )
+}
+
+function DimensionCell({ label, score }: { label: string; score: number }) {
+  const { token } = useToken()
+  const percent = (score / 2) * 100
+  const color = scoreColor(score)
+  const numberColor =
+    score === 2 ? token.colorText : score === 0 ? CRIMSON : token.colorTextSecondary
+
+  return (
+    <div
+      style={{
+        padding: '10px 12px 11px',
+        background: token.colorFillQuaternary,
+        border: `1px solid ${token.colorBorderSecondary}`,
+        borderRadius: token.borderRadiusSM,
+      }}
+    >
+      <Text
+        style={{
+          fontFamily: token.fontFamilyCode,
+          fontSize: token.fontSizeSM,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: token.colorTextTertiary,
+          display: 'block',
+          lineHeight: 1,
+        }}
+      >
+        {label}
+      </Text>
+      <Flex align="baseline" gap={3} style={{ marginTop: 8 }}>
+        <Text
+          style={{
+            fontFamily: token.fontFamilyCode,
+            fontSize: token.fontSizeHeading4,
+            fontWeight: 500,
+            color: numberColor,
+            lineHeight: 1,
+          }}
+        >
+          {score}
+        </Text>
+        <Text
+          type="secondary"
+          style={{
+            fontFamily: token.fontFamilyCode,
+            fontSize: token.fontSizeSM,
+          }}
+        >
+          /2
+        </Text>
+      </Flex>
+      <Progress
+        percent={percent}
+        showInfo={false}
+        size={{ height: 3 }}
+        strokeColor={
+          score === 1
+            ? { '0%': AMBER, '100%': SAGE }
+            : { '0%': color, '100%': color }
+        }
+        trailColor={token.colorFillSecondary}
+        style={{ marginTop: 10 }}
+      />
+    </div>
   )
 }
