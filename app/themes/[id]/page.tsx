@@ -6,9 +6,11 @@ import Link from 'next/link'
 import {
   Breadcrumb,
   Button,
+  Card,
   Flex,
   Input,
   Layout,
+  Progress,
   Space,
   Tag,
   Typography,
@@ -356,49 +358,123 @@ export default function ThemeDetailPage() {
                 const stageColor = getStageColor(theme.playbook_stage)
 
                 return (
-                  <div className="td-sec">
+                  <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
                       title={t('sections.theme_lifespan_title')}
                       subtitle={t('sections.theme_lifespan_subtitle')}
                     />
-                    <div className="td-card">
-                      <div className="td-lifespan">
-                        <div className="ticks">
-                          <span>{theme.first_seen_at.slice(0, 10)}</span>
-                          <span>Day {theme.days_hot} / ~{expectedDays || '?'}</span>
-                          <span>{t('theme_detail.expected_end')}</span>
+                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
+                      <Flex
+                        justify="space-between"
+                        style={{
+                          fontFamily: token.fontFamilyCode,
+                          fontSize: 10,
+                          letterSpacing: '0.12em',
+                          textTransform: 'uppercase',
+                          color: token.colorTextQuaternary,
+                          marginBottom: 10,
+                        }}
+                      >
+                        <span>{theme.first_seen_at.slice(0, 10)}</span>
+                        <span>Day {theme.days_hot} / ~{expectedDays || '?'}</span>
+                        <span>{t('theme_detail.expected_end')}</span>
+                      </Flex>
+                      <Progress
+                        percent={progressPercent}
+                        strokeColor={stageColor}
+                        trailColor={token.colorFillSecondary}
+                        showInfo={false}
+                        size={['100%', 4]}
+                        strokeLinecap="square"
+                      />
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        wrap
+                        gap={8}
+                        style={{ marginTop: 12 }}
+                      >
+                        <Text style={{ fontSize: 12, color: token.colorTextSecondary }}>
+                          {t('theme_card.stage_prefix')}: <Text strong style={{ color: token.colorText, fontSize: 12 }}>{stageText}</Text>
+                        </Text>
+                        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+                          {theme.days_active} {t('theme_detail.days')} · updated {formatRelativeTime(theme.last_active_at, t, locale)}
+                        </Text>
+                      </Flex>
+                      {modeNote && (
+                        <Text
+                          style={{
+                            display: 'block',
+                            marginTop: 8,
+                            fontSize: 12,
+                            color: token.colorTextTertiary,
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          {modeNote}
+                        </Text>
+                      )}
+                      {isCooling && (
+                        <div
+                          style={{
+                            marginTop: 16,
+                            padding: '12px 14px',
+                            background: token.colorWarningBg,
+                            border: `1px solid ${token.colorWarningBorder}`,
+                            borderRadius: token.borderRadius,
+                          }}
+                        >
+                          <Text
+                            strong
+                            style={{
+                              display: 'block',
+                              fontSize: 12,
+                              color: token.colorWarningText,
+                              marginBottom: 3,
+                            }}
+                          >
+                            {t('theme_detail.cooling_banner_title', { n: theme.days_hot })}
+                          </Text>
+                          <Text
+                            style={{
+                              display: 'block',
+                              fontSize: 11,
+                              color: token.colorWarningText,
+                              opacity: 0.85,
+                              marginBottom: 8,
+                            }}
+                          >
+                            {t('theme_detail.cooling_archive_hint', {
+                              n: theme.days_since_last_event,
+                              m: Math.max(0, 60 - theme.days_since_last_event),
+                            })}
+                          </Text>
+                          <Progress
+                            percent={coolPct}
+                            strokeColor={token.colorWarning}
+                            trailColor={token.colorWarningBgHover}
+                            showInfo={false}
+                            size={['100%', 3]}
+                            strokeLinecap="square"
+                          />
+                          <Flex
+                            justify="space-between"
+                            style={{
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 10,
+                              letterSpacing: '0.08em',
+                              color: token.colorWarningText,
+                              opacity: 0.8,
+                              marginTop: 6,
+                            }}
+                          >
+                            <span>{t('theme_detail.cooling_label')}</span>
+                            <span>{theme.days_since_last_event}d / 60d</span>
+                          </Flex>
                         </div>
-                        <div className="bar">
-                          <div className="fill" style={{ width: `${progressPercent}%`, background: stageColor }} />
-                          <div className="marker" style={{ left: `calc(${progressPercent}% - 1px)` }} />
-                        </div>
-                        <div className="stage-line">
-                          <span>{t('theme_card.stage_prefix')}: <strong>{stageText}</strong></span>
-                          <span style={{ color: 'var(--ink-3)' }}>
-                            {theme.days_active} {t('theme_detail.days')} · updated {formatRelativeTime(theme.last_active_at, t, locale)}
-                          </span>
-                        </div>
-                        {modeNote && <div className="note">{modeNote}</div>}
-
-                        {isCooling && (
-                          <div className="td-cool">
-                            <div className="ttl">{t('theme_detail.cooling_banner_title', { n: theme.days_hot })}</div>
-                            <div className="sub">
-                              {t('theme_detail.cooling_archive_hint', {
-                                n: theme.days_since_last_event,
-                                m: Math.max(0, 60 - theme.days_since_last_event),
-                              })}
-                            </div>
-                            <div className="track"><div className="f" style={{ width: `${coolPct}%` }} /></div>
-                            <div className="meta">
-                              <span>{t('theme_detail.cooling_label')}</span>
-                              <span>{theme.days_since_last_event}d / 60d</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      )}
+                    </Card>
                   </div>
                 )
               })()}
@@ -416,58 +492,146 @@ export default function ThemeDetailPage() {
                   { key: 'pr', labelKey: 'theme_detail.priced_in_risk', hintKey: 'theme_detail.priced_in_risk_hint', value: b.priced_in_risk, inverted: true },
                   { key: 'ed', labelKey: 'theme_detail.exit_signal_distance', hintKey: 'theme_detail.exit_signal_distance_hint', value: b.exit_signal_distance, inverted: false },
                 ]
+                const scoreColor =
+                  barClass(score) === 'up' ? token.colorSuccess
+                  : barClass(score) === 'mid' ? token.colorWarning
+                  : token.colorError
                 return (
-                  <div className="td-sec">
+                  <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
                       title={t('sections.theme_conviction_title')}
                       subtitle={t('sections.theme_conviction_subtitle')}
                     />
-                    <div className="td-card">
-                      <div className="td-score-row">
+                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
+                      <Flex align="center" justify="space-between" gap={24} wrap style={{ marginBottom: 18 }}>
                         <div>
-                          <div style={{ fontFamily: 'inherit', fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-3)', textTransform: 'uppercase', marginBottom: 4 }}>
+                          <div
+                            style={{
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 10,
+                              letterSpacing: '0.16em',
+                              textTransform: 'uppercase',
+                              color: token.colorTextQuaternary,
+                              marginBottom: 6,
+                            }}
+                          >
                             {bandLabel}
                           </div>
-                          <div className="td-score">
-                            {score.toFixed(1)}<span className="unit">/ 10</span>
-                          </div>
+                          <Flex align="baseline" gap={4}>
+                            <span
+                              style={{
+                                fontFamily: token.fontFamilyCode,
+                                fontSize: 34,
+                                fontWeight: 600,
+                                lineHeight: 1,
+                                color: token.colorText,
+                                letterSpacing: '-0.02em',
+                              }}
+                            >
+                              {score.toFixed(1)}
+                            </span>
+                            <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>/ 10</Text>
+                          </Flex>
                         </div>
-                        <div className="td-score-bar">
-                          <div className={`f ${barClass(score)}`} style={{ width: `${(score / 10) * 100}%` }} />
+                        <div style={{ flex: 1, minWidth: 160, maxWidth: 280 }}>
+                          <Progress
+                            percent={(score / 10) * 100}
+                            strokeColor={scoreColor}
+                            trailColor={token.colorFillSecondary}
+                            showInfo={false}
+                            size={['100%', 5]}
+                            strokeLinecap="square"
+                          />
                         </div>
-                      </div>
+                      </Flex>
 
-                      <div className="td-dims">
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                          columnGap: 28,
+                          rowGap: 14,
+                        }}
+                      >
                         {dims.map((d) => {
                           const displayValue = d.value
                           const barValue = d.inverted ? 10 - d.value : d.value
+                          const barColor =
+                            barClass(barValue) === 'up' ? token.colorSuccess
+                            : barClass(barValue) === 'mid' ? token.colorWarning
+                            : token.colorError
                           return (
                             <div key={d.key}>
-                              <div className="td-dim-row">
-                                <span title={t(d.hintKey)}>
+                              <Flex align="baseline" justify="space-between" style={{ marginBottom: 4 }}>
+                                <Text
+                                  title={t(d.hintKey)}
+                                  style={{ fontSize: 12, color: token.colorTextSecondary }}
+                                >
                                   {t(d.labelKey)}
-                                  {d.inverted && <span className="inv">↓</span>}
-                                </span>
-                                <span className="v">{displayValue.toFixed(1)}</span>
-                                <div className="track">
-                                  <div className={`fill ${barClass(barValue)}`} style={{ width: `${(barValue / 10) * 100}%` }} />
-                                </div>
-                              </div>
+                                  {d.inverted && (
+                                    <span style={{ marginLeft: 4, color: token.colorTextQuaternary, fontSize: 10 }}>↓</span>
+                                  )}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontFamily: token.fontFamilyCode,
+                                    fontSize: 12,
+                                    color: token.colorText,
+                                  }}
+                                >
+                                  {displayValue.toFixed(1)}
+                                </Text>
+                              </Flex>
+                              <Progress
+                                percent={(barValue / 10) * 100}
+                                strokeColor={barColor}
+                                trailColor={token.colorFillSecondary}
+                                showInfo={false}
+                                size={['100%', 3]}
+                                strokeLinecap="square"
+                              />
                             </div>
                           )
                         })}
                       </div>
 
-                      {reasoning && <div className="td-reasoning">{reasoning}</div>}
+                      {reasoning && (
+                        <Text
+                          style={{
+                            display: 'block',
+                            marginTop: 18,
+                            fontSize: 13,
+                            lineHeight: 1.65,
+                            color: token.colorTextSecondary,
+                          }}
+                        >
+                          {reasoning}
+                        </Text>
+                      )}
 
-                      <div className="td-meta-foot">
-                        <span className="disc">ℹ {t('theme_detail.ai_subjective_disclaimer')}</span>
+                      <Flex
+                        justify="space-between"
+                        gap={12}
+                        wrap
+                        style={{
+                          marginTop: 16,
+                          paddingTop: 12,
+                          borderTop: `1px solid ${token.colorSplit}`,
+                          fontSize: 11,
+                          color: token.colorTextTertiary,
+                        }}
+                      >
+                        <Text style={{ fontSize: 11, fontStyle: 'italic', color: token.colorTextTertiary }}>
+                          ℹ {t('theme_detail.ai_subjective_disclaimer')}
+                        </Text>
                         {theme.conviction_generated_at && (
-                          <span>{t('theme_detail.conviction_last_computed', { label: formatRelativeTime(theme.conviction_generated_at, t, locale) })}</span>
+                          <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextQuaternary }}>
+                            {t('theme_detail.conviction_last_computed', { label: formatRelativeTime(theme.conviction_generated_at, t, locale) })}
+                          </Text>
                         )}
-                      </div>
-                    </div>
+                      </Flex>
+                    </Card>
                   </div>
                 )
               })()}
