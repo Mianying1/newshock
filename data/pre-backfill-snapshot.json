@@ -1,0 +1,482 @@
+{
+  "snapshot_at": "2026-04-24T01:04:41.866Z",
+  "totals": {
+    "active_themes": 43,
+    "events": 577,
+    "archetypes": 62
+  },
+  "stage_distribution": {
+    "mid": 37,
+    "null": 3,
+    "early": 2,
+    "late": 1
+  },
+  "source_distribution": [
+    {
+      "source_name": "SEC EDGAR 8-K Filings",
+      "count": 145,
+      "first": "2026-04-20T23:55:09.496888+00:00",
+      "last": "2026-04-23T01:29:51.170456+00:00"
+    },
+    {
+      "source_name": "Nikkei Asia",
+      "count": 92,
+      "first": "2026-04-21T11:39:51.240129+00:00",
+      "last": "2026-04-23T11:01:43.754556+00:00"
+    },
+    {
+      "source_name": "CoinDesk",
+      "count": 83,
+      "first": "2026-04-21T11:39:51.240129+00:00",
+      "last": "2026-04-23T11:01:43.754556+00:00"
+    },
+    {
+      "source_name": "Electrek",
+      "count": 58,
+      "first": "2026-04-21T17:08:51.123717+00:00",
+      "last": "2026-04-23T01:29:51.170456+00:00"
+    },
+    {
+      "source_name": "Financial Times",
+      "count": 57,
+      "first": "2026-04-21T00:09:23.31575+00:00",
+      "last": "2026-04-23T11:01:43.754556+00:00"
+    },
+    {
+      "source_name": "Defense News",
+      "count": 36,
+      "first": "2026-04-21T17:08:51.123717+00:00",
+      "last": "2026-04-23T01:29:51.170456+00:00"
+    },
+    {
+      "source_name": "Google News: AI/Semi Keywords",
+      "count": 34,
+      "first": "2026-04-21T00:09:23.31575+00:00",
+      "last": "2026-04-23T11:01:43.754556+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · middle_east_energy_shock",
+      "count": 10,
+      "first": "2026-04-21T06:46:02.747328+00:00",
+      "last": "2026-04-21T06:46:05.166522+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · obesity_drug_breakthrough",
+      "count": 10,
+      "first": "2026-04-21T08:32:19.419045+00:00",
+      "last": "2026-04-21T08:32:21.889391+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · agriculture_supply_shock",
+      "count": 10,
+      "first": "2026-04-21T08:31:17.746543+00:00",
+      "last": "2026-04-21T08:31:20.047435+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · crypto_institutional_adoption",
+      "count": 9,
+      "first": "2026-04-21T08:34:38.952364+00:00",
+      "last": "2026-04-21T08:34:40.750035+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · rare_earth_national_security",
+      "count": 7,
+      "first": "2026-04-21T06:47:31.374267+00:00",
+      "last": "2026-04-21T06:47:32.781647+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · defense_buildup",
+      "count": 7,
+      "first": "2026-04-21T08:32:58.959522+00:00",
+      "last": "2026-04-21T08:33:00.460063+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · hyperscaler_mega_capex",
+      "count": 5,
+      "first": "2026-04-21T06:33:15.764445+00:00",
+      "last": "2026-04-21T06:33:17.034185+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · nvda_avgo_strategic_investment",
+      "count": 4,
+      "first": "2026-04-21T06:33:52.219537+00:00",
+      "last": "2026-04-21T06:33:53.274598+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · ev_supply_chain_shift",
+      "count": 4,
+      "first": "2026-04-21T08:33:38.443742+00:00",
+      "last": "2026-04-21T08:33:39.289622+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · energy_transition_acceleration",
+      "count": 2,
+      "first": "2026-04-21T06:38:24.229211+00:00",
+      "last": "2026-04-21T06:38:24.490269+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · consumer_polarization",
+      "count": 2,
+      "first": "2026-04-21T08:35:05.766321+00:00",
+      "last": "2026-04-21T08:35:06.463489+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · us_china_tariff_escalation",
+      "count": 1,
+      "first": "2026-04-21T06:36:43.632367+00:00",
+      "last": "2026-04-21T06:36:43.632367+00:00"
+    },
+    {
+      "source_name": "FMP Backfill · cpo_photonics_rotation",
+      "count": 1,
+      "first": "2026-04-21T06:34:47.80377+00:00",
+      "last": "2026-04-21T06:34:47.80377+00:00"
+    }
+  ],
+  "themes": [
+    {
+      "id": "afab761f-5b1b-462c-acf8-95bec2824c4b",
+      "name": "AI Capex & Infrastructure Build-out",
+      "archetype_id": "ai_capex_infrastructure",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 0,
+      "first_event_at": "2026-04-23"
+    },
+    {
+      "id": "fc2e07d0-d63c-4ee2-a787-b02edbeff571",
+      "name": "AI Data Center Optical Interconnect · 5-Year Transition",
+      "archetype_id": "cpo_photonics_rotation",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 163,
+      "first_event_at": "2025-11-11"
+    },
+    {
+      "id": "48b6c967-570e-46a8-98ec-5846abef872e",
+      "name": "AI Data Center Power · Semiconductor Efficiency",
+      "archetype_id": "energy_transition_acceleration",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 212,
+      "first_event_at": "2025-09-23"
+    },
+    {
+      "id": "7c3615df-9113-4915-9446-794dc118d382",
+      "name": "Allied Chip Export Controls · China Localization",
+      "archetype_id": "us_china_tariff_escalation",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 237,
+      "first_event_at": "2025-08-29"
+    },
+    {
+      "id": "c1c27785-b0a8-4ae3-80d2-5addbaab2a0c",
+      "name": "Anthropic-Amazon $100B AI Deal · Compute Infrastructure",
+      "archetype_id": "hyperscaler_mega_capex",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 78,
+      "first_event_at": "2026-02-04"
+    },
+    {
+      "id": "0fa1688d-8be4-4d43-83bb-596f244dc781",
+      "name": "Bitcoin Momentum Breakout · Technical Trading Signal",
+      "archetype_id": null,
+      "current_cycle_stage": null,
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "a73def07-891b-473b-8065-e8073de04577",
+      "name": "Cell Therapy Manufacturing Automation · iPS Cost Breakthrough",
+      "archetype_id": "cell_therapy_manufacturing_automation",
+      "current_cycle_stage": "early",
+      "days_since_first_event": 2,
+      "first_event_at": "2026-04-21"
+    },
+    {
+      "id": "56f45102-e501-47da-9321-0074ed440667",
+      "name": "China Industrial Overcapacity Export Surge",
+      "archetype_id": "china_industrial_overcapacity_export_surge",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "23d40834-82fe-47c3-8977-9053411ec50d",
+      "name": "Chinese EV Price Competition · UK Market Disruption",
+      "archetype_id": "ev_supply_chain_shift",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 5,
+      "first_event_at": "2026-04-18"
+    },
+    {
+      "id": "5b2f54a4-b1f8-4f85-bc60-fcc61844dfd9",
+      "name": "CHIPS Act Funding Delay · Fab Buildout Uncertainty",
+      "archetype_id": "onshoring_industrial_policy",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "6076581a-4d49-4db8-bc0e-ba4e20276e24",
+      "name": "Coinbase Payment License · Stablecoin Infrastructure",
+      "archetype_id": "crypto_institutional_adoption",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 50,
+      "first_event_at": "2026-03-04"
+    },
+    {
+      "id": "c3537282-f1dd-4c98-81c5-177625f9b3d1",
+      "name": "Combat Rescue Helicopter Upgrade · IR Countermeasures",
+      "archetype_id": "defense_buildup",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 6,
+      "first_event_at": "2026-04-17"
+    },
+    {
+      "id": "5616b738-b2d6-4cd6-92fb-6d02c0e7d243",
+      "name": "Commodity Geopolitical Risk Premium",
+      "archetype_id": "commodity_geopolitical_risk_premium",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "da9008e4-e8db-4196-b112-21175e055b69",
+      "name": "Crypto Institutional Infrastructure",
+      "archetype_id": "crypto_institutional_infrastructure",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 0,
+      "first_event_at": "2026-04-23"
+    },
+    {
+      "id": "a6a14706-e129-45b9-973e-6d22cf0b8877",
+      "name": "DeFi Security Crisis · Institutional Trust Erosion",
+      "archetype_id": null,
+      "current_cycle_stage": null,
+      "days_since_first_event": 3,
+      "first_event_at": "2026-04-20"
+    },
+    {
+      "id": "841ecfe8-80eb-465a-89a0-be15b900c7ca",
+      "name": "Dollar Reversal · Iran War Premium Fade",
+      "archetype_id": "dollar_strength",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "df120359-c0cc-422a-979c-964b52d6ae19",
+      "name": "DRAM Allocation Shift · Auto Chip Shortage",
+      "archetype_id": "critical_component_shortage",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 115,
+      "first_event_at": "2025-12-29"
+    },
+    {
+      "id": "c3bf41bb-60ca-47e4-b6e0-a6b93e34239f",
+      "name": "Energy Transition Capex Cycle",
+      "archetype_id": "energy_transition_capex_cycle",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-23"
+    },
+    {
+      "id": "7c86a573-c5fa-4bc7-bad8-900b07c8ce22",
+      "name": "EV Battery Arms Race · Ultra-Fast Charging",
+      "archetype_id": "ev_supply_chain_shift",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 3,
+      "first_event_at": "2026-04-20"
+    },
+    {
+      "id": "ef9a0003-768f-43b7-9b2b-8cd9dc7eccca",
+      "name": "Fed Leadership Transition · Policy Uncertainty",
+      "archetype_id": null,
+      "current_cycle_stage": null,
+      "days_since_first_event": 3,
+      "first_event_at": "2026-04-20"
+    },
+    {
+      "id": "bf0378d9-4da6-4eb9-be52-f5e579a5cdda",
+      "name": "Fed Rate Cycle Transition",
+      "archetype_id": "fed_rate_cycle_transition",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "8ebdc0ee-e0a7-4a61-840e-6f5ff7dfde2f",
+      "name": "Fertilizer Supply Chain Disruption · Global Repricing",
+      "archetype_id": "agriculture_supply_shock",
+      "current_cycle_stage": "late",
+      "days_since_first_event": 64,
+      "first_event_at": "2026-02-18"
+    },
+    {
+      "id": "5362e6c2-2262-4f4d-af84-7f1561397204",
+      "name": "Ford-China EV Partnership · US Market Entry",
+      "archetype_id": "ev_supply_chain_shift",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 86,
+      "first_event_at": "2026-01-27"
+    },
+    {
+      "id": "b91990db-6087-4825-8e8b-e2b9d009ccdf",
+      "name": "GENIUS Act Implementation Delay · Banking Pushback",
+      "archetype_id": "stablecoin_regulation",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "8ddb64b4-993b-47e4-a023-3474dd8148b8",
+      "name": "Global Defense Spending Super-Cycle",
+      "archetype_id": "global_defense_spending_super_cycle",
+      "current_cycle_stage": "early",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "d25b0327-6cad-4a61-b438-657ae40b689e",
+      "name": "GM EV Retreat · Gas Truck Pivot",
+      "archetype_id": "ev_supply_chain_shift",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "ae1b63fc-17e1-4734-9448-e81fa6e1b08b",
+      "name": "Iran Crisis Escalation · Oil War Premium",
+      "archetype_id": "middle_east_energy_shock",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 42,
+      "first_event_at": "2026-03-12"
+    },
+    {
+      "id": "7c7356ee-505b-458a-8784-6619c735f2ab",
+      "name": "Iran War Munitions Replenishment · Patriot Missile",
+      "archetype_id": "defense_buildup",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 68,
+      "first_event_at": "2026-02-14"
+    },
+    {
+      "id": "daff2614-9594-4681-ad73-4f372d5eb6f9",
+      "name": "Japan Defense Export Liberalization · Production Ramp",
+      "archetype_id": "defense_buildup",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 3,
+      "first_event_at": "2026-04-20"
+    },
+    {
+      "id": "5a5d87c5-5292-4456-a48f-3208ffde72f6",
+      "name": "Lilly Oral GLP-1 Launch · Obesity Drug Competition",
+      "archetype_id": "obesity_drug_breakthrough",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 59,
+      "first_event_at": "2026-02-23"
+    },
+    {
+      "id": "9cf60c3b-54d4-4e67-86c4-8225f9fc9b63",
+      "name": "Low-Income Consumer Stress · Discount Retail Slowdown",
+      "archetype_id": "consumer_polarization",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 42,
+      "first_event_at": "2026-03-12"
+    },
+    {
+      "id": "a43dddb5-ddb7-49b8-88e3-1f5a1de3a08c",
+      "name": "Multi-Token Crypto ETF · Staking Yield Products",
+      "archetype_id": "crypto_etf_products",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "59775ff6-909c-404e-9424-c9fba5e88ae9",
+      "name": "NATO Readiness Acceleration · Russia Threat Timeline",
+      "archetype_id": "defense_buildup",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "c53df16f-d1cc-439d-95e0-60f3d7f810e1",
+      "name": "Neocloud GPU Capacity Expansion · AI Compute Buildout",
+      "archetype_id": "hyperscaler_mega_capex",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "5c6134a9-a93e-47da-a316-d17450d68584",
+      "name": "NVDA $4B Photonics Lock · Optical Interconnect Capacity",
+      "archetype_id": "nvda_avgo_strategic_investment",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 52,
+      "first_event_at": "2026-03-02"
+    },
+    {
+      "id": "866743d7-ab1c-4815-b8e8-6238d3cc9880",
+      "name": "NVDA-Tower Deal · Specialty Foundry Capacity Lock",
+      "archetype_id": "nvda_avgo_strategic_investment",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 93,
+      "first_event_at": "2026-01-20"
+    },
+    {
+      "id": "7c94a0db-db39-49b5-9ce8-fbe538eb0cab",
+      "name": "Pharma Innovation Super-Cycle",
+      "archetype_id": "pharma_innovation_super_cycle",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "dfb7a7ca-019c-41a4-a2a9-9336ee488e79",
+      "name": "Rivian R2 Mass-Market Launch · Production Ramp",
+      "archetype_id": "ev_supply_chain_shift",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "2a1fef04-7456-4133-85f1-6bbbd3c8ec97",
+      "name": "Taiwan Info War Escalation · Semiconductor Risk",
+      "archetype_id": "taiwan_strait_tension",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 6,
+      "first_event_at": "2026-04-17"
+    },
+    {
+      "id": "5ca9dc3a-cd04-4c8f-975f-7b2df82c9042",
+      "name": "Trump Crypto Policy Volatility · BTC Price Swings",
+      "archetype_id": "crypto_institutional_adoption",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 3,
+      "first_event_at": "2026-04-20"
+    },
+    {
+      "id": "d3801df5-efea-4bb1-b801-0d77f50c6ea2",
+      "name": "UK Crypto P2P Crackdown · Regulated Exchange Flight",
+      "archetype_id": "crypto_exchange_custody",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    },
+    {
+      "id": "ed9161de-61aa-490b-912e-e7c53a7db3ee",
+      "name": "US Rare Earth Onshoring · Magnet Manufacturing",
+      "archetype_id": "rare_earth_national_security",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 88,
+      "first_event_at": "2026-01-25"
+    },
+    {
+      "id": "b19e7f7e-7e12-431c-8003-fcf948ed7b4f",
+      "name": "Western Critical Minerals Reshoring",
+      "archetype_id": "western_critical_minerals_reshoring",
+      "current_cycle_stage": "mid",
+      "days_since_first_event": 1,
+      "first_event_at": "2026-04-22"
+    }
+  ]
+}
