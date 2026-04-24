@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -17,7 +18,7 @@ import {
   Typography,
   theme as antdTheme,
 } from 'antd'
-import { MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
+import { BorderOutlined, CheckSquareFilled, MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
@@ -33,6 +34,7 @@ import type {
 } from '@/types/recommendations'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { SectionHeader } from '@/components/shared/SectionHeader'
+import { ThemeCard } from '@/components/radar/ThemeCard'
 import { stageColor as getStageColor } from '@/lib/design-tokens'
 import '../../radar.css'
 
@@ -89,6 +91,21 @@ export default function ThemeDetailPage() {
   const [showAllEvents, setShowAllEvents] = useState(false)
   const [eventTab, setEventTab] = useState<EventTab>('all')
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+
+  const { data: allThemesResp } = useSWR<{ themes: ThemeRadarItem[] }>(
+    theme?.child_themes && theme.child_themes.length > 0 ? '/api/themes' : null,
+    (url: string) => fetch(url).then((r) => r.json()),
+  )
+  const childThemeItems = useMemo(() => {
+    if (!theme?.child_themes?.length || !allThemesResp?.themes) return []
+    const ids = new Set(theme.child_themes.map((c) => c.id))
+    const byId = new Map(allThemesResp.themes.map((th) => [th.id, th]))
+    return theme.child_themes
+      .map((c) => byId.get(c.id))
+      .filter((th): th is ThemeRadarItem => Boolean(th))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      .slice(0, ids.size)
+  }, [theme?.child_themes, allThemesResp?.themes])
 
   useEffect(() => {
     if (!id) return
@@ -298,16 +315,6 @@ export default function ThemeDetailPage() {
                           <FocusLevelBadge strength={theme.theme_strength_score} />
                         </span>
                       </Flex>
-                      {locale === 'en' && theme.name_zh && (
-                        <Text style={{ display: 'block', marginTop: 8, fontSize: 14, color: token.colorTextTertiary }}>
-                          {theme.name_zh}
-                        </Text>
-                      )}
-                      {locale === 'zh' && theme.name_zh && (
-                        <Text style={{ display: 'block', marginTop: 8, fontSize: 14, color: token.colorTextTertiary, fontStyle: 'italic' }}>
-                          {theme.name}
-                        </Text>
-                      )}
                     </div>
 
                     <Flex gap={28} align="flex-start" style={{ paddingTop: 4 }}>
@@ -748,6 +755,7 @@ export default function ThemeDetailPage() {
                   subtitle={t('sections.theme_events_subtitle')}
                   meta={`${catalysts.length}`}
                 />
+                <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
                 {catalysts.length === 0 ? (
                   <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
                     {t('theme_detail.no_catalysts')}
@@ -915,11 +923,14 @@ export default function ThemeDetailPage() {
                     color: token.colorTextQuaternary,
                     fontStyle: 'italic',
                     marginTop: 14,
+                    paddingTop: 12,
+                    borderTop: `1px solid ${token.colorSplit}`,
                     letterSpacing: '0.06em',
                   }}
                 >
                   ℹ {t('theme_detail.ai_source_hint')}
                 </Text>
+                </Card>
               </div>
 
               {/* Exposure Mapping */}
@@ -952,31 +963,38 @@ export default function ThemeDetailPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                      gap: 10,
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                      gap: 16,
+                      alignItems: 'stretch',
                     }}
                   >
-                    {theme.child_themes.map((c) => (
-                      <Link
-                        key={c.id}
-                        href={`/themes/${c.id}`}
-                        style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <Card
-                          size="small"
-                          hoverable
-                          styles={{ body: { padding: '11px 14px' } }}
-                        >
-                          <Text strong style={{ display: 'block', fontSize: 13, color: token.colorText, marginBottom: 4 }}>
-                            {pickField(locale, c.name, c.name_zh)}
-                          </Text>
-                          <Flex align="center" gap={6} style={{ fontSize: 10.5, color: token.colorTextQuaternary, letterSpacing: '0.04em' }}>
-                            <FocusLevelBadge strength={c.theme_strength_score} />
-                            <span>· {t('themes_list.events', { n: c.event_count })}</span>
-                          </Flex>
-                        </Card>
-                      </Link>
-                    ))}
+                    {childThemeItems.length > 0
+                      ? childThemeItems.map((child) => (
+                          <ThemeCard key={child.id} theme={child} variant="secondary" />
+                        ))
+                      : theme.child_themes.map((c) => (
+                          <Link
+                            key={c.id}
+                            href={`/themes/${c.id}`}
+                            style={{ display: 'block', textDecoration: 'none', color: 'inherit', height: 320 }}
+                          >
+                            <Card
+                              hoverable
+                              styles={{ body: { padding: 20, height: '100%' } }}
+                              style={{ height: '100%' }}
+                            >
+                              <Text strong style={{ display: 'block', fontSize: 16, color: token.colorText, marginBottom: 6 }}>
+                                {pickField(locale, c.name, c.name_zh)}
+                              </Text>
+                              <Flex align="center" gap={8}>
+                                <FocusLevelBadge strength={c.theme_strength_score} />
+                                <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+                                  {t('themes_list.events', { n: c.event_count })}
+                                </Text>
+                              </Flex>
+                            </Card>
+                          </Link>
+                        ))}
                   </div>
                 </div>
               )}
@@ -1040,17 +1058,31 @@ export default function ThemeDetailPage() {
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                         gap: 10,
+                        alignItems: 'stretch',
                       }}
                     >
                       {pb.historical_cases.map((c, i) => (
-                        <Card key={i} size="small" styles={{ body: { padding: '10px 12px' } }}>
-                          <Text strong style={{ display: 'block', fontSize: 12.5, color: token.colorText, marginBottom: 4 }}>
+                        <Card
+                          key={i}
+                          size="small"
+                          styles={{
+                            body: {
+                              padding: '12px 14px',
+                              height: '100%',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 4,
+                            },
+                          }}
+                          style={{ height: '100%' }}
+                        >
+                          <Text strong style={{ display: 'block', fontSize: 12.5, color: token.colorText, marginBottom: 2 }}>
                             {c.name}
                           </Text>
                           <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextTertiary }}>
                             {c.approximate_duration}
                           </Text>
-                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextSecondary }}>
+                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextSecondary, marginTop: 'auto' }}>
                             Peak {c.peak_move}
                           </Text>
                         </Card>
@@ -1079,6 +1111,7 @@ export default function ThemeDetailPage() {
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
                                 gap: 10,
+                                alignItems: 'stretch',
                               }}
                             >
                               {visibleDiffs.map((d, i) => {
@@ -1091,7 +1124,12 @@ export default function ThemeDetailPage() {
                                   ? { color: token.colorSuccessText, background: token.colorSuccessBg }
                                   : { color: token.colorWarningText, background: token.colorWarningBg }
                                 return (
-                                  <Card key={i} size="small" styles={{ body: { padding: '10px 12px' } }}>
+                                  <Card
+                                    key={i}
+                                    size="small"
+                                    styles={{ body: { padding: '12px 14px', height: '100%' } }}
+                                    style={{ height: '100%' }}
+                                  >
                                     <Flex align="center" gap={6} style={{ marginBottom: 5 }}>
                                       <span style={{ fontSize: 13, lineHeight: 1, color: arrColor }}>{arrow}</span>
                                       <Text strong style={{ fontSize: 12, color: token.colorText, textTransform: 'capitalize' }}>
@@ -1186,35 +1224,55 @@ export default function ThemeDetailPage() {
                     {(pb.exit_signals?.length ?? 0) > 0 && (
                       <>
                         <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.exit_signals')}</div>
-                        <div style={{ display: 'grid', rowGap: 4 }}>
-                          {pb.exit_signals.map((s, i) => (
-                            <div
-                              key={i}
-                              style={{
-                                display: 'flex',
-                                gap: 10,
-                                fontSize: 12.5,
-                                color: token.colorTextSecondary,
-                                padding: '7px 0',
-                                borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
-                              }}
-                            >
-                              <span
-                                style={{
-                                  color: token.colorTextQuaternary,
-                                  fontFamily: token.fontFamilyCode,
-                                  fontSize: 10.5,
-                                  width: 18,
-                                  flexShrink: 0,
-                                  paddingTop: 2,
-                                }}
-                              >
-                                {String(i + 1).padStart(2, '0')}
-                              </span>
-                              <span>{s}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <Card size="small" styles={{ body: { padding: '12px 16px' } }}>
+                          <div style={{ display: 'grid', rowGap: 2 }}>
+                            {pb.exit_signals.map((s, i) => {
+                              const triggered = false
+                              return (
+                                <div
+                                  key={i}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: 10,
+                                    fontSize: 12.5,
+                                    color: triggered ? token.colorText : token.colorTextSecondary,
+                                    padding: '7px 0',
+                                    borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                  }}
+                                >
+                                  {triggered ? (
+                                    <CheckSquareFilled
+                                      style={{
+                                        color: token.colorSuccess,
+                                        fontSize: 14,
+                                        marginTop: 2,
+                                        flexShrink: 0,
+                                      }}
+                                    />
+                                  ) : (
+                                    <BorderOutlined
+                                      style={{
+                                        color: token.colorTextQuaternary,
+                                        fontSize: 14,
+                                        marginTop: 2,
+                                        flexShrink: 0,
+                                      }}
+                                    />
+                                  )}
+                                  <span
+                                    style={{
+                                      textDecoration: triggered ? 'line-through' : 'none',
+                                      lineHeight: 1.5,
+                                    }}
+                                  >
+                                    {s}
+                                  </span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </Card>
                       </>
                     )}
                   </div>
@@ -1328,7 +1386,13 @@ function ExposureGroup({
         <span style={{ fontWeight: 600 }}>{title}</span>
         <span style={{ color: token.colorTextQuaternary, fontWeight: 400 }}>· {items.length}</span>
       </Flex>
-      <Space direction="vertical" size={8} style={{ width: '100%' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 8,
+        }}
+      >
         {items.map((r) => {
           const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
           const exposure = pickField(locale, r.business_exposure, r.business_exposure_zh)
@@ -1433,7 +1497,7 @@ function ExposureGroup({
             </Card>
           )
         })}
-      </Space>
+      </div>
     </div>
   )
 }
