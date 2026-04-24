@@ -82,9 +82,16 @@ function symbolBg(symbol: string): string {
 }
 
 function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: string | null; size?: number }) {
-  const [errored, setErrored] = useState(false)
-  const show = logoUrl && !errored
+  const sources: string[] = []
+  if (logoUrl) sources.push(logoUrl)
+  sources.push(`https://financialmodelingprep.com/image-stock/${symbol}.png`)
+  sources.push(`https://logo.clearbit.com/${symbol.toLowerCase()}.com`)
+
+  const [srcIdx, setSrcIdx] = useState(0)
+  const [failed, setFailed] = useState(false)
+  const showImg = !failed && srcIdx < sources.length
   const initials = symbol.slice(0, Math.min(3, symbol.length))
+
   return (
     <span
       aria-hidden
@@ -95,29 +102,40 @@ function TickerLogo({ symbol, logoUrl, size = 24 }: { symbol: string; logoUrl?: 
         width: size,
         height: size,
         borderRadius: size,
-        background: show ? '#ffffff' : symbolBg(symbol),
-        border: show ? '1px solid #e4e4e7' : 'none',
+        background: showImg ? '#ffffff' : symbolBg(symbol),
+        border: showImg ? '1px solid #e4e4e7' : 'none',
         overflow: 'hidden',
         flexShrink: 0,
         fontSize: size <= 20 ? 8 : 9,
-        fontWeight: 600,
-        color: show ? '#71717a' : '#ffffff',
+        fontWeight: 700,
+        color: '#ffffff',
         letterSpacing: -0.2,
       }}
     >
-      {show ? (
+      {showImg ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={logoUrl as string}
+          key={sources[srcIdx]}
+          src={sources[srcIdx]}
           alt=""
           width={size}
           height={size}
           style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#ffffff' }}
-          onError={() => setErrored(true)}
           referrerPolicy="no-referrer"
+          onError={() => {
+            if (srcIdx < sources.length - 1) setSrcIdx(srcIdx + 1)
+            else setFailed(true)
+          }}
+          onLoad={(e) => {
+            const img = e.currentTarget
+            if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+              if (srcIdx < sources.length - 1) setSrcIdx(srcIdx + 1)
+              else setFailed(true)
+            }
+          }}
         />
       ) : (
-        <span>{initials}</span>
+        <span style={{ color: '#ffffff' }}>{initials}</span>
       )}
     </span>
   )

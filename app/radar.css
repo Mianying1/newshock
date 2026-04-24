@@ -602,11 +602,11 @@
 }
 .radar-page .rb-fill.pos {
   background: linear-gradient(90deg, #A6BB8A, #7A8C5C);
-  border-radius: 999px;
+  border-radius: 0 999px 999px 0;
 }
 .radar-page .rb-fill.neg {
   background: linear-gradient(270deg, #D59A8B, #B8453A);
-  border-radius: 999px;
+  border-radius: 999px 0 0 999px;
 }
 .radar-page .rb-mid {
   position: absolute;
