@@ -517,12 +517,12 @@
     "exploratory": "Exploratory"
   },
   "sections": {
-    "top_narratives_title": "Today's Focus",
-    "top_narratives_subtitle": "Top 3 narratives ranked by priority",
-    "stock_picks_title": "Stock Picks",
-    "stock_picks_subtitle": "Thematic leaders · Long-horizon potential",
+    "top_narratives_title": "Today's Top Narratives",
+    "top_narratives_subtitle": "The 3 narratives worth watching today · ranked by signal strength + time horizon",
+    "stock_picks_title": "Stocks",
+    "stock_picks_subtitle": "Tickers most tightly linked to today's main lines · layered by short- and long-horizon",
     "themes_title": "All Themes",
-    "themes_subtitle": "Other active themes tracked today",
+    "themes_subtitle": "Beyond the top 3 · {n} more themes tracked today · filter by horizon / category",
     "themes_meta": "{n} themes",
     "themes_view_all": "View all →",
     "market_regime_title": "Market Regime",

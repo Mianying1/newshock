@@ -252,7 +252,7 @@ export default function HomePage() {
                     <SectionHeader
                       index="03"
                       title={t('sections.themes_title')}
-                      subtitle={t('sections.themes_subtitle')}
+                      subtitle={t('sections.themes_subtitle', { n: secondaryThemes.length })}
                     />
                     <SecondaryThemesWithFilter themes={secondaryThemes} />
                   </>
