@@ -4,6 +4,7 @@ import type { ThemeRadarItem } from '@/types/recommendations'
 import { formatRelativeTime } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
 import { useField } from '@/lib/useField'
+import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 
 const CATEGORY_TAG: Record<string, { cls: string; labelKey: string }> = {
   geopolitical: { cls: 'geo', labelKey: 'categories.geopolitics' },
@@ -72,7 +73,7 @@ export function ActiveThemeCard({ theme }: { theme: ThemeRadarItem }) {
           <div className="th-title">{themeName}</div>
           {summary && <div className="th-sub">{summary}</div>}
         </div>
-        <div className="th-evts">str {theme.theme_strength_score.toFixed(0)}</div>
+        <div className="th-evts"><FocusLevelBadge strength={theme.theme_strength_score} size="small" /></div>
       </div>
 
       <div className="th-tags">

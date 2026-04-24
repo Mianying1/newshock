@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import useSWR from 'swr'
 import {
   Badge,
   Button,
+  Card,
   Col,
   Empty,
   Input,
@@ -17,17 +17,17 @@ import {
   Typography,
   theme,
 } from 'antd'
-import { SearchOutlined, SettingOutlined } from '@ant-design/icons'
+import Link from 'next/link'
+import { SearchOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
-import { MarketNarratives } from '@/components/MarketNarratives'
 import { TopTickersSection } from '@/components/TopTickersSection'
-import { EventStream } from '@/components/EventStream'
-import { ActiveThemeCard } from '@/components/ActiveThemeCard'
-import StageAlertsSection from '@/components/StageAlertsSection'
-import { SectionLabel } from '@/components/shared/SectionLabel'
-import { CuratorStrip } from '@/components/shared/CuratorStrip'
+import { SectionHeader } from '@/components/shared/SectionHeader'
+import { TodayTopNarratives } from '@/components/radar/TodayTopNarratives'
+import { SecondaryThemeGrid } from '@/components/radar/SecondaryThemeGrid'
+import { EventStreamCompact } from '@/components/radar/EventStreamCompact'
 import { useI18n } from '@/lib/i18n-context'
+import { getTodayPriority } from '@/lib/theme-priority'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import './radar.css'
 
@@ -90,10 +90,21 @@ export default function HomePage() {
   }, [])
 
   const activeThemes = themes.filter((th) => th.status !== 'archived')
-  const umbrellaThemes = activeThemes.filter((th) => th.theme_tier === 'umbrella')
-  const subthemes = activeThemes.filter((th) => th.theme_tier !== 'umbrella')
   const totalThemes = activeThemes.length
-  const visibleThemes = activeThemes.slice(0, 12)
+
+  const top3Ids = new Set(
+    activeThemes
+      .filter((th) => th.status === 'active')
+      .sort((a, b) => getTodayPriority(b) - getTodayPriority(a))
+      .slice(0, 3)
+      .map((th) => th.id),
+  )
+
+  const secondaryThemes = activeThemes
+    .filter((th) => !top3Ids.has(th.id))
+    .sort((a, b) => b.theme_strength_score - a.theme_strength_score)
+    .slice(0, 8)
+
   const narrativesCount = overview?.narratives_count ?? 0
   const eventsWeek = overview?.events_7d ?? 0
   const headerDate = useHeaderDate(locale)
@@ -131,6 +142,7 @@ export default function HomePage() {
               style={{ flex: 1 }}
             />
             <Segmented
+              size="small"
               value={locale}
               onChange={(v) => setLocale(v as 'en' | 'zh')}
               options={[
@@ -138,7 +150,6 @@ export default function HomePage() {
                 { label: '中', value: 'zh' },
               ]}
             />
-            <Button type="text" icon={<SettingOutlined />} aria-label="Settings" />
           </Header>
 
           <Content style={{ padding: '0 28px 40px' }}>
@@ -165,68 +176,86 @@ export default function HomePage() {
               </Space>
             </div>
 
-            <MarketRegimeCard />
-            <StageAlertsSection />
-            <TopTickersSection />
-            <MarketNarratives />
-            <EventStream />
+            <Row gutter={[24, 24]} style={{ marginTop: 8 }}>
+              <Col xs={24} lg={17}>
+                {loading && (
+                  <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                    <Spin />
+                  </div>
+                )}
+                {error && (
+                  <Empty description={t('common.error')} style={{ padding: '40px 0' }} />
+                )}
+                {!loading && !error && totalThemes === 0 && (
+                  <Empty description={t('common.no_themes')} style={{ padding: '40px 0' }} />
+                )}
 
-            <SectionLabel
-              label={t('active_themes.core_title')}
-              extra={t('active_themes.showing', { n: umbrellaThemes.length })}
-            />
+                {!loading && !error && activeThemes.length > 0 && (
+                  <>
+                    <SectionHeader
+                      first
+                      index="01"
+                      title={t('sections.top_narratives_title')}
+                      subtitle={t('sections.top_narratives_subtitle')}
+                      meta={t('sections.top_narratives_meta', { n: top3Ids.size })}
+                    />
+                    <TodayTopNarratives themes={activeThemes} />
+                  </>
+                )}
 
-            {loading && (
-              <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                <Spin />
-              </div>
-            )}
-            {error && (
-              <Empty
-                description={t('common.error')}
-                style={{ padding: '40px 0' }}
-              />
-            )}
-            {!loading && !error && visibleThemes.length === 0 && (
-              <Empty
-                description={t('common.no_themes')}
-                style={{ padding: '40px 0' }}
-              />
-            )}
-
-            {umbrellaThemes.length > 0 && (
-              <Row gutter={[14, 14]}>
-                {umbrellaThemes.map((th) => (
-                  <Col key={th.id} xs={24} md={12}>
-                    <ActiveThemeCard theme={th} />
-                  </Col>
-                ))}
-              </Row>
-            )}
-
-            {subthemes.length > 0 && (
-              <div style={{ marginTop: 24 }}>
-                <SectionLabel
-                  label={t('active_themes.subtheme_title')}
-                  extra={t('active_themes.showing', { n: subthemes.length })}
+                <SectionHeader
+                  index="02"
+                  title={t('sections.stock_picks_title')}
+                  subtitle={t('sections.stock_picks_subtitle')}
                 />
-                <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
-                  <Link href="/themes?tier=subtheme" style={{ textDecoration: 'none' }}>
-                    <Button shape="round">
-                      {t('active_themes.expand_subthemes', { count: subthemes.length })}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
+                <TopTickersSection />
 
-            <CuratorStrip
-              initials="MC"
-              name="Mianying Chen"
-              role={t('curator_strip.role')}
-              byLabel={t('curator_strip.by')}
-              disclaim={t('curator_strip.disclaim')}
-            />
+                {!loading && !error && secondaryThemes.length > 0 && (
+                  <>
+                    <SectionHeader
+                      index="03"
+                      title={t('sections.themes_title')}
+                      subtitle={t('sections.themes_subtitle')}
+                      meta={t('sections.themes_meta', { n: secondaryThemes.length })}
+                      action={
+                        <Link href="/themes" style={{ textDecoration: 'none' }}>
+                          <Button type="link" size="small" style={{ padding: 0, height: 'auto' }}>
+                            {t('sections.themes_view_all')}
+                          </Button>
+                        </Link>
+                      }
+                    />
+                    <Card size="small">
+                      <SecondaryThemeGrid themes={secondaryThemes} />
+                    </Card>
+                  </>
+                )}
+              </Col>
+              <Col xs={24} lg={7}>
+                <div style={{ position: 'sticky', top: 80 }}>
+                  <SectionHeader
+                    first
+                    size="sm"
+                    index="01"
+                    title={t('sections.market_regime_title')}
+                    subtitle={t('sections.market_regime_subtitle')}
+                    meta={t('market_regime.scores_refresh_twice_weekly')}
+                  />
+                  <Card size="small">
+                    <MarketRegimeCard />
+                  </Card>
+
+                  <EventStreamCompact
+                    section={{
+                      size: 'sm',
+                      index: '02',
+                      title: t('sections.event_stream_title'),
+                      subtitle: t('sections.event_stream_subtitle'),
+                    }}
+                  />
+                </div>
+              </Col>
+            </Row>
           </Content>
         </Layout>
       </div>

@@ -16,6 +16,7 @@ import type {
   ThemeRadarItem,
   ThemeRecommendation,
 } from '@/types/recommendations'
+import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import '../../radar.css'
 
 type EventTab = 'all' | EventDirection
@@ -241,11 +242,11 @@ export default function ThemeDetailPage() {
                 const isCooling = theme.status === 'cooling'
                 const coolPct = Math.min(100, Math.max(0, Math.round(((theme.days_since_last_event - 30) / 30) * 100)))
                 const stageHex: Record<string, string> = {
-                  early: '#7A8C5C',
-                  mid: '#3D6EB5',
-                  late: '#B08A3A',
-                  beyond: '#B8453A',
-                  unknown: '#A8A196',
+                  early: '#5C6A1E',
+                  mid: '#A86C00',
+                  late: '#8B3A2E',
+                  beyond: '#8B3A2E',
+                  unknown: '#8C8A85',
                 }
                 const stageColor = stageHex[theme.playbook_stage] ?? '#A8A196'
 
@@ -318,7 +319,7 @@ export default function ThemeDetailPage() {
                     <div className="td-card">
                       <div className="td-score-row">
                         <div>
-                          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-3)', textTransform: 'uppercase', marginBottom: 4 }}>
+                          <div style={{ fontFamily: 'inherit', fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-3)', textTransform: 'uppercase', marginBottom: 4 }}>
                             {bandLabel}
                           </div>
                           <div className="td-score">
@@ -402,7 +403,7 @@ export default function ThemeDetailPage() {
                         </div>
                       </div>
                       <div className="td-bb-foot">
-                        <span>{t('theme_detail.bull_bear_ratio')}: <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--ink)' }}>{ratio}</span></span>
+                        <span>{t('theme_detail.bull_bear_ratio')}: <span style={{ fontFamily: 'inherit', color: 'var(--ink)' }}>{ratio}</span></span>
                         {label && <span>{label}</span>}
                       </div>
                     </div>
@@ -492,7 +493,7 @@ export default function ThemeDetailPage() {
                     )}
                   </>
                 )}
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--ink-4)', fontStyle: 'italic', marginTop: 12, letterSpacing: '0.04em' }}>
+                <p style={{ fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', fontStyle: 'italic', marginTop: 12, letterSpacing: '0.04em' }}>
                   ℹ {t('theme_detail.ai_source_hint')}
                 </p>
               </div>
@@ -525,8 +526,9 @@ export default function ThemeDetailPage() {
                     {theme.child_themes.map((c) => (
                       <Link key={c.id} href={`/themes/${c.id}`} className="td-sub">
                         <div className="nm">{pickField(locale, c.name, c.name_zh)}</div>
-                        <div className="sub">
-                          STR {c.theme_strength_score} · {t('themes_list.events', { n: c.event_count })}
+                        <div className="sub" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <FocusLevelBadge strength={c.theme_strength_score} size="small" />
+                          <span>· {t('themes_list.events', { n: c.event_count })}</span>
                         </div>
                       </Link>
                     ))}
@@ -564,7 +566,7 @@ export default function ThemeDetailPage() {
                     </h2>
                     <hr className="td-sec-rule" />
 
-                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', marginBottom: 10, fontStyle: 'italic' }}>
+                    <p style={{ fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', marginBottom: 10, fontStyle: 'italic' }}>
                       ℹ {t('theme_detail.disclaimer_playbook')}
                     </p>
 
@@ -582,7 +584,7 @@ export default function ThemeDetailPage() {
                     {(visibleDiffs.length > 0 || validSims.length > 0 || ttd?.observation) && (
                       <>
                         <div style={{ marginTop: 18 }} className="td-ttd-panel">
-                          <div style={{ fontFamily: 'Instrument Serif, serif', fontSize: 18, marginBottom: 4 }}>
+                          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 4 }}>
                             {t('theme_detail.this_time_different')}
                           </div>
 
@@ -636,7 +638,7 @@ export default function ThemeDetailPage() {
                             </div>
                           )}
 
-                          <div style={{ marginTop: 10, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', fontStyle: 'italic' }}>
+                          <div style={{ marginTop: 10, fontFamily: 'inherit', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.04em', fontStyle: 'italic' }}>
                             ⚠ {t('theme_detail.disclaimer_observation')}
                           </div>
                         </div>

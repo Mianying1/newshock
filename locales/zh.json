@@ -44,7 +44,9 @@
     "diff_extend": "可能延长",
     "diff_shorten": "可能缩短",
     "diff_multi": "多维度差异",
-    "diff_weak": "有差异"
+    "diff_weak": "有差异",
+    "expected": "预期",
+    "expected_duration": "预期时长"
   },
   "theme_detail": {
     "summary": "摘要",
@@ -326,10 +328,9 @@
     "stage_bar_early": "{stage} 阶段 · 积累中",
     "since": "自 {date}",
     "est_horizon": "预期时长 {label}",
-    "view_all": "查看全部 {count} 个主题 →",
+    "view_all_simple": "查看全部主题 →",
     "core_title": "核心主题",
-    "subtheme_title": "次要主题",
-    "expand_subthemes": "展开 {count} 个次要主题 →"
+    "subtheme_title": "次要主题"
   },
   "themes_list": {
     "title": "全部主题",
@@ -365,7 +366,69 @@
     "themes": "{n} 个主题",
     "synthesis_meta": "每日汇总 · {time} · AI 起草, 策展人已校",
     "mark_reviewed": "已校",
-    "mark_ai": "AI"
+    "mark_ai": "AI",
+    "section_title": "今日主线",
+    "narrative_prefix": "主线",
+    "top_priority": "当前最重要",
+    "focus_critical": "极高关注",
+    "focus_high": "高关注",
+    "focus_watch": "观察中",
+    "focus_tracking": "跟踪",
+    "lifecycle_stage": "生命周期阶段",
+    "current_progress": "当前进度",
+    "day_of_expected": "第 {days} 天 / 预期 ~{total} 天",
+    "day_short": "第 {days} 天",
+    "days_suffix_short": "天",
+    "strength_label": "强度",
+    "events_48h": "48H 事件",
+    "event_unit": "条",
+    "events_unit": "条",
+    "urgency_label": "紧迫性",
+    "tickers_label": "关联标的",
+    "tickers_unit": "个标的",
+    "related_tickers": "相关标的",
+    "more_suffix": "更多",
+    "view_full_map": "查看完整图谱",
+    "why_now": "为什么现在",
+    "view_full_analysis": "查看完整分析 & 操作手册",
+    "alert_approaching_exit": "接近退出信号 · ",
+    "alert_early": "早期阶段 · 结构正在形成",
+    "alert_mid": "中期阶段 · 结构性窗口",
+    "alert_late": "晚期阶段 · 关注退出信号",
+    "alert_beyond": "超预期持续 · 立即关注",
+    "alert_default": "活跃跟踪中"
+  },
+  "stage": {
+    "early": "早期",
+    "mid": "中后期",
+    "late": "晚期",
+    "beyond": "尾声",
+    "tracking": "跟踪中",
+    "transition_early_mid": "EARLY → MID",
+    "transition_mid_late": "MID → LATE",
+    "transition_late_exit": "LATE → EXIT",
+    "transition_beyond": "BEYOND",
+    "transition_tracking": "TRACKING"
+  },
+  "urgency": {
+    "immediate": "立即关注",
+    "accelerating": "加速中",
+    "structural": "稳定推进",
+    "watching": "观察中"
+  },
+  "focus": {
+    "critical": "极高关注",
+    "high": "高度关注",
+    "medium": "中度关注",
+    "low": "低度关注"
+  },
+  "whynow": {
+    "events_48h": "过去 48 小时 {count} 个催化事件",
+    "source_diversity": "{count} 个独立来源交叉印证",
+    "fallback_early": "早期阶段 · 动能正在积累",
+    "fallback_mid": "中期阶段 · 结构性确认",
+    "fallback_late": "晚期阶段 · 关注退出信号",
+    "fallback_active": "活跃主题 · 持续跟踪"
   },
   "market_regime": {
     "title": "市场周期",
@@ -391,11 +454,11 @@
       "bear": "熊市"
     },
     "guidance_text": {
-      "maintain_equity": "维持 equity 敞口, 成长/价值均衡",
-      "hold_no_leverage": "不减仓, 避免加杠杆, 单项警觉",
-      "reduce_beta": "减持高 beta, 增持质量 + 防御",
-      "heavy_reduce": "大幅减仓, 增持现金 + 黄金",
-      "defensive": "防御, 逢反弹减仓, 寻找底部信号"
+      "maintain_equity": "多因子共振向好, 盈利广度与信用环境共同支撑风险资产, 美联储立场尚未构成压制。质量成长与顺周期可同持, 回调应视作加仓窗口而非转向信号; 首要关注信号是广度收窄与信用利差走阔。",
+      "hold_no_leverage": "综合评分仍偏积极, 但单维度已开始分化, 扩张动能不再一致。维持现有仓位即可, 不加杠杆、不追高 beta 尾部; 信用或盈利任一走弱即触发降仓, 这是改变立场的前兆。",
+      "reduce_beta": "多项维度同步走软, 扩张叙事被削弱但尚未崩溃。减持高 beta 与集中成长, 转向质量现金流、低波动防御与长久期利率资产; 信用未企稳前不做抄底动作, 等待至少一项维度重新转强。",
+      "heavy_reduce": "环境已转防御, 信用压力、盈利下修或宏观走弱占据主导。大幅减仓提升现金比重, 配置黄金与久期对冲尾部风险; 此阶段反弹多为逆势行情, 保本优先于相对收益。",
+      "defensive": "熊市格局确立, 多数维度普遍走弱。保持防御姿态, 反弹择机减仓而非追涨; 追踪三项底部信号 — 信用利差见顶、盈利修正触底、美联储转向, 至少两项共振前不提前布局反转。"
     }
   },
   "duration_type": {
@@ -427,6 +490,21 @@
     "crypto": "加密",
     "consumer": "消费",
     "exploratory": "探索性"
+  },
+  "sections": {
+    "top_narratives_title": "今日主线",
+    "top_narratives_subtitle": "按优先级排序的 Top 3 叙事",
+    "top_narratives_meta": "{n} 条活跃",
+    "stock_picks_title": "选股",
+    "stock_picks_subtitle": "题材龙头 · 长周期潜力",
+    "themes_title": "主题",
+    "themes_subtitle": "今日跟踪的其他活跃主题",
+    "themes_meta": "{n} 个主题",
+    "themes_view_all": "查看全部 →",
+    "market_regime_title": "市场周期",
+    "market_regime_subtitle": "六维综合评分",
+    "event_stream_title": "事件流",
+    "event_stream_subtitle": "实时采集的事件信号"
   },
   "curator_strip": {
     "by": "本周策展",

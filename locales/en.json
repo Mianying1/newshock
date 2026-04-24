@@ -44,7 +44,9 @@
     "diff_extend": "May extend cycle",
     "diff_shorten": "May shorten cycle",
     "diff_multi": "Mixed differences",
-    "diff_weak": "Minor differences"
+    "diff_weak": "Minor differences",
+    "expected": "expected",
+    "expected_duration": "Expected duration"
   },
   "theme_detail": {
     "summary": "Summary",
@@ -326,10 +328,9 @@
     "stage_bar_early": "{stage} stage · building",
     "since": "Since {date}",
     "est_horizon": "est. horizon {label}",
-    "view_all": "View all {count} themes →",
+    "view_all_simple": "View all themes →",
     "core_title": "Core Themes",
-    "subtheme_title": "Subthemes",
-    "expand_subthemes": "View all {count} subthemes →"
+    "subtheme_title": "Subthemes"
   },
   "themes_list": {
     "title": "All Themes",
@@ -365,7 +366,69 @@
     "themes": "{n} themes",
     "synthesis_meta": "Daily synthesis · updated {time} · AI drafted, curator reviewed",
     "mark_reviewed": "Reviewed",
-    "mark_ai": "AI"
+    "mark_ai": "AI",
+    "section_title": "Today's Top Narratives",
+    "narrative_prefix": "NARRATIVE",
+    "top_priority": "Top Priority",
+    "focus_critical": "Critical",
+    "focus_high": "High Focus",
+    "focus_watch": "Watch",
+    "focus_tracking": "Tracking",
+    "lifecycle_stage": "Lifecycle Stage",
+    "current_progress": "Current Progress",
+    "day_of_expected": "Day {days} of ~{total} days",
+    "day_short": "Day {days}",
+    "days_suffix_short": "days",
+    "strength_label": "Strength",
+    "events_48h": "Events · 48H",
+    "event_unit": "event",
+    "events_unit": "events",
+    "urgency_label": "Urgency",
+    "tickers_label": "Tickers",
+    "tickers_unit": "tickers",
+    "related_tickers": "Related Tickers",
+    "more_suffix": "more",
+    "view_full_map": "View full map",
+    "why_now": "Why now",
+    "view_full_analysis": "View full analysis & playbook",
+    "alert_approaching_exit": "Approaching exit · ",
+    "alert_early": "Early stage · structure forming",
+    "alert_mid": "Mid stage · structural window",
+    "alert_late": "Late stage · watch exit signals",
+    "alert_beyond": "Beyond typical duration · act now",
+    "alert_default": "Active tracking"
+  },
+  "stage": {
+    "early": "Early",
+    "mid": "Mid-late",
+    "late": "Late",
+    "beyond": "Beyond",
+    "tracking": "Tracking",
+    "transition_early_mid": "EARLY → MID",
+    "transition_mid_late": "MID → LATE",
+    "transition_late_exit": "LATE → EXIT",
+    "transition_beyond": "BEYOND",
+    "transition_tracking": "TRACKING"
+  },
+  "urgency": {
+    "immediate": "Act now",
+    "accelerating": "Accelerating",
+    "structural": "Steady",
+    "watching": "Watching"
+  },
+  "focus": {
+    "critical": "Critical",
+    "high": "High Focus",
+    "medium": "Medium Focus",
+    "low": "Low Focus"
+  },
+  "whynow": {
+    "events_48h": "{count} catalysts in last 48h",
+    "source_diversity": "{count} independent sources corroborating",
+    "fallback_early": "Early stage · momentum building",
+    "fallback_mid": "Mid stage · structural confirmation",
+    "fallback_late": "Late stage · watch exit signals",
+    "fallback_active": "Active theme · tracking"
   },
   "market_regime": {
     "title": "Market Regime",
@@ -391,11 +454,11 @@
       "bear": "Bear"
     },
     "guidance_text": {
-      "maintain_equity": "Maintain equity exposure · balance growth and value",
-      "hold_no_leverage": "Hold positions · avoid leverage · watch single dimensions",
-      "reduce_beta": "Reduce high-beta · add quality and defensives",
-      "heavy_reduce": "Significantly reduce · add cash and gold",
-      "defensive": "Defensive · sell rallies · look for bottom signals"
+      "maintain_equity": "Pillars are aligned — earnings breadth and credit jointly support risk assets, and the Fed stance is not yet restrictive. Hold both quality growth and cyclicals; treat pullbacks as adds, not as regime signals. Watch for breadth narrowing and widening credit spreads as the first cracks.",
+      "hold_no_leverage": "Composite is still constructive but pillars have begun to diverge — expansion momentum is no longer uniform. Maintain exposure without stretching: no new leverage, no high-beta tails. A single-pillar slip in credit or earnings is the trigger to de-risk, not a buy-the-dip prompt.",
+      "reduce_beta": "Multiple pillars are softening together — the expansion narrative is eroding but not yet broken. Rotate out of high-beta and crowded growth into quality cash flows, low-vol defensives, and duration; wait for credit to stabilize and at least one pillar to re-strengthen before bottom-fishing.",
+      "heavy_reduce": "Regime has turned defensive — credit stress, earnings cuts, or macro weakness now dominate. Cut equity meaningfully, raise cash, add gold and duration to hedge tail risk. Rallies here are typically counter-trend; capital preservation outweighs relative-return risk.",
+      "defensive": "Bear regime confirmed with broad-based deterioration. Hold defensive posture, sell into strength rather than chase rallies. Track three bottom signals — credit spreads peaking, earnings revisions troughing, Fed pivot — and don't front-run recovery until at least two align."
     }
   },
   "duration_type": {
@@ -427,6 +490,21 @@
     "crypto": "Crypto",
     "consumer": "Consumer",
     "exploratory": "Exploratory"
+  },
+  "sections": {
+    "top_narratives_title": "Today's Focus",
+    "top_narratives_subtitle": "Top 3 narratives ranked by priority",
+    "top_narratives_meta": "{n} active",
+    "stock_picks_title": "Stock Picks",
+    "stock_picks_subtitle": "Thematic leaders · Long-horizon potential",
+    "themes_title": "All Themes",
+    "themes_subtitle": "Other active themes tracked today",
+    "themes_meta": "{n} themes",
+    "themes_view_all": "View all →",
+    "market_regime_title": "Market Regime",
+    "market_regime_subtitle": "Composite score across 6 dimensions",
+    "event_stream_title": "Event Stream",
+    "event_stream_subtitle": "Live feed of ingested events"
   },
   "curator_strip": {
     "by": "This week curated by",

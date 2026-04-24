@@ -8,6 +8,7 @@ import { useField } from '@/lib/useField'
 import { formatRelativeTime } from '@/lib/utils'
 import { formatCategoryLabel } from '@/lib/theme-formatter'
 import type { ThemeRadarItem } from '@/types/recommendations'
+import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import '../radar.css'
 
 type StatusFilter = 'active' | 'cooling' | 'archived' | 'all'
@@ -46,8 +47,8 @@ function ThemeRow({ theme }: { theme: ThemeRadarItem }) {
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-1)', lineHeight: 1.3, minWidth: 0 }}>
           {name}
         </div>
-        <div style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--ink-3)', whiteSpace: 'nowrap' }}>
-          {t('themes_list.strength')} {theme.theme_strength_score.toFixed(0)}
+        <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+          <FocusLevelBadge strength={theme.theme_strength_score} size="small" />
         </div>
       </div>
 
