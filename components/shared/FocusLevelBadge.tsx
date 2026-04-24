@@ -8,7 +8,6 @@ import { useThemeMode } from '@/lib/providers'
 
 interface FocusLevelBadgeProps {
   strength: number | null | undefined
-  size?: 'small' | 'default'
 }
 
 interface FocusLevel {
@@ -40,25 +39,23 @@ function getFocusLevel(strength: number, isDark: boolean): FocusLevel {
   return { labelKey: 'focus.low', ...palette.low, icon: 'circle-outlined' }
 }
 
-export function FocusLevelBadge({ strength, size = 'default' }: FocusLevelBadgeProps) {
+export function FocusLevelBadge({ strength }: FocusLevelBadgeProps) {
   const { t } = useI18n()
   const { mode } = useThemeMode()
   if (strength == null) return null
 
   const level = getFocusLevel(strength, mode === 'dark')
-  const isSmall = size === 'small'
-  const dotSize = isSmall ? 6 : 8
 
   let iconNode: React.ReactNode = null
   if (level.icon === 'fire') {
-    iconNode = <FireFilled style={{ color: level.color, fontSize: isSmall ? 10 : 12 }} />
+    iconNode = <FireFilled style={{ color: level.color, fontSize: 12 }} />
   } else if (level.icon === 'circle-filled') {
     iconNode = (
       <span
         style={{
           display: 'inline-block',
-          width: dotSize,
-          height: dotSize,
+          width: 6,
+          height: 6,
           borderRadius: '50%',
           backgroundColor: level.color,
         }}
@@ -69,8 +66,8 @@ export function FocusLevelBadge({ strength, size = 'default' }: FocusLevelBadgeP
       <span
         style={{
           display: 'inline-block',
-          width: dotSize,
-          height: dotSize,
+          width: 6,
+          height: 6,
           borderRadius: '50%',
           border: `1.5px solid ${level.color}`,
           background: 'transparent',
@@ -86,8 +83,8 @@ export function FocusLevelBadge({ strength, size = 'default' }: FocusLevelBadgeP
         color: level.color,
         border: 'none',
         borderRadius: 4,
-        padding: isSmall ? '1px 8px' : '3px 10px',
-        fontSize: isSmall ? 11 : 12,
+        padding: '3px 10px',
+        fontSize: 12,
         fontWeight: 500,
         display: 'inline-flex',
         alignItems: 'center',

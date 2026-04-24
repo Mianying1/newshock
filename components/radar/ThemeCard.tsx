@@ -6,7 +6,7 @@ import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/typ
 import { useI18n } from '@/lib/i18n-context'
 import { useField, useJsonField } from '@/lib/useField'
 import { stageColor } from '@/lib/design-tokens'
-import { categoryTone, arrowColor } from '@/lib/category-colors'
+import { arrowColor } from '@/lib/category-colors'
 import { formatRelativeTime } from '@/lib/utils'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { HorizonBadge } from '@/components/shared/HorizonBadge'
@@ -92,14 +92,14 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 fontSize: 16,
                 fontWeight: 600,
                 color: token.colorText,
-                lineHeight: 1.35,
+                lineHeight: 1.5,
               }}
               ellipsis={{ rows: 2 }}
             >
               {themeName}
             </Title>
             <span style={{ flexShrink: 0 }}>
-              <FocusLevelBadge strength={th.theme_strength_score} size="small" />
+              <FocusLevelBadge strength={th.theme_strength_score} />
             </span>
           </Flex>
 
@@ -122,8 +122,11 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
               <Tag
                 style={{
                   margin: 0,
-                  ...categoryTone(th.category),
+                  background: token.colorFillAlter,
+                  color: token.colorTextSecondary,
+                  border: `1px solid ${token.colorBorder}`,
                   fontSize: 12,
+                  fontWeight: 500,
                   padding: '2px 10px',
                   borderRadius: 4,
                   lineHeight: 1.5,
@@ -132,7 +135,7 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
                 {categoryLabel}
               </Tag>
             )}
-            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} size="small" />
+            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
             <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
               {t('theme_card.events', { n: th.event_count })}
             </Text>

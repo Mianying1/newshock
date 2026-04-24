@@ -289,7 +289,8 @@
     "search_placeholder": "搜索主题 / 股票 / 事件…",
     "search_soon": "即将上线",
     "switch_dark": "切换到暗色模式",
-    "switch_light": "切换到亮色模式"
+    "switch_light": "切换到亮色模式",
+    "toggle_locale": "切换语言"
   },
   "radar": {
     "today_on_radar": "今日雷达",
@@ -501,7 +502,6 @@
   "sections": {
     "top_narratives_title": "今日主线",
     "top_narratives_subtitle": "按优先级排序的 Top 3 叙事",
-    "top_narratives_meta": "{n} 条活跃",
     "stock_picks_title": "选股",
     "stock_picks_subtitle": "题材龙头 · 长周期潜力",
     "themes_title": "主题",

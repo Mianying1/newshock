@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { ConfigProvider } from 'antd'
 import "./globals.css";
-import { I18nProvider } from '@/lib/i18n-context'
+import { Providers } from '@/lib/providers'
 import { inter } from '@/lib/fonts'
-import { newshockTheme } from '@/lib/design-tokens'
 
 export const metadata: Metadata = {
   title: 'Newshock',
@@ -23,9 +21,7 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <AntdRegistry>
-          <ConfigProvider theme={newshockTheme}>
-            <I18nProvider>{children}</I18nProvider>
-          </ConfigProvider>
+          <Providers>{children}</Providers>
         </AntdRegistry>
       </body>
     </html>

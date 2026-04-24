@@ -83,7 +83,6 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
   const { token } = useToken()
   const { mode } = useThemeMode()
   const isDark = mode === 'dark'
-  const whyNowAmber = isDark ? '#D4A862' : '#8B5A00'
   const themeName = useField(th, 'name')
   const altName = locale === 'zh' ? th.name : th.name_zh
   const summary = useField(th, 'summary')
@@ -137,9 +136,10 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   border: 'none',
                   fontSize: 12,
                   fontWeight: 600,
-                  lineHeight: '20px',
-                  padding: '0 12px',
+                  lineHeight: 1.5,
+                  padding: '3px 10px',
                   margin: 0,
+                  borderRadius: 4,
                   letterSpacing: '0.08em',
                 }}
               >
@@ -152,9 +152,10 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   border: 'none',
                   fontSize: 12,
                   fontWeight: 500,
-                  lineHeight: '20px',
-                  padding: '0 12px',
+                  lineHeight: 1.5,
+                  padding: '3px 10px',
                   margin: 0,
+                  borderRadius: 4,
                 }}
               >
                 {t('narratives.top_priority')}
@@ -440,13 +441,13 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             <div
               style={{
                 background: token.colorFillAlter,
-                borderLeft: `3px solid ${whyNowAmber}`,
+                borderLeft: `3px solid ${token.colorBorder}`,
                 padding: '8px 12px',
                 marginBottom: 14,
                 borderRadius: 4,
               }}
             >
-              <Text style={{ fontSize: 10, color: whyNowAmber, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
                 {t('narratives.why_now')}
               </Text>
               <Text style={{ fontSize: 13, color: token.colorText, display: 'block', marginTop: 2, lineHeight: 1.5 }}>
@@ -522,7 +523,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               {rankGlyph} {t('narratives.narrative_prefix')} #{rank + 1}
             </Text>
             <span style={{ flexShrink: 0 }}>
-              <FocusLevelBadge strength={th.theme_strength_score} size="small" />
+              <FocusLevelBadge strength={th.theme_strength_score} />
             </span>
           </Flex>
 
@@ -571,7 +572,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 {categoryLabel}
               </Tag>
             )}
-            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} size="small" />
+            <HorizonBadge typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
             <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
               {t('theme_card.events', { n: th.event_count })}
             </Text>
@@ -626,7 +627,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 padding: '8px 10px',
                 background: token.colorFillAlter,
                 borderRadius: 4,
-                borderLeft: `2px solid ${whyNowAmber}`,
+                borderLeft: `2px solid ${token.colorBorder}`,
               }}
             >
               <Text
@@ -634,7 +635,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   display: 'block',
                   fontSize: 10,
                   fontWeight: 600,
-                  color: whyNowAmber,
+                  color: token.colorTextTertiary,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   marginBottom: 4,

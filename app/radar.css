@@ -3,6 +3,27 @@
  * Scoped under `.radar-page` so other routes keep the existing styling.
  */
 
+[data-theme="dark"] .radar-page {
+  --bg: #1A1815;
+  --bg-elev: #242120;
+  --bg-sunk: #2C2926;
+  --ink: #EDE6D8;
+  --ink-2: #C9C2B4;
+  --ink-3: #8F8A7E;
+  --ink-4: #625D53;
+  --line: #3A3632;
+  --line-2: #302D29;
+  --line-card: #3A3632;
+
+  --topbar-bg: rgba(26, 24, 21, 0.78);
+
+  --accent: #EDE6D8;
+  --link: #D4C8B2;
+  --up: #8FA058;
+  --down: #C87A6B;
+  --warn: #C89A52;
+}
+
 .radar-page {
   --bg: #F4F1EC;
   --bg-elev: #FFFFFF;
@@ -14,6 +35,8 @@
   --line: #E4DFD6;
   --line-2: #EFEAE1;
   --line-card: #EAE4D8;
+
+  --topbar-bg: rgba(244, 241, 236, 0.78);
 
   --accent: #1F1C19;
   --link: #1F1C19;
@@ -244,6 +267,39 @@
   border-radius: 3px;
   border: 1px solid #DCD5C4;
   margin-left: auto;
+}
+
+/* ===== Top-bar controls · locale + theme toggles =====
+ * Grouped as AntD Space.Compact so both buttons share one border/radius.
+ * AntD owns color/border/hover/active; we only add icon-swap animation. */
+.radar-page .topbar-actions .ant-btn {
+  width: 36px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--ink-2);
+  transition: color 180ms ease, background-color 180ms ease;
+}
+.radar-page .topbar-actions .ant-btn:hover {
+  color: var(--ink);
+}
+.radar-page .topbar-actions .topbar-iconbtn-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  animation: topbarIconSwap 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes topbarIconSwap {
+  0%   { opacity: 0; transform: rotate(-90deg) scale(0.82); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: rotate(0deg) scale(1); }
 }
 
 /* @deprecated Phase 3 P1 · replaced by AntD Segmented in app/page.tsx · safe to delete after full Phase 3 */

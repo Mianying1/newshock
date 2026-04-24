@@ -12,13 +12,13 @@ import {
   Input,
   Layout,
   Row,
-  Segmented,
+  Space,
   Spin,
   Typography,
   theme,
 } from 'antd'
 import Link from 'next/link'
-import { SearchOutlined } from '@ant-design/icons'
+import { MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
 import { TopTickersSection } from '@/components/TopTickersSection'
@@ -27,6 +27,7 @@ import { TodayTopNarratives } from '@/components/radar/TodayTopNarratives'
 import { SecondaryThemeGrid } from '@/components/radar/SecondaryThemeGrid'
 import { EventStreamCompact } from '@/components/radar/EventStreamCompact'
 import { useI18n } from '@/lib/i18n-context'
+import { useThemeMode } from '@/lib/providers'
 import { getTodayPriority } from '@/lib/theme-priority'
 import type { ThemeRadarItem } from '@/types/recommendations'
 import './radar.css'
@@ -65,6 +66,7 @@ function useHeaderDate(locale: 'en' | 'zh') {
 export default function HomePage() {
   const { t, locale, setLocale } = useI18n()
   const { token } = useToken()
+  const { mode, toggle } = useThemeMode()
   const [themes, setThemes] = useState<ThemeRadarItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -121,7 +123,7 @@ export default function HomePage() {
               zIndex: 30,
               height: 52,
               padding: '10px 28px',
-              background: 'rgba(244, 241, 236, 0.78)',
+              background: 'var(--topbar-bg)',
               backdropFilter: 'saturate(160%) blur(16px)',
               WebkitBackdropFilter: 'saturate(160%) blur(16px)',
               borderBottom: `1px solid ${token.colorBorder}`,
@@ -141,15 +143,29 @@ export default function HomePage() {
               }
               style={{ flex: 1 }}
             />
-            <Segmented
-              size="small"
-              value={locale}
-              onChange={(v) => setLocale(v as 'en' | 'zh')}
-              options={[
-                { label: 'EN', value: 'en' },
-                { label: '中', value: 'zh' },
-              ]}
-            />
+            <Space.Compact className="topbar-actions">
+              <Button
+                className="topbar-iconbtn"
+                type="default"
+                aria-label={t('topbar.toggle_locale')}
+                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
+              >
+                <span key={locale} className="topbar-iconbtn-inner">
+                  {locale === 'en' ? 'EN' : '中'}
+                </span>
+              </Button>
+              <Button
+                className="topbar-iconbtn"
+                type="default"
+                aria-label={t(mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark')}
+                icon={
+                  <span key={mode} className="topbar-iconbtn-inner">
+                    {mode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+                  </span>
+                }
+                onClick={toggle}
+              />
+            </Space.Compact>
           </Header>
 
           <Content style={{ padding: '0 28px 40px' }}>
@@ -220,7 +236,6 @@ export default function HomePage() {
                       index="01"
                       title={t('sections.top_narratives_title')}
                       subtitle={t('sections.top_narratives_subtitle')}
-                      meta={t('sections.top_narratives_meta', { n: top3Ids.size })}
                     />
                     <TodayTopNarratives themes={activeThemes} />
                   </>
@@ -248,9 +263,7 @@ export default function HomePage() {
                         </Link>
                       }
                     />
-                    <Card size="small">
-                      <SecondaryThemeGrid themes={secondaryThemes} />
-                    </Card>
+                    <SecondaryThemeGrid themes={secondaryThemes} />
                   </>
                 )}
               </Col>

@@ -1,12 +1,11 @@
 'use client'
 
 import React from 'react'
-import { Tag } from 'antd'
+import { Tag, theme } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
 
 interface HorizonBadgeProps {
   typicalDurationDaysUpper?: number | null
-  size?: 'small' | 'default'
 }
 
 type Horizon = 'short' | 'medium' | 'long'
@@ -18,32 +17,32 @@ function getHorizon(days: number | null | undefined): Horizon {
   return 'medium'
 }
 
-const STYLES: Record<Horizon, { bg: string; color: string; labelKey: string }> = {
-  short: { bg: '#F5E8E3', color: '#8B3A2E', labelKey: 'horizon.short' },
-  medium: { bg: '#FFF5E0', color: '#8B5A00', labelKey: 'horizon.medium' },
-  long: { bg: '#F0F2D8', color: '#5C6A1E', labelKey: 'horizon.long' },
+const LABEL_KEY: Record<Horizon, string> = {
+  short: 'horizon.short',
+  medium: 'horizon.medium',
+  long: 'horizon.long',
 }
 
-export function HorizonBadge({ typicalDurationDaysUpper, size = 'default' }: HorizonBadgeProps) {
+export function HorizonBadge({ typicalDurationDaysUpper }: HorizonBadgeProps) {
   const { t } = useI18n()
+  const { token } = theme.useToken()
   const horizon = getHorizon(typicalDurationDaysUpper)
-  const style = STYLES[horizon]
-  const isSmall = size === 'small'
 
   return (
     <Tag
       style={{
-        background: style.bg,
-        color: style.color,
-        border: 'none',
+        background: token.colorFillAlter,
+        color: token.colorTextSecondary,
+        border: `1px solid ${token.colorBorder}`,
         borderRadius: 4,
-        padding: isSmall ? '1px 8px' : '2px 10px',
-        fontSize: isSmall ? 11 : 12,
+        padding: '2px 10px',
+        fontSize: 12,
+        fontWeight: 500,
         margin: 0,
         lineHeight: 1.5,
       }}
     >
-      {t(style.labelKey)}
+      {t(LABEL_KEY[horizon])}
     </Tag>
   )
 }

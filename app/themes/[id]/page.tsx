@@ -17,6 +17,7 @@ import type {
   ThemeRecommendation,
 } from '@/types/recommendations'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { stageColor as getStageColor } from '@/lib/design-tokens'
 import '../../radar.css'
 
 type EventTab = 'all' | EventDirection
@@ -241,14 +242,7 @@ export default function ThemeDetailPage() {
                   : t(`theme_detail.stage_desc_${theme.playbook_stage}`)
                 const isCooling = theme.status === 'cooling'
                 const coolPct = Math.min(100, Math.max(0, Math.round(((theme.days_since_last_event - 30) / 30) * 100)))
-                const stageHex: Record<string, string> = {
-                  early: '#5C6A1E',
-                  mid: '#A86C00',
-                  late: '#8B3A2E',
-                  beyond: '#8B3A2E',
-                  unknown: '#8C8A85',
-                }
-                const stageColor = stageHex[theme.playbook_stage] ?? '#A8A196'
+                const stageColor = getStageColor(theme.playbook_stage)
 
                 return (
                   <div className="td-sec">
@@ -527,7 +521,7 @@ export default function ThemeDetailPage() {
                       <Link key={c.id} href={`/themes/${c.id}`} className="td-sub">
                         <div className="nm">{pickField(locale, c.name, c.name_zh)}</div>
                         <div className="sub" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <FocusLevelBadge strength={c.theme_strength_score} size="small" />
+                          <FocusLevelBadge strength={c.theme_strength_score} />
                           <span>· {t('themes_list.events', { n: c.event_count })}</span>
                         </div>
                       </Link>

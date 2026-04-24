@@ -35,7 +35,7 @@ function ThemeRow({ theme }: { theme: ThemeRadarItem }) {
       style={{
         display: 'block',
         padding: '14px 16px',
-        background: '#fff',
+        background: 'var(--bg-elev)',
         border: '1px solid var(--line-2)',
         borderRadius: 10,
         textDecoration: 'none',
@@ -48,7 +48,7 @@ function ThemeRow({ theme }: { theme: ThemeRadarItem }) {
           {name}
         </div>
         <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
-          <FocusLevelBadge strength={theme.theme_strength_score} size="small" />
+          <FocusLevelBadge strength={theme.theme_strength_score} />
         </div>
       </div>
 
@@ -85,15 +85,15 @@ function ThemeRow({ theme }: { theme: ThemeRadarItem }) {
           style={{
             background:
               theme.status === 'active'
-                ? 'rgba(34,197,94,0.08)'
+                ? 'rgba(92,106,30,0.12)'
                 : theme.status === 'cooling'
-                  ? 'rgba(245,158,11,0.08)'
-                  : 'var(--surface-2)',
+                  ? 'rgba(168,108,0,0.14)'
+                  : 'var(--bg-sunk)',
             color:
               theme.status === 'active'
-                ? '#047857'
+                ? 'var(--up)'
                 : theme.status === 'cooling'
-                  ? '#b45309'
+                  ? 'var(--warn)'
                   : 'var(--ink-4)',
             padding: '2px 7px',
             borderRadius: 999,
@@ -192,15 +192,15 @@ export default function ThemesListPage() {
     fontSize: 12,
     borderRadius: 999,
     border: '1px solid var(--line-2)',
-    background: '#fff',
+    background: 'var(--bg-elev)',
     color: 'var(--ink-2)',
     cursor: 'pointer',
   }
   const tabActive: React.CSSProperties = {
     ...tabBase,
-    background: 'var(--ink-1)',
-    color: '#fff',
-    borderColor: 'var(--ink-1)',
+    background: 'var(--ink)',
+    color: 'var(--bg)',
+    borderColor: 'var(--ink)',
   }
 
   return (

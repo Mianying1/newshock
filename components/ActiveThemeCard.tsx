@@ -73,7 +73,7 @@ export function ActiveThemeCard({ theme }: { theme: ThemeRadarItem }) {
           <div className="th-title">{themeName}</div>
           {summary && <div className="th-sub">{summary}</div>}
         </div>
-        <div className="th-evts"><FocusLevelBadge strength={theme.theme_strength_score} size="small" /></div>
+        <div className="th-evts"><FocusLevelBadge strength={theme.theme_strength_score} /></div>
       </div>
 
       <div className="th-tags">
