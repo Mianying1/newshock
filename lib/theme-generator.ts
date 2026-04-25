@@ -697,16 +697,24 @@ function mergeTickers(
 async function checkArchetypeExclusionForStrengthen(
   event: EventRow,
   archetypeName: string,
-  exclusionRules: string[]
+  exclusionRules: string[],
+  targetThemeName: string
 ): Promise<{ shouldBypass: boolean; reason: string }> {
   const rulesBlock = exclusionRules.map((r, i) => `${i + 1}. ${r}`).join('\n')
   const eventText = `Headline: ${event.headline}\n${event.raw_content ? `Content: ${event.raw_content.slice(0, 1500)}` : ''}`
 
   const prompt =
-    `Archetype: ${archetypeName}\n\n` +
-    `EXCLUSION RULES (any hit = exclude this event from this archetype):\n${rulesBlock}\n\n` +
+    `Archetype: ${archetypeName}\n` +
+    `Target theme being strengthened: "${targetThemeName}"\n\n` +
+    `EXCLUSION RULES (numbered). Some rules are conditional on the target theme's\n` +
+    `scope — apply them with that theme name in mind:\n${rulesBlock}\n\n` +
     `EVENT:\n${eventText}\n\n` +
-    `Does this event violate ANY of the exclusion rules above? Reply ONLY with valid JSON:\n` +
+    `For each numbered rule above, decide whether THAT SPECIFIC rule literally fires\n` +
+    `for this event when attached to the target theme. Return violates=true ONLY if\n` +
+    `at least one of the listed rules literally applies. DO NOT use general judgment\n` +
+    `about theme fit — base your answer purely on the listed rules. If no listed rule\n` +
+    `clearly applies, return violates=false even if the event seems imperfectly fit.\n` +
+    `Reply ONLY with valid JSON:\n` +
     `{"violates": true|false, "rule_hit": "<copy of the rule that fired, or empty>", "why": "<one sentence>"}`
 
   try {
@@ -759,7 +767,12 @@ async function handleStrengthenExisting(
 
     const rules = (archetype?.exclusion_rules ?? []) as string[]
     if (rules.length > 0) {
-      const check = await checkArchetypeExclusionForStrengthen(event, archetype?.name ?? existing.archetype_id, rules)
+      const check = await checkArchetypeExclusionForStrengthen(
+        event,
+        archetype?.name ?? existing.archetype_id,
+        rules,
+        existing.name ?? '(unnamed theme)'
+      )
       if (check.shouldBypass) {
         await supabaseAdmin
           .from('events')
