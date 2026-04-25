@@ -42,7 +42,6 @@ import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { getDisplayPublisher } from '@/lib/source-display'
 import type {
   CatalystEvent,
-  CounterEvidenceSummary,
   DriverIcon,
   EventDirection,
   RecentDriver,
@@ -1585,7 +1584,6 @@ export default function ThemeDetailPage() {
                       expanded={expanded}
                       toggleExpand={toggleExpand}
                       sectionIndex={nextIdx()}
-                      counterEvidence={theme.counter_evidence_summary}
                       isCooling={theme.status === 'cooling'}
                       daysHot={theme.days_hot}
                       daysSinceLastEvent={theme.days_since_last_event}
@@ -1681,7 +1679,6 @@ function ThemeEventSidebar({
   expanded,
   toggleExpand,
   sectionIndex,
-  counterEvidence,
   isCooling,
   daysHot,
   daysSinceLastEvent,
@@ -1697,7 +1694,6 @@ function ThemeEventSidebar({
   expanded: Set<string>
   toggleExpand: (id: string) => void
   sectionIndex: string
-  counterEvidence: CounterEvidenceSummary | null
   isCooling: boolean
   daysHot: number
   daysSinceLastEvent: number
@@ -1707,22 +1703,6 @@ function ThemeEventSidebar({
 
   const visibleEvents = showAllEvents ? filteredEvents : filteredEvents.slice(0, 8)
 
-  const ev = counterEvidence
-  const evTotal = ev ? ev.supports_count + ev.contradicts_count + ev.neutral_count : 0
-  const evMax = ev ? Math.max(ev.supports_count, ev.contradicts_count, ev.neutral_count, 1) : 1
-  const evRatio = ev
-    ? ev.contradicts_count === 0
-      ? ev.supports_count > 0 ? `${ev.supports_count}:0` : '—'
-      : (ev.supports_count / ev.contradicts_count).toFixed(2) + ':1'
-    : '—'
-  const bearWarn = ev ? ev.contradicts_count > ev.supports_count : false
-  const evRows = ev
-    ? [
-        { key: 'sup', color: token.colorSuccess, label: t('theme_detail.supports'), count: ev.supports_count },
-        { key: 'con', color: token.colorError, label: t('theme_detail.contradicts'), count: ev.contradicts_count },
-        { key: 'neu', color: token.colorTextQuaternary, label: t('theme_detail.neutral'), count: ev.neutral_count },
-      ]
-    : []
   const coolPct = Math.min(100, Math.max(0, Math.round(((daysSinceLastEvent - 30) / 30) * 100)))
 
   return (
@@ -1772,103 +1752,6 @@ function ThemeEventSidebar({
           />
         </div>
       )}
-
-      {ev && evTotal > 0 && (() => {
-        const totalEvents = catalysts.length
-        const pendingCount = Math.max(0, totalEvents - evTotal)
-        return (
-        <Card size="small" styles={{ body: { padding: '12px 14px' } }} style={{ marginBottom: 12 }}>
-          <Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
-            <Text
-              strong
-              style={{
-                fontFamily: token.fontFamilyCode,
-                fontSize: 10,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: token.colorTextTertiary,
-              }}
-            >
-              {t('sections.sidebar_evidence_title')}
-            </Text>
-            <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextSecondary }}>
-              {t('theme_detail.analyzed_count', { analyzed: evTotal, total: totalEvents })} · {evRatio}
-            </Text>
-          </Flex>
-          {bearWarn && (
-            <div
-              style={{
-                background: token.colorErrorBg,
-                border: `1px solid ${token.colorErrorBorder}`,
-                color: token.colorErrorText,
-                padding: '6px 10px',
-                borderRadius: token.borderRadius,
-                fontSize: 11,
-                marginBottom: 8,
-              }}
-            >
-              ⚠ {t('theme_detail.bear_warning')}
-            </div>
-          )}
-          <div style={{ display: 'grid', rowGap: 6 }}>
-            {evRows.map((r) => (
-              <div
-                key={r.key}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '64px 1fr 24px',
-                  gap: 8,
-                  alignItems: 'center',
-                  fontSize: 11,
-                }}
-              >
-                <Flex align="center" gap={5} style={{ color: token.colorTextSecondary }}>
-                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: r.color }} />
-                  {r.label}
-                </Flex>
-                <Progress
-                  percent={(r.count / evMax) * 100}
-                  strokeColor={r.color}
-                  trailColor={token.colorFillSecondary}
-                  showInfo={false}
-                  size={['100%', 3]}
-                  strokeLinecap="square"
-                />
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 11,
-                    color: token.colorTextSecondary,
-                    textAlign: 'right',
-                  }}
-                >
-                  {r.count}
-                </Text>
-              </div>
-            ))}
-            {pendingCount > 0 && (
-              <Flex
-                align="center"
-                justify="space-between"
-                style={{
-                  marginTop: 4,
-                  paddingTop: 6,
-                  borderTop: `1px solid ${token.colorSplit}`,
-                  fontSize: 11,
-                  color: token.colorTextTertiary,
-                  fontStyle: 'italic',
-                }}
-              >
-                <span>{t('theme_detail.pending_count', { count: pendingCount })}</span>
-                <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextTertiary }}>
-                  {pendingCount}
-                </Text>
-              </Flex>
-            )}
-          </div>
-        </Card>
-        )
-      })()}
 
       <SectionHeader
         index={sectionIndex}
