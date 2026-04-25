@@ -34,8 +34,8 @@ export async function GET() {
       .maybeSingle(),
     supabaseAdmin
       .from('events')
-      .select('published_at')
-      .order('published_at', { ascending: false })
+      .select('event_date')
+      .order('event_date', { ascending: false })
       .limit(1)
       .maybeSingle(),
     supabaseAdmin
@@ -50,7 +50,7 @@ export async function GET() {
 
   const now = Date.now()
   const updatedAt = lastEventRes.data?.created_at ?? null
-  const lastIngestAt = lastIngestRes.data?.published_at ?? null
+  const lastIngestAt = lastIngestRes.data?.event_date ?? null
 
   return Response.json({
     active_count: activeRes.count ?? 0,

@@ -429,3 +429,17 @@ B 阶段 · 前端 UI (Next.js + Tailwind, 主题雷达 + 详情页)
 - Audit 产出的 archetype 可能包含 DB 外 ticker → 校验失败的 ticker 作为 `failed_tickers` 返回给 UI 提示，不写入 ticker_candidates（避免污染该表，这些是管理员提案而非分类器提案）
 
 **测试**: 本地 tsx 脚本对 prod Supabase 跑完整 flow，6 项断言全绿（source / report_id / 4 recs / tier=1 / failed ticker 过滤 / status active），执行后清理。
+
+## 2026-04-25 · Admin surface security hardening
+
+**决策**: `/admin/*`, `/api/admin/*`, `/api/theme-alerts/*`, `/debug/*` 统一由 Next middleware 保护，使用 `ADMIN_SECRET` 作为短期内部访问门槛。
+
+**实现**:
+- 新增 `middleware.ts`，支持 `Authorization: Bearer`, `x-admin-secret`, `?admin_secret=...` 和 HttpOnly cookie。
+- 浏览器访问可用 `?admin_secret=...` 一次性设置 12 小时 HttpOnly cookie（保存 secret 的 SHA-256 digest，不保存原文），随后同源 admin API fetch 自动携带 cookie。
+- `/api/meta/overview` 改用 `events.event_date`，避免查询不存在的 `published_at` 字段导致 freshness 指标为空。
+- `.gitignore` 收紧为忽略所有 `.env*`，避免异常命名 env 文件进入 git 工作区。
+
+**依据**:
+- Admin API 使用 service role 执行写入/删除，公开暴露会直接破坏数据完整性。
+- 当前阶段还没有完整 Supabase Auth/role model，`ADMIN_SECRET` middleware 是最小可用防线；正式付费前仍需迁移到真实登录、角色、审计日志。
