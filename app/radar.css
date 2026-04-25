@@ -1085,6 +1085,11 @@
 .radar-page .crumbs .sep { color: var(--ink-4); }
 .radar-page .crumbs .cur { color: var(--ink); }
 
+/* ===== Mobile bottom tab bar (hidden on desktop) ===== */
+.radar-page .mobile-tabbar {
+  display: none;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .radar-page,
@@ -1099,6 +1104,62 @@
   }
   .radar-page .main {
     padding: 0 16px 32px;
+  }
+
+  .radar-page .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    height: calc(72px + env(safe-area-inset-bottom));
+    padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+  }
+  .radar-page .mobile-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: var(--ink-3);
+    text-decoration: none;
+    font-size: 11px;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .radar-page .mobile-tab .mobile-tab-icon {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+  }
+  .radar-page .mobile-tab svg {
+    width: 19px;
+    height: 19px;
+    color: inherit;
+  }
+  .radar-page .mobile-tab.active {
+    color: var(--ink);
+  }
+  .radar-page .mobile-tab-label {
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  /* Use a dot indicator instead of numeric count — keeps all 4 icons the same size. */
+  .radar-page .mobile-tab .ant-badge-dot {
+    width: 5px;
+    min-width: 5px;
+    height: 5px;
+    box-shadow: none;
+  }
+  /* Reserve space so floating content (e.g. sticky CTAs) doesn't sit under the bar. */
+  .radar-page .ant-layout-content {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
   }
   .radar-page .topbar {
     margin: 0 -16px;

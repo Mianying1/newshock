@@ -613,14 +613,14 @@ export default function EventsPage() {
                   value={selectedSources}
                   onChange={setSelectedSources}
                   options={sourceOptions}
-                  style={{ minWidth: 240, flex: '0 1 320px' }}
+                  style={{ minWidth: 240, flex: '1 1 280px' }}
                   maxTagCount="responsive"
                 />
                 <Select
                   value={themeId}
                   onChange={setThemeId}
                   options={themeOptions}
-                  style={{ minWidth: 220, flex: '0 1 280px' }}
+                  style={{ minWidth: 240, flex: '1 1 280px' }}
                   showSearch
                   optionFilterProp="label"
                   placeholder={t('events_page.all_themes')}

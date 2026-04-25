@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
+import { Badge, theme } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
 
@@ -28,9 +29,9 @@ function BrandMark() {
 function RadarIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19.07 4.93a10 10 0 1 1-14.14 14.14" />
-      <path d="M12 12 8 8" />
-      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4.5" />
+      <path d="M12 12 18.5 5.5" />
     </svg>
   )
 }
@@ -63,6 +64,7 @@ function ClockIcon() {
 export function Sidebar() {
   const { t } = useI18n()
   const pathname = usePathname() ?? '/'
+  const { token } = theme.useToken()
   const { data } = useSWR<Overview>('/api/meta/overview', fetcher, {
     refreshInterval: 60_000,
   })
@@ -82,55 +84,88 @@ export function Sidebar() {
     { href: '/events', labelKey: 'sidebar.events', count: events7d, Icon: ClockIcon },
   ]
 
+  const isActive = (href: string, i: number) =>
+    i === 0 ? pathname === '/' : href !== '/' && pathname.startsWith(href)
+
   return (
-    <aside className="sidebar">
-      <div className="brand">
-        <span className="brand-mark">
-          <BrandMark />
-        </span>
-        <div>
-          <div className="brand-name">Newshock</div>
-          <div className="brand-sub">Radar</div>
-        </div>
-        <span className="brand-v">v1.0</span>
-      </div>
-
-      <div className="nav-section">{t('sidebar.workspace')}</div>
-
-      {items.map(({ href, labelKey, count, Icon }, i) => {
-        const active =
-          i === 0
-            ? pathname === '/'
-            : href !== '/' && pathname.startsWith(href)
-        return (
-          <Link
-            key={`${labelKey}-${i}`}
-            href={href}
-            className={`nav-item${active ? ' active' : ''}`}
-          >
-            <Icon />
-            <span>{t(labelKey)}</span>
-            {typeof count === 'number' && count > 0 && (
-              <span className="count">{count}</span>
-            )}
-          </Link>
-        )
-      })}
-
-      <div className="sidebar-foot">
-        <div className="line">
-          <span>
-            <span className="k">{t('sidebar.last_sync')}</span>
-            {lastSync}
+    <>
+      <aside className="sidebar">
+        <div className="brand">
+          <span className="brand-mark">
+            <BrandMark />
           </span>
+          <div>
+            <div className="brand-name">Newshock</div>
+            <div className="brand-sub">Radar</div>
+          </div>
+          <span className="brand-v">v1.0</span>
         </div>
-        <div className="line">
-          <span>
-            <span className="k">{t('sidebar.license_expires')}</span>
-            15d
-          </span>
+
+        <div className="nav-section">{t('sidebar.workspace')}</div>
+
+        {items.map(({ href, labelKey, count, Icon }, i) => {
+          const active = isActive(href, i)
+          return (
+            <Link
+              key={`${labelKey}-${i}`}
+              href={href}
+              className={`nav-item${active ? ' active' : ''}`}
+            >
+              <Icon />
+              <span>{t(labelKey)}</span>
+              {typeof count === 'number' && count > 0 && (
+                <span className="count">{count}</span>
+              )}
+            </Link>
+          )
+        })}
+
+        <div className="sidebar-foot">
+          <div className="line">
+            <span>
+              <span className="k">{t('sidebar.last_sync')}</span>
+              {lastSync}
+            </span>
+          </div>
+          <div className="line">
+            <span>
+              <span className="k">{t('sidebar.license_expires')}</span>
+              15d
+            </span>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      <nav
+        className="mobile-tabbar"
+        style={{
+          background: 'var(--topbar-bg)',
+          borderTop: `1px solid ${token.colorBorder}`,
+        }}
+      >
+        {items.map(({ href, labelKey, count, Icon }, i) => {
+          const active = isActive(href, i)
+          return (
+            <Link
+              key={`m-${labelKey}-${i}`}
+              href={href}
+              className={`mobile-tab${active ? ' active' : ''}`}
+            >
+              <Badge
+                dot={typeof count === 'number' && count > 0}
+                color={token.colorPrimary}
+                offset={[-1, 3]}
+                styles={{ indicator: { boxShadow: 'none' } }}
+              >
+                <span className="mobile-tab-icon">
+                  <Icon />
+                </span>
+              </Badge>
+              <span className="mobile-tab-label">{t(labelKey)}</span>
+            </Link>
+          )
+        })}
+      </nav>
+    </>
   )
 }
