@@ -354,6 +354,140 @@ function tokenCost(input: number, output: number): number {
   return (input * 3 + output * 15) / 1_000_000
 }
 
+// Self-consistency Pass 2 (subtask 20.4).
+// Hands the Pass 1 recommendations back to Sonnet with a critical-review
+// prompt. Returns one verdict per ticker: KEEP / REVISE / REMOVE. The
+// caller applies them: REMOVE drops the row, REVISE rewrites confidence
+// and appends a caveat to role_reasoning, KEEP is a no-op.
+export type Pass2Verdict = 'KEEP' | 'REVISE' | 'REMOVE'
+
+export interface Pass2RecAction {
+  ticker_symbol: string
+  verdict: Pass2Verdict
+  reasoning: string
+  suggested_confidence?: number
+  suggested_caveat?: string
+}
+
+export interface Pass2Result {
+  actions: Pass2RecAction[]
+  stats: DeepRunStats
+}
+
+interface Pass2Input {
+  ticker_symbol: string
+  tier: number
+  exposure_direction: string | null
+  business_segment: string | null
+  role_reasoning: string | null
+  evidence_event_ids: string[]
+  confidence: number
+  sector: string | null
+  skip_reason: string | null
+}
+
+export async function callSelfConsistencyPass(input: {
+  theme: ThemeRow
+  arch: ArchetypeRow | null
+  recs: Pass2Input[]
+  events: EventRow[]
+}): Promise<Pass2Result> {
+  // Compact summary of the theme + each rec. We deliberately omit Pass 1's
+  // catalyst/risk text — those weren't part of the original audit triggers
+  // and adding them inflates the prompt without changing verdicts.
+  const eventLookup = new Map(input.events.map((e) => [e.id, e]))
+  const recsBlock = input.recs
+    .map((r, i) => {
+      const evidenceText = r.evidence_event_ids.length === 0
+        ? '(none cited)'
+        : r.evidence_event_ids
+            .map((id) => {
+              const e = eventLookup.get(id)
+              return e ? `${id.slice(0, 8)}: ${e.headline.slice(0, 80)}` : `${id.slice(0, 8)}: (unknown)`
+            })
+            .join(' | ')
+      return (
+        `[${i + 1}] ${r.ticker_symbol} (sector=${r.sector ?? 'unknown'}, tier=${r.tier}, conf=${r.confidence}, dir=${r.exposure_direction ?? '?'})\n` +
+        `    segment: ${r.business_segment ?? '(none)'}\n` +
+        `    evidence: ${evidenceText}\n` +
+        `    reasoning: ${(r.role_reasoning ?? '').replace(/\s+/g, ' ').slice(0, 240)}` +
+        (r.skip_reason ? `\n    pre-flag: ${r.skip_reason}` : '')
+      )
+    })
+    .join('\n\n')
+
+  const prompt =
+    `You are auditing your own previous Pass 1 recommendations for theme:\n` +
+    `  Name: ${input.theme.name}\n` +
+    `  Description: ${(input.theme.summary ?? '').slice(0, 300)}\n` +
+    `  Archetype: ${input.arch?.id ?? '(none)'} (${input.arch?.category ?? ''})\n\n` +
+    `PASS 1 RECOMMENDATIONS (${input.recs.length} total):\n\n${recsBlock}\n\n` +
+    `Critically review each recommendation. For each one, decide:\n` +
+    `  - KEEP   · Strong evidence, concrete reasoning, multi-faceted view.\n` +
+    `  - REVISE · Some merit but confidence is too high or a caveat is missing.\n` +
+    `  - REMOVE · Pure textbook logic, single-axis reasoning, sector mismatch,\n` +
+    `             contradiction with other recs, OR weak/no evidence.\n\n` +
+    `Watch specifically for:\n` +
+    `  1. Textbook claims: "X eats Y", "DTC kills retail", "rate cuts always lift biotech".\n` +
+    `  2. Single-axis reasoning that ignores other business segments of the company.\n` +
+    `  3. Sector mismatch (use the sector= tag in the input).\n` +
+    `  4. Cross-rec contradictions inside this theme (e.g. one says benefit, another says headwind for the same supply chain).\n` +
+    `  5. Stale evidence: only OLD events cited.\n` +
+    `  6. Recs flagged with pre-flag (sector_mismatch_high_conf_review, etc.) — re-judge them.\n\n` +
+    `Return STRICT JSON ONLY (no markdown):\n` +
+    `{\n` +
+    `  "actions": [\n` +
+    `    {\n` +
+    `      "ticker_symbol": "TICKER",\n` +
+    `      "verdict": "KEEP" | "REVISE" | "REMOVE",\n` +
+    `      "reasoning": "1-2 sentences explaining the verdict",\n` +
+    `      "suggested_confidence": 60,         // only when REVISE\n` +
+    `      "suggested_caveat": "Short caveat"  // only when REVISE\n` +
+    `    }\n` +
+    `  ]\n` +
+    `}`
+
+  const started = Date.now()
+  const resp = await anthropic.messages.create({
+    model: MODEL_SONNET,
+    max_tokens: 3000,
+    messages: [{ role: 'user', content: prompt }],
+  })
+  const elapsed = (Date.now() - started) / 1000
+  const text = resp.content
+    .filter((x: { type: string }) => x.type === 'text')
+    .map((x: { type: string; text?: string }) => x.text ?? '')
+    .join('')
+
+  let actions: Pass2RecAction[] = []
+  const m = text.match(/\{[\s\S]*\}/)
+  if (m) {
+    try {
+      const json = JSON.parse(m[0]) as { actions?: Pass2RecAction[] }
+      actions = (json.actions ?? []).filter(
+        (a): a is Pass2RecAction =>
+          typeof a?.ticker_symbol === 'string' &&
+          (a.verdict === 'KEEP' || a.verdict === 'REVISE' || a.verdict === 'REMOVE')
+      )
+    } catch {
+      // fall through · empty actions returned
+    }
+  }
+
+  const input_tokens = resp.usage?.input_tokens ?? 0
+  const output_tokens = resp.usage?.output_tokens ?? 0
+  return {
+    actions,
+    stats: {
+      input_tokens,
+      output_tokens,
+      cost_usd: tokenCost(input_tokens, output_tokens),
+      elapsed_sec: elapsed,
+      stop_reason: resp.stop_reason ?? null,
+    },
+  }
+}
+
 export async function callDeepReasoning(input: {
   theme: ThemeRow
   arch: ArchetypeRow | null
@@ -404,6 +538,10 @@ export interface ThemeProcessResult {
   sector_mismatches_high_conf?: number
   no_evidence_count?: number
   hallucinated_event_count?: number
+  pass2_kept?: number
+  pass2_revised?: number
+  pass2_removed?: number
+  pass2_stats?: DeepRunStats
   stats?: DeepRunStats
 }
 
@@ -627,6 +765,67 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     )
   }
 
+  // Self-consistency Pass 2 (subtask 20.4).
+  // Hand the post-check rows back to Sonnet for KEEP/REVISE/REMOVE verdicts.
+  // Skip when Pass 1 produced too few recs to be worth a second LLM call.
+  let pass2Stats: DeepRunStats | undefined
+  let pass2Kept = 0
+  let pass2Revised = 0
+  let pass2Removed = 0
+  let postPass2Rows = rowsToInsert
+  if (rowsToInsert.length >= 3) {
+    try {
+      const pass2Input: Pass2Input[] = rowsToInsert.map((r) => ({
+        ticker_symbol: r.ticker_symbol,
+        tier: r.tier,
+        exposure_direction: r.exposure_direction,
+        business_segment: r.business_segment,
+        role_reasoning: r.role_reasoning,
+        evidence_event_ids: r.evidence_event_ids,
+        confidence: r.confidence,
+        sector: tickerSector.get(r.ticker_symbol) ?? null,
+        skip_reason: r.skip_reason,
+      }))
+      const pass2 = await callSelfConsistencyPass({ theme: t, arch, recs: pass2Input, events })
+      pass2Stats = pass2.stats
+      const verdictMap = new Map(pass2.actions.map((a) => [a.ticker_symbol, a]))
+      postPass2Rows = rowsToInsert.flatMap((r) => {
+        const v = verdictMap.get(r.ticker_symbol)
+        if (!v) {
+          // No verdict returned — keep the row as a safety net.
+          pass2Kept++
+          return [r]
+        }
+        if (v.verdict === 'REMOVE') {
+          pass2Removed++
+          return []
+        }
+        if (v.verdict === 'REVISE') {
+          pass2Revised++
+          const newConf = typeof v.suggested_confidence === 'number'
+            ? Math.max(0, Math.min(100, Math.round(v.suggested_confidence)))
+            : r.confidence
+          const caveat = v.suggested_caveat ? ` Note: ${v.suggested_caveat}` : ''
+          return [{
+            ...r,
+            confidence: newConf,
+            // Recompute confidence_band only when not already pre-flagged.
+            confidence_band: r.confidence_band ?? (newConf < 50 ? 'low' : null),
+            role_reasoning: caveat ? `${r.role_reasoning ?? ''}${caveat}`.slice(0, 800) : r.role_reasoning,
+          }]
+        }
+        pass2Kept++
+        return [r]
+      })
+      console.log(
+        `  [pass2] theme=${t.id.slice(0, 8)} kept=${pass2Kept} revised=${pass2Revised} removed=${pass2Removed} cost=$${pass2.stats.cost_usd.toFixed(4)}`
+      )
+    } catch (err) {
+      // Pass 2 failure shouldn't fail the whole theme. Log and continue.
+      console.error(`  [pass2] theme=${t.id.slice(0, 8)} FAILED · ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
   const { error: delErr } = await supabaseAdmin
     .from('theme_recommendations')
     .delete()
@@ -646,13 +845,21 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
   }
 
   // Deduplicate inserts on (theme_id, ticker_symbol) in case Sonnet returned duplicates.
+  // Use the post-Pass 2 set so REMOVE verdicts and REVISE confidence/caveat
+  // edits flow into the DB.
   const seen = new Set<string>()
-  const deduped = rowsToInsert.filter((r) => {
+  const deduped = postPass2Rows.filter((r) => {
     const key = r.ticker_symbol
     if (seen.has(key)) return false
     seen.add(key)
     return true
   })
+
+  // Recompute added/removed against the final inserted set so Pass 2 REMOVEs
+  // are reflected in the run report.
+  const finalSymbols = new Set(deduped.map((r) => r.ticker_symbol))
+  const finalAdded = Array.from(finalSymbols).filter((s) => !priorSymbols.has(s))
+  const finalRemoved = Array.from(new Set([...removed, ...added.filter((s) => !finalSymbols.has(s))]))
 
   const { error: insErr } = await supabaseAdmin.from('theme_recommendations').insert(deduped)
   if (insErr) {
@@ -688,12 +895,16 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       error: `reflection update: ${updThemeErr.message}`,
       recommendations_inserted: deduped.length,
       often_missed: deduped.filter((r) => r.is_often_missed).length,
-      added_tickers: added,
-      removed_tickers: removed,
+      added_tickers: finalAdded,
+      removed_tickers: finalRemoved,
       sector_mismatches: sectorMismatchCount,
       sector_mismatches_high_conf: sectorMismatchHighConf,
       no_evidence_count: noEvidenceCount,
       hallucinated_event_count: hallucinatedEventCount,
+      pass2_kept: pass2Kept,
+      pass2_revised: pass2Revised,
+      pass2_removed: pass2Removed,
+      pass2_stats: pass2Stats,
       stats: result.stats,
     }
   }
@@ -704,10 +915,16 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     ok: true,
     recommendations_inserted: deduped.length,
     often_missed: deduped.filter((r) => r.is_often_missed).length,
-    added_tickers: added,
-    removed_tickers: removed,
+    added_tickers: finalAdded,
+    removed_tickers: finalRemoved,
     sector_mismatches: sectorMismatchCount,
     sector_mismatches_high_conf: sectorMismatchHighConf,
+    no_evidence_count: noEvidenceCount,
+    hallucinated_event_count: hallucinatedEventCount,
+    pass2_kept: pass2Kept,
+    pass2_revised: pass2Revised,
+    pass2_removed: pass2Removed,
+    pass2_stats: pass2Stats,
     stats: result.stats,
   }
 }
