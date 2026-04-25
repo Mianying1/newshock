@@ -590,15 +590,15 @@
     "top_narratives_title": "Today's Top Narratives",
     "top_narratives_subtitle": "The 3 narratives worth watching today · ranked by signal strength + time horizon",
     "stock_picks_title": "Stocks",
-    "stock_picks_subtitle": "Tickers most tightly linked to today's main lines · layered by short- and long-horizon",
+    "stock_picks_subtitle": "Stocks most aligned with today's narratives",
     "themes_title": "All Themes",
-    "themes_subtitle": "Beyond the top 3 · {n} more themes tracked today · filter by horizon / category",
+    "themes_subtitle": "Other active themes being tracked · filter by horizon or category",
     "themes_meta": "{n} themes",
     "themes_view_all": "View all →",
     "market_regime_title": "Market Regime",
-    "market_regime_subtitle": "Composite score across 6 dimensions",
+    "market_regime_subtitle": "Macro regime context for your trades",
     "event_stream_title": "Event Stream",
-    "event_stream_subtitle": "Live feed of ingested events"
+    "event_stream_subtitle": "Real-time event signals filtered by your tracked themes"
   },
   "curator_strip": {
     "by": "This week curated by",

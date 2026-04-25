@@ -590,15 +590,15 @@
     "top_narratives_title": "今日主线",
     "top_narratives_subtitle": "今天这 3 个叙事值得关注 · 综合信号强度 + 时间维度排序",
     "stock_picks_title": "选股",
-    "stock_picks_subtitle": "这些股票与今日主线关联度最高 · 按长短期分层展示",
+    "stock_picks_subtitle": "与今日主线关联最强的个股",
     "themes_title": "主题",
-    "themes_subtitle": "除了 Top 3 · 还有 {n} 个跟踪中的主题 · 按时间维度 / 分类筛选",
+    "themes_subtitle": "其他正在跟踪的主题 · 按时间维度或分类筛选",
     "themes_meta": "{n} 个主题",
     "themes_view_all": "查看全部 →",
     "market_regime_title": "市场周期",
-    "market_regime_subtitle": "六维综合评分",
+    "market_regime_subtitle": "宏观市场周期 · 交易决策参考",
     "event_stream_title": "事件流",
-    "event_stream_subtitle": "实时采集的事件信号"
+    "event_stream_subtitle": "实时事件流 · 已按主题过滤"
   },
   "curator_strip": {
     "by": "本周策展",
