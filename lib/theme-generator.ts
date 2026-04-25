@@ -694,23 +694,92 @@ function mergeTickers(
 
 // ─── DB operations ────────────────────────────────────────────────────────────
 
+async function checkArchetypeExclusionForStrengthen(
+  event: EventRow,
+  archetypeName: string,
+  exclusionRules: string[]
+): Promise<{ shouldBypass: boolean; reason: string }> {
+  const rulesBlock = exclusionRules.map((r, i) => `${i + 1}. ${r}`).join('\n')
+  const eventText = `Headline: ${event.headline}\n${event.raw_content ? `Content: ${event.raw_content.slice(0, 1500)}` : ''}`
+
+  const prompt =
+    `Archetype: ${archetypeName}\n\n` +
+    `EXCLUSION RULES (any hit = exclude this event from this archetype):\n${rulesBlock}\n\n` +
+    `EVENT:\n${eventText}\n\n` +
+    `Does this event violate ANY of the exclusion rules above? Reply ONLY with valid JSON:\n` +
+    `{"violates": true|false, "rule_hit": "<copy of the rule that fired, or empty>", "why": "<one sentence>"}`
+
+  try {
+    const resp = await anthropic.messages.create({
+      model: MODEL_HAIKU,
+      max_tokens: 200,
+      messages: [{ role: 'user', content: prompt }],
+    })
+    const text = resp.content
+      .filter((c): c is { type: 'text'; text: string } => c.type === 'text')
+      .map((c) => c.text)
+      .join('')
+    const match = text.match(/\{[\s\S]*\}/)
+    if (!match) return { shouldBypass: false, reason: 'no_json' }
+    const json = JSON.parse(match[0]) as { violates?: boolean; rule_hit?: string; why?: string }
+    if (json.violates) {
+      return { shouldBypass: true, reason: `${json.rule_hit ?? 'rule'} :: ${json.why ?? ''}`.slice(0, 240) }
+    }
+    return { shouldBypass: false, reason: '' }
+  } catch (err) {
+    // Fail-open: don't block strengthen on a check error.
+    console.warn(`[strengthen-exclusion-check] Haiku error, allowing through: ${err instanceof Error ? err.message : String(err)}`)
+    return { shouldBypass: false, reason: 'check_error' }
+  }
+}
+
 async function handleStrengthenExisting(
-  eventId: string,
+  event: EventRow,
   themeId: string,
   reasoning: string,
-  levelOfImpact: LevelOfImpact | null = null
-): Promise<{ tickers_created: number; novel_tickers_skipped: string[] }> {
+  levelOfImpact: LevelOfImpact | null = null,
+  options: { skipExclusionCheck?: boolean } = {}
+): Promise<{ tickers_created: number; novel_tickers_skipped: string[]; bypassed?: boolean }> {
   const { data: existing } = await supabaseAdmin
     .from('themes')
-    .select('event_count, theme_strength_score, status')
+    .select('event_count, theme_strength_score, status, archetype_id, name')
     .eq('id', themeId)
     .single()
+
+  // Archetype exclusion check — strengthen path historically bypassed
+  // exclusion_rules because Sonnet picks themes by name match, not by
+  // re-validating the underlying archetype constraints. Run a Haiku check
+  // here before attaching.
+  if (!options.skipExclusionCheck && existing?.archetype_id) {
+    const { data: archetype } = await supabaseAdmin
+      .from('theme_archetypes')
+      .select('name, exclusion_rules')
+      .eq('id', existing.archetype_id)
+      .maybeSingle()
+
+    const rules = (archetype?.exclusion_rules ?? []) as string[]
+    if (rules.length > 0) {
+      const check = await checkArchetypeExclusionForStrengthen(event, archetype?.name ?? existing.archetype_id, rules)
+      if (check.shouldBypass) {
+        await supabaseAdmin
+          .from('events')
+          .update({
+            trigger_theme_id: null,
+            classifier_reasoning: `[strengthen-bypass-archetype-exclusion] target=${themeId} archetype=${existing.archetype_id} ${check.reason}`,
+            level_of_impact: 'event_only',
+          })
+          .eq('id', event.id)
+        console.log(`  [STRENGTHEN-BYPASS] "${event.headline.slice(0, 60)}" archetype=${existing.archetype_id} reason="${check.reason.slice(0, 80)}"`)
+        return { tickers_created: 0, novel_tickers_skipped: [], bypassed: true }
+      }
+    }
+  }
 
   // Attach event first so it's included when recomputing strength
   await supabaseAdmin
     .from('events')
     .update({ trigger_theme_id: themeId, classifier_reasoning: reasoning, level_of_impact: levelOfImpact })
-    .eq('id', eventId)
+    .eq('id', event.id)
 
   if (existing) {
     const newEventCount = (existing.event_count ?? 0) + 1
@@ -962,7 +1031,7 @@ export async function generateTheme(event: EventRow): Promise<GenerationResult> 
 
     if (sonnet.action === 'strengthen_existing' && sonnet.target_theme_id) {
       const { tickers_created, novel_tickers_skipped } = await handleStrengthenExisting(
-        event.id,
+        event,
         sonnet.target_theme_id,
         sonnet.reasoning,
         sonnet.level_of_impact
@@ -1176,7 +1245,7 @@ export async function generateThemesForPendingEvents(options: {
         const ctx = await getMatcherContext()
         const matchedTheme = ctx.activeThemes.find((t) => t.id === sonnet.target_theme_id)
         console.log(`  [STRENGTHEN] "${event.headline.slice(0, 60)}" → "${matchedTheme?.name ?? sonnet.target_theme_id}"`)
-        await handleStrengthenExisting(event.id, sonnet.target_theme_id, sonnet.reasoning, sonnet.level_of_impact)
+        await handleStrengthenExisting(event, sonnet.target_theme_id, sonnet.reasoning, sonnet.level_of_impact)
         counts.strengthen_existing++
 
       } else if (sonnet.action === 'new_from_archetype') {
@@ -1186,7 +1255,9 @@ export async function generateThemesForPendingEvents(options: {
         if (existingBatchThemeId) {
           // Within-batch dedup: redirect to strengthen the already-created theme
           console.log(`[dedup] ${event.id.slice(0, 8)} → strengthen batch theme ${existingBatchThemeId} (archetype=${archetypeKey})`)
-          await handleStrengthenExisting(event.id, existingBatchThemeId, `[batch-dedup] ${sonnet.reasoning}`, sonnet.level_of_impact)
+          // Skip exclusion check: this event already matched the same archetype that
+          // produced existingBatchThemeId, so the routing-time check already passed.
+          await handleStrengthenExisting(event, existingBatchThemeId, `[batch-dedup] ${sonnet.reasoning}`, sonnet.level_of_impact, { skipExclusionCheck: true })
           counts.strengthen_existing++
         } else {
           console.log(`  [NEW_ARCHETYPE] "${event.headline.slice(0, 60)}" → archetype="${sonnet.archetype_id}"`)
