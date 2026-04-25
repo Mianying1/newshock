@@ -1871,7 +1871,6 @@ function ThemeEventSidebar({
       })()}
 
       <SectionHeader
-        size="sm"
         index={sectionIndex}
         title={t('sections.theme_events_title')}
         subtitle={t('sections.theme_events_subtitle')}
