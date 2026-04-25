@@ -209,10 +209,15 @@ async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
 }
 
 async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent[]> {
+  // Hide stale events from the theme catalyst stream — events older than 90 days
+  // lose the "today's narrative" framing the section is meant to convey.
+  // DB rows preserved; UI hide only.
+  const cutoff = new Date(Date.now() - 90 * 86400 * 1000).toISOString()
   const { data, error } = await supabaseAdmin
     .from('events')
     .select('id, headline, source_name, source_url, event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh')
     .eq('trigger_theme_id', themeId)
+    .gte('event_date', cutoff)
     .order('event_date', { ascending: false })
     .limit(limit)
 

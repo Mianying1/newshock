@@ -33,9 +33,14 @@ export async function GET(request: NextRequest) {
     rawMode === 'unmatched' || rawMode === 'all' ? rawMode : 'matched'
   const includeNoise = request.nextUrl.searchParams.get('noise') === '1'
 
+  // Homepage focuses on "what's happening NOW" — hide events older than 14 days.
+  // DB rows preserved; UI hide only.
+  const cutoff = new Date(Date.now() - 14 * 86400 * 1000).toISOString()
+
   let query = supabaseAdmin
     .from('events')
     .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id, level_of_impact')
+    .gte('event_date', cutoff)
     .order('event_date', { ascending: false })
     .limit(limit)
 
