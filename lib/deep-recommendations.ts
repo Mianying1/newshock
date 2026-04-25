@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
+import { normalizeSector } from '@/lib/sector-normalize'
 
 export const DEEP_VERSION = 'v1'
 
@@ -14,6 +15,7 @@ export interface ArchetypeRow {
   id: string
   category: string | null
   playbook: Record<string, unknown> | null
+  expected_sectors: string[] | null
 }
 
 interface EventRow {
@@ -364,6 +366,8 @@ export interface ThemeProcessResult {
   often_missed: number
   added_tickers: string[]
   removed_tickers: string[]
+  sector_mismatches?: number
+  sector_mismatches_high_conf?: number
   stats?: DeepRunStats
 }
 
@@ -391,7 +395,7 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     t.archetype_id
       ? supabaseAdmin
           .from('theme_archetypes')
-          .select('id, category, playbook')
+          .select('id, category, playbook, expected_sectors')
           .eq('id', t.archetype_id)
           .maybeSingle()
       : Promise.resolve({ data: null, error: null }),
@@ -481,29 +485,79 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
   const added = Array.from(nowSymbols).filter((s) => !priorSymbols.has(s))
   const removed = Array.from(priorSymbols).filter((s) => !nowSymbols.has(s))
 
+  // Sector baseline check (subtask 20.1).
+  // archetype.expected_sectors lists which normalized sectors a rec must come
+  // from. If a rec's ticker has a known sector that falls outside this list,
+  // it is structurally suspicious — we keep the row for auditability but
+  // demote its confidence_band to 'low' so the UI's confidence floor hides it.
+  // Tickers with NULL sector are not gated (we don't know enough to penalize).
+  // Empty expected_sectors[] disables the gate (legacy/unfilled archetypes).
+  const expectedSet = new Set((arch?.expected_sectors ?? []).map((s) => normalizeSector(s)).filter(Boolean) as string[])
+  const { data: tickerSectorRows } = await supabaseAdmin
+    .from('tickers')
+    .select('symbol, sector')
+    .in('symbol', uniqueTickers)
+  const tickerSector = new Map<string, string | null>()
+  for (const row of (tickerSectorRows ?? []) as { symbol: string; sector: string | null }[]) {
+    tickerSector.set(row.symbol, normalizeSector(row.sector))
+  }
+  let sectorMismatchCount = 0
+  let sectorMismatchHighConf = 0
+
   const generatedAt = new Date().toISOString()
-  const rowsToInsert = result.output.recommendations.map((r) => ({
-    theme_id: t.id,
-    ticker_symbol: r.ticker.toUpperCase(),
-    tier: r.tier,
-    exposure_direction: r.direction,
-    role_reasoning: r.reasoning,
-    role_reasoning_zh: r.reasoning_zh,
-    business_exposure: r.business_exposure,
-    business_exposure_zh: r.business_exposure_zh,
-    catalyst: r.catalyst,
-    catalyst_zh: r.catalyst_zh,
-    risk: r.risk,
-    risk_zh: r.risk_zh,
-    market_cap_band: r.market_cap_band,
-    is_pure_play: r.is_pure_play,
-    is_often_missed: r.is_often_missed,
-    confidence: Math.max(0, Math.min(100, Math.round(r.confidence ?? 0))),
-    deep_version: DEEP_VERSION,
-    generated_at: generatedAt,
-    added_at: generatedAt,
-    last_confirmed_at: generatedAt,
-  }))
+  const rowsToInsert = result.output.recommendations.map((r) => {
+    const symbol = r.ticker.toUpperCase()
+    const baseConfidence = Math.max(0, Math.min(100, Math.round(r.confidence ?? 0)))
+    const sector = tickerSector.get(symbol) ?? null
+    const sectorMismatch =
+      expectedSet.size > 0 && sector !== null && !expectedSet.has(sector)
+    let skipReason: string | null = null
+    let confidenceBand: 'high' | 'medium' | 'low' | null = null
+    if (sectorMismatch) {
+      sectorMismatchCount++
+      if (baseConfidence > 80) {
+        // High-conf sector mismatch: keep visible but tag for review. The
+        // ticker may legitimately bridge sectors (e.g. semiconductors firm
+        // building defense chips); a human / Pass 2 should re-judge.
+        sectorMismatchHighConf++
+        skipReason = 'sector_mismatch_high_conf_review'
+      } else {
+        // Low/mid conf + sector outside expected list: hide from UI.
+        skipReason = 'sector_mismatch'
+        confidenceBand = 'low'
+      }
+    }
+    return {
+      theme_id: t.id,
+      ticker_symbol: symbol,
+      tier: r.tier,
+      exposure_direction: r.direction,
+      role_reasoning: r.reasoning,
+      role_reasoning_zh: r.reasoning_zh,
+      business_exposure: r.business_exposure,
+      business_exposure_zh: r.business_exposure_zh,
+      catalyst: r.catalyst,
+      catalyst_zh: r.catalyst_zh,
+      risk: r.risk,
+      risk_zh: r.risk_zh,
+      market_cap_band: r.market_cap_band,
+      is_pure_play: r.is_pure_play,
+      is_often_missed: r.is_often_missed,
+      confidence: baseConfidence,
+      confidence_band: confidenceBand,
+      skip_reason: skipReason,
+      deep_version: DEEP_VERSION,
+      generated_at: generatedAt,
+      added_at: generatedAt,
+      last_confirmed_at: generatedAt,
+    }
+  })
+
+  if (sectorMismatchCount > 0) {
+    console.log(
+      `  [sector-check] theme=${t.id.slice(0, 8)} mismatches=${sectorMismatchCount} (${sectorMismatchHighConf} high-conf kept, ${sectorMismatchCount - sectorMismatchHighConf} demoted)`
+    )
+  }
 
   const { error: delErr } = await supabaseAdmin
     .from('theme_recommendations')
@@ -568,6 +622,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       often_missed: deduped.filter((r) => r.is_often_missed).length,
       added_tickers: added,
       removed_tickers: removed,
+      sector_mismatches: sectorMismatchCount,
+      sector_mismatches_high_conf: sectorMismatchHighConf,
       stats: result.stats,
     }
   }
@@ -580,6 +636,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     often_missed: deduped.filter((r) => r.is_often_missed).length,
     added_tickers: added,
     removed_tickers: removed,
+    sector_mismatches: sectorMismatchCount,
+    sector_mismatches_high_conf: sectorMismatchHighConf,
     stats: result.stats,
   }
 }
