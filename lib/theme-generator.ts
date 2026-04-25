@@ -1,5 +1,5 @@
 import pLimit from 'p-limit'
-import { anthropic, MODEL_SONNET } from './anthropic'
+import { anthropic, MODEL_HAIKU, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import { isSecFiling } from './sec-filter'
 import { resolve8KContext } from './sec-8k-parser'
@@ -724,8 +724,7 @@ async function checkArchetypeExclusionForStrengthen(
       messages: [{ role: 'user', content: prompt }],
     })
     const text = resp.content
-      .filter((c): c is { type: 'text'; text: string } => c.type === 'text')
-      .map((c) => c.text)
+      .flatMap((c) => (c.type === 'text' ? [c.text] : []))
       .join('')
     const match = text.match(/\{[\s\S]*\}/)
     if (!match) return { shouldBypass: false, reason: 'no_json' }
