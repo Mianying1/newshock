@@ -1660,7 +1660,10 @@ export default function ThemeDetailPage() {
 
                     {(pb.exit_signals?.length ?? 0) > 0 && (
                       <>
-                        <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.exit_signals')}</div>
+                        <div style={{ ...sublabelStyle, marginTop: 22, marginBottom: 4 }}>{t('theme_detail.exit_signals')}</div>
+                        <Text type="secondary" style={{ display: 'block', fontSize: 11, color: token.colorTextQuaternary, marginBottom: 8 }}>
+                          {t('theme_detail.exit_signals_subtitle')}
+                        </Text>
                         <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
                           <div style={{ display: 'grid', rowGap: 2 }}>
                             {pb.exit_signals.map((s, i) => (
@@ -1891,7 +1894,10 @@ function ThemeEventSidebar({
         </div>
       )}
 
-      {ev && evTotal > 0 && (
+      {ev && evTotal > 0 && (() => {
+        const totalEvents = catalysts.length
+        const pendingCount = Math.max(0, totalEvents - evTotal)
+        return (
         <Card size="small" styles={{ body: { padding: '12px 14px' } }} style={{ marginBottom: 12 }}>
           <Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
             <Text
@@ -1907,7 +1913,7 @@ function ThemeEventSidebar({
               {t('sections.sidebar_evidence_title')}
             </Text>
             <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextSecondary }}>
-              {evRatio}
+              {t('theme_detail.analyzed_count', { analyzed: evTotal, total: totalEvents })} · {evRatio}
             </Text>
           </Flex>
           {bearWarn && (
@@ -1961,9 +1967,29 @@ function ThemeEventSidebar({
                 </Text>
               </div>
             ))}
+            {pendingCount > 0 && (
+              <Flex
+                align="center"
+                justify="space-between"
+                style={{
+                  marginTop: 4,
+                  paddingTop: 6,
+                  borderTop: `1px solid ${token.colorSplit}`,
+                  fontSize: 11,
+                  color: token.colorTextTertiary,
+                  fontStyle: 'italic',
+                }}
+              >
+                <span>{t('theme_detail.pending_count', { count: pendingCount })}</span>
+                <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextTertiary }}>
+                  {pendingCount}
+                </Text>
+              </Flex>
+            )}
           </div>
         </Card>
-      )}
+        )
+      })()}
 
       <SectionHeader
         size="sm"
