@@ -19,6 +19,7 @@ export interface ArchetypeRow {
 interface EventRow {
   headline: string
   source_name: string | null
+  source_url?: string | null
   event_date: string
   mentioned_tickers: string[] | null
 }
@@ -50,9 +51,22 @@ export interface DeepRecommendation {
   confidence: number
 }
 
+export type DriverIcon = 'bolt' | 'building' | 'chip' | 'globe' | 'chart' | 'factory' | 'shield'
+
+export interface RecentDriver {
+  icon: DriverIcon
+  title: string
+  title_zh: string
+  description: string
+  description_zh: string
+  source_label: string
+  source_url: string | null
+}
+
 export interface DeepOutput {
   theme_reflection: string
   theme_reflection_zh: string
+  recent_drivers: RecentDriver[]
   recommendations: DeepRecommendation[]
   tickers_removed_from_current: { ticker: string; why_removed: string }[]
   new_tickers_added: string[]
@@ -129,7 +143,7 @@ function buildPrompt({
     .slice(0, 15)
     .map(
       (e) =>
-        `- ${e.event_date.slice(0, 10)} · ${e.source_name ?? 'Press'} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
+        `- ${e.event_date.slice(0, 10)} · ${e.source_name ?? 'Press'}${e.source_url ? ` (${e.source_url})` : ''} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
     )
     .join('\n')
 
@@ -197,6 +211,17 @@ OUTPUT (valid JSON only, no markdown):
 {
   "theme_reflection": "2-3 sentences: conviction take and current positioning opportunity",
   "theme_reflection_zh": "中文版",
+  "recent_drivers": [
+    {
+      "icon": "bolt|building|chip|globe|chart|factory|shield",
+      "title": "Short headline 4-8 words (e.g. 'Data-center power demand surge')",
+      "title_zh": "中文短标题 (4-8 字)",
+      "description": "1-2 sentences with a quantitative stat where possible",
+      "description_zh": "中文描述",
+      "source_label": "Primary source + month (e.g. 'IEA, 2024.04')",
+      "source_url": "https://... or null"
+    }
+  ],
   "recommendations": [
     {
       "ticker": "TICKER",
@@ -230,6 +255,7 @@ Length budget (HARD limits):
 - business_exposure / _zh: ≤ 90 chars
 - catalyst / _zh, risk / _zh: ≤ 80 chars each
 - theme_reflection / _zh: ≤ 280 chars
+- recent_drivers: 3-5 items. title/title_zh ≤ 18 chars. description/_zh ≤ 120 chars. Cluster the recent events into thematic drivers — pick the strongest stat-bearing source per cluster. Pick icon by cluster type: bolt=power/grid/energy, building=hyperscaler/capex/earnings, chip=semi/GPU/foundry, globe=geopolitics/trade, chart=demand/market data, factory=supply/manufacturing, shield=policy/regulation.
 
 Return ONLY valid JSON, no markdown.`
 }
@@ -280,6 +306,7 @@ function lenientParse(text: string): DeepOutput {
   return {
     theme_reflection: reflection ? JSON.parse(`"${reflection[1]}"`) : '',
     theme_reflection_zh: reflectionZh ? JSON.parse(`"${reflectionZh[1]}"`) : '',
+    recent_drivers: [],
     recommendations: recs as DeepRecommendation[],
     tickers_removed_from_current: [],
     new_tickers_added: [],
@@ -374,7 +401,7 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       .eq('theme_id', t.id),
     supabaseAdmin
       .from('events')
-      .select('headline, source_name, event_date, mentioned_tickers')
+      .select('headline, source_name, source_url, event_date, mentioned_tickers')
       .eq('trigger_theme_id', t.id)
       .gte('event_date', new Date(Date.now() - 30 * 86_400_000).toISOString())
       .order('event_date', { ascending: false })
@@ -525,6 +552,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     .update({
       strategist_reflection: result.output.theme_reflection,
       strategist_reflection_zh: result.output.theme_reflection_zh,
+      recent_drivers: result.output.recent_drivers,
+      recent_drivers_generated_at: generatedAt,
       deep_generated_at: generatedAt,
     })
     .eq('id', t.id)

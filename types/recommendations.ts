@@ -157,6 +157,20 @@ export interface ThemeRadarItem {
   conviction_reasoning_zh: string | null
   conviction_generated_at: string | null
   counter_evidence_summary: CounterEvidenceSummary | null
+  recent_drivers: RecentDriver[] | null
+  recent_drivers_generated_at: string | null
+}
+
+export type DriverIcon = 'bolt' | 'building' | 'chip' | 'globe' | 'chart' | 'factory' | 'shield'
+
+export interface RecentDriver {
+  icon: DriverIcon
+  title: string
+  title_zh: string
+  description: string
+  description_zh: string
+  source_label: string
+  source_url: string | null
 }
 
 export interface ThemeRadarSummary {

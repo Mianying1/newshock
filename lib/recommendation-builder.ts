@@ -16,6 +16,8 @@ import type {
   ThemeParentRef,
   ConvictionBreakdown,
   CounterEvidenceSummary,
+  RecentDriver,
+  DriverIcon,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -57,6 +59,8 @@ interface ThemeRow {
   conviction_reasoning_zh: string | null
   conviction_generated_at: string | null
   counter_evidence_summary: unknown
+  recent_drivers: unknown
+  recent_drivers_generated_at: string | null
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -170,6 +174,27 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
   })
 }
 
+async function fetchRecentDrivers(
+  themeId: string,
+): Promise<{ recent_drivers: unknown; recent_drivers_generated_at: string | null }> {
+  // Tolerant: the migration adding these columns may not be applied yet.
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('themes')
+      .select('recent_drivers, recent_drivers_generated_at')
+      .eq('id', themeId)
+      .maybeSingle()
+    if (error || !data) return { recent_drivers: null, recent_drivers_generated_at: null }
+    const r = data as { recent_drivers?: unknown; recent_drivers_generated_at?: string | null }
+    return {
+      recent_drivers: r.recent_drivers ?? null,
+      recent_drivers_generated_at: r.recent_drivers_generated_at ?? null,
+    }
+  } catch {
+    return { recent_drivers: null, recent_drivers_generated_at: null }
+  }
+}
+
 async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
   const { data } = await supabaseAdmin
     .from('events')
@@ -272,7 +297,37 @@ function buildItem(
     conviction_reasoning_zh: row.conviction_reasoning_zh ?? null,
     conviction_generated_at: row.conviction_generated_at ?? null,
     counter_evidence_summary: parseCounterSummary(row.counter_evidence_summary),
+    recent_drivers: parseRecentDrivers(row.recent_drivers),
+    recent_drivers_generated_at: row.recent_drivers_generated_at ?? null,
   }
+}
+
+const VALID_DRIVER_ICONS: ReadonlySet<DriverIcon> = new Set([
+  'bolt', 'building', 'chip', 'globe', 'chart', 'factory', 'shield',
+])
+
+function parseRecentDrivers(raw: unknown): RecentDriver[] | null {
+  if (!Array.isArray(raw)) return null
+  const out: RecentDriver[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const r = item as Record<string, unknown>
+    const icon = typeof r.icon === 'string' && VALID_DRIVER_ICONS.has(r.icon as DriverIcon)
+      ? (r.icon as DriverIcon)
+      : 'chart'
+    const title = typeof r.title === 'string' ? r.title : ''
+    if (!title) continue
+    out.push({
+      icon,
+      title,
+      title_zh: typeof r.title_zh === 'string' ? r.title_zh : title,
+      description: typeof r.description === 'string' ? r.description : '',
+      description_zh: typeof r.description_zh === 'string' ? r.description_zh : '',
+      source_label: typeof r.source_label === 'string' ? r.source_label : '',
+      source_url: typeof r.source_url === 'string' ? r.source_url : null,
+    })
+  }
+  return out.length ? out : null
 }
 
 function parseCounterSummary(raw: unknown): CounterEvidenceSummary | null {
@@ -374,6 +429,8 @@ export async function buildThemeRadar(options: {
         fetchCatalysts(row.id, 5),
         fetchEarliestEventDate(row.id),
       ])
+      row.recent_drivers = null
+      row.recent_drivers_generated_at = null
       return buildItem(row, recs, catalysts, earliestEventDate)
     })
   )
@@ -432,13 +489,16 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   if (error || !row) throw new Error(`theme not found: ${themeId}`)
 
   const themeRow = row as unknown as ThemeRow
-  const [recs, catalysts, earliestEventDate, parent, children] = await Promise.all([
+  const [recs, catalysts, earliestEventDate, parent, children, drivers] = await Promise.all([
     fetchRecommendations(themeId),
     fetchCatalysts(themeId, 50),
     fetchEarliestEventDate(themeId),
     fetchParent(themeRow.parent_theme_id),
     fetchChildren(themeId),
+    fetchRecentDrivers(themeId),
   ])
+  themeRow.recent_drivers = drivers.recent_drivers
+  themeRow.recent_drivers_generated_at = drivers.recent_drivers_generated_at
 
   return buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children)
 }

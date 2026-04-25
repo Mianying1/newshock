@@ -8,17 +8,30 @@ import {
   Breadcrumb,
   Button,
   Card,
+  Col,
   Flex,
   Input,
   Layout,
   Progress,
+  Row,
   Segmented,
   Space,
   Tag,
   Typography,
   theme as antdTheme,
 } from 'antd'
-import { BorderOutlined, CheckSquareFilled, MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
+import {
+  ApiOutlined,
+  BankOutlined,
+  BuildOutlined,
+  GlobalOutlined,
+  LineChartOutlined,
+  MoonOutlined,
+  SafetyCertificateOutlined,
+  SearchOutlined,
+  SunOutlined,
+  ThunderboltOutlined,
+} from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
@@ -28,7 +41,10 @@ import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { getDisplayPublisher } from '@/lib/source-display'
 import type {
   CatalystEvent,
+  CounterEvidenceSummary,
+  DriverIcon,
   EventDirection,
+  RecentDriver,
   ThemeRadarItem,
   ThemeRecommendation,
 } from '@/types/recommendations'
@@ -127,11 +143,12 @@ export default function ThemeDetailPage() {
   }, [id])
 
   const recs = theme?.recommendations ?? []
-  const directRecs = recs.filter((r) => r.exposure_type === 'direct')
-  const observationalRecs = recs.filter((r) => r.exposure_type === 'observational')
   const pressureRecs = recs.filter((r) => r.exposure_type === 'pressure')
-  const unclassified = recs.filter((r) => !r.exposure_type && r.exposure_direction !== 'headwind')
-  const headwinds = recs.filter((r) => !r.exposure_type && r.exposure_direction === 'headwind')
+  const headwinds = recs.filter((r) => r.exposure_direction === 'headwind' && r.exposure_type !== 'pressure')
+  const tradableRecs = recs.filter((r) => r.exposure_type !== 'pressure' && r.exposure_direction !== 'headwind')
+  const tier1Recs = tradableRecs.filter((r) => r.tier === 1)
+  const tier2Recs = tradableRecs.filter((r) => r.tier === 2)
+  const tier3Recs = tradableRecs.filter((r) => r.tier === 3)
 
   const catalysts = useMemo(() => theme?.catalysts ?? [], [theme])
   const eventCounts = useMemo(() => ({
@@ -315,6 +332,24 @@ export default function ThemeDetailPage() {
                           <FocusLevelBadge strength={theme.theme_strength_score} />
                         </span>
                       </Flex>
+                      {(() => {
+                        const summary = pickField(locale, theme.summary, theme.summary_zh)
+                        const firstSentence = summary ? summary.split(/[。.]/)[0].trim() : ''
+                        return firstSentence ? (
+                          <Text
+                            style={{
+                              display: 'block',
+                              marginTop: 10,
+                              fontSize: 13,
+                              lineHeight: 1.6,
+                              color: token.colorTextTertiary,
+                              maxWidth: 640,
+                            }}
+                          >
+                            {firstSentence}
+                          </Text>
+                        ) : null
+                      })()}
                     </div>
 
                     <Flex gap={28} align="flex-start" style={{ paddingTop: 4 }}>
@@ -332,162 +367,524 @@ export default function ThemeDetailPage() {
                   </Flex>
                 </div>
 
-              {/* Summary */}
-              {(() => {
-                const summary = pickField(locale, theme.summary, theme.summary_zh)
-                return summary ? (
-                  <div style={{ marginTop: 32 }}>
-                    <SectionHeader
-                      index={nextIdx()}
-                      title={t('sections.theme_thesis_title')}
-                      subtitle={t('sections.theme_thesis_subtitle')}
-                    />
-                    <Text style={{ display: 'block', fontSize: 14, color: token.colorTextSecondary, lineHeight: 1.65 }}>
-                      {summary}
-                    </Text>
-                  </div>
-                ) : null
-              })()}
+                {/* Hero stats — gauge + 4 stat cells */}
+                {(() => {
+                  const pb = theme.archetype_playbook
+                  const daysMin = pb?.typical_duration_days_approx?.[0] || 0
+                  const daysMax = pb?.typical_duration_days_approx?.[1] || 0
+                  const progressPercent = daysMax > 0
+                    ? Math.min(100, Math.round((theme.days_hot / daysMax) * 100))
+                    : 0
+                  const stageText = t(`theme_card.stage_${theme.playbook_stage === 'beyond' ? 'beyond' : theme.playbook_stage}`)
+                  const stageColor = getStageColor(theme.playbook_stage)
 
-              {/* Lifespan / Timeline */}
+                  const formatDuration = (minD: number, maxD: number) => {
+                    if (!maxD) return '—'
+                    const unit = t('theme_detail.duration_unit_days')
+                    const months = t('theme_detail.duration_unit_months')
+                    if (maxD >= 90) {
+                      const minM = Math.round(minD / 30)
+                      const maxM = Math.round(maxD / 30)
+                      return minM && minM !== maxM ? `~${minM}–${maxM} ${months}` : `~${maxM} ${months}`
+                    }
+                    return minD && minD !== maxD ? `~${minD}–${maxD} ${unit}` : `~${maxD} ${unit}`
+                  }
+                  const durationLabel = formatDuration(daysMin, daysMax)
+
+                  const stageRangeKey =
+                    theme.playbook_stage === 'early' ? 'theme_detail.stage_range_early'
+                    : theme.playbook_stage === 'mid' ? 'theme_detail.stage_range_mid'
+                    : theme.playbook_stage === 'late' ? 'theme_detail.stage_range_late'
+                    : theme.playbook_stage === 'beyond' ? 'theme_detail.stage_range_beyond'
+                    : 'theme_detail.stage_range_unknown'
+
+                  const categoryLabel = formatCategoryLabel(theme.category)
+
+                  const conv = theme.conviction_score
+                  const cev = theme.counter_evidence_summary
+                  const bearish = cev && cev.contradicts_count > cev.supports_count
+                  const riskTier = bearish
+                    ? 'high'
+                    : conv !== null && conv >= 7
+                    ? 'low'
+                    : conv !== null && conv >= 4
+                    ? 'mid'
+                    : 'high'
+                  const riskLabel = t(`theme_detail.risk_${riskTier}`)
+                  const riskColor =
+                    riskTier === 'low' ? token.colorSuccess
+                    : riskTier === 'mid' ? token.colorWarning
+                    : token.colorError
+
+                  const reflection = pickField(locale, theme.strategist_reflection, theme.strategist_reflection_zh)
+                  const summary = pickField(locale, theme.summary, theme.summary_zh)
+                  const conclusion = reflection?.trim() || summary?.trim() || ''
+                  const conclusionShort = conclusion.length > 160 ? conclusion.slice(0, 160) + '…' : conclusion
+
+                  const cells = [
+                    {
+                      key: 'stage',
+                      label: t('theme_detail.stage_position'),
+                      value: stageText,
+                      sub: `${progressPercent}% · ${t(stageRangeKey)}`,
+                      color: stageColor,
+                    },
+                    {
+                      key: 'duration',
+                      label: t('theme_detail.duration_header'),
+                      value: durationLabel,
+                      sub: t('theme_detail.historical_median'),
+                      color: token.colorPrimary,
+                    },
+                    {
+                      key: 'driver',
+                      label: t('theme_detail.core_driver'),
+                      value: categoryLabel,
+                      sub: theme.theme_tier === 'umbrella' ? t('theme_detail.badge_umbrella') : '—',
+                      color: token.colorInfo ?? token.colorPrimary,
+                    },
+                    {
+                      key: 'risk',
+                      label: t('theme_detail.risk_level'),
+                      value: riskLabel,
+                      sub: '',
+                      color: riskColor,
+                    },
+                  ]
+
+                  const gaugeWidth = 160
+                  const gaugeStroke = 8
+                  const gaugeRadius = (gaugeWidth - gaugeStroke) / 2
+                  const gaugeArcLength = Math.PI * gaugeRadius
+                  const gaugeProgressLength = (progressPercent / 100) * gaugeArcLength
+                  const gaugeCx = gaugeWidth / 2
+                  const gaugeCy = gaugeWidth / 2
+                  const gaugePath = `M ${gaugeStroke / 2} ${gaugeCy} A ${gaugeRadius} ${gaugeRadius} 0 0 1 ${gaugeWidth - gaugeStroke / 2} ${gaugeCy}`
+
+                  return (
+                    <Card
+                      size="small"
+                      styles={{ body: { padding: 0 } }}
+                      style={{ marginTop: 20, overflow: 'hidden' }}
+                    >
+                      <Flex align="stretch" wrap>
+                        {/* Left: semicircle gauge */}
+                        <div
+                          style={{
+                            width: 200,
+                            flexShrink: 0,
+                            padding: '20px 16px 18px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 4,
+                            borderRight: `1px solid ${token.colorSplit}`,
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 10,
+                              letterSpacing: '0.18em',
+                              textTransform: 'uppercase',
+                              color: token.colorTextQuaternary,
+                            }}
+                          >
+                            {t('theme_detail.current_stage')}
+                          </div>
+                          <div
+                            style={{
+                              position: 'relative',
+                              width: gaugeWidth,
+                              height: gaugeWidth / 2 + gaugeStroke,
+                            }}
+                          >
+                            <svg
+                              width={gaugeWidth}
+                              height={gaugeWidth / 2 + gaugeStroke}
+                              viewBox={`0 0 ${gaugeWidth} ${gaugeWidth / 2 + gaugeStroke}`}
+                              style={{ display: 'block' }}
+                            >
+                              <path
+                                d={gaugePath}
+                                fill="none"
+                                stroke={token.colorFillSecondary}
+                                strokeWidth={gaugeStroke}
+                                strokeLinecap="round"
+                              />
+                              {progressPercent > 0 && (
+                                <path
+                                  d={gaugePath}
+                                  fill="none"
+                                  stroke={stageColor}
+                                  strokeWidth={gaugeStroke}
+                                  strokeLinecap="round"
+                                  strokeDasharray={`${gaugeProgressLength} ${gaugeArcLength}`}
+                                />
+                              )}
+                            </svg>
+                            <div
+                              style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: gaugeStroke + 2,
+                                textAlign: 'center',
+                              }}
+                            >
+                              <Text
+                                strong
+                                style={{
+                                  fontSize: 22,
+                                  color: token.colorText,
+                                  letterSpacing: '-0.01em',
+                                  lineHeight: 1,
+                                }}
+                              >
+                                {stageText}
+                              </Text>
+                            </div>
+                          </div>
+                          <Text
+                            style={{
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 11,
+                              color: token.colorTextTertiary,
+                              letterSpacing: '0.04em',
+                              marginTop: 6,
+                            }}
+                          >
+                            Day {theme.days_hot} / {durationLabel.replace(/^~/, '')}
+                          </Text>
+                        </div>
+
+                        {/* Right: conclusion + 4 cells */}
+                        <div
+                          style={{
+                            flex: 1,
+                            minWidth: 320,
+                            display: 'flex',
+                            flexDirection: 'column',
+                          }}
+                        >
+                          {conclusionShort && (
+                            <Flex
+                              align="flex-start"
+                              gap={10}
+                              style={{
+                                padding: '11px 18px',
+                                borderBottom: `1px solid ${token.colorSplit}`,
+                                borderLeft: `2px solid ${token.colorSuccess}`,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: 15,
+                                  height: 15,
+                                  borderRadius: '50%',
+                                  background: token.colorSuccess,
+                                  color: '#fff',
+                                  fontSize: 9,
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0,
+                                  marginTop: 2,
+                                }}
+                              >
+                                ✓
+                              </span>
+                              <Text
+                                style={{
+                                  fontSize: 12.5,
+                                  lineHeight: 1.55,
+                                  color: token.colorTextSecondary,
+                                }}
+                              >
+                                <Text strong style={{ color: token.colorText, fontSize: 12.5, marginRight: 4 }}>
+                                  {t('theme_detail.hero_conclusion')}：
+                                </Text>
+                                {conclusionShort}
+                              </Text>
+                            </Flex>
+                          )}
+
+                          <div
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                              flex: 1,
+                            }}
+                          >
+                            {cells.map((c, i) => (
+                              <div
+                                key={c.key}
+                                style={{
+                                  padding: '12px 18px',
+                                  borderLeft: i > 0 ? `1px solid ${token.colorSplit}` : 'none',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 3,
+                                  minWidth: 0,
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Flex align="center" gap={6}>
+                                  <span
+                                    style={{
+                                      width: 5,
+                                      height: 5,
+                                      borderRadius: '50%',
+                                      background: c.color,
+                                      flexShrink: 0,
+                                    }}
+                                  />
+                                  <Text
+                                    style={{
+                                      fontFamily: token.fontFamilyCode,
+                                      fontSize: 9.5,
+                                      letterSpacing: '0.16em',
+                                      textTransform: 'uppercase',
+                                      color: token.colorTextQuaternary,
+                                    }}
+                                  >
+                                    {c.label}
+                                  </Text>
+                                </Flex>
+                                <Text
+                                  strong
+                                  style={{
+                                    fontSize: 13.5,
+                                    color: token.colorText,
+                                    lineHeight: 1.3,
+                                    letterSpacing: '-0.005em',
+                                  }}
+                                  ellipsis={{ tooltip: c.value }}
+                                >
+                                  {c.value}
+                                </Text>
+                                {c.sub && (
+                                  <Text
+                                    style={{
+                                      fontSize: 11,
+                                      color: token.colorTextTertiary,
+                                      lineHeight: 1.4,
+                                    }}
+                                    ellipsis={{ tooltip: c.sub }}
+                                  >
+                                    {c.sub}
+                                  </Text>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </Flex>
+                    </Card>
+                  )
+                })()}
+
+              <Row gutter={[24, 24]} style={{ marginTop: 0 }}>
+                <Col xs={24} lg={17}>
+
+              {/* Why Now — Recent Drivers (backend-clustered, falls back to per-event synthesis) */}
               {(() => {
-                const pb = theme.archetype_playbook
-                const daysMax = pb?.typical_duration_days_approx?.[1] || 90
-                const expectedDays = daysMax > 0 ? daysMax : 0
-                const progressPercent = expectedDays > 0
-                  ? Math.min(100, Math.round((theme.days_hot / expectedDays) * 100))
-                  : 20
-                const stageText = t(`theme_card.stage_${theme.playbook_stage === 'beyond' ? 'beyond' : theme.playbook_stage}`)
-                const dtype = pb?.duration_type ?? 'bounded'
-                const modeNote =
-                  dtype === 'extended' ? t('timeline.extended_note')
-                  : dtype === 'dependent' ? t('timeline.dependent_note')
-                  : t(`theme_detail.stage_desc_${theme.playbook_stage}`)
-                const isCooling = theme.status === 'cooling'
-                const coolPct = Math.min(100, Math.max(0, Math.round(((theme.days_since_last_event - 30) / 30) * 100)))
-                const stageColor = getStageColor(theme.playbook_stage)
+                const iconMap: Record<DriverIcon, typeof ThunderboltOutlined> = {
+                  bolt: ThunderboltOutlined,
+                  building: BankOutlined,
+                  chip: ApiOutlined,
+                  globe: GlobalOutlined,
+                  chart: LineChartOutlined,
+                  factory: BuildOutlined,
+                  shield: SafetyCertificateOutlined,
+                }
+
+                const formatDriverDate = (iso: string) => {
+                  const d = new Date(iso)
+                  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
+                }
+
+                type Card = {
+                  key: string
+                  Icon: typeof ThunderboltOutlined
+                  title: string
+                  description: string | null
+                  sourceLabel: string
+                  href: string | null
+                }
+
+                const cards: Card[] = []
+
+                if (theme.recent_drivers && theme.recent_drivers.length > 0) {
+                  for (const d of theme.recent_drivers as RecentDriver[]) {
+                    cards.push({
+                      key: d.title,
+                      Icon: iconMap[d.icon] ?? LineChartOutlined,
+                      title: pickField(locale, d.title, d.title_zh) ?? d.title,
+                      description: pickField(locale, d.description, d.description_zh),
+                      sourceLabel: d.source_label,
+                      href: d.source_url,
+                    })
+                  }
+                } else {
+                  const driverPool = catalysts.filter(
+                    (c) => c.supports_or_contradicts === 'supports' || c.supports_or_contradicts === null,
+                  )
+                  const seen = new Set<string>()
+                  const drivers: CatalystEvent[] = []
+                  for (const c of driverPool) {
+                    const key = (c.source_name || c.id).toLowerCase()
+                    if (seen.has(key)) continue
+                    seen.add(key)
+                    drivers.push(c)
+                    if (drivers.length >= 5) break
+                  }
+                  const iconForSource = (sourceName: string | null) => {
+                    const s = (sourceName || '').toLowerCase()
+                    if (/iea|power|grid|electric|energy|utility|util/.test(s)) return ThunderboltOutlined
+                    if (/aws|microsoft|google|meta|amazon|hyperscal|capex|earning/.test(s)) return BankOutlined
+                    if (/nvidia|tsmc|chip|gpu|semi|amd|intel|broadcom/.test(s)) return ApiOutlined
+                    if (/reuters|bloomberg|ft|wsj|nyt|economist|guardian/.test(s)) return GlobalOutlined
+                    return LineChartOutlined
+                  }
+                  for (const d of drivers) {
+                    const publisher = getDisplayPublisher(d.source_name, d.source_url)
+                    cards.push({
+                      key: d.id,
+                      Icon: iconForSource(d.source_name),
+                      title: d.headline,
+                      description: null,
+                      sourceLabel: `${publisher}, ${formatDriverDate(d.published_at)}`,
+                      href: d.source_url || null,
+                    })
+                  }
+                }
+
+                const summary = pickField(locale, theme.summary, theme.summary_zh)
+                if (cards.length === 0 && !summary) return null
 
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
-                      title={t('sections.theme_lifespan_title')}
-                      subtitle={t('sections.theme_lifespan_subtitle')}
+                      title={t('sections.why_theme_title')}
+                      subtitle={t('sections.why_theme_subtitle')}
                     />
-                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
-                      <Flex
-                        justify="space-between"
+                    {summary && (
+                      <Text
                         style={{
-                          fontFamily: token.fontFamilyCode,
-                          fontSize: 10,
-                          letterSpacing: '0.12em',
-                          textTransform: 'uppercase',
-                          color: token.colorTextQuaternary,
-                          marginBottom: 10,
+                          display: 'block',
+                          fontSize: 14,
+                          color: token.colorTextSecondary,
+                          lineHeight: 1.65,
+                          marginBottom: 16,
                         }}
                       >
-                        <span>{theme.first_seen_at.slice(0, 10)}</span>
-                        <span>Day {theme.days_hot} / ~{expectedDays || '?'}</span>
-                        <span>{t('theme_detail.expected_end')}</span>
-                      </Flex>
-                      <Progress
-                        percent={progressPercent}
-                        strokeColor={stageColor}
-                        trailColor={token.colorFillSecondary}
-                        showInfo={false}
-                        size={['100%', 4]}
-                        strokeLinecap="square"
-                      />
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        wrap
-                        gap={8}
-                        style={{ marginTop: 12 }}
-                      >
-                        <Text style={{ fontSize: 12, color: token.colorTextSecondary }}>
-                          {t('theme_card.stage_prefix')}: <Text strong style={{ color: token.colorText, fontSize: 12 }}>{stageText}</Text>
-                        </Text>
-                        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
-                          {theme.days_active} {t('theme_detail.days')} · updated {formatRelativeTime(theme.last_active_at, t, locale)}
-                        </Text>
-                      </Flex>
-                      {modeNote && (
-                        <Text
-                          style={{
-                            display: 'block',
-                            marginTop: 8,
-                            fontSize: 12,
-                            color: token.colorTextTertiary,
-                            fontStyle: 'italic',
-                          }}
-                        >
-                          {modeNote}
-                        </Text>
-                      )}
-                      {isCooling && (
-                        <div
-                          style={{
-                            marginTop: 16,
-                            padding: '12px 14px',
-                            background: token.colorWarningBg,
-                            border: `1px solid ${token.colorWarningBorder}`,
-                            borderRadius: token.borderRadius,
-                          }}
-                        >
+                        {summary}
+                      </Text>
+                    )}
+                    {cards.length === 0 ? null : (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: 12,
+                        alignItems: 'stretch',
+                      }}
+                    >
+                      {cards.map((c) => {
+                        const Icon = c.Icon
+                        const titleNode = (
                           <Text
                             strong
                             style={{
                               display: 'block',
-                              fontSize: 12,
-                              color: token.colorWarningText,
-                              marginBottom: 3,
+                              fontSize: 13,
+                              color: token.colorText,
+                              lineHeight: 1.4,
                             }}
                           >
-                            {t('theme_detail.cooling_banner_title', { n: theme.days_hot })}
+                            {c.title}
                           </Text>
-                          <Text
-                            style={{
-                              display: 'block',
-                              fontSize: 11,
-                              color: token.colorWarningText,
-                              opacity: 0.85,
-                              marginBottom: 8,
+                        )
+                        return (
+                          <Card
+                            key={c.key}
+                            size="small"
+                            styles={{
+                              body: {
+                                padding: '14px 16px',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 8,
+                              },
                             }}
+                            style={{ height: '100%' }}
                           >
-                            {t('theme_detail.cooling_archive_hint', {
-                              n: theme.days_since_last_event,
-                              m: Math.max(0, 60 - theme.days_since_last_event),
-                            })}
-                          </Text>
-                          <Progress
-                            percent={coolPct}
-                            strokeColor={token.colorWarning}
-                            trailColor={token.colorWarningBgHover}
-                            showInfo={false}
-                            size={['100%', 3]}
-                            strokeLinecap="square"
-                          />
-                          <Flex
-                            justify="space-between"
-                            style={{
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 10,
-                              letterSpacing: '0.08em',
-                              color: token.colorWarningText,
-                              opacity: 0.8,
-                              marginTop: 6,
-                            }}
-                          >
-                            <span>{t('theme_detail.cooling_label')}</span>
-                            <span>{theme.days_since_last_event}d / 60d</span>
-                          </Flex>
-                        </div>
-                      )}
-                    </Card>
+                            <div
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: token.borderRadius,
+                                background: token.colorFillSecondary,
+                                color: token.colorText,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 16,
+                              }}
+                            >
+                              <Icon />
+                            </div>
+                            {c.href ? (
+                              <a
+                                href={c.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: 'inherit', textDecoration: 'none' }}
+                              >
+                                {titleNode}
+                              </a>
+                            ) : (
+                              titleNode
+                            )}
+                            {c.description ? (
+                              <Text
+                                style={{
+                                  display: 'block',
+                                  fontSize: 12,
+                                  color: token.colorTextSecondary,
+                                  lineHeight: 1.5,
+                                }}
+                              >
+                                {c.description}
+                              </Text>
+                            ) : null}
+                            <Text
+                              style={{
+                                display: 'block',
+                                fontFamily: token.fontFamilyCode,
+                                fontSize: 10,
+                                color: token.colorTextQuaternary,
+                                letterSpacing: '0.06em',
+                                marginTop: 'auto',
+                                paddingTop: 4,
+                                borderTop: `1px solid ${token.colorSplit}`,
+                              }}
+                            >
+                              {t('theme_detail.driver_source_label')}: {c.sourceLabel}
+                            </Text>
+                          </Card>
+                        )
+                      })}
+                    </div>
+                    )}
                   </div>
                 )
               })()}
+
 
               {/* Conviction */}
               {theme.conviction_score !== null && theme.conviction_breakdown && (() => {
@@ -646,292 +1043,147 @@ export default function ThemeDetailPage() {
                 )
               })()}
 
-              {/* Bull vs Bear */}
-              {theme.counter_evidence_summary && (() => {
-                const s = theme.counter_evidence_summary
-                const total = s.supports_count + s.contradicts_count + s.neutral_count
-                if (total === 0) return null
-                const maxCount = Math.max(s.supports_count, s.contradicts_count, s.neutral_count, 1)
-                const ratio = s.contradicts_count === 0
-                  ? s.supports_count > 0 ? `${s.supports_count}:0` : '—'
-                  : (s.supports_count / s.contradicts_count).toFixed(2) + ':1'
-                const bearWarn = s.contradicts_count > s.supports_count
-                const strongBull = s.supports_count >= s.contradicts_count * 3 && s.supports_count > 0
-                const label = bearWarn ? null : strongBull ? t('theme_detail.strong_bull') : t('theme_detail.balanced')
-                const rows = [
-                  { key: 'sup', color: token.colorSuccess, label: t('theme_detail.supports'), count: s.supports_count },
-                  { key: 'con', color: token.colorError, label: t('theme_detail.contradicts'), count: s.contradicts_count },
-                  { key: 'neu', color: token.colorTextQuaternary, label: t('theme_detail.neutral'), count: s.neutral_count },
-                ]
+              {/* Key Events Timeline (last 30 days) */}
+              {(() => {
+                const timelineEvents = catalysts
+                  .filter((c) => c.days_ago <= 30)
+                  .slice(0, 8)
+                if (catalysts.length === 0) return null
+                const formatTimelineDate = (iso: string) => {
+                  const d = new Date(iso)
+                  return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+                }
+                const dotColor = (dir: EventDirection | null) =>
+                  dir === 'supports' ? token.colorSuccess
+                  : dir === 'contradicts' ? token.colorError
+                  : token.colorTextQuaternary
+
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
                       index={nextIdx()}
-                      title={t('sections.theme_evidence_title')}
-                      subtitle={t('sections.theme_evidence_subtitle')}
+                      title={t('sections.key_timeline_title')}
+                      subtitle={t('sections.key_timeline_subtitle')}
+                      meta={`${timelineEvents.length}`}
                     />
-                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
-                      {bearWarn && (
-                        <div
-                          style={{
-                            background: token.colorErrorBg,
-                            border: `1px solid ${token.colorErrorBorder}`,
-                            color: token.colorErrorText,
-                            padding: '8px 12px',
-                            borderRadius: token.borderRadius,
-                            fontSize: 12,
-                            marginBottom: 12,
-                          }}
-                        >
-                          ⚠ {t('theme_detail.bear_warning')}
-                        </div>
-                      )}
-                      <div style={{ display: 'grid', rowGap: 10 }}>
-                        {rows.map((r) => (
-                          <div
-                            key={r.key}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '100px 1fr 36px',
-                              gap: 12,
-                              alignItems: 'center',
-                              fontSize: 12,
-                            }}
-                          >
-                            <Flex align="center" gap={6} style={{ color: token.colorTextSecondary }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: r.color }} />
-                              {r.label}
-                            </Flex>
-                            <Progress
-                              percent={(r.count / maxCount) * 100}
-                              strokeColor={r.color}
-                              trailColor={token.colorFillSecondary}
-                              showInfo={false}
-                              size={['100%', 4]}
-                              strokeLinecap="square"
-                            />
-                            <Text
+                    <Card size="small" styles={{ body: { padding: '20px 20px 16px' } }}>
+                      {timelineEvents.length === 0 ? (
+                        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+                          {t('sections.key_timeline_empty')}
+                        </Text>
+                      ) : (
+                        <>
+                          <div style={{ position: 'relative' }}>
+                            <div
                               style={{
-                                fontFamily: token.fontFamilyCode,
-                                color: token.colorTextSecondary,
-                                textAlign: 'right',
+                                position: 'absolute',
+                                top: 7,
+                                left: 0,
+                                right: 0,
+                                height: 1,
+                                background: token.colorSplit,
+                              }}
+                            />
+                            <div
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: `repeat(${timelineEvents.length}, minmax(0, 1fr))`,
+                                gap: 12,
+                                position: 'relative',
                               }}
                             >
-                              {r.count}
-                            </Text>
+                              {timelineEvents.map((e) => (
+                                <div
+                                  key={e.id}
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 8,
+                                    minWidth: 0,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: 14,
+                                      height: 14,
+                                      borderRadius: '50%',
+                                      background: token.colorBgContainer,
+                                      border: `2px solid ${dotColor(e.supports_or_contradicts)}`,
+                                      boxSizing: 'border-box',
+                                      zIndex: 1,
+                                    }}
+                                  />
+                                  <Text
+                                    style={{
+                                      display: 'block',
+                                      fontFamily: token.fontFamilyCode,
+                                      fontSize: 11,
+                                      color: token.colorTextTertiary,
+                                      letterSpacing: '0.04em',
+                                    }}
+                                  >
+                                    {formatTimelineDate(e.published_at)}
+                                  </Text>
+                                  {e.source_url ? (
+                                    <a
+                                      href={e.source_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: 'inherit', textDecoration: 'none' }}
+                                    >
+                                      <Text
+                                        strong
+                                        style={{
+                                          display: '-webkit-box',
+                                          WebkitLineClamp: 3,
+                                          WebkitBoxOrient: 'vertical',
+                                          overflow: 'hidden',
+                                          fontSize: 12.5,
+                                          color: token.colorText,
+                                          lineHeight: 1.4,
+                                        }}
+                                      >
+                                        {e.headline}
+                                      </Text>
+                                    </a>
+                                  ) : (
+                                    <Text
+                                      strong
+                                      style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        fontSize: 12.5,
+                                        color: token.colorText,
+                                        lineHeight: 1.4,
+                                      }}
+                                    >
+                                      {e.headline}
+                                    </Text>
+                                  )}
+                                  {e.source_name && (
+                                    <Text
+                                      style={{
+                                        display: 'block',
+                                        fontSize: 10.5,
+                                        color: token.colorTextQuaternary,
+                                        marginTop: 'auto',
+                                      }}
+                                    >
+                                      {getDisplayPublisher(e.source_name, e.source_url)}
+                                    </Text>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                      <Flex
-                        justify="space-between"
-                        gap={12}
-                        wrap
-                        style={{
-                          marginTop: 14,
-                          paddingTop: 10,
-                          borderTop: `1px solid ${token.colorSplit}`,
-                          fontSize: 11,
-                          color: token.colorTextTertiary,
-                        }}
-                      >
-                        <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
-                          {t('theme_detail.bull_bear_ratio')}:{' '}
-                          <Text style={{ fontFamily: token.fontFamilyCode, color: token.colorText, fontSize: 11 }}>{ratio}</Text>
-                        </Text>
-                        {label && (
-                          <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>{label}</Text>
-                        )}
-                      </Flex>
+                        </>
+                      )}
                     </Card>
                   </div>
                 )
               })()}
-
-              {/* Trigger Events */}
-              <div style={{ marginTop: 32 }}>
-                <SectionHeader
-                  index={nextIdx()}
-                  title={t('sections.theme_events_title')}
-                  subtitle={t('sections.theme_events_subtitle')}
-                  meta={`${catalysts.length}`}
-                />
-                <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
-                {catalysts.length === 0 ? (
-                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
-                    {t('theme_detail.no_catalysts')}
-                  </Text>
-                ) : (
-                  <>
-                    {hasDirection && (
-                      <Segmented
-                        size="small"
-                        value={eventTab}
-                        onChange={(v) => setEventTab(v as EventTab)}
-                        options={(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => ({
-                          label: `${t(k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`)} ${eventCounts[k]}`,
-                          value: k,
-                        }))}
-                        style={{ marginBottom: 14 }}
-                      />
-                    )}
-
-                    {GROUP_ORDER.map((key) => {
-                      const items = groupedEvents.get(key)
-                      if (!items || items.length === 0) return null
-                      return (
-                        <div key={key} style={{ marginBottom: 18 }}>
-                          <Flex
-                            align="center"
-                            gap={8}
-                            style={{
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 10,
-                              letterSpacing: '0.14em',
-                              textTransform: 'uppercase',
-                              color: token.colorTextTertiary,
-                              marginBottom: 8,
-                            }}
-                          >
-                            <span style={{ fontWeight: 600 }}>{t(GROUP_LABEL[key])}</span>
-                            <span style={{ color: token.colorTextQuaternary, fontWeight: 400 }}>{items.length}</span>
-                          </Flex>
-                          {items.map((c, idx) => {
-                            const publisher = getDisplayPublisher(c.source_name, c.source_url)
-                            const reasoning = pickField(
-                              locale,
-                              c.counter_evidence_reasoning,
-                              c.counter_evidence_reasoning_zh,
-                            )
-                            const isExp = expanded.has(c.id)
-                            const dir = dirDot(c.supports_or_contradicts)
-                            const dotColor =
-                              dir === 'sup' ? token.colorSuccess
-                              : dir === 'con' ? token.colorError
-                              : token.colorTextQuaternary
-                            return (
-                              <div
-                                key={c.id}
-                                style={{
-                                  display: 'grid',
-                                  gridTemplateColumns: '14px 1fr',
-                                  gap: 10,
-                                  padding: '8px 0',
-                                  borderBottom: idx === items.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
-                                  fontSize: 12.5,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    width: 6,
-                                    height: 6,
-                                    borderRadius: '50%',
-                                    marginTop: 7,
-                                    background: dotColor,
-                                  }}
-                                />
-                                <div>
-                                  {c.source_url ? (
-                                    <a
-                                      href={c.source_url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{ color: token.colorText, textDecoration: 'none' }}
-                                    >
-                                      {c.headline}
-                                    </a>
-                                  ) : (
-                                    <span style={{ color: token.colorText }}>{c.headline}</span>
-                                  )}
-                                  <Flex
-                                    align="center"
-                                    gap={6}
-                                    wrap
-                                    style={{
-                                      fontSize: 10.5,
-                                      color: token.colorTextQuaternary,
-                                      marginTop: 3,
-                                    }}
-                                  >
-                                    <span>{publisher}</span>
-                                    <span>·</span>
-                                    <span>
-                                      {c.days_ago === 0
-                                        ? t('theme_detail.today')
-                                        : t('relative_time.days_ago', { n: c.days_ago })}
-                                    </span>
-                                    {reasoning && (
-                                      <>
-                                        <span>·</span>
-                                        <button
-                                          onClick={() => toggleExpand(c.id)}
-                                          style={{
-                                            border: 'none',
-                                            background: 'transparent',
-                                            padding: 0,
-                                            color: token.colorTextTertiary,
-                                            fontSize: 'inherit',
-                                            cursor: 'pointer',
-                                            textDecoration: 'underline',
-                                          }}
-                                        >
-                                          {isExp ? t('theme_detail.collapse') : t('theme_detail.counter_reasoning')}
-                                        </button>
-                                      </>
-                                    )}
-                                  </Flex>
-                                  {isExp && reasoning && (
-                                    <div
-                                      style={{
-                                        fontSize: 12,
-                                        color: token.colorTextSecondary,
-                                        fontStyle: 'italic',
-                                        marginTop: 4,
-                                        paddingLeft: 10,
-                                        borderLeft: `2px solid ${token.colorBorderSecondary}`,
-                                      }}
-                                    >
-                                      {reasoning}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      )
-                    })}
-
-                    {filteredEvents.length > 8 && (
-                      <Button
-                        type="link"
-                        size="small"
-                        onClick={() => setShowAllEvents((v) => !v)}
-                        style={{ padding: 0, marginTop: 4, fontSize: 12 }}
-                      >
-                        {showAllEvents
-                          ? t('theme_detail.collapse_events')
-                          : t('theme_detail.view_all_events', { n: filteredEvents.length })}
-                      </Button>
-                    )}
-                  </>
-                )}
-                <Text
-                  style={{
-                    display: 'block',
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 10,
-                    color: token.colorTextQuaternary,
-                    fontStyle: 'italic',
-                    marginTop: 14,
-                    paddingTop: 12,
-                    borderTop: `1px solid ${token.colorSplit}`,
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  ℹ {t('theme_detail.ai_source_hint')}
-                </Text>
-                </Card>
-              </div>
 
               {/* Exposure Mapping */}
               <div style={{ marginTop: 32 }}>
@@ -944,10 +1196,38 @@ export default function ThemeDetailPage() {
                   <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{t('theme_detail.no_exposure')}</Text>
                 )}
 
-                <ExposureGroup title={t('theme_detail.direct_exposure')} items={directRecs} />
-                <ExposureGroup title={t('theme_detail.observational_mapping')} items={observationalRecs} />
+                {tradableRecs.length > 0 && (
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gap: 16,
+                      alignItems: 'stretch',
+                      marginBottom: 20,
+                    }}
+                  >
+                    <TierColumn
+                      tier={1}
+                      title={t('theme_detail.tier1')}
+                      subtitle={t('theme_detail.tier1_desc')}
+                      items={tier1Recs}
+                    />
+                    <TierColumn
+                      tier={2}
+                      title={t('theme_detail.tier2')}
+                      subtitle={t('theme_detail.tier2_desc')}
+                      items={tier2Recs}
+                    />
+                    <TierColumn
+                      tier={3}
+                      title={t('theme_detail.tier3')}
+                      subtitle={t('theme_detail.tier3_desc')}
+                      items={tier3Recs}
+                    />
+                  </div>
+                )}
+
                 <ExposureGroup title={t('theme_detail.pressure_assets')} items={pressureRecs} variant="pressure" />
-                <ExposureGroup title={t('theme_detail.diversified_beneficiaries')} items={unclassified} />
                 <ExposureGroup title={t('theme_detail.headwinds')} items={headwinds} variant="headwind" />
               </div>
 
@@ -1052,60 +1332,214 @@ export default function ThemeDetailPage() {
                       ℹ {t('theme_detail.disclaimer_playbook')}
                     </Text>
 
+                    {ttd?.observation && (
+                      <>
+                        <div style={sublabelStyle}>{t('theme_detail.observation')}</div>
+                        <Card
+                          size="small"
+                          styles={{ body: { padding: '14px 16px' } }}
+                          style={{ background: token.colorFillAlter, borderColor: token.colorBorderSecondary }}
+                        >
+                          <Text
+                            style={{
+                              display: 'block',
+                              fontSize: 12,
+                              color: token.colorTextSecondary,
+                              lineHeight: 1.6,
+                            }}
+                          >
+                            {ttd.observation}
+                          </Text>
+                          <Text
+                            style={{
+                              display: 'block',
+                              marginTop: 10,
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 10,
+                              color: token.colorTextQuaternary,
+                              letterSpacing: '0.06em',
+                              fontStyle: 'italic',
+                            }}
+                          >
+                            ⚠ {t('theme_detail.disclaimer_observation')}
+                          </Text>
+                        </Card>
+                      </>
+                    )}
+
                     <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                        gap: 10,
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: 12,
                         alignItems: 'stretch',
                       }}
                     >
-                      {pb.historical_cases.map((c, i) => (
-                        <Card
-                          key={i}
-                          size="small"
-                          styles={{
-                            body: {
-                              padding: '12px 14px',
+                      {pb.historical_cases.map((c, i) => {
+                        const peakIsNegative = typeof c.peak_move === 'string' && c.peak_move.trim().startsWith('-')
+                        const peakColor = peakIsNegative ? token.colorError : token.colorSuccess
+                        return (
+                          <Card
+                            key={i}
+                            size="small"
+                            styles={{
+                              body: {
+                                padding: '14px 16px',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 8,
+                              },
+                            }}
+                            style={{ height: '100%' }}
+                          >
+                            <Text strong style={{ display: 'block', fontSize: 13, color: token.colorText, lineHeight: 1.35 }}>
+                              {c.name}
+                            </Text>
+                            <Flex justify="space-between" align="center" gap={8}>
+                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                                {t('theme_detail.duration_label')}
+                              </Text>
+                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: token.colorTextSecondary }}>
+                                {c.approximate_duration}
+                              </Text>
+                            </Flex>
+                            <Flex justify="space-between" align="center" gap={8}>
+                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                                {t('theme_detail.peak_move_label')}
+                              </Text>
+                              <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 12.5, color: peakColor }}>
+                                {c.peak_move}
+                              </Text>
+                            </Flex>
+                            {c.exit_trigger && (
+                              <Text
+                                style={{
+                                  fontSize: 11,
+                                  color: token.colorTextQuaternary,
+                                  lineHeight: 1.5,
+                                  marginTop: 'auto',
+                                  paddingTop: 6,
+                                  borderTop: `1px solid ${token.colorSplit}`,
+                                }}
+                              >
+                                {c.exit_trigger}
+                              </Text>
+                            )}
+                          </Card>
+                        )
+                      })}
+
+                      {(() => {
+                        const stage = theme.playbook_stage
+                        const stageLabel = stage === 'early' ? t('theme_detail.stage_early')
+                          : stage === 'mid' ? t('theme_detail.stage_mid')
+                          : stage === 'late' ? t('theme_detail.stage_late')
+                          : stage === 'beyond' ? t('theme_detail.stage_beyond')
+                          : null
+                        const stageColor = stage === 'early' ? token.colorSuccess
+                          : stage === 'mid' ? token.colorPrimary
+                          : stage === 'late' ? token.colorWarning
+                          : stage === 'beyond' ? token.colorError
+                          : token.colorTextSecondary
+                        const range = pb.typical_duration_days_approx
+                        const dayUnit = locale === 'zh' ? '天' : 'd'
+                        const positionPct = range && range[1] > 0
+                          ? Math.min(100, Math.max(0, (theme.days_hot / range[1]) * 100))
+                          : null
+                        return (
+                          <Card
+                            size="small"
+                            styles={{
+                              body: {
+                                padding: '14px 16px',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 8,
+                              },
+                            }}
+                            style={{
                               height: '100%',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: 4,
-                            },
-                          }}
-                          style={{ height: '100%' }}
-                        >
-                          <Text strong style={{ display: 'block', fontSize: 12.5, color: token.colorText, marginBottom: 2 }}>
-                            {c.name}
-                          </Text>
-                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextTertiary }}>
-                            {c.approximate_duration}
-                          </Text>
-                          <Text style={{ display: 'block', fontFamily: token.fontFamilyCode, fontSize: 10.5, color: token.colorTextSecondary, marginTop: 'auto' }}>
-                            Peak {c.peak_move}
-                          </Text>
-                        </Card>
-                      ))}
+                              borderColor: stageColor,
+                              borderWidth: 1.5,
+                              background: token.colorFillAlter,
+                            }}
+                          >
+                            <Flex align="center" justify="space-between" gap={8}>
+                              <Text strong style={{ fontSize: 13, color: token.colorText, lineHeight: 1.35 }}>
+                                {t('theme_detail.current_stage_compare')}
+                              </Text>
+                              {stageLabel && (
+                                <Tag
+                                  style={{
+                                    margin: 0,
+                                    fontSize: 9.5,
+                                    padding: '0 6px',
+                                    border: 'none',
+                                    letterSpacing: '0.08em',
+                                    textTransform: 'uppercase',
+                                    fontFamily: token.fontFamilyCode,
+                                    color: stageColor,
+                                    background: token.colorFillSecondary,
+                                  }}
+                                >
+                                  {stageLabel}
+                                </Tag>
+                              )}
+                            </Flex>
+                            <Flex justify="space-between" align="center" gap={8}>
+                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                                {t('theme_detail.duration_label')}
+                              </Text>
+                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: token.colorTextSecondary }}>
+                                {theme.days_hot}{dayUnit}{range ? ` / ${range[1]}${dayUnit}` : ''}
+                              </Text>
+                            </Flex>
+                            {positionPct !== null && (
+                              <div style={{ marginTop: 'auto' }}>
+                                <div
+                                  style={{
+                                    width: '100%',
+                                    height: 4,
+                                    background: token.colorFillTertiary,
+                                    borderRadius: 2,
+                                    overflow: 'hidden',
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: `${positionPct}%`,
+                                      height: '100%',
+                                      background: stageColor,
+                                    }}
+                                  />
+                                </div>
+                                <Text
+                                  style={{
+                                    display: 'block',
+                                    marginTop: 4,
+                                    fontFamily: token.fontFamilyCode,
+                                    fontSize: 10,
+                                    color: token.colorTextQuaternary,
+                                    letterSpacing: '0.04em',
+                                  }}
+                                >
+                                  {t('theme_detail.position_label')}: {Math.round(positionPct)}%
+                                </Text>
+                              </div>
+                            )}
+                          </Card>
+                        )
+                      })()}
                     </div>
 
-                    {(visibleDiffs.length > 0 || validSims.length > 0 || ttd?.observation) && (
-                      <Card
-                        size="small"
-                        styles={{ body: { padding: '16px 18px' } }}
-                        style={{
-                          marginTop: 18,
-                          background: token.colorFillAlter,
-                          borderColor: token.colorBorderSecondary,
-                        }}
-                      >
-                        <Text strong style={{ display: 'block', fontSize: 15, color: token.colorText, marginBottom: 2 }}>
-                          {t('theme_detail.this_time_different')}
-                        </Text>
-
+                    {(visibleDiffs.length > 0 || validSims.length > 0) && (
+                      <>
                         {visibleDiffs.length > 0 && (
                           <>
-                            <div style={sublabelStyle}>{t('theme_detail.structural_differences')}</div>
+                            <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.structural_differences')}</div>
                             <div
                               style={{
                                 display: 'grid',
@@ -1127,12 +1561,20 @@ export default function ThemeDetailPage() {
                                   <Card
                                     key={i}
                                     size="small"
-                                    styles={{ body: { padding: '12px 14px', height: '100%' } }}
+                                    styles={{
+                                      body: {
+                                        padding: '14px 16px',
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 6,
+                                      },
+                                    }}
                                     style={{ height: '100%' }}
                                   >
-                                    <Flex align="center" gap={6} style={{ marginBottom: 5 }}>
-                                      <span style={{ fontSize: 13, lineHeight: 1, color: arrColor }}>{arrow}</span>
-                                      <Text strong style={{ fontSize: 12, color: token.colorText, textTransform: 'capitalize' }}>
+                                    <Flex align="center" gap={6}>
+                                      <span style={{ fontSize: 14, lineHeight: 1, color: arrColor }}>{arrow}</span>
+                                      <Text strong style={{ fontSize: 13, color: token.colorText, textTransform: 'capitalize', lineHeight: 1.35 }}>
                                         {dimGroup(d.dimension)}
                                       </Text>
                                       <Tag
@@ -1151,7 +1593,7 @@ export default function ThemeDetailPage() {
                                         {d.confidence}
                                       </Tag>
                                     </Flex>
-                                    <Text style={{ fontSize: 11.5, color: token.colorTextSecondary, lineHeight: 1.5 }}>
+                                    <Text style={{ fontSize: 12, color: token.colorTextSecondary, lineHeight: 1.5 }}>
                                       {d.description}
                                     </Text>
                                   </Card>
@@ -1178,99 +1620,56 @@ export default function ThemeDetailPage() {
 
                         {validSims.length > 0 && (
                           <>
-                            <div style={sublabelStyle}>{t('theme_detail.similarities')}</div>
-                            <ul style={{ fontSize: 12.5, color: token.colorTextSecondary, listStyle: 'none', padding: 0, margin: 0 }}>
-                              {validSims.map((s, i) => (
-                                <li key={i} style={{ padding: '3px 0' }}>
-                                  <span style={{ color: token.colorTextQuaternary, marginRight: 6 }}>=</span>
-                                  <span style={{ color: token.colorTextTertiary }}>{s.dimension}:</span> {s.description}
-                                </li>
-                              ))}
-                            </ul>
+                            <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.similarities')}</div>
+                            <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
+                              <div style={{ display: 'grid', rowGap: 2 }}>
+                                {validSims.map((s, i) => (
+                                  <div
+                                    key={i}
+                                    style={{
+                                      fontSize: 12,
+                                      color: token.colorTextSecondary,
+                                      lineHeight: 1.6,
+                                      padding: '6px 0',
+                                      borderBottom: i === validSims.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                    }}
+                                  >
+                                    <span style={{ color: token.colorTextTertiary, fontWeight: 500, textTransform: 'capitalize' }}>
+                                      {dimGroup(s.dimension)}
+                                    </span>
+                                    <span style={{ color: token.colorTextQuaternary, margin: '0 8px' }}>·</span>
+                                    {s.description}
+                                  </div>
+                                ))}
+                              </div>
+                            </Card>
                           </>
                         )}
-
-                        {ttd?.observation && (
-                          <Text
-                            style={{
-                              display: 'block',
-                              marginTop: 12,
-                              fontSize: 12.5,
-                              fontStyle: 'italic',
-                              color: token.colorTextSecondary,
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {t('theme_detail.observation')}: {ttd.observation}
-                          </Text>
-                        )}
-
-                        <Text
-                          style={{
-                            display: 'block',
-                            marginTop: 10,
-                            fontFamily: token.fontFamilyCode,
-                            fontSize: 10,
-                            color: token.colorTextQuaternary,
-                            letterSpacing: '0.06em',
-                            fontStyle: 'italic',
-                          }}
-                        >
-                          ⚠ {t('theme_detail.disclaimer_observation')}
-                        </Text>
-                      </Card>
+                      </>
                     )}
 
                     {(pb.exit_signals?.length ?? 0) > 0 && (
                       <>
                         <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.exit_signals')}</div>
-                        <Card size="small" styles={{ body: { padding: '12px 16px' } }}>
+                        <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
                           <div style={{ display: 'grid', rowGap: 2 }}>
-                            {pb.exit_signals.map((s, i) => {
-                              const triggered = false
-                              return (
-                                <div
-                                  key={i}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'flex-start',
-                                    gap: 10,
-                                    fontSize: 12.5,
-                                    color: triggered ? token.colorText : token.colorTextSecondary,
-                                    padding: '7px 0',
-                                    borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
-                                  }}
-                                >
-                                  {triggered ? (
-                                    <CheckSquareFilled
-                                      style={{
-                                        color: token.colorSuccess,
-                                        fontSize: 14,
-                                        marginTop: 2,
-                                        flexShrink: 0,
-                                      }}
-                                    />
-                                  ) : (
-                                    <BorderOutlined
-                                      style={{
-                                        color: token.colorTextQuaternary,
-                                        fontSize: 14,
-                                        marginTop: 2,
-                                        flexShrink: 0,
-                                      }}
-                                    />
-                                  )}
-                                  <span
-                                    style={{
-                                      textDecoration: triggered ? 'line-through' : 'none',
-                                      lineHeight: 1.5,
-                                    }}
-                                  >
-                                    {s}
-                                  </span>
-                                </div>
-                              )
-                            })}
+                            {pb.exit_signals.map((s, i) => (
+                              <div
+                                key={i}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: 10,
+                                  fontSize: 12.5,
+                                  color: token.colorTextSecondary,
+                                  padding: '7px 0',
+                                  borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                }}
+                              >
+                                <span style={{ color: token.colorTextQuaternary, lineHeight: 1.5, flexShrink: 0 }}>·</span>
+                                <span style={{ lineHeight: 1.5 }}>{s}</span>
+                              </div>
+                            ))}
                           </div>
                         </Card>
                       </>
@@ -1278,6 +1677,30 @@ export default function ThemeDetailPage() {
                   </div>
                 )
               })()}
+
+                </Col>
+                <Col xs={24} lg={7}>
+                  <div style={{ position: 'sticky', top: 80, marginTop: 32 }}>
+                    <ThemeEventSidebar
+                      catalysts={catalysts}
+                      eventTab={eventTab}
+                      setEventTab={setEventTab}
+                      hasDirection={hasDirection}
+                      eventCounts={eventCounts}
+                      filteredEvents={filteredEvents}
+                      showAllEvents={showAllEvents}
+                      setShowAllEvents={setShowAllEvents}
+                      expanded={expanded}
+                      toggleExpand={toggleExpand}
+                      sectionIndex={nextIdx()}
+                      counterEvidence={theme.counter_evidence_summary}
+                      isCooling={theme.status === 'cooling'}
+                      daysHot={theme.days_hot}
+                      daysSinceLastEvent={theme.days_since_last_event}
+                    />
+                  </div>
+                </Col>
+              </Row>
 
                 <div style={{ marginTop: 40, padding: '16px 0', fontSize: 11, color: token.colorTextQuaternary, textAlign: 'center', letterSpacing: '0.02em' }}>
                   {t('common.disclaimer_footer')}
@@ -1329,6 +1752,389 @@ function KPICell({ label, value, token, tone }: KPICellProps) {
         {value}
       </div>
     </div>
+  )
+}
+
+const SIDEBAR_SRC_COLOR: Record<string, { bg: string; fg: string }> = {
+  Reuters: { bg: '#FFEDD5', fg: '#C2410C' },
+  Bloomberg: { bg: '#D1FAE5', fg: '#047857' },
+  WSJ: { bg: '#EDE9FE', fg: '#6D28D9' },
+  'Financial Times': { bg: '#FCE7F3', fg: '#BE185D' },
+  CNBC: { bg: '#E0F2FE', fg: '#0369A1' },
+  NYT: { bg: '#F4F4F5', fg: '#3F3F46' },
+}
+
+function shortPublisher(name: string): string {
+  if (name === 'Financial Times') return 'FT'
+  if (name === 'Nikkei Asia') return 'Nikkei'
+  if (name === "Investor's Business Daily") return 'IBD'
+  if (name === 'GlobeNewswire') return 'Globe'
+  if (name === 'PR Newswire') return 'PRNews'
+  if (name === 'BusinessWire') return 'BizWire'
+  if (name.length > 10) return name.split(/\s+/)[0].slice(0, 10)
+  return name
+}
+
+function ThemeEventSidebar({
+  catalysts,
+  eventTab,
+  setEventTab,
+  hasDirection,
+  eventCounts,
+  filteredEvents,
+  showAllEvents,
+  setShowAllEvents,
+  expanded,
+  toggleExpand,
+  sectionIndex,
+  counterEvidence,
+  isCooling,
+  daysHot,
+  daysSinceLastEvent,
+}: {
+  catalysts: CatalystEvent[]
+  eventTab: EventTab
+  setEventTab: (v: EventTab) => void
+  hasDirection: boolean
+  eventCounts: Record<EventTab, number>
+  filteredEvents: CatalystEvent[]
+  showAllEvents: boolean
+  setShowAllEvents: (fn: (v: boolean) => boolean) => void
+  expanded: Set<string>
+  toggleExpand: (id: string) => void
+  sectionIndex: string
+  counterEvidence: CounterEvidenceSummary | null
+  isCooling: boolean
+  daysHot: number
+  daysSinceLastEvent: number
+}) {
+  const { t, locale } = useI18n()
+  const { token } = useToken()
+
+  const visibleEvents = showAllEvents ? filteredEvents : filteredEvents.slice(0, 8)
+
+  const ev = counterEvidence
+  const evTotal = ev ? ev.supports_count + ev.contradicts_count + ev.neutral_count : 0
+  const evMax = ev ? Math.max(ev.supports_count, ev.contradicts_count, ev.neutral_count, 1) : 1
+  const evRatio = ev
+    ? ev.contradicts_count === 0
+      ? ev.supports_count > 0 ? `${ev.supports_count}:0` : '—'
+      : (ev.supports_count / ev.contradicts_count).toFixed(2) + ':1'
+    : '—'
+  const bearWarn = ev ? ev.contradicts_count > ev.supports_count : false
+  const evRows = ev
+    ? [
+        { key: 'sup', color: token.colorSuccess, label: t('theme_detail.supports'), count: ev.supports_count },
+        { key: 'con', color: token.colorError, label: t('theme_detail.contradicts'), count: ev.contradicts_count },
+        { key: 'neu', color: token.colorTextQuaternary, label: t('theme_detail.neutral'), count: ev.neutral_count },
+      ]
+    : []
+  const coolPct = Math.min(100, Math.max(0, Math.round(((daysSinceLastEvent - 30) / 30) * 100)))
+
+  return (
+    <>
+      {isCooling && (
+        <div
+          style={{
+            marginBottom: 12,
+            padding: '10px 12px',
+            background: token.colorWarningBg,
+            border: `1px solid ${token.colorWarningBorder}`,
+            borderRadius: token.borderRadius,
+          }}
+        >
+          <Text
+            strong
+            style={{
+              display: 'block',
+              fontSize: 12,
+              color: token.colorWarningText,
+              marginBottom: 2,
+            }}
+          >
+            {t('theme_detail.cooling_banner_title', { n: daysHot })}
+          </Text>
+          <Text
+            style={{
+              display: 'block',
+              fontSize: 11,
+              color: token.colorWarningText,
+              opacity: 0.85,
+              marginBottom: 6,
+            }}
+          >
+            {t('theme_detail.cooling_archive_hint', {
+              n: daysSinceLastEvent,
+              m: Math.max(0, 60 - daysSinceLastEvent),
+            })}
+          </Text>
+          <Progress
+            percent={coolPct}
+            strokeColor={token.colorWarning}
+            trailColor={token.colorWarningBgHover}
+            showInfo={false}
+            size={['100%', 3]}
+            strokeLinecap="square"
+          />
+        </div>
+      )}
+
+      {ev && evTotal > 0 && (
+        <Card size="small" styles={{ body: { padding: '12px 14px' } }} style={{ marginBottom: 12 }}>
+          <Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
+            <Text
+              strong
+              style={{
+                fontFamily: token.fontFamilyCode,
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: token.colorTextTertiary,
+              }}
+            >
+              {t('sections.sidebar_evidence_title')}
+            </Text>
+            <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextSecondary }}>
+              {evRatio}
+            </Text>
+          </Flex>
+          {bearWarn && (
+            <div
+              style={{
+                background: token.colorErrorBg,
+                border: `1px solid ${token.colorErrorBorder}`,
+                color: token.colorErrorText,
+                padding: '6px 10px',
+                borderRadius: token.borderRadius,
+                fontSize: 11,
+                marginBottom: 8,
+              }}
+            >
+              ⚠ {t('theme_detail.bear_warning')}
+            </div>
+          )}
+          <div style={{ display: 'grid', rowGap: 6 }}>
+            {evRows.map((r) => (
+              <div
+                key={r.key}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '64px 1fr 24px',
+                  gap: 8,
+                  alignItems: 'center',
+                  fontSize: 11,
+                }}
+              >
+                <Flex align="center" gap={5} style={{ color: token.colorTextSecondary }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: r.color }} />
+                  {r.label}
+                </Flex>
+                <Progress
+                  percent={(r.count / evMax) * 100}
+                  strokeColor={r.color}
+                  trailColor={token.colorFillSecondary}
+                  showInfo={false}
+                  size={['100%', 3]}
+                  strokeLinecap="square"
+                />
+                <Text
+                  style={{
+                    fontFamily: token.fontFamilyCode,
+                    fontSize: 11,
+                    color: token.colorTextSecondary,
+                    textAlign: 'right',
+                  }}
+                >
+                  {r.count}
+                </Text>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <SectionHeader
+        size="sm"
+        index={sectionIndex}
+        title={t('sections.theme_events_title')}
+        subtitle={t('sections.theme_events_subtitle')}
+        meta={`${catalysts.length}`}
+      />
+      <Card size="small" styles={{ body: { padding: 0 } }}>
+        {catalysts.length === 0 ? (
+          <Text style={{ display: 'block', padding: '16px 14px', fontSize: 12, color: token.colorTextTertiary }}>
+            {t('theme_detail.no_catalysts')}
+          </Text>
+        ) : (
+          <>
+            {hasDirection && (
+              <div style={{ padding: '12px 14px 0' }}>
+                <Segmented
+                  size="small"
+                  block
+                  value={eventTab}
+                  onChange={(v) => setEventTab(v as EventTab)}
+                  options={(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => ({
+                    label: `${t(k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`)} ${eventCounts[k]}`,
+                    value: k,
+                  }))}
+                />
+              </div>
+            )}
+
+            {visibleEvents.length === 0 ? (
+              <Text style={{ display: 'block', padding: '16px 14px', fontSize: 12, color: token.colorTextTertiary }}>
+                {t('theme_detail.no_catalysts')}
+              </Text>
+            ) : (
+              visibleEvents.map((c, idx) => {
+                const publisher = getDisplayPublisher(c.source_name, c.source_url)
+                const srcColors = SIDEBAR_SRC_COLOR[publisher]
+                const reasoning = pickField(
+                  locale,
+                  c.counter_evidence_reasoning,
+                  c.counter_evidence_reasoning_zh,
+                )
+                const isExp = expanded.has(c.id)
+                const dir = dirDot(c.supports_or_contradicts)
+                const dotColor =
+                  dir === 'sup' ? token.colorSuccess
+                  : dir === 'con' ? token.colorError
+                  : token.colorTextQuaternary
+                const timeAgo =
+                  c.days_ago === 0
+                    ? t('theme_detail.today')
+                    : t('relative_time.days_ago', { n: c.days_ago })
+                return (
+                  <Flex
+                    vertical
+                    key={c.id}
+                    gap={6}
+                    style={{
+                      padding: '12px 14px',
+                      borderTop: idx === 0 && !hasDirection ? 'none' : `1px solid ${token.colorBorderSecondary}`,
+                    }}
+                  >
+                    <Flex align="center" gap={8}>
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: dotColor,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: token.fontFamilyCode,
+                          fontSize: 10.5,
+                          color: token.colorTextTertiary,
+                        }}
+                      >
+                        {timeAgo}
+                      </Text>
+                      <Tag
+                        style={{
+                          fontFamily: token.fontFamilyCode,
+                          fontSize: 9.5,
+                          fontWeight: 600,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          margin: 0,
+                          background: srcColors?.bg ?? token.colorFillTertiary,
+                          color: srcColors?.fg ?? token.colorTextSecondary,
+                          borderColor: 'transparent',
+                        }}
+                      >
+                        {shortPublisher(publisher)}
+                      </Tag>
+                    </Flex>
+                    {c.source_url ? (
+                      <a
+                        href={c.source_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          color: token.colorText,
+                          fontSize: 12.5,
+                          lineHeight: 1.4,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {c.headline}
+                      </a>
+                    ) : (
+                      <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>
+                        {c.headline}
+                      </Text>
+                    )}
+                    {reasoning && (
+                      <button
+                        onClick={() => toggleExpand(c.id)}
+                        style={{
+                          alignSelf: 'flex-start',
+                          border: 'none',
+                          background: 'transparent',
+                          padding: 0,
+                          color: token.colorTextTertiary,
+                          fontSize: 11,
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        {isExp ? t('theme_detail.collapse') : t('theme_detail.counter_reasoning')}
+                      </button>
+                    )}
+                    {isExp && reasoning && (
+                      <div
+                        style={{
+                          fontSize: 11.5,
+                          color: token.colorTextSecondary,
+                          fontStyle: 'italic',
+                          paddingLeft: 10,
+                          borderLeft: `2px solid ${token.colorBorderSecondary}`,
+                        }}
+                      >
+                        {reasoning}
+                      </div>
+                    )}
+                  </Flex>
+                )
+              })
+            )}
+
+            {filteredEvents.length > 8 && (
+              <div style={{ padding: '8px 14px 12px' }}>
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={() => setShowAllEvents((v) => !v)}
+                  style={{ padding: 0, fontSize: 12 }}
+                >
+                  {showAllEvents
+                    ? t('theme_detail.collapse_events')
+                    : t('theme_detail.view_all_events', { n: filteredEvents.length })}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+      <Text
+        style={{
+          display: 'block',
+          fontFamily: token.fontFamilyCode,
+          fontSize: 10,
+          color: token.colorTextQuaternary,
+          fontStyle: 'italic',
+          marginTop: 10,
+          letterSpacing: '0.06em',
+        }}
+      >
+        ℹ {t('theme_detail.ai_source_hint')}
+      </Text>
+    </>
   )
 }
 
@@ -1524,5 +2330,272 @@ function MetaKey({
     >
       {children}
     </span>
+  )
+}
+
+function TierColumn({
+  tier,
+  title,
+  subtitle,
+  items,
+}: {
+  tier: 1 | 2 | 3
+  title: string
+  subtitle: string
+  items: ThemeRecommendation[]
+}) {
+  const { t } = useI18n()
+  const { token } = useToken()
+  const [expanded, setExpanded] = useState(false)
+  const COLLAPSED_LIMIT = 4
+
+  const tierColor =
+    tier === 1 ? token.colorSuccess
+    : tier === 2 ? token.colorPrimary
+    : token.colorTextTertiary
+
+  const visible = expanded ? items : items.slice(0, COLLAPSED_LIMIT)
+  const hasMore = items.length > COLLAPSED_LIMIT
+
+  return (
+    <Card
+      size="small"
+      styles={{
+        body: {
+          padding: 14,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          height: '100%',
+        },
+      }}
+      style={{ height: '100%' }}
+    >
+      <div>
+        <Flex align="center" gap={8} style={{ marginBottom: 4 }}>
+          <span
+            style={{
+              fontFamily: token.fontFamilyCode,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: tierColor,
+            }}
+          >
+            Tier {tier}
+          </span>
+          <Text strong style={{ fontSize: 13.5, color: token.colorText }}>
+            {title}
+          </Text>
+        </Flex>
+        <Text style={{ display: 'block', fontSize: 11.5, color: token.colorTextTertiary, lineHeight: 1.5 }}>
+          {subtitle}
+        </Text>
+      </div>
+
+      {items.length === 0 ? (
+        <Text
+          style={{
+            fontSize: 11,
+            fontStyle: 'italic',
+            color: token.colorTextQuaternary,
+            padding: '8px 2px',
+          }}
+        >
+          {t('theme_detail.no_exposure')}
+        </Text>
+      ) : (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: 8,
+          }}
+        >
+          {visible.map((r) => (
+            <TickerTile key={r.ticker_symbol} item={r} tierColor={tierColor} />
+          ))}
+        </div>
+      )}
+
+      {hasMore && !expanded && (
+        <Button
+          type="link"
+          size="small"
+          onClick={() => setExpanded(true)}
+          style={{
+            marginTop: 'auto',
+            padding: 0,
+            height: 'auto',
+            fontSize: 12,
+            color: token.colorTextSecondary,
+          }}
+        >
+          {t('theme_detail.view_all_tickers').replace('{n}', String(items.length))}
+        </Button>
+      )}
+    </Card>
+  )
+}
+
+function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor: string }) {
+  const { t } = useI18n()
+  const { token } = useToken()
+  const [imgError, setImgError] = useState(false)
+
+  const confLabel =
+    item.confidence_band === 'high' ? t('theme_detail.confidence_strong')
+    : item.confidence_band === 'medium' ? t('theme_detail.confidence_moderate')
+    : t('theme_detail.confidence_medium')
+
+  const confTextColor =
+    item.confidence_band === 'high' ? token.colorSuccessText
+    : item.confidence_band === 'medium' ? token.colorWarningText
+    : token.colorTextSecondary
+  const confBg =
+    item.confidence_band === 'high' ? token.colorSuccessBg
+    : item.confidence_band === 'medium' ? token.colorWarningBg
+    : token.colorFillSecondary
+
+  const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
+
+  const initials = item.ticker_symbol.slice(0, 1)
+
+  return (
+    <Link
+      href={`/tickers/${item.ticker_symbol}`}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}
+    >
+      <div
+        style={{
+          padding: '10px 12px',
+          border: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: token.borderRadius,
+          background: token.colorBgContainer,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          height: '100%',
+        }}
+      >
+        <Flex align="center" gap={8} style={{ minWidth: 0 }}>
+          {item.logo_url && !imgError ? (
+            <div
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: token.colorFillAlter,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                flexShrink: 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.logo_url}
+                alt={item.ticker_symbol}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                onError={() => setImgError(true)}
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: token.colorFillSecondary,
+                color: tierColor,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: token.fontFamilyCode,
+                flexShrink: 0,
+              }}
+            >
+              {initials}
+            </div>
+          )}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <Text
+              strong
+              style={{
+                display: 'block',
+                fontFamily: token.fontFamilyCode,
+                fontSize: 13,
+                color: token.colorText,
+                lineHeight: 1.2,
+              }}
+            >
+              {item.ticker_symbol}
+            </Text>
+            {item.company_name && item.company_name !== item.ticker_symbol && (
+              <Text
+                ellipsis={{ tooltip: item.company_name }}
+                style={{
+                  display: 'block',
+                  fontSize: 10.5,
+                  color: token.colorTextTertiary,
+                  lineHeight: 1.3,
+                  marginTop: 1,
+                }}
+              >
+                {item.company_name}
+              </Text>
+            )}
+          </div>
+          {item.is_thematic_tool && (
+            <Tag
+              title={t('theme_detail.thematic_tool_tooltip')}
+              style={{
+                margin: 0,
+                fontSize: 10,
+                padding: '0 4px',
+                lineHeight: '14px',
+                background: token.colorFillSecondary,
+                border: 'none',
+                color: token.colorText,
+              }}
+            >
+              💎
+            </Tag>
+          )}
+        </Flex>
+
+        <Flex align="center" justify="space-between" style={{ marginTop: 'auto' }}>
+          <span
+            style={{
+              fontSize: 10,
+              padding: '1px 6px',
+              borderRadius: token.borderRadiusSM,
+              background: confBg,
+              color: confTextColor,
+              fontWeight: 500,
+              lineHeight: '16px',
+            }}
+          >
+            {confLabel}
+          </span>
+          {confNum !== null && (
+            <Text
+              style={{
+                fontFamily: token.fontFamilyCode,
+                fontSize: 12,
+                fontWeight: 500,
+                color: token.colorTextSecondary,
+              }}
+            >
+              {confNum}
+            </Text>
+          )}
+        </Flex>
+      </div>
+    </Link>
   )
 }
