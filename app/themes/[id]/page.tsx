@@ -366,320 +366,171 @@ export default function ThemeDetailPage() {
                   </Flex>
                 </div>
 
-                {/* Hero stats — gauge + 4 stat cells */}
+                {/* Hero stats — stage-focused: gauge + progress bar + scale */}
                 {(() => {
                   const pb = theme.archetype_playbook
                   const daysMin = pb?.typical_duration_days_approx?.[0] || 0
                   const daysMax = pb?.typical_duration_days_approx?.[1] || 0
-                  const progressPercent = daysMax > 0
-                    ? Math.min(100, Math.round((theme.days_hot / daysMax) * 100))
+                  const expectedDaysAvg = daysMax > 0 ? Math.round((daysMin + daysMax) / 2) : 0
+                  const progressPct = daysMax > 0
+                    ? Math.min(100, Math.max(0, Math.round((theme.days_hot / daysMax) * 100)))
                     : 0
                   const stageText = t(`theme_card.stage_${theme.playbook_stage === 'beyond' ? 'beyond' : theme.playbook_stage}`)
                   const stageColor = getStageColor(theme.playbook_stage)
 
-                  const formatDuration = (minD: number, maxD: number) => {
-                    if (!maxD) return '—'
-                    const unit = t('theme_detail.duration_unit_days')
-                    const months = t('theme_detail.duration_unit_months')
-                    if (maxD >= 90) {
-                      const minM = Math.round(minD / 30)
-                      const maxM = Math.round(maxD / 30)
-                      return minM && minM !== maxM ? `~${minM}–${maxM} ${months}` : `~${maxM} ${months}`
-                    }
-                    return minD && minD !== maxD ? `~${minD}–${maxD} ${unit}` : `~${maxD} ${unit}`
-                  }
-                  const durationLabel = formatDuration(daysMin, daysMax)
+                  const currentStageLabel =
+                    progressPct < 30 ? t('theme_card.stage_early')
+                    : progressPct < 70 ? t('theme_card.stage_mid')
+                    : progressPct < 90 ? t('theme_card.stage_late')
+                    : t('theme_card.stage_beyond')
 
-                  const stageRangeKey =
-                    theme.playbook_stage === 'early' ? 'theme_detail.stage_range_early'
-                    : theme.playbook_stage === 'mid' ? 'theme_detail.stage_range_mid'
-                    : theme.playbook_stage === 'late' ? 'theme_detail.stage_range_late'
-                    : theme.playbook_stage === 'beyond' ? 'theme_detail.stage_range_beyond'
-                    : 'theme_detail.stage_range_unknown'
-
-                  const categoryLabel = formatCategoryLabel(theme.category)
-
-                  const conv = theme.conviction_score
-                  const cev = theme.counter_evidence_summary
-                  const bearish = cev && cev.contradicts_count > cev.supports_count
-                  const riskTier = bearish
-                    ? 'high'
-                    : conv !== null && conv >= 7
-                    ? 'low'
-                    : conv !== null && conv >= 4
-                    ? 'mid'
-                    : 'high'
-                  const riskLabel = t(`theme_detail.risk_${riskTier}`)
-                  const riskColor =
-                    riskTier === 'low' ? token.colorSuccess
-                    : riskTier === 'mid' ? token.colorWarning
-                    : token.colorError
-
-                  const reflection = pickField(locale, theme.strategist_reflection, theme.strategist_reflection_zh)
-                  const summary = pickField(locale, theme.summary, theme.summary_zh)
-                  const conclusion = reflection?.trim() || summary?.trim() || ''
-                  const conclusionShort = conclusion.length > 160 ? conclusion.slice(0, 160) + '…' : conclusion
-
-                  const cells = [
-                    {
-                      key: 'stage',
-                      label: t('theme_detail.stage_position'),
-                      value: stageText,
-                      sub: `${progressPercent}% · ${t(stageRangeKey)}`,
-                      color: stageColor,
-                    },
-                    {
-                      key: 'duration',
-                      label: t('theme_detail.duration_header'),
-                      value: durationLabel,
-                      sub: t('theme_detail.historical_median'),
-                      color: token.colorPrimary,
-                    },
-                    {
-                      key: 'driver',
-                      label: t('theme_detail.core_driver'),
-                      value: categoryLabel,
-                      sub: theme.theme_tier === 'umbrella' ? t('theme_detail.badge_umbrella') : '—',
-                      color: token.colorInfo ?? token.colorPrimary,
-                    },
-                    {
-                      key: 'risk',
-                      label: t('theme_detail.risk_level'),
-                      value: riskLabel,
-                      sub: '',
-                      color: riskColor,
-                    },
-                  ]
+                  const stageEnglish =
+                    theme.playbook_stage === 'early' ? 'Early'
+                    : theme.playbook_stage === 'mid' ? 'Mid'
+                    : theme.playbook_stage === 'late' ? 'Late'
+                    : theme.playbook_stage === 'beyond' ? 'Beyond'
+                    : 'Unknown'
 
                   const gaugeWidth = 160
                   const gaugeStroke = 8
                   const gaugeRadius = (gaugeWidth - gaugeStroke) / 2
                   const gaugeArcLength = Math.PI * gaugeRadius
-                  const gaugeProgressLength = (progressPercent / 100) * gaugeArcLength
-                  const gaugeCx = gaugeWidth / 2
+                  const gaugeProgressLength = (progressPct / 100) * gaugeArcLength
                   const gaugeCy = gaugeWidth / 2
                   const gaugePath = `M ${gaugeStroke / 2} ${gaugeCy} A ${gaugeRadius} ${gaugeRadius} 0 0 1 ${gaugeWidth - gaugeStroke / 2} ${gaugeCy}`
 
                   return (
                     <Card
                       size="small"
-                      styles={{ body: { padding: 0 } }}
-                      style={{ marginTop: 20, overflow: 'hidden' }}
+                      styles={{ body: { padding: '24px 28px' } }}
+                      style={{ marginTop: 20 }}
                     >
-                      <Flex align="stretch" wrap>
-                        {/* Left: semicircle gauge */}
+                      <Flex align="center" gap={24} wrap>
                         <div
                           style={{
-                            width: 200,
+                            position: 'relative',
+                            width: gaugeWidth,
+                            height: gaugeWidth / 2 + gaugeStroke,
                             flexShrink: 0,
-                            padding: '20px 16px 18px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 4,
-                            borderRight: `1px solid ${token.colorSplit}`,
                           }}
                         >
-                          <div
-                            style={{
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 10,
-                              letterSpacing: '0.18em',
-                              textTransform: 'uppercase',
-                              color: token.colorTextQuaternary,
-                            }}
+                          <svg
+                            width={gaugeWidth}
+                            height={gaugeWidth / 2 + gaugeStroke}
+                            viewBox={`0 0 ${gaugeWidth} ${gaugeWidth / 2 + gaugeStroke}`}
+                            style={{ display: 'block' }}
                           >
-                            {t('theme_detail.current_stage')}
-                          </div>
-                          <div
-                            style={{
-                              position: 'relative',
-                              width: gaugeWidth,
-                              height: gaugeWidth / 2 + gaugeStroke,
-                            }}
-                          >
-                            <svg
-                              width={gaugeWidth}
-                              height={gaugeWidth / 2 + gaugeStroke}
-                              viewBox={`0 0 ${gaugeWidth} ${gaugeWidth / 2 + gaugeStroke}`}
-                              style={{ display: 'block' }}
-                            >
+                            <path
+                              d={gaugePath}
+                              fill="none"
+                              stroke={token.colorFillSecondary}
+                              strokeWidth={gaugeStroke}
+                              strokeLinecap="round"
+                            />
+                            {progressPct > 0 && (
                               <path
                                 d={gaugePath}
                                 fill="none"
-                                stroke={token.colorFillSecondary}
+                                stroke={stageColor}
                                 strokeWidth={gaugeStroke}
                                 strokeLinecap="round"
+                                strokeDasharray={`${gaugeProgressLength} ${gaugeArcLength}`}
                               />
-                              {progressPercent > 0 && (
-                                <path
-                                  d={gaugePath}
-                                  fill="none"
-                                  stroke={stageColor}
-                                  strokeWidth={gaugeStroke}
-                                  strokeLinecap="round"
-                                  strokeDasharray={`${gaugeProgressLength} ${gaugeArcLength}`}
-                                />
-                              )}
-                            </svg>
-                            <div
-                              style={{
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                bottom: gaugeStroke + 2,
-                                textAlign: 'center',
-                              }}
-                            >
-                              <Text
-                                strong
-                                style={{
-                                  fontSize: 22,
-                                  color: token.colorText,
-                                  letterSpacing: '-0.01em',
-                                  lineHeight: 1,
-                                }}
-                              >
-                                {stageText}
-                              </Text>
-                            </div>
-                          </div>
-                          <Text
-                            style={{
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 11,
-                              color: token.colorTextTertiary,
-                              letterSpacing: '0.04em',
-                              marginTop: 6,
-                            }}
-                          >
-                            Day {theme.days_hot} / {durationLabel.replace(/^~/, '')}
-                          </Text>
-                        </div>
-
-                        {/* Right: conclusion + 4 cells */}
-                        <div
-                          style={{
-                            flex: 1,
-                            minWidth: 320,
-                            display: 'flex',
-                            flexDirection: 'column',
-                          }}
-                        >
-                          {conclusionShort && (
-                            <Flex
-                              align="flex-start"
-                              gap={10}
-                              style={{
-                                padding: '11px 18px',
-                                borderBottom: `1px solid ${token.colorSplit}`,
-                                borderLeft: `2px solid ${token.colorSuccess}`,
-                              }}
-                            >
-                              <span
-                                style={{
-                                  width: 15,
-                                  height: 15,
-                                  borderRadius: '50%',
-                                  background: token.colorSuccess,
-                                  color: '#fff',
-                                  fontSize: 9,
-                                  fontWeight: 700,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  flexShrink: 0,
-                                  marginTop: 2,
-                                }}
-                              >
-                                ✓
-                              </span>
-                              <Text
-                                style={{
-                                  fontSize: 12.5,
-                                  lineHeight: 1.55,
-                                  color: token.colorTextSecondary,
-                                }}
-                              >
-                                <Text strong style={{ color: token.colorText, fontSize: 12.5, marginRight: 4 }}>
-                                  {t('theme_detail.hero_conclusion')}：
-                                </Text>
-                                {conclusionShort}
-                              </Text>
-                            </Flex>
-                          )}
-
+                            )}
+                          </svg>
                           <div
                             style={{
-                              display: 'grid',
-                              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-                              flex: 1,
+                              position: 'absolute',
+                              left: 0,
+                              right: 0,
+                              bottom: gaugeStroke + 2,
+                              textAlign: 'center',
                             }}
                           >
-                            {cells.map((c, i) => (
-                              <div
-                                key={c.key}
-                                style={{
-                                  padding: '12px 18px',
-                                  borderLeft: i > 0 ? `1px solid ${token.colorSplit}` : 'none',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  gap: 3,
-                                  minWidth: 0,
-                                  justifyContent: 'center',
-                                }}
-                              >
-                                <Flex align="center" gap={6}>
-                                  <span
-                                    style={{
-                                      width: 5,
-                                      height: 5,
-                                      borderRadius: '50%',
-                                      background: c.color,
-                                      flexShrink: 0,
-                                    }}
-                                  />
-                                  <Text
-                                    style={{
-                                      fontFamily: token.fontFamilyCode,
-                                      fontSize: 9.5,
-                                      letterSpacing: '0.16em',
-                                      textTransform: 'uppercase',
-                                      color: token.colorTextQuaternary,
-                                    }}
-                                  >
-                                    {c.label}
-                                  </Text>
-                                </Flex>
-                                <Text
-                                  strong
-                                  style={{
-                                    fontSize: 13.5,
-                                    color: token.colorText,
-                                    lineHeight: 1.3,
-                                    letterSpacing: '-0.005em',
-                                  }}
-                                  ellipsis={{ tooltip: c.value }}
-                                >
-                                  {c.value}
-                                </Text>
-                                {c.sub && (
-                                  <Text
-                                    style={{
-                                      fontSize: 11,
-                                      color: token.colorTextTertiary,
-                                      lineHeight: 1.4,
-                                    }}
-                                    ellipsis={{ tooltip: c.sub }}
-                                  >
-                                    {c.sub}
-                                  </Text>
-                                )}
-                              </div>
-                            ))}
+                            <Text
+                              strong
+                              style={{
+                                fontSize: 26,
+                                color: stageColor,
+                                letterSpacing: '-0.01em',
+                                lineHeight: 1,
+                              }}
+                            >
+                              {progressPct}%
+                            </Text>
                           </div>
                         </div>
+
+                        <div style={{ flex: 1, minWidth: 240 }}>
+                          <Title
+                            level={3}
+                            style={{
+                              margin: 0,
+                              fontSize: 22,
+                              fontWeight: 600,
+                              letterSpacing: '-0.01em',
+                              color: token.colorText,
+                            }}
+                          >
+                            {stageText} · Stage {stageEnglish}
+                          </Title>
+                          {expectedDaysAvg > 0 && (
+                            <Text
+                              style={{
+                                display: 'block',
+                                marginTop: 6,
+                                fontFamily: token.fontFamilyCode,
+                                fontSize: 12,
+                                color: token.colorTextTertiary,
+                                letterSpacing: '0.04em',
+                              }}
+                            >
+                              {t('theme_detail.day_of', { days: theme.days_hot, total: expectedDaysAvg })}
+                            </Text>
+                          )}
+                        </div>
                       </Flex>
+
+                      <Progress
+                        percent={progressPct}
+                        showInfo={false}
+                        strokeColor={stageColor}
+                        trailColor={token.colorFillSecondary}
+                        strokeLinecap="butt"
+                        style={{ marginTop: 22, marginBottom: 0 }}
+                      />
+
+                      <Flex justify="space-between" style={{ marginTop: 8 }}>
+                        {[
+                          t('theme_detail.stage_early_range'),
+                          t('theme_detail.stage_mid_range'),
+                          t('theme_detail.stage_late_range'),
+                          t('theme_detail.stage_exit_range'),
+                        ].map((label) => (
+                          <Text
+                            key={label}
+                            style={{
+                              fontSize: 11,
+                              color: token.colorTextQuaternary,
+                              fontFamily: token.fontFamilyCode,
+                              letterSpacing: '0.02em',
+                            }}
+                          >
+                            {label}
+                          </Text>
+                        ))}
+                      </Flex>
+
+                      <Text
+                        style={{
+                          display: 'block',
+                          fontSize: 12,
+                          color: token.colorTextSecondary,
+                          marginTop: 12,
+                        }}
+                      >
+                        {t('theme_detail.current_position', { pct: progressPct, stage: currentStageLabel })}
+                      </Text>
                     </Card>
                   )
                 })()}
@@ -2478,25 +2329,16 @@ function TierColumn({
 }
 
 function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor: string }) {
-  const { t } = useI18n()
   const { token } = useToken()
   const [imgError, setImgError] = useState(false)
 
-  const confLabel =
-    item.confidence_band === 'high' ? t('theme_detail.confidence_strong')
-    : item.confidence_band === 'medium' ? t('theme_detail.confidence_moderate')
-    : t('theme_detail.confidence_medium')
-
-  const confTextColor =
-    item.confidence_band === 'high' ? token.colorSuccessText
-    : item.confidence_band === 'medium' ? token.colorWarningText
-    : token.colorTextSecondary
-  const confBg =
-    item.confidence_band === 'high' ? token.colorSuccessBg
-    : item.confidence_band === 'medium' ? token.colorWarningBg
-    : token.colorFillSecondary
-
   const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
+  const confColor =
+    confNum === null ? token.colorTextQuaternary
+    : confNum >= 80 ? '#5C4A1E'
+    : confNum >= 65 ? '#8B5A00'
+    : confNum >= 50 ? token.colorTextTertiary
+    : token.colorTextQuaternary
 
   const initials = item.ticker_symbol.slice(0, 1)
 
@@ -2588,51 +2430,23 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
               </Text>
             )}
           </div>
-          {item.is_thematic_tool && (
-            <Tag
-              title={t('theme_detail.thematic_tool_tooltip')}
-              style={{
-                margin: 0,
-                fontSize: 10,
-                padding: '0 4px',
-                lineHeight: '14px',
-                background: token.colorFillSecondary,
-                border: 'none',
-                color: token.colorText,
-              }}
-            >
-              💎
-            </Tag>
-          )}
         </Flex>
 
-        <Flex align="center" justify="space-between" style={{ marginTop: 'auto' }}>
-          <span
-            style={{
-              fontSize: 10,
-              padding: '1px 6px',
-              borderRadius: token.borderRadiusSM,
-              background: confBg,
-              color: confTextColor,
-              fontWeight: 500,
-              lineHeight: '16px',
-            }}
-          >
-            {confLabel}
-          </span>
-          {confNum !== null && (
+        {confNum !== null && (
+          <Flex align="center" justify="flex-end" style={{ marginTop: 'auto' }}>
             <Text
               style={{
                 fontFamily: token.fontFamilyCode,
-                fontSize: 12,
-                fontWeight: 500,
-                color: token.colorTextSecondary,
+                fontSize: 14,
+                fontWeight: 600,
+                color: confColor,
+                letterSpacing: '-0.01em',
               }}
             >
               {confNum}
             </Text>
-          )}
-        </Flex>
+          </Flex>
+        )}
       </div>
     </Link>
   )
