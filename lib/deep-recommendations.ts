@@ -144,11 +144,21 @@ function buildPrompt({
   const durationType =
     (arch?.playbook as { duration_type?: string } | null | undefined)?.duration_type ?? 'unknown'
 
+  // Recency tagging (subtask 20.3): events are ordered newest-first by the
+  // caller. We label each by age bucket so the LLM weights NEW events over
+  // OLD ones. The 90d cutoff is enforced upstream by the events query.
+  const now = Date.now()
+  function recencyTag(eventDate: string): string {
+    const days = Math.max(0, Math.floor((now - new Date(eventDate).getTime()) / 86_400_000))
+    if (days < 30) return 'NEW'
+    if (days < 60) return 'RECENT'
+    return 'OLD'
+  }
   const eventsBlock = events
     .slice(0, 15)
     .map(
       (e) =>
-        `[event_id: ${e.id}] ${e.event_date.slice(0, 10)} · ${e.source_name ?? 'Press'}${e.source_url ? ` (${e.source_url})` : ''} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
+        `[event_id: ${e.id}] ${e.event_date.slice(0, 10)} (${recencyTag(e.event_date)}) · ${e.source_name ?? 'Press'}${e.source_url ? ` (${e.source_url})` : ''} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
     )
     .join('\n')
 
@@ -185,7 +195,14 @@ ${pb.historical}
 EXIT SIGNALS:
 ${pb.exit}
 
-RECENT EVENTS (last 30 days, up to 15):
+RECENT EVENTS (reverse chronological · last 90 days · up to 15):
+Events are tagged by age. Weight NEW events more heavily — they reflect the
+latest theme dynamics (e.g. fresh policy moves, recent earnings pivots).
+RECENT events still inform but are likely already partially priced in.
+OLD events are shown for continuity but should not drive judgments alone.
+  - NEW    · < 30 days
+  - RECENT · 30–60 days
+  - OLD    · 60–90 days
 ${eventsBlock || '(no recent events)'}
 
 CURRENT RECOMMENDATIONS (for reference, we want to improve):
