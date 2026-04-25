@@ -143,7 +143,6 @@ export default function ThemeDetailPage() {
   }, [id])
 
   const recs = theme?.recommendations ?? []
-  const pressureRecs = recs.filter((r) => r.exposure_type === 'pressure')
   const headwinds = recs.filter((r) => r.exposure_direction === 'headwind' && r.exposure_type !== 'pressure')
   const tradableRecs = recs.filter((r) => r.exposure_type !== 'pressure' && r.exposure_direction !== 'headwind')
   const tier1Recs = tradableRecs.filter((r) => r.tier === 1)
@@ -1192,6 +1191,18 @@ export default function ThemeDetailPage() {
                   title={t('sections.theme_exposure_title')}
                   subtitle={t('sections.theme_exposure_subtitle')}
                 />
+                <Text
+                  type="secondary"
+                  style={{
+                    display: 'block',
+                    fontSize: 12,
+                    marginTop: 4,
+                    marginBottom: 12,
+                    color: token.colorTextTertiary,
+                  }}
+                >
+                  {t('common.ai_disclaimer_short')}
+                </Text>
                 {recs.length === 0 && (
                   <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>{t('theme_detail.no_exposure')}</Text>
                 )}
@@ -1227,7 +1238,6 @@ export default function ThemeDetailPage() {
                   </div>
                 )}
 
-                <ExposureGroup title={t('theme_detail.pressure_assets')} items={pressureRecs} variant="pressure" />
                 <ExposureGroup title={t('theme_detail.headwinds')} items={headwinds} variant="headwind" />
               </div>
 
@@ -1702,8 +1712,10 @@ export default function ThemeDetailPage() {
                 </Col>
               </Row>
 
-                <div style={{ marginTop: 40, padding: '16px 0', fontSize: 11, color: token.colorTextQuaternary, textAlign: 'center', letterSpacing: '0.02em' }}>
-                  {t('common.disclaimer_footer')}
+                <div style={{ marginTop: 32, padding: '16px 0', borderTop: `1px solid ${token.colorBorderSecondary}`, textAlign: 'center' }}>
+                  <Text type="secondary" style={{ fontSize: 11, color: token.colorTextQuaternary, letterSpacing: '0.02em' }}>
+                    {t('common.ai_disclaimer_full')}
+                  </Text>
                 </div>
               </>
               )

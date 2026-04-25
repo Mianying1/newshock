@@ -308,7 +308,9 @@
   "common": {
     "no_themes": "No themes yet",
     "error": "Something went wrong, please try again later",
-    "disclaimer_footer": "Information only, not investment advice. Past performance does not predict future results."
+    "disclaimer_footer": "Information only, not investment advice. Past performance does not predict future results.",
+    "ai_disclaimer_short": "AI-generated · Public info analysis · Not investment advice",
+    "ai_disclaimer_full": "Content AI-generated from public information · May lag real-time market · For reference only · Not investment advice"
   },
   "sidebar": {
     "workspace": "Workspace",
