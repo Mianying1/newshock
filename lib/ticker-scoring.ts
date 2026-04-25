@@ -78,7 +78,8 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       .select('symbol, company_name, sector, logo_url'),
     supabaseAdmin
       .from('theme_recommendations')
-      .select('theme_id, ticker_symbol, tier'),
+      .select('theme_id, ticker_symbol, tier')
+      .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
       .select('id, name, status, archetype_id, first_seen_at, last_active_at, days_hot')
@@ -237,7 +238,10 @@ export async function getThematicTickers(
 
   const [tickersRes, recsRes, themesRes, archsRes, eventsRes] = await Promise.all([
     supabaseAdmin.from('tickers').select('symbol, company_name, sector, logo_url'),
-    supabaseAdmin.from('theme_recommendations').select('theme_id, ticker_symbol, tier'),
+    supabaseAdmin
+      .from('theme_recommendations')
+      .select('theme_id, ticker_symbol, tier')
+      .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
       .select('id, name, status, archetype_id, first_seen_at, last_active_at, days_hot')
@@ -350,7 +354,10 @@ export async function getPotentialTickers(
 
   const [tickersRes, recsRes, themesRes, archsRes] = await Promise.all([
     supabaseAdmin.from('tickers').select('symbol, company_name, sector, logo_url'),
-    supabaseAdmin.from('theme_recommendations').select('theme_id, ticker_symbol, tier'),
+    supabaseAdmin
+      .from('theme_recommendations')
+      .select('theme_id, ticker_symbol, tier')
+      .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
       .select('id, name, status, archetype_id, first_seen_at, last_active_at, days_hot, theme_strength_score')
@@ -522,6 +529,8 @@ export async function getLongShortTickers(
     `)
     .in('ticker_type', wantedTickerTypes)
     .not('ticker_maturity_score', 'is', null)
+    // Hide LLM-flagged low-confidence picks. NULLs (pre-enrichment) stay visible.
+    .or('confidence_band.is.null,confidence_band.neq.low')
     .order('ticker_maturity_score', { ascending: false })
     .limit(500)
 

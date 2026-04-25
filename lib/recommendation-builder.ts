@@ -122,6 +122,8 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       'tickers(company_name, sector, market_cap_usd_b, logo_url)'
     )
     .eq('theme_id', themeId)
+    // Hide LLM-flagged low-confidence picks. NULLs (pre-enrichment) stay visible.
+    .or('confidence_band.is.null,confidence_band.neq.low')
     .order('tier')
     .order('ticker_symbol')
 
