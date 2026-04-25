@@ -94,6 +94,7 @@ interface RecRow {
   exposure_type: string | null
   confidence_band: string | null
   is_thematic_tool: boolean | null
+  context_label: string | null
   added_at: string
   tickers: TickerInfo | TickerInfo[] | null
 }
@@ -118,7 +119,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
       'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
       'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
-      'exposure_type, confidence_band, is_thematic_tool, added_at, ' +
+      'exposure_type, confidence_band, is_thematic_tool, context_label, added_at, ' +
       'tickers(company_name, sector, market_cap_usd_b, logo_url)'
     )
     .eq('theme_id', themeId)
@@ -130,7 +131,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
   if (error) throw new Error(`recs fetch failed: ${error.message}`)
 
   const validCapBands = new Set(['small', 'mid', 'large'])
-  const validExposureTypes = new Set(['direct', 'observational', 'pressure'])
+  const validExposureTypes = new Set(['direct', 'observational', 'pressure', 'mixed'])
   const validConfBands = new Set(['high', 'medium', 'low'])
 
   return ((data ?? []) as unknown as RecRow[]).map((r) => {
@@ -171,6 +172,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       exposure_type: exposureType,
       confidence_band: confBand,
       is_thematic_tool: r.is_thematic_tool,
+      context_label: r.context_label ?? null,
       added_at: r.added_at,
     }
   })

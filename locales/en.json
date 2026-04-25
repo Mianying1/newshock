@@ -73,6 +73,8 @@
     "observational_mapping": "Observational Mapping",
     "pressure_assets": "Pressure Assets",
     "thematic_tool_tooltip": "Also appears in 3+ themes · may be a macro proxy rather than a theme-specific signal",
+    "mixed_badge": "Mixed",
+    "mixed_tooltip": "Both benefits and faces pressure within this theme",
     "parent_theme": "Part of",
     "child_themes": "Subthemes ({count})",
     "badge_umbrella": "Core",

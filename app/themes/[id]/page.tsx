@@ -17,6 +17,7 @@ import {
   Segmented,
   Space,
   Tag,
+  Tooltip,
   Typography,
   theme as antdTheme,
 } from 'antd'
@@ -2330,6 +2331,7 @@ function TierColumn({
 
 function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor: string }) {
   const { token } = useToken()
+  const { t } = useI18n()
   const [imgError, setImgError] = useState(false)
 
   const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
@@ -2341,6 +2343,9 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
     : token.colorTextQuaternary
 
   const initials = item.ticker_symbol.slice(0, 1)
+  const isMixed = item.exposure_type === 'mixed'
+  const contextLabel = item.context_label?.trim() || null
+  const mixedTooltip = contextLabel ?? t('theme_detail.mixed_tooltip')
 
   return (
     <Link
@@ -2403,18 +2408,35 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
             </div>
           )}
           <div style={{ minWidth: 0, flex: 1 }}>
-            <Text
-              strong
-              style={{
-                display: 'block',
-                fontFamily: token.fontFamilyCode,
-                fontSize: 13,
-                color: token.colorText,
-                lineHeight: 1.2,
-              }}
-            >
-              {item.ticker_symbol}
-            </Text>
+            <Flex align="center" gap={6} style={{ minWidth: 0 }}>
+              <Text
+                strong
+                style={{
+                  fontFamily: token.fontFamilyCode,
+                  fontSize: 13,
+                  color: token.colorText,
+                  lineHeight: 1.2,
+                }}
+              >
+                {item.ticker_symbol}
+              </Text>
+              {isMixed && (
+                <Tooltip title={mixedTooltip}>
+                  <Tag
+                    color="warning"
+                    style={{
+                      margin: 0,
+                      fontSize: 9.5,
+                      lineHeight: 1.3,
+                      padding: '0 5px',
+                      borderRadius: 3,
+                    }}
+                  >
+                    {t('theme_detail.mixed_badge')}
+                  </Tag>
+                </Tooltip>
+              )}
+            </Flex>
             {item.company_name && item.company_name !== item.ticker_symbol && (
               <Text
                 ellipsis={{ tooltip: item.company_name }}
@@ -2428,6 +2450,23 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
               >
                 {item.company_name}
               </Text>
+            )}
+            {contextLabel && !isMixed && (
+              <Tooltip title={contextLabel}>
+                <Text
+                  ellipsis
+                  style={{
+                    display: 'block',
+                    fontSize: 10,
+                    fontStyle: 'italic',
+                    color: token.colorTextTertiary,
+                    lineHeight: 1.3,
+                    marginTop: 2,
+                  }}
+                >
+                  · {contextLabel}
+                </Text>
+              </Tooltip>
             )}
           </div>
         </Flex>

@@ -1,6 +1,6 @@
 export type ExposureDirection = 'benefits' | 'headwind' | 'mixed' | 'uncertain'
 export type MarketCapBand = 'small' | 'mid' | 'large'
-export type ExposureType = 'direct' | 'observational' | 'pressure'
+export type ExposureType = 'direct' | 'observational' | 'pressure' | 'mixed'
 export type ConfidenceBand = 'high' | 'medium' | 'low'
 
 export interface ThemeRecommendation {
@@ -26,6 +26,7 @@ export interface ThemeRecommendation {
   exposure_type: ExposureType | null
   confidence_band: ConfidenceBand | null
   is_thematic_tool: boolean | null
+  context_label: string | null
   added_at: string
 }
 

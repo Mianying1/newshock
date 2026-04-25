@@ -73,6 +73,8 @@
     "observational_mapping": "观察性映射",
     "pressure_assets": "受压资产",
     "thematic_tool_tooltip": "该标的也出现在 3+ 个主题 · 可能是宏观泛映射, 而非主题特异信号",
+    "mixed_badge": "混合",
+    "mixed_tooltip": "在此主题内同时受益且承压",
     "parent_theme": "属于",
     "child_themes": "子主题 ({count})",
     "badge_umbrella": "核心",
