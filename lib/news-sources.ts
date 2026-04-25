@@ -18,9 +18,22 @@ export const NEWS_SOURCES: NewsSource[] = [
     priority_slots: ['eu_us_mid', 'us_close'],
   },
   {
+    // Tightened 2026-04-24: original single-word triggers ("AI", "chip export")
+    // were polluting Allied Chip Export and AI Capex themes with broad noise.
+    // Replaced with multi-word phrases that require narrative-specific context;
+    // negatives strip review/opinion/launch-event chatter.
     id: 'google_news_ai_semi',
     name: 'Google News: AI/Semi Keywords',
-    url: 'https://news.google.com/rss/search?q=(gigawatt+OR+%22AI+data+center%22+OR+%22chip+export%22+OR+%22strategic+investment%22+semiconductor)&hl=en-US&gl=US&ceid=US:en',
+    url:
+      'https://news.google.com/rss/search?q=' +
+      encodeURIComponent(
+        '("AI capex" OR "datacenter capex" OR "AI infrastructure spending" OR ' +
+        '"hyperscaler spending" OR "AI server orders" OR "GPU procurement" OR ' +
+        '"chip export controls" OR "semiconductor export ban" OR "CHIPS Act" OR ' +
+        '"AI datacenter buildout" OR "neocloud capex") ' +
+        '-review -opinion -book -launch -keynote -CES -conference'
+      ) +
+      '&hl=en-US&gl=US&ceid=US:en',
     category: 'general_news',
     priority_slots: ['asia_eu', 'eu_us_mid', 'us_close'],
   },
