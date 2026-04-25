@@ -19,6 +19,7 @@ export interface ArchetypeRow {
 }
 
 interface EventRow {
+  id: string
   headline: string
   source_name: string | null
   source_url?: string | null
@@ -41,6 +42,8 @@ export interface DeepRecommendation {
   role: string
   business_exposure: string
   business_exposure_zh: string
+  business_segment: string | null
+  evidence_event_ids: string[]
   reasoning: string
   reasoning_zh: string
   catalyst: string
@@ -145,7 +148,7 @@ function buildPrompt({
     .slice(0, 15)
     .map(
       (e) =>
-        `- ${e.event_date.slice(0, 10)} · ${e.source_name ?? 'Press'}${e.source_url ? ` (${e.source_url})` : ''} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
+        `[event_id: ${e.id}] ${e.event_date.slice(0, 10)} · ${e.source_name ?? 'Press'}${e.source_url ? ` (${e.source_url})` : ''} · ${e.headline}${e.mentioned_tickers?.length ? ` [tickers: ${e.mentioned_tickers.slice(0, 6).join(', ')}]` : ''}`
     )
     .join('\n')
 
@@ -206,6 +209,18 @@ For each ticker: why the tier, specific business exposure, catalyst to move, wha
 
 Include US + major ADRs (Canada, UK, Japan, Europe), range of caps, mix of pure play and diversified.
 
+EVIDENCE REQUIREMENTS (subtask 20.2 — strict):
+- For each rec, cite at least one event_id from the RECENT EVENTS list above
+  in the "evidence_event_ids" field. Use the literal UUIDs shown in brackets.
+- If you cannot find any event in the list that supports the rec, OMIT the
+  rec entirely. Do NOT fabricate event_ids — they are validated against the DB.
+- Name the specific business_segment that connects the ticker to the theme
+  (e.g. "Foundry only", "AI Capex GPUs", "Power generation"). For pure plays
+  use the company's primary segment.
+- Reasoning must reference concrete events / earnings / product launches.
+  AVOID textbook claims like "GPU eats CPU", "DTC kills retail", "rate cuts
+  always lift biotech" — these are filtered out by the self-consistency pass.
+
 ===
 
 OUTPUT (valid JSON only, no markdown):
@@ -233,7 +248,9 @@ OUTPUT (valid JSON only, no markdown):
       "role": "pure_play_beneficiary|infrastructure_enabler|...",
       "business_exposure": "% of business + specific segment",
       "business_exposure_zh": "中文",
-      "reasoning": "Why this ticker, 1 sentence",
+      "business_segment": "Specific line of business · e.g. 'Foundry only', 'AI GPUs', 'Power generation'",
+      "evidence_event_ids": ["uuid1", "uuid2"],
+      "reasoning": "Why this ticker, 1 sentence — must reference cited evidence",
       "reasoning_zh": "中文",
       "catalyst": "What event moves it",
       "catalyst_zh": "中文",
@@ -368,6 +385,8 @@ export interface ThemeProcessResult {
   removed_tickers: string[]
   sector_mismatches?: number
   sector_mismatches_high_conf?: number
+  no_evidence_count?: number
+  hallucinated_event_count?: number
   stats?: DeepRunStats
 }
 
@@ -405,9 +424,9 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       .eq('theme_id', t.id),
     supabaseAdmin
       .from('events')
-      .select('headline, source_name, source_url, event_date, mentioned_tickers')
+      .select('id, headline, source_name, source_url, event_date, mentioned_tickers')
       .eq('trigger_theme_id', t.id)
-      .gte('event_date', new Date(Date.now() - 30 * 86_400_000).toISOString())
+      .gte('event_date', new Date(Date.now() - 90 * 86_400_000).toISOString())
       .order('event_date', { ascending: false })
       .limit(30),
   ])
@@ -504,6 +523,18 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
   let sectorMismatchCount = 0
   let sectorMismatchHighConf = 0
 
+  // Evidence validation (subtask 20.2).
+  // Recs must cite event_ids from the fetched events list. We:
+  //   1. Filter LLM output to only event_ids that actually exist in the DB
+  //      (catches hallucinated UUIDs).
+  //   2. If a rec ends up with zero valid evidence, mark skip_reason='no_evidence'
+  //      and demote to confidence_band='low'.
+  // Empty events list (theme has no recent activity) disables the gate.
+  const validEventIds = new Set(events.map((e) => e.id))
+  const evidenceCheckEnabled = validEventIds.size > 0
+  let noEvidenceCount = 0
+  let hallucinatedEventCount = 0
+
   const generatedAt = new Date().toISOString()
   const rowsToInsert = result.output.recommendations.map((r) => {
     const symbol = r.ticker.toUpperCase()
@@ -511,9 +542,22 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
     const sector = tickerSector.get(symbol) ?? null
     const sectorMismatch =
       expectedSet.size > 0 && sector !== null && !expectedSet.has(sector)
+
+    // Filter cited evidence to event_ids that actually exist.
+    const citedRaw = Array.isArray(r.evidence_event_ids) ? r.evidence_event_ids : []
+    const evidenceIds = citedRaw.filter((id) => validEventIds.has(id))
+    if (citedRaw.length > evidenceIds.length) {
+      hallucinatedEventCount += citedRaw.length - evidenceIds.length
+    }
+    const noEvidence = evidenceCheckEnabled && evidenceIds.length === 0
+
     let skipReason: string | null = null
     let confidenceBand: 'high' | 'medium' | 'low' | null = null
-    if (sectorMismatch) {
+    if (noEvidence) {
+      noEvidenceCount++
+      skipReason = 'no_evidence'
+      confidenceBand = 'low'
+    } else if (sectorMismatch) {
       sectorMismatchCount++
       if (baseConfidence > 80) {
         // High-conf sector mismatch: keep visible but tag for review. The
@@ -536,6 +580,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       role_reasoning_zh: r.reasoning_zh,
       business_exposure: r.business_exposure,
       business_exposure_zh: r.business_exposure_zh,
+      business_segment: r.business_segment ?? null,
+      evidence_event_ids: evidenceIds,
       catalyst: r.catalyst,
       catalyst_zh: r.catalyst_zh,
       risk: r.risk,
@@ -556,6 +602,11 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
   if (sectorMismatchCount > 0) {
     console.log(
       `  [sector-check] theme=${t.id.slice(0, 8)} mismatches=${sectorMismatchCount} (${sectorMismatchHighConf} high-conf kept, ${sectorMismatchCount - sectorMismatchHighConf} demoted)`
+    )
+  }
+  if (noEvidenceCount > 0 || hallucinatedEventCount > 0) {
+    console.log(
+      `  [evidence-check] theme=${t.id.slice(0, 8)} no_evidence=${noEvidenceCount} hallucinated=${hallucinatedEventCount}`
     )
   }
 
@@ -624,6 +675,8 @@ export async function processTheme(themeId: string): Promise<ThemeProcessResult>
       removed_tickers: removed,
       sector_mismatches: sectorMismatchCount,
       sector_mismatches_high_conf: sectorMismatchHighConf,
+      no_evidence_count: noEvidenceCount,
+      hallucinated_event_count: hallucinatedEventCount,
       stats: result.stats,
     }
   }
