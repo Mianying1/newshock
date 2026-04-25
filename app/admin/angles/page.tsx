@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
 import useSWR from 'swr'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -61,21 +61,18 @@ export default function AdminAnglesPage() {
     }
   }
 
-  if (isLoading) return <div className="p-8 text-zinc-500 text-sm">Loading...</div>
+  if (isLoading) return (
+    <AdminShell title="New Angle Candidates" subtitle="Loading…">
+      <div />
+    </AdminShell>
+  )
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8 min-h-screen">
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <Link href="/admin" className="text-xs text-zinc-500 hover:text-zinc-900">← Admin</Link>
-        </div>
-        <h1 className="text-2xl font-semibold text-zinc-900 mb-1">New Angle Candidates</h1>
-        <p className="text-sm text-zinc-500">
-          Sonnet-proposed long-horizon angles from recent events under each umbrella theme.
-          Approved ones surface on /tickers · 长周期潜力股 tab.
-        </p>
-      </div>
-
+    <AdminShell
+      title="New Angle Candidates"
+      subtitle="Sonnet-proposed long-horizon angles · approved ones surface on /tickers long-horizon tab"
+      maxWidth={960}
+    >
       {message && (
         <div className="mb-4 p-3 bg-zinc-50 border border-zinc-200 rounded text-sm text-zinc-800">
           {message}
@@ -114,7 +111,7 @@ export default function AdminAnglesPage() {
           ))}
         </div>
       )}
-    </div>
+    </AdminShell>
   )
 }
 

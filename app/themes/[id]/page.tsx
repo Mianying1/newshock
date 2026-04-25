@@ -169,7 +169,6 @@ export default function ThemeDetailPage() {
   const [theme, setTheme] = useState<ThemeRadarItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [showAllDiffs, setShowAllDiffs] = useState(false)
   const [showAllEvents, setShowAllEvents] = useState(false)
   const [eventTab, setEventTab] = useState<EventTab>('all')
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
@@ -754,7 +753,7 @@ export default function ThemeDetailPage() {
                     cards.push({
                       key: d.title,
                       Icon: iconMap[d.icon] ?? LineChartOutlined,
-                      title: pickField(locale, d.title, d.title_zh) ?? d.title,
+                      title: pickField(locale, d.title, d.title_zh) || d.title,
                       description: pickField(locale, d.description, d.description_zh),
                       sourceLabel: d.source_label,
                       href: d.source_url,
@@ -969,7 +968,7 @@ export default function ThemeDetailPage() {
                             >
                               {timelineEvents.map((e, i) => {
                                 const shortHeadline =
-                                  pickField(locale, e.short_headline, e.short_headline_zh) ?? e.headline
+                                  pickField(locale, e.short_headline, e.short_headline_zh) || e.headline
                                 const isLatest = i === timelineEvents.length - 1
                                 return (
                                 <div
@@ -1175,8 +1174,6 @@ export default function ThemeDetailPage() {
                 const ttd = pb.this_time_different
                 const allDiffs = (ttd?.differences ?? []).filter((d) => d.dimension && d.description)
                 const highConfDiffs = allDiffs.filter((d) => d.confidence === 'high')
-                const visibleDiffs = showAllDiffs ? allDiffs : highConfDiffs
-                const hiddenCount = allDiffs.length - highConfDiffs.length
                 const validSims = (ttd?.similarities ?? []).filter(
                   (s) => typeof s === 'object' && s !== null && s.dimension && s.description,
                 ) as { dimension: string; description: string }[]
@@ -1205,79 +1202,66 @@ export default function ThemeDetailPage() {
                       index={nextIdx()}
                       title={t('sections.theme_playbook_title')}
                       subtitle={t('sections.theme_playbook_subtitle')}
+                      meta={t('common.ai_disclaimer_short')}
+                      action={
+                        <Tag
+                          style={{
+                            margin: 0,
+                            fontFamily: token.fontFamilyCode,
+                            fontSize: 10,
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase',
+                          }}
+                          color={isThemeSpecific ? 'geekblue' : 'default'}
+                        >
+                          {isThemeSpecific
+                            ? t('theme_detail.playbook_source_theme')
+                            : t('theme_detail.playbook_source_archetype')}
+                        </Tag>
+                      }
                     />
 
-                    <Tag
-                      style={{
-                        fontFamily: token.fontFamilyCode,
-                        fontSize: 10,
-                        letterSpacing: '0.08em',
-                        marginBottom: 8,
-                        textTransform: 'uppercase',
-                      }}
-                      color={isThemeSpecific ? 'geekblue' : 'default'}
-                    >
-                      {isThemeSpecific
-                        ? t('theme_detail.playbook_source_theme')
-                        : t('theme_detail.playbook_source_archetype')}
-                    </Tag>
-
-                    <Text
-                      style={{
-                        display: 'block',
-                        fontFamily: token.fontFamilyCode,
-                        fontSize: 10,
-                        color: token.colorTextQuaternary,
-                        letterSpacing: '0.06em',
-                        marginBottom: 10,
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      ℹ {t('theme_detail.disclaimer_playbook')}
-                    </Text>
-
                     {ttd?.observation && (
-                      <>
-                        <div style={sublabelStyle}>{t('theme_detail.observation')}</div>
-                        <Card
-                          size="small"
-                          styles={{ body: { padding: '14px 16px' } }}
-                          style={{ background: token.colorFillAlter, borderColor: token.colorBorderSecondary }}
+                      <Card
+                        size="small"
+                        styles={{ body: { padding: '12px 14px' } }}
+                        style={{ background: token.colorFillAlter, borderColor: token.colorBorderSecondary, marginBottom: 4 }}
+                      >
+                        <Text
+                          style={{
+                            display: 'block',
+                            fontFamily: token.fontFamilyCode,
+                            fontSize: 10,
+                            letterSpacing: '0.14em',
+                            textTransform: 'uppercase',
+                            color: token.colorTextQuaternary,
+                            marginBottom: 6,
+                          }}
                         >
-                          <Text
-                            style={{
-                              display: 'block',
-                              fontSize: 12,
-                              color: token.colorTextSecondary,
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {ttd.observation}
-                          </Text>
-                          <Text
-                            style={{
-                              display: 'block',
-                              marginTop: 10,
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 10,
-                              color: token.colorTextQuaternary,
-                              letterSpacing: '0.06em',
-                              fontStyle: 'italic',
-                            }}
-                          >
-                            ⚠ {t('theme_detail.disclaimer_observation')}
-                          </Text>
-                        </Card>
-                      </>
+                          {t('theme_detail.observation')}
+                        </Text>
+                        <Text
+                          style={{
+                            display: 'block',
+                            fontSize: 12,
+                            color: token.colorTextSecondary,
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {ttd.observation}
+                        </Text>
+                      </Card>
                     )}
 
                     <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                        gap: 12,
+                        gridTemplateColumns: `repeat(${pb.historical_cases.length + 1}, minmax(180px, 1fr))`,
+                        gap: 10,
                         alignItems: 'stretch',
+                        overflowX: 'auto',
+                        paddingBottom: 4,
                       }}
                     >
                       {pb.historical_cases.map((c, i) => {
@@ -1289,7 +1273,7 @@ export default function ThemeDetailPage() {
                             size="small"
                             styles={{
                               body: {
-                                padding: '14px 16px',
+                                padding: '12px 14px',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -1298,38 +1282,59 @@ export default function ThemeDetailPage() {
                             }}
                             style={{ height: '100%' }}
                           >
-                            <Text strong style={{ display: 'block', fontSize: 13, color: token.colorText, lineHeight: 1.35 }}>
+                            <Text
+                              strong
+                              style={{
+                                display: 'block',
+                                fontSize: 12.5,
+                                color: token.colorText,
+                                lineHeight: 1.35,
+                              }}
+                            >
                               {c.name}
                             </Text>
                             <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
                                 {t('theme_detail.duration_label')}
                               </Text>
-                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: token.colorTextSecondary }}>
+                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextSecondary }}>
                                 {c.approximate_duration}
                               </Text>
                             </Flex>
                             <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
                                 {t('theme_detail.peak_move_label')}
                               </Text>
-                              <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 12.5, color: peakColor }}>
+                              <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 12, color: peakColor }}>
                                 {c.peak_move}
                               </Text>
                             </Flex>
                             {c.exit_trigger && (
-                              <Text
+                              <div
                                 style={{
-                                  fontSize: 11,
-                                  color: token.colorTextQuaternary,
-                                  lineHeight: 1.5,
                                   marginTop: 'auto',
-                                  paddingTop: 6,
+                                  paddingTop: 8,
                                   borderTop: `1px solid ${token.colorSplit}`,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 3,
                                 }}
                               >
-                                {c.exit_trigger}
-                              </Text>
+                                <Text
+                                  style={{
+                                    fontFamily: token.fontFamilyCode,
+                                    fontSize: 9.5,
+                                    letterSpacing: '0.1em',
+                                    textTransform: 'uppercase',
+                                    color: token.colorTextQuaternary,
+                                  }}
+                                >
+                                  {t('theme_detail.exit_reason_label')}
+                                </Text>
+                                <Text style={{ fontSize: 11, color: token.colorTextSecondary, lineHeight: 1.5 }}>
+                                  {c.exit_trigger}
+                                </Text>
+                              </div>
                             )}
                           </Card>
                         )
@@ -1342,11 +1347,7 @@ export default function ThemeDetailPage() {
                           : stage === 'late' ? t('theme_card.stage_late')
                           : stage === 'beyond' ? t('theme_card.stage_beyond')
                           : null
-                        const stageColor = stage === 'early' ? token.colorSuccess
-                          : stage === 'mid' ? token.colorPrimary
-                          : stage === 'late' ? token.colorWarning
-                          : stage === 'beyond' ? token.colorError
-                          : token.colorTextSecondary
+                        const stageColor = getStageColor(stage)
                         const range = pb.typical_duration_days_approx
                         const dayUnit = locale === 'zh' ? '天' : 'd'
                         const positionPct = range && range[1] > 0
@@ -1357,7 +1358,7 @@ export default function ThemeDetailPage() {
                             size="small"
                             styles={{
                               body: {
-                                padding: '14px 16px',
+                                padding: '12px 14px 12px 16px',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -1366,72 +1367,105 @@ export default function ThemeDetailPage() {
                             }}
                             style={{
                               height: '100%',
-                              borderColor: stageColor,
-                              borderWidth: 1.5,
-                              background: token.colorFillAlter,
+                              borderColor: token.colorBorder,
+                              borderLeft: `3px solid ${stageColor}`,
+                              background: token.colorBgContainer,
+                              position: 'relative',
                             }}
                           >
-                            <Flex align="center" justify="space-between" gap={8}>
-                              <Text strong style={{ fontSize: 13, color: token.colorText, lineHeight: 1.35 }}>
-                                {t('theme_detail.current_stage_compare')}
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: -1,
+                                right: -1,
+                                padding: '2px 8px',
+                                fontSize: 9.5,
+                                letterSpacing: '0.12em',
+                                textTransform: 'uppercase',
+                                fontFamily: token.fontFamilyCode,
+                                fontWeight: 700,
+                                color: token.colorBgContainer,
+                                background: token.colorText,
+                                borderTopRightRadius: token.borderRadiusLG,
+                                borderBottomLeftRadius: token.borderRadiusLG,
+                              }}
+                            >
+                              {t('theme_detail.current_badge')}
+                            </div>
+                            <Text strong style={{ fontSize: 12.5, color: token.colorText, lineHeight: 1.35, paddingRight: 48 }}>
+                              {locale === 'zh' ? (theme.name_zh || theme.name) : theme.name}
+                            </Text>
+                            <Flex justify="space-between" align="center" gap={8}>
+                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
+                                {t('theme_detail.duration_label')}
                               </Text>
-                              {stageLabel && (
-                                <Tag
+                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextSecondary }}>
+                                Day {theme.days_hot}{range ? ` / ${range[1]}${dayUnit}` : ''}
+                              </Text>
+                            </Flex>
+                            {stageLabel && (
+                              <Flex justify="space-between" align="center" gap={8}>
+                                <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
+                                  {t('theme_detail.current_stage')}
+                                </Text>
+                                <span
                                   style={{
-                                    margin: 0,
-                                    fontSize: 9.5,
-                                    padding: '0 6px',
-                                    border: 'none',
-                                    letterSpacing: '0.08em',
-                                    textTransform: 'uppercase',
                                     fontFamily: token.fontFamilyCode,
+                                    fontSize: 10.5,
+                                    fontWeight: 600,
+                                    letterSpacing: '0.06em',
                                     color: stageColor,
-                                    background: token.colorFillSecondary,
+                                    background: `${stageColor}1A`,
+                                    padding: '1px 8px',
+                                    borderRadius: 3,
                                   }}
                                 >
                                   {stageLabel}
-                                </Tag>
-                              )}
-                            </Flex>
-                            <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
-                                {t('theme_detail.duration_label')}
-                              </Text>
-                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: token.colorTextSecondary }}>
-                                {theme.days_hot}{dayUnit}{range ? ` / ${range[1]}${dayUnit}` : ''}
-                              </Text>
-                            </Flex>
+                                </span>
+                              </Flex>
+                            )}
                             {positionPct !== null && (
-                              <div style={{ marginTop: 'auto' }}>
+                              <div
+                                style={{
+                                  marginTop: 'auto',
+                                  paddingTop: 10,
+                                  borderTop: `1px solid ${token.colorSplit}`,
+                                }}
+                              >
+                                <Flex justify="space-between" align="baseline" style={{ marginBottom: 5 }}>
+                                  <Text
+                                    style={{
+                                      fontFamily: token.fontFamilyCode,
+                                      fontSize: 9.5,
+                                      letterSpacing: '0.1em',
+                                      textTransform: 'uppercase',
+                                      color: token.colorTextQuaternary,
+                                    }}
+                                  >
+                                    {t('theme_detail.position_label')}
+                                  </Text>
+                                  <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: stageColor }}>
+                                    {Math.round(positionPct)}%
+                                  </Text>
+                                </Flex>
                                 <div
                                   style={{
                                     width: '100%',
-                                    height: 4,
+                                    height: 6,
                                     background: token.colorFillTertiary,
-                                    borderRadius: 2,
+                                    borderRadius: 3,
                                     overflow: 'hidden',
                                   }}
                                 >
                                   <div
                                     style={{
-                                      width: `${positionPct}%`,
+                                      width: `${Math.max(positionPct, 1.5)}%`,
                                       height: '100%',
                                       background: stageColor,
+                                      transition: 'width 0.3s',
                                     }}
                                   />
                                 </div>
-                                <Text
-                                  style={{
-                                    display: 'block',
-                                    marginTop: 4,
-                                    fontFamily: token.fontFamilyCode,
-                                    fontSize: 10,
-                                    color: token.colorTextQuaternary,
-                                    letterSpacing: '0.04em',
-                                  }}
-                                >
-                                  {t('theme_detail.position_label')}: {Math.round(positionPct)}%
-                                </Text>
                               </div>
                             )}
                           </Card>
@@ -1439,192 +1473,215 @@ export default function ThemeDetailPage() {
                       })()}
                     </div>
 
-                    {(visibleDiffs.length > 0 || validSims.length > 0) && (
-                      <>
-                        {visibleDiffs.length > 0 && (
-                          <>
-                            <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.structural_differences')}</div>
-                            <div
+                    {(highConfDiffs.length > 0 || validSims.length > 0) && (
+                      <div style={{ marginTop: 28 }}>
+                        <div style={sublabelStyle}>{t('theme_detail.layer3_title')}</div>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                            gap: 12,
+                            alignItems: 'stretch',
+                          }}
+                        >
+                          {validSims.length > 0 && (
+                            <Card
+                              size="small"
+                              styles={{ body: { padding: '14px 16px 14px 18px', height: '100%' } }}
                               style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                                gap: 10,
-                                alignItems: 'stretch',
+                                height: '100%',
+                                borderColor: token.colorBorderSecondary,
+                                background: token.colorBgContainer,
+                                borderLeft: `3px solid ${token.colorSuccess}`,
                               }}
                             >
-                              {visibleDiffs.map((d, i) => {
-                                const arrow = d.direction === 'may_extend' ? '↑' : d.direction === 'may_shorten' ? '↓' : '⇅'
-                                const arrColor =
-                                  d.direction === 'may_extend' ? token.colorSuccess
-                                  : d.direction === 'may_shorten' ? token.colorError
-                                  : token.colorTextTertiary
-                                const confTone = d.confidence === 'high'
-                                  ? { color: token.colorSuccessText, background: token.colorSuccessBg }
-                                  : { color: token.colorWarningText, background: token.colorWarningBg }
-                                return (
-                                  <Card
-                                    key={i}
-                                    size="small"
-                                    styles={{
-                                      body: {
-                                        padding: '14px 16px',
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 6,
-                                      },
-                                    }}
-                                    style={{ height: '100%' }}
-                                  >
-                                    <Flex align="center" gap={6}>
-                                      <span style={{ fontSize: 14, lineHeight: 1, color: arrColor }}>{arrow}</span>
-                                      <Text strong style={{ fontSize: 13, color: token.colorText, textTransform: 'capitalize', lineHeight: 1.35 }}>
-                                        {dimGroup(d.dimension)}
-                                      </Text>
-                                      <Tag
-                                        style={{
-                                          margin: 0,
-                                          marginLeft: 'auto',
-                                          fontSize: 9.5,
-                                          padding: '0 6px',
-                                          border: 'none',
-                                          letterSpacing: '0.08em',
-                                          textTransform: 'uppercase',
-                                          fontFamily: token.fontFamilyCode,
-                                          ...confTone,
-                                        }}
-                                      >
-                                        {d.confidence}
-                                      </Tag>
-                                    </Flex>
-                                    <Text style={{ fontSize: 12, color: token.colorTextSecondary, lineHeight: 1.5 }}>
-                                      {d.description}
-                                    </Text>
-                                  </Card>
-                                )
-                              })}
-                            </div>
-                            {!showAllDiffs && hiddenCount > 0 && (
-                              <Button
-                                type="link"
-                                size="small"
-                                onClick={() => setShowAllDiffs(true)}
-                                style={{
-                                  padding: 0,
-                                  marginTop: 8,
-                                  fontSize: 11,
-                                  color: token.colorTextTertiary,
-                                }}
-                              >
-                                {t('theme_detail.show_all_diffs')} ({hiddenCount} {t('theme_detail.more_medium_conf')})
-                              </Button>
-                            )}
-                          </>
-                        )}
-
-                        {validSims.length > 0 && (
-                          <>
-                            <div style={{ ...sublabelStyle, marginTop: 22 }}>{t('theme_detail.similarities')}</div>
-                            <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
-                              <div style={{ display: 'grid', rowGap: 2 }}>
+                              <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+                                <span style={{ color: token.colorSuccess, fontSize: 13, lineHeight: 1 }}>✓</span>
+                                <Text
+                                  strong
+                                  style={{
+                                    fontSize: 12,
+                                    color: token.colorSuccess,
+                                    letterSpacing: '0.04em',
+                                  }}
+                                >
+                                  {t('theme_detail.similarities_column_title')}
+                                </Text>
+                              </Flex>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 {validSims.map((s, i) => (
                                   <div
                                     key={i}
                                     style={{
+                                      display: 'flex',
+                                      alignItems: 'flex-start',
+                                      gap: 8,
                                       fontSize: 12,
                                       color: token.colorTextSecondary,
-                                      lineHeight: 1.6,
-                                      padding: '6px 0',
-                                      borderBottom: i === validSims.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                      lineHeight: 1.5,
                                     }}
                                   >
-                                    <span style={{ color: token.colorTextTertiary, fontWeight: 500, textTransform: 'capitalize' }}>
-                                      {dimGroup(s.dimension)}
-                                    </span>
-                                    <span style={{ color: token.colorTextQuaternary, margin: '0 8px' }}>·</span>
-                                    {s.description}
+                                    <span style={{ color: token.colorSuccess, flexShrink: 0, lineHeight: 1.5 }}>·</span>
+                                    <span>{s.description}</span>
                                   </div>
                                 ))}
                               </div>
                             </Card>
-                          </>
-                        )}
-                      </>
-                    )}
+                          )}
 
-                    {(pb.exit_signals?.length ?? 0) > 0 && (
-                      <>
-                        <div style={{ ...sublabelStyle, marginTop: 22, marginBottom: 4 }}>{t('theme_detail.exit_signals')}</div>
-                        <Text type="secondary" style={{ display: 'block', fontSize: 11, color: token.colorTextQuaternary, marginBottom: 8 }}>
-                          {t('theme_detail.exit_signals_subtitle')}
-                        </Text>
-                        <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
-                          <div style={{ display: 'grid', rowGap: 2 }}>
-                            {pb.exit_signals.map((s, i) => {
-                              const trig = theme.exit_signal_triggers?.find((x) => x.signal_index === i) ?? null
-                              const isTriggered = trig?.trigger_status === 'triggered'
-                              const isManual = trig?.trigger_status === 'manual_review' || !trig
-                              const isMonitoring = trig?.trigger_status === 'not_triggered'
-                              const marker = isTriggered ? '✓' : isMonitoring ? '⚠' : '·'
-                              const markerColor = isTriggered
-                                ? token.colorError
-                                : isMonitoring
-                                ? token.colorWarning
-                                : token.colorTextQuaternary
-                              const labelKey = isTriggered
-                                ? 'theme_detail.exit_signal_status_triggered'
-                                : isMonitoring
-                                ? 'theme_detail.exit_signal_status_monitoring'
-                                : 'theme_detail.exit_signal_status_manual'
-                              const triggeredAt = trig?.triggered_at
-                                ? new Date(trig.triggered_at).toISOString().slice(0, 10)
-                                : null
-                              const ev = trig?.triggered_evidence ?? null
-                              const signalText = typeof s === 'string' ? s : (s as { signal?: string; description?: string }).signal ?? JSON.stringify(s)
-                              const signalDesc = typeof s === 'string' ? null : (s as { signal?: string; description?: string }).description ?? null
-                              let evidenceLine: string | null = null
-                              if (isTriggered && trig?.trigger_rule_type === 'stale') {
-                                evidenceLine = t('theme_detail.exit_signal_evidence_stale')
-                              } else if (isTriggered && trig?.trigger_rule_type === 'event_count' && typeof ev?.contradicts_count === 'number') {
-                                evidenceLine = t('theme_detail.exit_signal_evidence_contradicts', { count: String(ev.contradicts_count) })
-                              }
-                              return (
-                                <div
-                                  key={i}
+                          {highConfDiffs.length > 0 && (
+                            <Card
+                              size="small"
+                              styles={{ body: { padding: '14px 16px 14px 18px', height: '100%' } }}
+                              style={{
+                                height: '100%',
+                                borderColor: token.colorBorderSecondary,
+                                background: token.colorBgContainer,
+                                borderLeft: `3px solid ${token.colorWarning}`,
+                              }}
+                            >
+                              <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+                                <span style={{ color: token.colorWarning, fontSize: 13, lineHeight: 1 }}>⚠</span>
+                                <Text
+                                  strong
                                   style={{
-                                    display: 'flex',
-                                    alignItems: 'flex-start',
-                                    gap: 10,
-                                    fontSize: 12.5,
-                                    color: token.colorTextSecondary,
-                                    padding: '7px 0',
-                                    borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                    fontSize: 12,
+                                    color: token.colorWarning,
+                                    letterSpacing: '0.04em',
                                   }}
                                 >
-                                  <span style={{ color: markerColor, lineHeight: 1.5, flexShrink: 0, fontWeight: isTriggered ? 600 : 400 }}>{marker}</span>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                                      <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>
-                                        {t(labelKey)}{triggeredAt ? ` · ${triggeredAt}` : ''}
-                                      </span>
-                                    </div>
-                                    <span style={{ lineHeight: 1.5 }}>{signalText}</span>
-                                    {signalDesc && (
-                                      <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>{signalDesc}</span>
-                                    )}
-                                    {evidenceLine && (
-                                      <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary, fontStyle: 'italic' }}>
-                                        {evidenceLine}
-                                      </span>
-                                    )}
+                                  {t('theme_detail.differences_column_title')}
+                                </Text>
+                              </Flex>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {highConfDiffs.map((d, i) => (
+                                  <div
+                                    key={i}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'flex-start',
+                                      gap: 8,
+                                      fontSize: 12,
+                                      color: token.colorTextSecondary,
+                                      lineHeight: 1.5,
+                                    }}
+                                  >
+                                    <span style={{ color: token.colorWarning, flexShrink: 0, lineHeight: 1.5 }}>·</span>
+                                    <span>
+                                      <span style={{ fontWeight: 500, color: token.colorText }}>
+                                        {dimGroup(d.dimension)}:
+                                      </span>{' '}
+                                      {d.description}
+                                    </span>
                                   </div>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </Card>
-                      </>
+                                ))}
+                              </div>
+                            </Card>
+                          )}
+                        </div>
+
+                        <Text
+                          style={{
+                            display: 'block',
+                            marginTop: 12,
+                            fontSize: 12,
+                            color: token.colorTextSecondary,
+                            lineHeight: 1.5,
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          <span style={{ color: token.colorTextTertiary, fontWeight: 500 }}>
+                            {t('theme_detail.conclusion_label')}:
+                          </span>{' '}
+                          {highConfDiffs.length >= 2
+                            ? t('theme_detail.conclusion_diverged')
+                            : t('theme_detail.conclusion_aligned')}
+                        </Text>
+                      </div>
                     )}
+
+                  </div>
+                )
+              })()}
+
+              {/* Exit Signals · Section 06 */}
+              {(theme.archetype_playbook?.exit_signals?.length ?? 0) > 0 && (() => {
+                const pb = (locale === 'zh' && theme.archetype_playbook_zh?.exit_signals?.length
+                  ? theme.archetype_playbook_zh
+                  : theme.archetype_playbook) as NonNullable<typeof theme.archetype_playbook>
+                const signals = pb.exit_signals ?? []
+                return (
+                  <div style={{ marginTop: 32 }}>
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.exit_signals_title')}
+                      subtitle={t('sections.exit_signals_subtitle')}
+                      meta={t('common.ai_disclaimer_short')}
+                    />
+                    <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
+                      <div style={{ display: 'grid', rowGap: 2 }}>
+                        {signals.map((s, i) => {
+                          const trig = theme.exit_signal_triggers?.find((x) => x.signal_index === i) ?? null
+                          const isTriggered = trig?.trigger_status === 'triggered'
+                          const isMonitoring = trig?.trigger_status === 'not_triggered'
+                          const marker = isTriggered ? '✓' : isMonitoring ? '⚠' : '·'
+                          const markerColor = isTriggered
+                            ? token.colorError
+                            : isMonitoring
+                            ? token.colorWarning
+                            : token.colorTextQuaternary
+                          const labelKey = isTriggered
+                            ? 'theme_detail.exit_signal_status_triggered'
+                            : isMonitoring
+                            ? 'theme_detail.exit_signal_status_monitoring'
+                            : 'theme_detail.exit_signal_status_manual'
+                          const triggeredAt = trig?.triggered_at
+                            ? new Date(trig.triggered_at).toISOString().slice(0, 10)
+                            : null
+                          const ev = trig?.triggered_evidence ?? null
+                          const signalText = typeof s === 'string' ? s : (s as { signal?: string; description?: string }).signal ?? JSON.stringify(s)
+                          const signalDesc = typeof s === 'string' ? null : (s as { signal?: string; description?: string }).description ?? null
+                          let evidenceLine: string | null = null
+                          if (isTriggered && trig?.trigger_rule_type === 'stale') {
+                            evidenceLine = t('theme_detail.exit_signal_evidence_stale')
+                          } else if (isTriggered && trig?.trigger_rule_type === 'event_count' && typeof ev?.contradicts_count === 'number') {
+                            evidenceLine = t('theme_detail.exit_signal_evidence_contradicts', { count: String(ev.contradicts_count) })
+                          }
+                          return (
+                            <div
+                              key={i}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: 10,
+                                fontSize: 12.5,
+                                color: token.colorTextSecondary,
+                                padding: '7px 0',
+                                borderBottom: i === signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                              }}
+                            >
+                              <span style={{ color: markerColor, lineHeight: 1.5, flexShrink: 0, fontWeight: isTriggered ? 600 : 400 }}>{marker}</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                                    {t(labelKey)}{triggeredAt ? ` · ${triggeredAt}` : ''}
+                                  </span>
+                                </div>
+                                <span style={{ lineHeight: 1.5 }}>{signalText}</span>
+                                {signalDesc && (
+                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>{signalDesc}</span>
+                                )}
+                                {evidenceLine && (
+                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary, fontStyle: 'italic' }}>
+                                    {evidenceLine}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </Card>
                   </div>
                 )
               })()}
