@@ -1106,12 +1106,14 @@ export default function ThemeDetailPage() {
                       subtitle={t('theme_detail.tier2_desc')}
                       items={tier2Recs}
                     />
-                    <TierColumn
-                      tier={3}
-                      title={t('theme_detail.tier3')}
-                      subtitle={t('theme_detail.tier3_desc')}
-                      items={tier3Recs}
-                    />
+                    {tier3Recs.length > 0 && (
+                      <TierColumn
+                        tier={3}
+                        title={t('theme_detail.tier3')}
+                        subtitle={t('theme_detail.tier3_desc')}
+                        items={tier3Recs}
+                      />
+                    )}
                   </div>
                 )}
 
