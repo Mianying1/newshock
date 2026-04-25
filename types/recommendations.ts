@@ -35,6 +35,8 @@ export type EventDirection = 'supports' | 'contradicts' | 'neutral'
 export interface CatalystEvent {
   id: string
   headline: string
+  short_headline: string | null
+  short_headline_zh: string | null
   source_name: string
   source_url: string
   published_at: string

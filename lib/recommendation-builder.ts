@@ -102,6 +102,8 @@ interface RecRow {
 interface EventRow {
   id: string
   headline: string
+  short_headline: string | null
+  short_headline_zh: string | null
   source_name: string | null
   source_url: string | null
   event_date: string | null
@@ -217,7 +219,7 @@ async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent
   const cutoff = new Date(Date.now() - 90 * 86400 * 1000).toISOString()
   const { data, error } = await supabaseAdmin
     .from('events')
-    .select('id, headline, source_name, source_url, event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh')
+    .select('id, headline, short_headline, short_headline_zh, source_name, source_url, event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh')
     .eq('trigger_theme_id', themeId)
     .gte('event_date', cutoff)
     .order('event_date', { ascending: false })
@@ -229,6 +231,8 @@ async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent
   return (data ?? []).map((e: EventRow) => ({
     id: e.id,
     headline: e.headline,
+    short_headline: e.short_headline,
+    short_headline_zh: e.short_headline_zh,
     source_name: e.source_name ?? '',
     source_url: e.source_url ?? '',
     published_at: e.event_date ?? '',

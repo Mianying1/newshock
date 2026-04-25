@@ -39,3 +39,18 @@ body {
 }
 .ticker-row:hover { background: #FAF7F1; }
 .ticker-row:first-child { border-top: none; }
+
+@keyframes timelineDotPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10), 0 0 6px rgba(0, 0, 0, 0.30);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.06), 0 0 14px rgba(0, 0, 0, 0.55);
+  }
+}
+.timeline-dot-latest {
+  animation: timelineDotPulse 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .timeline-dot-latest { animation: none; }
+}

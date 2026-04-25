@@ -150,41 +150,49 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
         </div>
 
         <div style={{ marginTop: 16 }}>
-          {visibleTickers.length > 0 && (
-            <Flex wrap gap={6} align="center" style={{ marginBottom: 10 }}>
-              {visibleTickers.map((r) => {
-                const arrow = directionArrow(r.exposure_direction)
-                return (
-                  <span
-                    key={r.ticker_symbol}
-                    style={{
-                      backgroundColor: token.colorFillAlter,
-                      color: token.colorText,
-                      border: `1px solid ${token.colorBorder}`,
-                      fontSize: 11,
-                      fontWeight: 500,
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    ${r.ticker_symbol}
-                    {arrow && (
-                      <span style={{ color: arrow.color, fontSize: 9 }}>{arrow.glyph}</span>
-                    )}
-                  </span>
-                )
-              })}
-              {overflow > 0 && (
-                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
-                  +{overflow} more
-                </Text>
-              )}
-            </Flex>
-          )}
+          <Flex
+            gap={6}
+            align="center"
+            style={{
+              marginBottom: 10,
+              height: 24,
+              overflow: 'hidden',
+              flexWrap: 'nowrap',
+            }}
+          >
+            {visibleTickers.map((r) => {
+              const arrow = directionArrow(r.exposure_direction)
+              return (
+                <span
+                  key={r.ticker_symbol}
+                  style={{
+                    backgroundColor: token.colorFillAlter,
+                    color: token.colorText,
+                    border: `1px solid ${token.colorBorder}`,
+                    fontSize: 11,
+                    fontWeight: 500,
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    lineHeight: 1.4,
+                    flexShrink: 0,
+                  }}
+                >
+                  ${r.ticker_symbol}
+                  {arrow && (
+                    <span style={{ color: arrow.color, fontSize: 9 }}>{arrow.glyph}</span>
+                  )}
+                </span>
+              )
+            })}
+            {overflow > 0 && (
+              <Text style={{ fontSize: 11, color: token.colorTextTertiary, flexShrink: 0 }}>
+                +{overflow}
+              </Text>
+            )}
+          </Flex>
           <Progress
             percent={progressPct}
             showInfo={false}
@@ -226,16 +234,14 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
               )}
             </span>
           </Flex>
-          {(sinceDate || durationLabel) && (
-            <Flex justify="space-between" align="center" style={{ marginTop: 6 }}>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
-                {sinceDate ? t('theme_card.since_short', { date: sinceDate }) : ''}
-              </Text>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
-                {durationLabel ? `${t('theme_card.expected_duration')} ${durationLabel}` : ''}
-              </Text>
-            </Flex>
-          )}
+          <Flex justify="space-between" align="center" style={{ marginTop: 6, minHeight: 14 }}>
+            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
+              {sinceDate ? t('theme_card.since_short', { date: sinceDate }) : ''}
+            </Text>
+            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
+              {durationLabel ? `${t('theme_card.expected_duration')} ${durationLabel}` : ''}
+            </Text>
+          </Flex>
         </div>
       </Card>
     </Link>
