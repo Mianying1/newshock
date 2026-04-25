@@ -1087,6 +1087,10 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
+  .radar-page,
+  .radar-page .app {
+    overflow-x: clip;
+  }
   .radar-page .app {
     grid-template-columns: 1fr;
   }
@@ -1113,5 +1117,12 @@
     grid-column: 1 / -1;
     justify-content: flex-start;
     padding-left: 62px;
+  }
+  /* antd Layout.Content renders as .ant-layout-content, not .main — keep it from
+     creating its own horizontal scroll if any descendant pushes wider than viewport. */
+  .radar-page .ant-layout,
+  .radar-page .ant-layout-content {
+    min-width: 0;
+    max-width: 100%;
   }
 }

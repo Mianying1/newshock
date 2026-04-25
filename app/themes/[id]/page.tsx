@@ -15,7 +15,6 @@ import {
   Layout,
   Progress,
   Row,
-  Segmented,
   Space,
   Tag,
   Tooltip,
@@ -51,6 +50,7 @@ import type {
   ThemeRecommendation,
 } from '@/types/recommendations'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { FilterPill } from '@/components/shared/FilterPill'
 import { HorizonBadge } from '@/components/shared/HorizonBadge'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { ThemeCard } from '@/components/radar/ThemeCard'
@@ -210,7 +210,6 @@ export default function ThemeDetailPage() {
   }, [id])
 
   const recs = theme?.recommendations ?? []
-  const headwinds = recs.filter((r) => r.exposure_direction === 'headwind' && r.exposure_type !== 'pressure')
   const tradableRecs = recs.filter((r) => r.exposure_type !== 'pressure' && r.exposure_direction !== 'headwind')
   const tier1Recs = tradableRecs.filter((r) => r.tier === 1)
   const tier2Recs = tradableRecs.filter((r) => r.tier === 2)
@@ -1092,7 +1091,7 @@ export default function ThemeDetailPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                       gap: 16,
                       alignItems: 'stretch',
                       marginBottom: 20,
@@ -1119,7 +1118,6 @@ export default function ThemeDetailPage() {
                   </div>
                 )}
 
-                <ExposureGroup title={t('theme_detail.headwinds')} items={headwinds} variant="headwind" />
               </div>
 
               {/* Subthemes */}
@@ -1134,7 +1132,7 @@ export default function ThemeDetailPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
                       gap: 16,
                       alignItems: 'stretch',
                     }}
@@ -1885,20 +1883,19 @@ function ThemeEventSidebar({
           </Text>
         ) : (
           <>
-            {hasDirection && (
-              <div style={{ padding: '12px 14px 0' }}>
-                <Segmented
-                  size="small"
-                  block
-                  value={eventTab}
-                  onChange={(v) => setEventTab(v as EventTab)}
-                  options={(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => ({
-                    label: `${t(k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`)} ${eventCounts[k]}`,
-                    value: k,
-                  }))}
-                />
-              </div>
-            )}
+            <div style={{ padding: '12px 14px 14px', borderBottom: `1px solid ${token.colorSplit}` }}>
+              <Flex gap={8} wrap>
+                {(['all', 'supports', 'contradicts', 'neutral'] as EventTab[]).map((k) => (
+                  <FilterPill
+                    key={k}
+                    label={t(k === 'all' ? 'theme_detail.tab_all' : `theme_detail.${k}`)}
+                    count={eventCounts[k]}
+                    active={eventTab === k}
+                    onClick={() => setEventTab(k)}
+                  />
+                ))}
+              </Flex>
+            </div>
 
             {visibleEvents.length === 0 ? (
               <Text style={{ display: 'block', padding: '16px 14px', fontSize: 12, color: token.colorTextTertiary }}>
@@ -2053,201 +2050,6 @@ function ThemeEventSidebar({
         ℹ {t('theme_detail.ai_source_hint')}
       </Text>
     </>
-  )
-}
-
-function ExposureGroup({
-  title,
-  items,
-  variant = 'default',
-}: {
-  title: string
-  items: ThemeRecommendation[]
-  variant?: 'default' | 'pressure' | 'headwind'
-}) {
-  const { t, locale } = useI18n()
-  const { token } = useToken()
-  if (items.length === 0) return null
-
-  const wrapperStyle: React.CSSProperties =
-    variant === 'headwind'
-      ? {
-          background: token.colorErrorBg,
-          border: `1px solid ${token.colorErrorBorder}`,
-          borderRadius: token.borderRadius,
-          padding: '14px 16px',
-          marginBottom: 16,
-        }
-      : variant === 'pressure'
-      ? {
-          background: token.colorWarningBg,
-          border: `1px solid ${token.colorWarningBorder}`,
-          borderRadius: token.borderRadius,
-          padding: '14px 16px',
-          marginBottom: 16,
-        }
-      : { marginBottom: 20 }
-
-  const titleColor =
-    variant === 'headwind' ? token.colorErrorText
-    : variant === 'pressure' ? token.colorWarningText
-    : token.colorTextSecondary
-
-  return (
-    <div style={wrapperStyle}>
-      <Flex
-        align="center"
-        gap={6}
-        style={{
-          fontFamily: token.fontFamilyCode,
-          fontSize: 10,
-          letterSpacing: '0.14em',
-          textTransform: 'uppercase',
-          color: titleColor,
-          marginBottom: 10,
-        }}
-      >
-        <span style={{ fontWeight: 600 }}>{title}</span>
-        <span style={{ color: token.colorTextQuaternary, fontWeight: 400 }}>· {items.length}</span>
-      </Flex>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 8,
-        }}
-      >
-        {items.map((r) => {
-          const reasoning = pickField(locale, r.role_reasoning, r.role_reasoning_zh)
-          const exposure = pickField(locale, r.business_exposure, r.business_exposure_zh)
-          const catalyst = pickField(locale, r.catalyst, r.catalyst_zh)
-          const risk = pickField(locale, r.risk, r.risk_zh)
-          const capLabel = r.market_cap_band === 'small' ? t('theme_detail.cap_small')
-            : r.market_cap_band === 'mid' ? t('theme_detail.cap_mid')
-            : r.market_cap_band === 'large' ? t('theme_detail.cap_large')
-            : null
-          const confTone =
-            r.confidence_band === 'high'
-              ? { color: token.colorSuccessText, background: token.colorSuccessBg }
-              : r.confidence_band === 'medium'
-              ? { color: token.colorWarningText, background: token.colorWarningBg }
-              : { color: token.colorTextTertiary, background: token.colorFillTertiary }
-          return (
-            <Card
-              key={r.ticker_symbol}
-              size="small"
-              styles={{ body: { padding: '12px 14px' } }}
-            >
-              <Flex align="center" gap={8} wrap style={{ marginBottom: reasoning.trim() ? 6 : 0 }}>
-                <Link
-                  href={`/tickers/${r.ticker_symbol}`}
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontWeight: 600,
-                    fontSize: 13,
-                    color: token.colorText,
-                    textDecoration: 'none',
-                  }}
-                >
-                  ${r.ticker_symbol}
-                </Link>
-                {r.company_name && r.company_name !== r.ticker_symbol && (
-                  <Text style={{ fontSize: 11.5, color: token.colorTextTertiary }}>{r.company_name}</Text>
-                )}
-                <Flex gap={6} align="center" style={{ marginLeft: 'auto' }}>
-                  {r.is_thematic_tool && (
-                    <Tag
-                      title={t('theme_detail.thematic_tool_tooltip')}
-                      style={{
-                        margin: 0,
-                        fontSize: 10,
-                        padding: '0 6px',
-                        background: token.colorFillSecondary,
-                        border: 'none',
-                        color: token.colorText,
-                      }}
-                    >
-                      💎
-                    </Tag>
-                  )}
-                  {r.confidence_band && (
-                    <Tag
-                      style={{
-                        margin: 0,
-                        fontSize: 10,
-                        padding: '0 6px',
-                        border: 'none',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        fontFamily: token.fontFamilyCode,
-                        ...confTone,
-                      }}
-                    >
-                      {r.confidence_band}
-                    </Tag>
-                  )}
-                  {capLabel && (
-                    <Text style={{ fontSize: 10, color: token.colorTextQuaternary }}>{capLabel}</Text>
-                  )}
-                </Flex>
-              </Flex>
-              {reasoning.trim().length > 0 && (
-                <Text style={{ display: 'block', fontSize: 12.5, lineHeight: 1.55, color: token.colorTextSecondary }}>
-                  {reasoning}
-                </Text>
-              )}
-              {(exposure.trim() || catalyst.trim() || risk.trim()) && (
-                <div style={{ marginTop: 6, display: 'grid', rowGap: 3, fontSize: 11, color: token.colorTextTertiary }}>
-                  {exposure.trim().length > 0 && (
-                    <div>
-                      <MetaKey token={token}>{t('theme_detail.exposure_label')}</MetaKey>
-                      {exposure}
-                    </div>
-                  )}
-                  {catalyst.trim().length > 0 && (
-                    <div>
-                      <MetaKey token={token} color={token.colorSuccessText}>{t('theme_detail.catalyst')}</MetaKey>
-                      {catalyst}
-                    </div>
-                  )}
-                  {risk.trim().length > 0 && (
-                    <div>
-                      <MetaKey token={token} color={token.colorErrorText}>{t('theme_detail.risk')}</MetaKey>
-                      {risk}
-                    </div>
-                  )}
-                </div>
-              )}
-            </Card>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-function MetaKey({
-  children,
-  token,
-  color,
-}: {
-  children: React.ReactNode
-  token: ReturnType<typeof useToken>['token']
-  color?: string
-}) {
-  return (
-    <span
-      style={{
-        fontFamily: token.fontFamilyCode,
-        fontSize: 10,
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        color: color ?? token.colorTextQuaternary,
-        marginRight: 6,
-      }}
-    >
-      {children}
-    </span>
   )
 }
 

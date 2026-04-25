@@ -9,6 +9,7 @@ import {
   Col,
   Empty,
   Flex,
+  Grid,
   Input,
   Layout,
   Row,
@@ -34,6 +35,7 @@ import './radar.css'
 const { Title, Text } = Typography
 const { Header, Content } = Layout
 const { useToken } = theme
+const { useBreakpoint } = Grid
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -66,6 +68,9 @@ export default function HomePage() {
   const { t, locale, setLocale } = useI18n()
   const { token } = useToken()
   const { mode, toggle } = useThemeMode()
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
+  const sidePad = isMobile ? 16 : 28
   const [themes, setThemes] = useState<ThemeRadarItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -121,7 +126,7 @@ export default function HomePage() {
               top: 0,
               zIndex: 30,
               height: 52,
-              padding: '10px 28px',
+              padding: `10px ${sidePad}px`,
               background: 'var(--topbar-bg)',
               backdropFilter: 'saturate(160%) blur(16px)',
               WebkitBackdropFilter: 'saturate(160%) blur(16px)',
@@ -167,7 +172,7 @@ export default function HomePage() {
             </Space.Compact>
           </Header>
 
-          <Content style={{ padding: '0 28px 40px' }}>
+          <Content style={{ padding: `0 ${sidePad}px 40px`, minWidth: 0 }}>
             <div
               style={{
                 padding: '34px 2px 20px',
