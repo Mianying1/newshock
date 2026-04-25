@@ -470,7 +470,7 @@ const COST_SONNET_CACHE_HIT = 0.014
 
 // ─── Sonnet theme identification (with prompt caching) ────────────────────────
 
-async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> {
+export async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeResult> {
   const ctx = await getMatcherContext()
 
   const cachedContext =
