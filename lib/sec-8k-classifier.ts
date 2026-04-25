@@ -12,6 +12,7 @@ export type EightKAction = 'irrelevant' | 'match_archetype' | 'exploratory' | 'e
 export interface EightKDecision {
   event_id: string
   ticker: string | null
+  cik: string | null
   items: string[]
   materiality: 'high' | 'medium' | 'low'
   action: EightKAction
@@ -20,15 +21,39 @@ export interface EightKDecision {
   reasoning_zh: string | null
 }
 
-const IRRELEVANT_ONLY_ITEMS = new Set(['5.07', '5.08', '9.01'])
+// Cap repeat 8-K filings from the same CIK on the same theme within 30 days.
+// Audit found single filers (AAOI on CPO, Vertiv on AI Capex, USAR on Rare Earth)
+// generating 6+ events on one theme — most were routine disclosures.
+const PER_FILER_THEME_CAP = 2
+const PER_FILER_WINDOW_DAYS = 30
+
+// Allowlist of signal-bearing 8-K item codes. Filings with NO allowed items
+// are dropped at pre-filter (audit found bulk-pull noise was the #1 attachment
+// pollution source — board changes (5.02), Reg FD (7.01), exhibit-only (9.01),
+// bylaw amends (5.03) etc. were being treated as theme catalysts).
+const ALLOWED_8K_ITEMS = new Set([
+  '1.01', // Material Definitive Agreement
+  '1.02', // Termination of Material Definitive Agreement
+  '1.03', // Bankruptcy or Receivership
+  '2.01', // Completion of Acquisition or Disposition
+  '2.02', // Results of Operations (earnings)
+  '2.03', // Creation of Material Financial Obligation
+  '2.04', // Triggering Events Accelerating Financial Obligation
+  '2.05', // Costs Associated with Exit or Disposal
+  '2.06', // Material Impairments
+  '4.02', // Non-Reliance on Prior Financials
+  '5.01', // Changes in Control
+  '5.07', // Submission of Matters to a Vote
+  '8.01', // Other Events (issuer-elected material disclosure)
+])
 
 export function preFilter(items: string[]): { skip: boolean; reason: string } {
   if (items.length === 0) return { skip: false, reason: '' }
-  const nonBoilerplate = items.filter((it) => !IRRELEVANT_ONLY_ITEMS.has(it))
-  if (nonBoilerplate.length === 0) {
+  const allowed = items.filter((it) => ALLOWED_8K_ITEMS.has(it))
+  if (allowed.length === 0) {
     return {
       skip: true,
-      reason: `Only routine items (${items.join(',')}): shareholder votes / exhibits / nominations. Not market-moving.`,
+      reason: `No allowlisted items (filed: ${items.join(',')}). Dropped as routine (board / FD / exhibits / bylaws).`,
     }
   }
   return { skip: false, reason: '' }
@@ -101,6 +126,7 @@ export async function classify8KEvent(
     return {
       event_id: event.id,
       ticker: context.ticker,
+      cik: context.cik,
       items: context.items,
       materiality,
       action: 'irrelevant',
@@ -130,6 +156,7 @@ export async function classify8KEvent(
       return {
         event_id: event.id,
         ticker: context.ticker,
+        cik: context.cik,
         items: context.items,
         materiality,
         action: 'error',
@@ -142,6 +169,7 @@ export async function classify8KEvent(
     return {
       event_id: event.id,
       ticker: context.ticker,
+      cik: context.cik,
       items: context.items,
       materiality,
       action: parsed.action,
@@ -153,6 +181,7 @@ export async function classify8KEvent(
     return {
       event_id: event.id,
       ticker: context.ticker,
+      cik: context.cik,
       items: context.items,
       materiality,
       action: 'error',
@@ -169,6 +198,18 @@ export function buildArchetypeBlock(
   return archetypes
     .map((a) => `- ${a.id}: ${a.name} — ${a.description ?? ''}`)
     .join('\n')
+}
+
+async function isFilerCappedOnTheme(themeId: string, cik: string): Promise<boolean> {
+  const sinceIso = new Date(Date.now() - PER_FILER_WINDOW_DAYS * 24 * 3600 * 1000).toISOString()
+  const { count, error } = await supabaseAdmin
+    .from('events')
+    .select('id', { count: 'exact', head: true })
+    .eq('trigger_theme_id', themeId)
+    .ilike('headline', `%(${cik})%`)
+    .gte('event_date', sinceIso)
+  if (error) return false
+  return (count ?? 0) >= PER_FILER_THEME_CAP
 }
 
 export async function applyDecision(decision: EightKDecision): Promise<void> {
@@ -199,7 +240,15 @@ export async function applyDecision(decision: EightKDecision): Promise<void> {
 
     const activeTheme = themes?.[0]
     if (activeTheme) {
-      updates.trigger_theme_id = activeTheme.id
+      const capped = decision.cik
+        ? await isFilerCappedOnTheme(activeTheme.id, decision.cik)
+        : false
+      if (capped) {
+        updates.classifier_reasoning = `[8-K dedup-cap · CIK ${decision.cik} ≥${PER_FILER_THEME_CAP}/${PER_FILER_WINDOW_DAYS}d] ${decision.reasoning}`
+        updates.level_of_impact = 'event_only'
+      } else {
+        updates.trigger_theme_id = activeTheme.id
+      }
     }
   }
 
