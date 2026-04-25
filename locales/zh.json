@@ -151,6 +151,8 @@
     "direction_mixed": "混合",
     "direction_uncertain": "方向不确定",
     "disclaimer_playbook": "基于 Claude AI 训练数据估算, 非精确市场测量. 后续版本将基于实际股价数据校准.",
+    "playbook_source_theme": "本主题专属",
+    "playbook_source_archetype": "基于行业模式",
     "disclaimer_observation": "以上为观察分析, 非预测或投资建议.",
     "ai_source_hint": "以下为 AI 生成内容, 原文为英文.",
     "cooling_banner_title": "热度阶段冻结于 {n} 天",

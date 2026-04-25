@@ -146,6 +146,7 @@ export interface ThemeRadarItem {
   catalysts: CatalystEvent[]
   archetype_playbook: ArchetypePlaybook | null
   archetype_playbook_zh: ArchetypePlaybook | null
+  playbook_source: 'theme' | 'archetype'
   playbook_stage: PlaybookStage
   strategist_reflection: string | null
   strategist_reflection_zh: string | null

@@ -1198,6 +1198,7 @@ export default function ThemeDetailPage() {
                   color: token.colorTextTertiary,
                   margin: '14px 0 8px',
                 }
+                const isThemeSpecific = theme.playbook_source === 'theme'
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
@@ -1205,6 +1206,21 @@ export default function ThemeDetailPage() {
                       title={t('sections.theme_playbook_title')}
                       subtitle={t('sections.theme_playbook_subtitle')}
                     />
+
+                    <Tag
+                      style={{
+                        fontFamily: token.fontFamilyCode,
+                        fontSize: 10,
+                        letterSpacing: '0.08em',
+                        marginBottom: 8,
+                        textTransform: 'uppercase',
+                      }}
+                      color={isThemeSpecific ? 'geekblue' : 'default'}
+                    >
+                      {isThemeSpecific
+                        ? t('theme_detail.playbook_source_theme')
+                        : t('theme_detail.playbook_source_archetype')}
+                    </Tag>
 
                     <Text
                       style={{

@@ -61,6 +61,8 @@ interface ThemeRow {
   counter_evidence_summary: unknown
   recent_drivers: unknown
   recent_drivers_generated_at: string | null
+  specific_playbook: ArchetypePlaybook | null
+  specific_playbook_zh: ArchetypePlaybook | null
   theme_archetypes: {
     category: string
     playbook: ArchetypePlaybook | null
@@ -267,8 +269,18 @@ function buildItem(
   const lastEventDate = new Date(row.last_active_at)
   const daysSinceLast = Math.max(0, Math.floor((Date.now() - lastEventDate.getTime()) / 86400000))
 
-  const archetype_playbook = row.theme_archetypes?.playbook ?? null
-  const archetype_playbook_zh = row.theme_archetypes?.playbook_zh ?? null
+  // Theme-specific playbook overrides the archetype baseline when present.
+  // Both locales fall through specific → archetype, with cross-locale specific
+  // reuse so a single zh-or-en specific generation covers both views.
+  const archetype_playbook =
+    row.specific_playbook ?? row.theme_archetypes?.playbook ?? null
+  const archetype_playbook_zh =
+    row.specific_playbook_zh
+      ?? row.specific_playbook
+      ?? row.theme_archetypes?.playbook_zh
+      ?? null
+  const playbook_source: 'theme' | 'archetype' =
+    row.specific_playbook || row.specific_playbook_zh ? 'theme' : 'archetype'
   const playbook_stage = computePlaybookStage(daysHot, archetype_playbook)
 
   return {
@@ -296,6 +308,7 @@ function buildItem(
     catalysts,
     archetype_playbook,
     archetype_playbook_zh,
+    playbook_source,
     playbook_stage,
     strategist_reflection: row.strategist_reflection ?? null,
     strategist_reflection_zh: row.strategist_reflection_zh ?? null,
@@ -389,6 +402,7 @@ export async function buildThemeRadar(options: {
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
       'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
+      'specific_playbook, specific_playbook_zh, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .in('status', statusValues)
@@ -494,6 +508,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'strategist_reflection, strategist_reflection_zh, deep_generated_at, ' +
       'theme_tier, parent_theme_id, ' +
       'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
+      'specific_playbook, specific_playbook_zh, ' +
       'theme_archetypes(category, playbook, playbook_zh)'
     )
     .eq('id', themeId)
