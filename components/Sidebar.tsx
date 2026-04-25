@@ -77,9 +77,9 @@ export function Sidebar() {
 
   const items: { href: string; labelKey: string; count?: number; Icon: () => JSX.Element }[] = [
     { href: '/', labelKey: 'sidebar.radar', Icon: RadarIcon },
-    { href: '/', labelKey: 'sidebar.themes', count: themeCount, Icon: LayersIcon },
+    { href: '/themes', labelKey: 'sidebar.themes', count: themeCount, Icon: LayersIcon },
     { href: '/tickers', labelKey: 'sidebar.tickers', count: tickerCount, Icon: TrendingUpIcon },
-    { href: '/', labelKey: 'sidebar.events', count: events7d, Icon: ClockIcon },
+    { href: '/events', labelKey: 'sidebar.events', count: events7d, Icon: ClockIcon },
   ]
 
   return (
