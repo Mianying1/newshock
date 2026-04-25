@@ -96,6 +96,68 @@ function dirDot(d: EventDirection | null): string {
   return 'neu'
 }
 
+function HalfGauge({
+  pct,
+  color,
+  trail,
+  size = 160,
+  stroke = 8,
+  children,
+}: {
+  pct: number
+  color: string
+  trail: string
+  size?: number
+  stroke?: number
+  children: React.ReactNode
+}) {
+  const radius = (size - stroke) / 2
+  const arcLength = Math.PI * radius
+  const progressLength = (Math.min(100, Math.max(0, pct)) / 100) * arcLength
+  const cy = size / 2
+  const path = `M ${stroke / 2} ${cy} A ${radius} ${radius} 0 0 1 ${size - stroke / 2} ${cy}`
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: size,
+        height: size / 2 + stroke,
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width={size}
+        height={size / 2 + stroke}
+        viewBox={`0 0 ${size} ${size / 2 + stroke}`}
+        style={{ display: 'block' }}
+      >
+        <path d={path} fill="none" stroke={trail} strokeWidth={stroke} strokeLinecap="round" />
+        {pct > 0 && (
+          <path
+            d={path}
+            fill="none"
+            stroke={color}
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={`${progressLength} ${arcLength}`}
+          />
+        )}
+      </svg>
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: stroke + 2,
+          textAlign: 'center',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function ThemeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { t, locale, setLocale } = useI18n()
@@ -367,7 +429,7 @@ export default function ThemeDetailPage() {
                   </Flex>
                 </div>
 
-                {/* Hero stats — stage-focused: gauge + progress bar + scale */}
+                {/* Card 1 — Stage: gauge (left 50%) + narrative (right 50%) */}
                 {(() => {
                   const pb = theme.archetype_playbook
                   const daysMin = pb?.typical_duration_days_approx?.[0] || 0
@@ -376,6 +438,7 @@ export default function ThemeDetailPage() {
                   const progressPct = daysMax > 0
                     ? Math.min(100, Math.max(0, Math.round((theme.days_hot / daysMax) * 100)))
                     : 0
+                  const remainingPct = Math.max(0, 100 - progressPct)
                   const stageText = t(`theme_card.stage_${theme.playbook_stage === 'beyond' ? 'beyond' : theme.playbook_stage}`)
                   const stageColor = getStageColor(theme.playbook_stage)
 
@@ -392,94 +455,72 @@ export default function ThemeDetailPage() {
                     : theme.playbook_stage === 'beyond' ? 'Beyond'
                     : 'Unknown'
 
-                  const gaugeWidth = 160
-                  const gaugeStroke = 8
-                  const gaugeRadius = (gaugeWidth - gaugeStroke) / 2
-                  const gaugeArcLength = Math.PI * gaugeRadius
-                  const gaugeProgressLength = (progressPct / 100) * gaugeArcLength
-                  const gaugeCy = gaugeWidth / 2
-                  const gaugePath = `M ${gaugeStroke / 2} ${gaugeCy} A ${gaugeRadius} ${gaugeRadius} 0 0 1 ${gaugeWidth - gaugeStroke / 2} ${gaugeCy}`
-
                   return (
                     <Card
                       size="small"
                       styles={{ body: { padding: '24px 28px' } }}
                       style={{ marginTop: 20 }}
                     >
-                      <Flex align="center" gap={24} wrap>
-                        <div
-                          style={{
-                            position: 'relative',
-                            width: gaugeWidth,
-                            height: gaugeWidth / 2 + gaugeStroke,
-                            flexShrink: 0,
-                          }}
-                        >
-                          <svg
-                            width={gaugeWidth}
-                            height={gaugeWidth / 2 + gaugeStroke}
-                            viewBox={`0 0 ${gaugeWidth} ${gaugeWidth / 2 + gaugeStroke}`}
-                            style={{ display: 'block' }}
-                          >
-                            <path
-                              d={gaugePath}
-                              fill="none"
-                              stroke={token.colorFillSecondary}
-                              strokeWidth={gaugeStroke}
-                              strokeLinecap="round"
-                            />
-                            {progressPct > 0 && (
-                              <path
-                                d={gaugePath}
-                                fill="none"
-                                stroke={stageColor}
-                                strokeWidth={gaugeStroke}
-                                strokeLinecap="round"
-                                strokeDasharray={`${gaugeProgressLength} ${gaugeArcLength}`}
-                              />
-                            )}
-                          </svg>
-                          <div
-                            style={{
-                              position: 'absolute',
-                              left: 0,
-                              right: 0,
-                              bottom: gaugeStroke + 2,
-                              textAlign: 'center',
-                            }}
-                          >
+                      <Row gutter={[32, 24]} align="middle">
+                        {/* Left 50% — gauge */}
+                        <Col xs={24} lg={12}>
+                          <Flex vertical align="center" gap={8}>
+                            <HalfGauge
+                              pct={progressPct}
+                              color={stageColor}
+                              trail={token.colorFillSecondary}
+                            >
+                              <Text
+                                strong
+                                style={{
+                                  fontSize: 32,
+                                  color: token.colorText,
+                                  letterSpacing: '-0.02em',
+                                  lineHeight: 1,
+                                }}
+                              >
+                                {progressPct}%
+                              </Text>
+                            </HalfGauge>
                             <Text
-                              strong
                               style={{
-                                fontSize: 26,
+                                fontSize: 14,
                                 color: stageColor,
-                                letterSpacing: '-0.01em',
-                                lineHeight: 1,
+                                fontWeight: 600,
                               }}
                             >
-                              {progressPct}%
+                              {stageText}
                             </Text>
-                          </div>
-                        </div>
+                          </Flex>
+                        </Col>
 
-                        <div style={{ flex: 1, minWidth: 240 }}>
+                        {/* Right 50% — narrative */}
+                        <Col
+                          xs={24}
+                          lg={12}
+                          className="stage-narrative-col"
+                          style={{
+                            borderLeft: `1px solid ${token.colorSplit}`,
+                            paddingLeft: 32,
+                          }}
+                        >
                           <Title
-                            level={3}
+                            level={4}
                             style={{
                               margin: 0,
-                              fontSize: 22,
+                              fontSize: 18,
                               fontWeight: 600,
                               letterSpacing: '-0.01em',
                               color: token.colorText,
                             }}
                           >
-                            {stageText} · Stage {stageEnglish}
+                            Stage {stageEnglish} · {stageText}
                           </Title>
                           {expectedDaysAvg > 0 && (
                             <Text
                               style={{
                                 display: 'block',
-                                marginTop: 6,
+                                marginTop: 4,
                                 fontFamily: token.fontFamilyCode,
                                 fontSize: 12,
                                 color: token.colorTextTertiary,
@@ -489,49 +530,71 @@ export default function ThemeDetailPage() {
                               {t('theme_detail.day_of', { days: theme.days_hot, total: expectedDaysAvg })}
                             </Text>
                           )}
-                        </div>
-                      </Flex>
-
-                      <Progress
-                        percent={progressPct}
-                        showInfo={false}
-                        strokeColor={stageColor}
-                        trailColor={token.colorFillSecondary}
-                        strokeLinecap="butt"
-                        style={{ marginTop: 22, marginBottom: 0 }}
-                      />
-
-                      <Flex justify="space-between" style={{ marginTop: 8 }}>
-                        {[
-                          t('theme_detail.stage_early_range'),
-                          t('theme_detail.stage_mid_range'),
-                          t('theme_detail.stage_late_range'),
-                          t('theme_detail.stage_exit_range'),
-                        ].map((label) => (
                           <Text
-                            key={label}
                             style={{
-                              fontSize: 11,
-                              color: token.colorTextQuaternary,
-                              fontFamily: token.fontFamilyCode,
-                              letterSpacing: '0.02em',
+                              display: 'block',
+                              marginTop: 10,
+                              fontSize: 13,
+                              color: token.colorTextSecondary,
+                              lineHeight: 1.6,
                             }}
                           >
-                            {label}
+                            {t('theme_detail.cycle_position', { pct: progressPct, remaining: remainingPct })}
                           </Text>
-                        ))}
-                      </Flex>
 
-                      <Text
-                        style={{
-                          display: 'block',
-                          fontSize: 12,
-                          color: token.colorTextSecondary,
-                          marginTop: 12,
-                        }}
-                      >
-                        {t('theme_detail.current_position', { pct: progressPct, stage: currentStageLabel })}
-                      </Text>
+                          <Progress
+                            percent={progressPct}
+                            showInfo={false}
+                            strokeColor={stageColor}
+                            trailColor={token.colorFillSecondary}
+                            strokeLinecap="butt"
+                            style={{ marginTop: 16, marginBottom: 0 }}
+                          />
+
+                          <Flex justify="space-between" style={{ marginTop: 6 }}>
+                            {[
+                              t('theme_detail.stage_early_range'),
+                              t('theme_detail.stage_mid_range'),
+                              t('theme_detail.stage_late_range'),
+                              t('theme_detail.stage_exit_range'),
+                            ].map((label) => (
+                              <Text
+                                key={label}
+                                style={{
+                                  fontSize: 10,
+                                  color: token.colorTextQuaternary,
+                                  fontFamily: token.fontFamilyCode,
+                                  letterSpacing: '0.02em',
+                                }}
+                              >
+                                {label}
+                              </Text>
+                            ))}
+                          </Flex>
+
+                          <Text
+                            style={{
+                              display: 'block',
+                              fontSize: 12,
+                              color: token.colorTextTertiary,
+                              marginTop: 10,
+                            }}
+                          >
+                            {t('theme_detail.current_position', { pct: progressPct, stage: currentStageLabel })}
+                          </Text>
+                        </Col>
+                      </Row>
+
+                      <style jsx>{`
+                        @media (max-width: 991px) {
+                          :global(.stage-narrative-col) {
+                            border-left: none !important;
+                            padding-left: 12px !important;
+                            border-top: 1px solid ${token.colorSplit};
+                            padding-top: 20px !important;
+                          }
+                        }
+                      `}</style>
                     </Card>
                   )
                 })()}
@@ -737,7 +800,7 @@ export default function ThemeDetailPage() {
               })()}
 
 
-              {/* Conviction */}
+              {/* Card 2 — Conviction: gauge (left 35%) + 4-dim breakdown (right 65%) */}
               {theme.conviction_score !== null && theme.conviction_breakdown && (() => {
                 const score = theme.conviction_score
                 const b = theme.conviction_breakdown
@@ -761,138 +824,146 @@ export default function ThemeDetailPage() {
                       title={t('sections.theme_conviction_title')}
                       subtitle={t('sections.theme_conviction_subtitle')}
                     />
-                    <Card size="small" styles={{ body: { padding: '18px 20px' } }}>
-                      <Flex align="center" justify="space-between" gap={24} wrap style={{ marginBottom: 18 }}>
-                        <div>
-                          <div
-                            style={{
-                              fontFamily: token.fontFamilyCode,
-                              fontSize: 10,
-                              letterSpacing: '0.16em',
-                              textTransform: 'uppercase',
-                              color: token.colorTextQuaternary,
-                              marginBottom: 6,
-                            }}
-                          >
-                            {bandLabel}
-                          </div>
-                          <Flex align="baseline" gap={4}>
-                            <span
-                              style={{
-                                fontFamily: token.fontFamilyCode,
-                                fontSize: 34,
-                                fontWeight: 600,
-                                lineHeight: 1,
-                                color: token.colorText,
-                                letterSpacing: '-0.02em',
-                              }}
+                    <Card size="small" styles={{ body: { padding: '24px 28px' } }}>
+                      <Row gutter={[32, 24]} align="middle">
+                        {/* Left 35% — gauge */}
+                        <Col xs={24} lg={8}>
+                          <Flex vertical align="center" gap={8}>
+                            <HalfGauge
+                              pct={(score / 10) * 100}
+                              color={scoreColor}
+                              trail={token.colorFillSecondary}
                             >
-                              {score.toFixed(1)}
-                            </span>
-                            <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>/ 10</Text>
-                          </Flex>
-                        </div>
-                        <div style={{ flex: 1, minWidth: 160, maxWidth: 280 }}>
-                          <Progress
-                            percent={(score / 10) * 100}
-                            strokeColor={scoreColor}
-                            trailColor={token.colorFillSecondary}
-                            showInfo={false}
-                            size={['100%', 5]}
-                            strokeLinecap="square"
-                          />
-                        </div>
-                      </Flex>
-
-                      <div
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                          columnGap: 28,
-                          rowGap: 14,
-                        }}
-                      >
-                        {dims.map((d) => {
-                          const displayValue = d.value
-                          const barValue = d.inverted ? 10 - d.value : d.value
-                          const barColor =
-                            barClass(barValue) === 'up' ? token.colorSuccess
-                            : barClass(barValue) === 'mid' ? token.colorWarning
-                            : token.colorError
-                          return (
-                            <div key={d.key}>
-                              <Flex align="baseline" justify="space-between" style={{ marginBottom: 4 }}>
-                                <Text
-                                  title={t(d.hintKey)}
-                                  style={{ fontSize: 12, color: token.colorTextSecondary }}
-                                >
-                                  {t(d.labelKey)}
-                                  {d.inverted && (
-                                    <span style={{ marginLeft: 4, color: token.colorTextQuaternary, fontSize: 10 }}>↓</span>
-                                  )}
-                                </Text>
-                                <Text
+                              <Flex align="baseline" justify="center" gap={2}>
+                                <span
                                   style={{
                                     fontFamily: token.fontFamilyCode,
-                                    fontSize: 12,
+                                    fontSize: 32,
+                                    fontWeight: 600,
+                                    lineHeight: 1,
                                     color: token.colorText,
+                                    letterSpacing: '-0.02em',
                                   }}
                                 >
-                                  {displayValue.toFixed(1)}
-                                </Text>
+                                  {score.toFixed(1)}
+                                </span>
+                                <Text style={{ fontSize: 12, color: token.colorTextQuaternary }}>/ 10</Text>
                               </Flex>
-                              <Progress
-                                percent={(barValue / 10) * 100}
-                                strokeColor={barColor}
-                                trailColor={token.colorFillSecondary}
-                                showInfo={false}
-                                size={['100%', 3]}
-                                strokeLinecap="square"
-                              />
-                            </div>
-                          )
-                        })}
-                      </div>
+                            </HalfGauge>
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: scoreColor,
+                              }}
+                            >
+                              {bandLabel}
+                            </Text>
+                          </Flex>
+                        </Col>
 
-                      {reasoning && (
-                        <Text
+                        {/* Right 65% — 4-dim breakdown + narrative + disclaimer */}
+                        <Col
+                          xs={24}
+                          lg={16}
+                          className="conviction-detail-col"
                           style={{
-                            display: 'block',
-                            marginTop: 18,
-                            fontSize: 13,
-                            lineHeight: 1.65,
-                            color: token.colorTextSecondary,
+                            borderLeft: `1px solid ${token.colorSplit}`,
+                            paddingLeft: 32,
                           }}
                         >
-                          {reasoning}
-                        </Text>
-                      )}
+                          <Row gutter={[20, 14]}>
+                            {dims.map((d) => {
+                              const displayValue = d.value
+                              const barValue = d.inverted ? 10 - d.value : d.value
+                              const barColor =
+                                barClass(barValue) === 'up' ? token.colorSuccess
+                                : barClass(barValue) === 'mid' ? token.colorWarning
+                                : token.colorError
+                              return (
+                                <Col key={d.key} xs={12} md={6}>
+                                  <Flex align="baseline" justify="space-between" style={{ marginBottom: 4 }}>
+                                    <Text
+                                      title={t(d.hintKey)}
+                                      style={{ fontSize: 12, color: token.colorTextSecondary }}
+                                    >
+                                      {t(d.labelKey)}
+                                    </Text>
+                                    <Text
+                                      style={{
+                                        fontFamily: token.fontFamilyCode,
+                                        fontSize: 12,
+                                        fontWeight: 600,
+                                        color: token.colorText,
+                                      }}
+                                    >
+                                      {displayValue.toFixed(1)}
+                                    </Text>
+                                  </Flex>
+                                  <Progress
+                                    percent={(barValue / 10) * 100}
+                                    strokeColor={barColor}
+                                    trailColor={token.colorFillSecondary}
+                                    showInfo={false}
+                                    size={['100%', 3]}
+                                    strokeLinecap="square"
+                                  />
+                                </Col>
+                              )
+                            })}
+                          </Row>
 
-                      <Flex
-                        justify="space-between"
-                        gap={12}
-                        wrap
-                        style={{
-                          marginTop: 16,
-                          paddingTop: 12,
-                          borderTop: `1px solid ${token.colorSplit}`,
-                          fontSize: 11,
-                          color: token.colorTextTertiary,
-                        }}
-                      >
-                        <Text style={{ fontSize: 11, fontStyle: 'italic', color: token.colorTextTertiary }}>
-                          ℹ {t('theme_detail.ai_subjective_disclaimer')}
-                        </Text>
-                        {theme.conviction_generated_at && (
-                          <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextQuaternary }}>
-                            {t('theme_detail.conviction_last_computed', { label: formatRelativeTime(theme.conviction_generated_at, t, locale) })}
-                          </Text>
-                        )}
-                      </Flex>
+                          {reasoning && (
+                            <Text
+                              style={{
+                                display: 'block',
+                                marginTop: 18,
+                                fontSize: 13,
+                                lineHeight: 1.65,
+                                color: token.colorTextSecondary,
+                              }}
+                            >
+                              {reasoning}
+                            </Text>
+                          )}
+
+                          <Flex
+                            justify="space-between"
+                            gap={12}
+                            wrap
+                            style={{
+                              marginTop: 16,
+                              paddingTop: 12,
+                              borderTop: `1px solid ${token.colorSplit}`,
+                            }}
+                          >
+                            <Text style={{ fontSize: 11, fontStyle: 'italic', color: token.colorTextTertiary }}>
+                              ℹ {t('theme_detail.ai_subjective_disclaimer')}
+                            </Text>
+                            {theme.conviction_generated_at && (
+                              <Text style={{ fontSize: 11, fontFamily: token.fontFamilyCode, color: token.colorTextQuaternary }}>
+                                {t('theme_detail.conviction_last_computed', { label: formatRelativeTime(theme.conviction_generated_at, t, locale) })}
+                              </Text>
+                            )}
+                          </Flex>
+                        </Col>
+                      </Row>
+
+                      <style jsx>{`
+                        @media (max-width: 991px) {
+                          :global(.conviction-detail-col) {
+                            border-left: none !important;
+                            padding-left: 12px !important;
+                            border-top: 1px solid ${token.colorSplit};
+                            padding-top: 20px !important;
+                          }
+                        }
+                      `}</style>
                     </Card>
                   </div>
                 )
               })()}
+
 
               {/* Key Events Timeline (last 30 days) */}
               {(() => {
