@@ -3,9 +3,7 @@ import { buildThemeRadar } from '@/lib/recommendation-builder'
 export async function GET() {
   try {
     const result = await buildThemeRadar({
-      tier: 'umbrella',
       statuses: ['active', 'cooling'],
-      include_children: true,
       limit: 50,
     })
     return Response.json(result)
