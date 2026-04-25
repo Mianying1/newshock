@@ -79,6 +79,10 @@
     {
       "path": "/api/cron/compute-sentiment-score",
       "schedule": "15 7 * * *"
+    },
+    {
+      "path": "/api/cron/check-exit-signals",
+      "schedule": "20 7 * * *"
     }
   ]
 }

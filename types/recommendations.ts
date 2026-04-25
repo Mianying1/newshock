@@ -163,6 +163,27 @@ export interface ThemeRadarItem {
   counter_evidence_summary: CounterEvidenceSummary | null
   recent_drivers: RecentDriver[] | null
   recent_drivers_generated_at: string | null
+  exit_signal_triggers: ExitSignalTrigger[] | null
+}
+
+export type ExitSignalRuleType = 'event_count' | 'stale' | 'manual_review'
+export type ExitSignalStatus = 'not_triggered' | 'triggered' | 'manual_review'
+
+export interface ExitSignalTrigger {
+  signal_index: number
+  signal_text: string
+  trigger_rule_type: ExitSignalRuleType
+  trigger_status: ExitSignalStatus
+  triggered_at: string | null
+  triggered_evidence: {
+    reason?: string
+    threshold?: number
+    window_days?: number
+    contradicts_count?: number
+    event_count?: number
+    examples?: { id: string; event_date: string | null; headline: string }[]
+  } | null
+  last_checked_at: string
 }
 
 export type DriverIcon = 'bolt' | 'building' | 'chip' | 'globe' | 'chart' | 'factory' | 'shield'

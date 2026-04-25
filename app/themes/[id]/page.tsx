@@ -414,9 +414,7 @@ export default function ThemeDetailPage() {
                 {/* Card 1 — Stage (left) + Conviction (right): cycle context + AI confidence in this cycle */}
                 {(() => {
                   const pb = theme.archetype_playbook
-                  const daysMin = pb?.typical_duration_days_approx?.[0] || 0
                   const daysMax = pb?.typical_duration_days_approx?.[1] || 0
-                  const expectedDaysAvg = daysMax > 0 ? Math.round((daysMin + daysMax) / 2) : 0
                   const progressPct = daysMax > 0
                     ? Math.min(100, Math.max(0, Math.round((theme.days_hot / daysMax) * 100)))
                     : 0
@@ -623,7 +621,7 @@ export default function ThemeDetailPage() {
                                   >
                                     {theme.days_hot}
                                   </Text>
-                                  {expectedDaysAvg > 0 && (
+                                  {daysMax > 0 && (
                                     <Text
                                       style={{
                                         fontFamily: token.fontFamilyCode,
@@ -632,7 +630,7 @@ export default function ThemeDetailPage() {
                                         lineHeight: 1,
                                       }}
                                     >
-                                      / ~{expectedDaysAvg}
+                                      / ~{daysMax}
                                     </Text>
                                   )}
                                   <Text
@@ -1337,10 +1335,10 @@ export default function ThemeDetailPage() {
 
                       {(() => {
                         const stage = theme.playbook_stage
-                        const stageLabel = stage === 'early' ? t('theme_detail.stage_early')
-                          : stage === 'mid' ? t('theme_detail.stage_mid')
-                          : stage === 'late' ? t('theme_detail.stage_late')
-                          : stage === 'beyond' ? t('theme_detail.stage_beyond')
+                        const stageLabel = stage === 'early' ? t('theme_card.stage_early')
+                          : stage === 'mid' ? t('theme_card.stage_mid')
+                          : stage === 'late' ? t('theme_card.stage_late')
+                          : stage === 'beyond' ? t('theme_card.stage_beyond')
                           : null
                         const stageColor = stage === 'early' ? token.colorSuccess
                           : stage === 'mid' ? token.colorPrimary
@@ -1560,23 +1558,67 @@ export default function ThemeDetailPage() {
                         </Text>
                         <Card size="small" styles={{ body: { padding: '14px 16px' } }}>
                           <div style={{ display: 'grid', rowGap: 2 }}>
-                            {pb.exit_signals.map((s, i) => (
-                              <div
-                                key={i}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'flex-start',
-                                  gap: 10,
-                                  fontSize: 12.5,
-                                  color: token.colorTextSecondary,
-                                  padding: '7px 0',
-                                  borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
-                                }}
-                              >
-                                <span style={{ color: token.colorTextQuaternary, lineHeight: 1.5, flexShrink: 0 }}>·</span>
-                                <span style={{ lineHeight: 1.5 }}>{s}</span>
-                              </div>
-                            ))}
+                            {pb.exit_signals.map((s, i) => {
+                              const trig = theme.exit_signal_triggers?.find((x) => x.signal_index === i) ?? null
+                              const isTriggered = trig?.trigger_status === 'triggered'
+                              const isManual = trig?.trigger_status === 'manual_review' || !trig
+                              const isMonitoring = trig?.trigger_status === 'not_triggered'
+                              const marker = isTriggered ? '✓' : isMonitoring ? '⚠' : '·'
+                              const markerColor = isTriggered
+                                ? token.colorError
+                                : isMonitoring
+                                ? token.colorWarning
+                                : token.colorTextQuaternary
+                              const labelKey = isTriggered
+                                ? 'theme_detail.exit_signal_status_triggered'
+                                : isMonitoring
+                                ? 'theme_detail.exit_signal_status_monitoring'
+                                : 'theme_detail.exit_signal_status_manual'
+                              const triggeredAt = trig?.triggered_at
+                                ? new Date(trig.triggered_at).toISOString().slice(0, 10)
+                                : null
+                              const ev = trig?.triggered_evidence ?? null
+                              const signalText = typeof s === 'string' ? s : (s as { signal?: string; description?: string }).signal ?? JSON.stringify(s)
+                              const signalDesc = typeof s === 'string' ? null : (s as { signal?: string; description?: string }).description ?? null
+                              let evidenceLine: string | null = null
+                              if (isTriggered && trig?.trigger_rule_type === 'stale') {
+                                evidenceLine = t('theme_detail.exit_signal_evidence_stale')
+                              } else if (isTriggered && trig?.trigger_rule_type === 'event_count' && typeof ev?.contradicts_count === 'number') {
+                                evidenceLine = t('theme_detail.exit_signal_evidence_contradicts', { count: String(ev.contradicts_count) })
+                              }
+                              return (
+                                <div
+                                  key={i}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: 10,
+                                    fontSize: 12.5,
+                                    color: token.colorTextSecondary,
+                                    padding: '7px 0',
+                                    borderBottom: i === pb.exit_signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
+                                  }}
+                                >
+                                  <span style={{ color: markerColor, lineHeight: 1.5, flexShrink: 0, fontWeight: isTriggered ? 600 : 400 }}>{marker}</span>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                                      <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                                        {t(labelKey)}{triggeredAt ? ` · ${triggeredAt}` : ''}
+                                      </span>
+                                    </div>
+                                    <span style={{ lineHeight: 1.5 }}>{signalText}</span>
+                                    {signalDesc && (
+                                      <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>{signalDesc}</span>
+                                    )}
+                                    {evidenceLine && (
+                                      <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary, fontStyle: 'italic' }}>
+                                        {evidenceLine}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
                         </Card>
                       </>

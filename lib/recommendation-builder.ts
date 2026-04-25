@@ -203,6 +203,21 @@ async function fetchRecentDrivers(
   }
 }
 
+async function fetchExitSignalTriggers(themeId: string) {
+  // Tolerant: table is created by migration 20260425000003.
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('theme_exit_signal_triggers')
+      .select('signal_index, signal_text, trigger_rule_type, trigger_status, triggered_at, triggered_evidence, last_checked_at')
+      .eq('theme_id', themeId)
+      .order('signal_index', { ascending: true })
+    if (error || !data) return null
+    return data as unknown as import('@/types/recommendations').ExitSignalTrigger[]
+  } catch {
+    return null
+  }
+}
+
 async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
   const { data } = await supabaseAdmin
     .from('events')
@@ -325,6 +340,7 @@ function buildItem(
     counter_evidence_summary: parseCounterSummary(row.counter_evidence_summary),
     recent_drivers: parseRecentDrivers(row.recent_drivers),
     recent_drivers_generated_at: row.recent_drivers_generated_at ?? null,
+    exit_signal_triggers: null,
   }
 }
 
@@ -517,18 +533,21 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   if (error || !row) throw new Error(`theme not found: ${themeId}`)
 
   const themeRow = row as unknown as ThemeRow
-  const [recs, catalysts, earliestEventDate, parent, children, drivers] = await Promise.all([
+  const [recs, catalysts, earliestEventDate, parent, children, drivers, exitTriggers] = await Promise.all([
     fetchRecommendations(themeId),
     fetchCatalysts(themeId, 50),
     fetchEarliestEventDate(themeId),
     fetchParent(themeRow.parent_theme_id),
     fetchChildren(themeId),
     fetchRecentDrivers(themeId),
+    fetchExitSignalTriggers(themeId),
   ])
   themeRow.recent_drivers = drivers.recent_drivers
   themeRow.recent_drivers_generated_at = drivers.recent_drivers_generated_at
 
-  return buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children)
+  const item = buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children)
+  item.exit_signal_triggers = exitTriggers
+  return item
 }
 
 async function fetchParent(parentId: string | null): Promise<ThemeParentRef | null> {
