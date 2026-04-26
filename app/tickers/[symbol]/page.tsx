@@ -1,655 +1,624 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { TickerBadge } from '@/components/TickerBadge'
-import { LocaleToggle } from '@/components/LocaleToggle'
+import useSWR from 'swr'
+import { useParams } from 'next/navigation'
+import {
+  Breadcrumb,
+  Button,
+  Empty,
+  Grid,
+  Input,
+  Layout,
+  Skeleton,
+  Space,
+  Typography,
+  theme,
+} from 'antd'
+import {
+  MoonOutlined,
+  SearchOutlined,
+  SunOutlined,
+} from '@ant-design/icons'
+import { Sidebar } from '@/components/Sidebar'
+import { Topbar } from '@/components/shared/Topbar'
+import { SectionHeader } from '@/components/shared/SectionHeader'
 import { useI18n } from '@/lib/i18n-context'
-import { pickField } from '@/lib/useField'
-import { getDisplayPublisher } from '@/lib/source-display'
-import { STAGE_COLORS } from '@/lib/utils'
-import type { TickerScores } from '@/lib/ticker-scoring'
+import { useThemeMode } from '@/lib/providers'
+import { HeroBlock } from '@/components/ticker-detail/HeroBlock'
+import { NarrativeBlocks } from '@/components/ticker-detail/NarrativeBlocks'
+import {
+  ThemeCards,
+  type ThemeCardItem,
+} from '@/components/ticker-detail/ThemeCards'
+import {
+  AllThemesCollapsed,
+  type AllThemesItem,
+} from '@/components/ticker-detail/AllThemesCollapsed'
+import {
+  PlaybookTabs,
+  type PlaybookData,
+} from '@/components/ticker-detail/PlaybookTabs'
+import { EventsList, type EventItem } from '@/components/ticker-detail/EventsList'
+import '../../radar.css'
 
-interface ThemeResult {
-  id: string
-  name: string
-  name_zh: string | null
-  status: string
-  category: string | null
-  tier: number
-  exposure_direction: string
-  role_reasoning: string
-  role_reasoning_zh: string | null
-  first_seen_at: string
-  days_hot: number
-  days_active: number
-  theme_strength_score: number
-  typical_duration_days_min: number | null
-  typical_duration_days_max: number | null
-  playbook_stage: 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
+const { Text } = Typography
+const { Header, Content } = Layout
+const { useToken } = theme
+const { useBreakpoint } = Grid
+
+type NarrativeBlockShape = {
+  hero_line: string | null
+  top_themes: Array<{ theme_id: string; label: string; direction: string }> | null
+  core_tension: string | null
+  why_benefits: string | null
+  risk_sources: string | null
 }
-
-interface EventItem {
-  id: string
-  headline: string
-  source_name: string | null
-  source_url: string | null
-  event_date: string
-  theme_id: string | null
-  theme_name: string | null
-  theme_name_zh: string | null
+type NarrativeApiResponse = {
+  symbol: string
+  locale: 'en' | 'zh'
+  narrative: NarrativeBlockShape | null
+  status: 'fresh' | 'stale_served' | 'no_active_themes' | 'unknown_ticker' | 'generated' | 'failed'
+  generated_at: string | null
+  model_version: string | null
+  ticker: { company_name: string | null; sector: string | null } | null
+  active_theme_count: number
 }
-
-interface ExitSignal {
-  signal: string
-  themes: string[]
-}
-
-interface ArchetypeFit {
-  archetype_id: string
-  archetype_name: string
-  archetype_name_zh: string | null
-  category: string | null
-  category_zh: string | null
-  description: string | null
-  description_zh: string | null
-  fit_score: number
-  exposure_label: 'direct' | 'pressure' | 'secondary' | 'peripheral' | 'uncertain' | null
-  relationship_type: string | null
-  evidence_summary: string | null
-  evidence_summary_zh: string | null
-  data_source: 'ai_generated' | 'fmp_validated' | 'manual'
-  last_validated_at: string | null
-}
-
-interface TickerDetailResponse {
-  ticker: {
-    symbol: string
-    company_name: string | null
-    sector: string | null
-    logo_url: string | null
+async function narrativeFetcher(url: string): Promise<NarrativeApiResponse> {
+  const r = await fetch(url, { cache: 'no-store' })
+  if (!r.ok && r.status !== 404 && r.status !== 502) {
+    throw new Error(`narrative_http_${r.status}`)
   }
-  scores: TickerScores | null
-  themes: ThemeResult[]
-  archetype_fits: ArchetypeFit[]
-  recent_events: EventItem[]
-  exit_signals: ExitSignal[]
+  return (await r.json()) as NarrativeApiResponse
 }
 
-const EXPOSURE_KEY: Record<string, string> = {
-  direct: 'ticker_detail.exposure_direct',
-  pressure: 'ticker_detail.exposure_pressure',
-  secondary: 'ticker_detail.exposure_secondary',
-  peripheral: 'ticker_detail.exposure_peripheral',
-  uncertain: 'ticker_detail.exposure_uncertain',
-}
+type DetailApiResponse =
+  | {
+      ok: true
+      topThemes: ThemeCardItem[]
+      allActive: AllThemesItem[]
+      playbooks: PlaybookData[]
+      events: EventItem[]
+      totals: { coreCount: number; activeCount: number }
+    }
+  | { ok: false; error: string }
 
-const EXPOSURE_COLOR: Record<string, string> = {
-  direct: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  pressure: 'bg-amber-50 text-amber-700 border-amber-200',
-  secondary: 'bg-blue-50 text-blue-700 border-blue-200',
-  peripheral: 'bg-zinc-50 text-zinc-600 border-zinc-200',
-  uncertain: 'bg-zinc-50 text-zinc-400 border-zinc-200',
-}
-
-const EXPOSURE_GROUP_ORDER: Array<ArchetypeFit['exposure_label']> = [
-  'direct',
-  'pressure',
-  'secondary',
-  'peripheral',
-  'uncertain',
-]
-
-const SOURCE_KEY: Record<string, string> = {
-  fmp_validated: 'ticker_detail.source_fmp',
-  ai_generated: 'ticker_detail.source_ai',
-  manual: 'ticker_detail.source_manual',
-}
-
-const SOURCE_COLOR: Record<string, string> = {
-  fmp_validated: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-  ai_generated: 'bg-zinc-50 text-zinc-500 border-zinc-200',
-  manual: 'bg-blue-50 text-blue-700 border-blue-200',
-}
-
-function fitScoreColor(s: number): string {
-  if (s >= 8) return 'text-emerald-600'
-  if (s >= 6) return 'text-amber-600'
-  return 'text-zinc-500'
-}
-
-function computeNetPosition(fits: ArchetypeFit[]): {
-  net: 'positive' | 'negative' | 'mixed'
-  convergence: 'convergent' | 'divergent'
-  positive: number
-  negative: number
-} {
-  const positive = fits.filter((f) => f.exposure_label === 'direct').length
-  const negative = fits.filter((f) => f.exposure_label === 'pressure').length
-  let net: 'positive' | 'negative' | 'mixed' = 'mixed'
-  if (positive >= negative + 2) net = 'positive'
-  else if (negative >= positive + 2) net = 'negative'
-  const convergence: 'convergent' | 'divergent' =
-    positive > 0 && negative > 0 ? 'divergent' : 'convergent'
-  return { net, convergence, positive, negative }
-}
-
-const DIRECTION_KEY: Record<string, string> = {
-  benefits: 'theme_detail.direction_benefits',
-  headwind: 'theme_detail.direction_headwind',
-  mixed: 'theme_detail.direction_mixed',
-  uncertain: 'theme_detail.direction_uncertain',
-}
-
-const DIRECTION_COLOR: Record<string, string> = {
-  benefits: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  headwind: 'bg-rose-50 text-rose-700 border-rose-200',
-  mixed: 'bg-blue-50 text-blue-700 border-blue-200',
-  uncertain: 'bg-zinc-50 text-zinc-600 border-zinc-200',
-}
-
-const STATUS_KEY: Record<string, string> = {
-  active: 'theme_card.status_active',
-  cooling: 'theme_card.status_cooling',
-  archived: 'theme_card.status_archived',
-  exploratory_candidate: 'theme_card.status_exploratory',
-}
-
-function stageLabel(stage: ThemeResult['playbook_stage'], t: (k: string, v?: Record<string, string | number>) => string): string {
-  if (stage === 'unknown') return ''
-  const map: Record<string, string> = {
-    early: 'theme_card.stage_early',
-    mid: 'theme_card.stage_mid',
-    late: 'theme_card.stage_late',
-    beyond: 'theme_card.stage_beyond',
+async function detailFetcher(url: string): Promise<DetailApiResponse> {
+  const r = await fetch(url, { cache: 'no-store' })
+  if (!r.ok && r.status !== 500) {
+    throw new Error(`detail_http_${r.status}`)
   }
-  return t(map[stage])
-}
-
-function formatDateShort(iso: string, locale: string): string {
-  const d = new Date(iso)
-  return d.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
+  return (await r.json()) as DetailApiResponse
 }
 
 export default function TickerDetailPage() {
-  const { t, locale } = useI18n()
-  const router = useRouter()
+  const { t, locale, setLocale } = useI18n()
+  const { token } = useToken()
+  const { mode, toggle } = useThemeMode()
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
+  const sidePad = isMobile ? 16 : 28
+
   const params = useParams<{ symbol: string }>()
   const symbol = params?.symbol?.toString().toUpperCase() ?? ''
 
-  const [data, setData] = useState<TickerDetailResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [notFound, setNotFound] = useState(false)
-  const [showAllEvents, setShowAllEvents] = useState(false)
+  const narrativeKey = symbol ? `/api/tickers/${symbol}/narrative?locale=${locale}` : null
+  const {
+    data: narrativeResp,
+    error: narrativeError,
+    isLoading: narrativeLoading,
+    mutate: refetchNarrative,
+  } = useSWR<NarrativeApiResponse>(narrativeKey, narrativeFetcher, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  })
 
-  useEffect(() => {
-    if (!symbol) return
-    fetch(`/api/tickers/${symbol}`)
-      .then((r) => {
-        if (r.status === 404) {
-          setNotFound(true)
-          setLoading(false)
-          return null
+  const detailKey = symbol ? `/api/tickers/${symbol}/detail?locale=${locale}` : null
+  const {
+    data: detailResp,
+    error: detailError,
+    isLoading: detailLoading,
+  } = useSWR<DetailApiResponse>(detailKey, detailFetcher, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  })
+  const detail = detailResp?.ok ? detailResp : null
+
+  // Case — ticker has no active themes anywhere.
+  if (narrativeResp?.status === 'no_active_themes') {
+    return (
+      <PageShell symbol={symbol} sidePad={sidePad} mode={mode} toggle={toggle} setLocale={setLocale} locale={locale} t={t} token={token}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 15, marginBottom: 4 }}>
+                {locale === 'zh' ? `${symbol} · 暂无活跃主题` : `${symbol} · No active themes`}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>
+                {locale === 'zh' ? '该 ticker 当前未关联任何活跃主题' : 'This ticker is not linked to any active theme'}
+              </div>
+            </div>
+          }
+        >
+          <Link href="/tickers">
+            <Button type="primary">{locale === 'zh' ? '返回列表' : 'Back to list'}</Button>
+          </Link>
+        </Empty>
+      </PageShell>
+    )
+  }
+
+  if (narrativeResp?.status === 'unknown_ticker') {
+    return (
+      <PageShell symbol={symbol} sidePad={sidePad} mode={mode} toggle={toggle} setLocale={setLocale} locale={locale} t={t} token={token}>
+        <Empty description={locale === 'zh' ? `未找到 ticker ${symbol}` : `Ticker ${symbol} not found`}>
+          <Link href="/tickers">
+            <Button type="primary">{locale === 'zh' ? '返回列表' : 'Back to list'}</Button>
+          </Link>
+        </Empty>
+      </PageShell>
+    )
+  }
+
+  // Section 03 page-level empty — detail loaded with no active themes at all.
+  if (detail && detail.totals.activeCount === 0 && !detailLoading && narrativeResp) {
+    return (
+      <PageShell symbol={symbol} sidePad={sidePad} mode={mode} toggle={toggle} setLocale={setLocale} locale={locale} t={t} token={token}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={locale === 'zh' ? `${symbol} · 暂无活跃主题` : `${symbol} · No active themes`}
+        >
+          <Link href="/tickers">
+            <Button type="primary">{locale === 'zh' ? '返回列表' : 'Back to list'}</Button>
+          </Link>
+        </Empty>
+      </PageShell>
+    )
+  }
+
+  const tierLabels = {
+    tier1: t('ticker_detail.tier_1'),
+    tier2: t('ticker_detail.tier_2'),
+    tier3: t('ticker_detail.tier_3'),
+  }
+  const directionLabels = {
+    directionBenefits: t('theme_detail.direction_benefits'),
+    directionHeadwind: t('theme_detail.direction_headwind'),
+    directionMixed: t('theme_detail.direction_mixed'),
+    directionUncertain: t('theme_detail.direction_uncertain'),
+  }
+
+  const heroThemes =
+    detail?.topThemes.map((th) => ({
+      themeId: th.fullThemeId ?? th.themeId,
+      label: th.label,
+      direction: th.exposureDirection ?? 'uncertain',
+    })) ??
+    (narrativeResp?.narrative?.top_themes ?? []).map((tt) => ({
+      themeId: tt.theme_id,
+      label: tt.label,
+      direction: tt.direction,
+    }))
+
+  return (
+    <PageShell symbol={symbol} sidePad={sidePad} mode={mode} toggle={toggle} setLocale={setLocale} locale={locale} t={t} token={token}>
+      <HeroBlock
+        symbol={symbol}
+        companyName={narrativeResp?.ticker?.company_name ?? null}
+        sector={narrativeResp?.ticker?.sector ?? null}
+        thematicScore={null}
+        potentialScore={null}
+        heroLine={narrativeResp?.narrative?.hero_line ?? null}
+        themes={heroThemes}
+        heroLabels={{
+          thematic: t('ticker_detail.thematic_score'),
+          potential: t('ticker_detail.potential_score'),
+        }}
+      />
+
+      {/* 02 · Core Narrative */}
+      <SectionHeader
+        first
+        index="02"
+        title={t('ticker_detail.section_narrative_title')}
+        subtitle={t('ticker_detail.section_narrative_subtitle')}
+      />
+      <NarrativeSection
+        loading={narrativeLoading}
+        failed={
+          Boolean(narrativeError) ||
+          narrativeResp?.status === 'failed' ||
+          (narrativeResp != null && !narrativeResp.narrative)
         }
-        if (!r.ok) throw new Error('fetch failed')
-        return r.json()
-      })
-      .then((d) => {
-        if (!d) return
-        setData(d)
-        setLoading(false)
-      })
-      .catch(() => {
-        setError(true)
-        setLoading(false)
-      })
-  }, [symbol])
+        narrative={narrativeResp?.narrative ?? null}
+        labels={{
+          coreTension: t('ticker_detail.core_tension'),
+          whyBenefits: t('ticker_detail.why_benefits'),
+          riskSources: t('ticker_detail.risk_sources'),
+          unavailable: locale === 'zh' ? '分析暂不可用' : 'Analysis temporarily unavailable',
+          retry: locale === 'zh' ? '重试' : 'Retry',
+        }}
+        token={token}
+        onRetry={() => refetchNarrative()}
+      />
 
+      {/* 03 · Theme Drivers */}
+      <SectionHeader
+        index="03"
+        title={t('ticker_detail.section_themes_title')}
+        subtitle={
+          detail
+            ? t('ticker_detail.section_themes_subtitle', {
+                n: detail.topThemes.length,
+                total: detail.totals.activeCount,
+              })
+            : ''
+        }
+      />
+      <ThemesSection
+        loading={detailLoading}
+        failed={Boolean(detailError) || (detailResp?.ok === false)}
+        topThemes={detail?.topThemes ?? []}
+        allActive={detail?.allActive ?? []}
+        labels={{
+          viewFullTheme: t('ticker_detail.view_full_theme'),
+          exposure: t('ticker_detail.exposure_zh'),
+          events: t('ticker_detail.events_count'),
+          expected: t('ticker_detail.expected_zh'),
+          ...tierLabels,
+          ...directionLabels,
+          allToggle: t('ticker_detail.all_themes_toggle'),
+          allSummary: t('ticker_detail.all_themes_summary'),
+          daysShort: t('ticker_detail.days_unit'),
+          unavailable: locale === 'zh' ? '主题数据暂不可用' : 'Theme data unavailable',
+        }}
+        token={token}
+      />
+
+      {/* 04 · Investment Playbook */}
+      <SectionHeader
+        index="04"
+        title={t('ticker_detail.section_playbook_title')}
+        subtitle={t('ticker_detail.section_playbook_subtitle')}
+      />
+      <PlaybookSection
+        loading={detailLoading}
+        playbooks={detail?.playbooks ?? []}
+        labels={{
+          observation: t('ticker_detail.this_time_observation'),
+          historicalCases: t('ticker_detail.historical_cases_section'),
+          exitSignals: t('ticker_detail.exit_signals_section'),
+          empty: locale === 'zh' ? 'Playbook 准备中' : 'Playbook coming soon',
+        }}
+        token={token}
+      />
+
+      {/* 05 · Recent Events */}
+      <SectionHeader
+        index="05"
+        title={t('ticker_detail.section_events_title')}
+        subtitle={
+          detail
+            ? t('ticker_detail.section_events_subtitle', { n: detail.events.length })
+            : ''
+        }
+      />
+      <EventsSection
+        loading={detailLoading}
+        events={detail?.events ?? []}
+        isDark={mode === 'dark'}
+        labels={{
+          showAll: t('ticker_detail.show_all_events_zh'),
+          collapse: t('ticker_detail.collapse'),
+          today: t('relative_time.just_now'),
+          hoursAgo: t('relative_time.hours_ago'),
+          daysAgo: t('relative_time.days_ago'),
+          weeksAgo: t('relative_time.weeks_ago'),
+          impactHigh: t('ticker_detail.impact_high'),
+          impactMedium: t('ticker_detail.impact_medium'),
+          impactLow: t('ticker_detail.impact_low'),
+          linkedTheme: t('events_page.linked_theme'),
+          empty: locale === 'zh' ? '近期无重大事件' : 'No recent significant events',
+        }}
+        token={token}
+      />
+
+      <Text
+        style={{
+          display: 'block',
+          marginTop: 24,
+          fontSize: 11,
+          color: token.colorTextQuaternary,
+          textAlign: 'center',
+        }}
+      >
+        {t('common.disclaimer_footer')}
+      </Text>
+    </PageShell>
+  )
+}
+
+// ─── Section components ─────────────────────────────────────────────────────
+
+function NarrativeSection({
+  loading,
+  failed,
+  narrative,
+  labels,
+  token,
+  onRetry,
+}: {
+  loading: boolean
+  failed: boolean
+  narrative: NarrativeBlockShape | null
+  labels: { coreTension: string; whyBenefits: string; riskSources: string; unavailable: string; retry: string }
+  token: ReturnType<typeof useToken>['token']
+  onRetry: () => void
+}) {
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-zinc-900">
-        <p className="max-w-3xl mx-auto px-4 py-10 text-center text-zinc-400">
-          {t('ticker_detail.loading')}
-        </p>
+      <div style={{ marginTop: 12 }}>
+        <Skeleton active paragraph={{ rows: 3 }} />
       </div>
     )
   }
-
-  if (error || notFound || !data) {
-    return (
-      <div className="min-h-screen bg-white text-zinc-900">
-        <div className="max-w-3xl mx-auto px-4 py-10 text-center">
-          <p className="text-zinc-400 mb-4">
-            {notFound ? t('ticker_detail.not_found') : t('ticker_detail.error')}
-          </p>
-          <button onClick={() => router.back()} className="text-sm text-blue-600 hover:underline">
-            {t('ticker_detail.back')}
-          </button>
-        </div>
-      </div>
-    )
+  if (failed || !narrative) {
+    return <PlaceholderBox token={token} text={labels.unavailable} action={{ text: labels.retry, onClick: onRetry }} />
   }
-
-  const { ticker, scores, themes, archetype_fits, recent_events, exit_signals } = data
-  const fits = archetype_fits ?? []
-  const net = computeNetPosition(fits)
-  const fitsByGroup = new Map<ArchetypeFit['exposure_label'], ArchetypeFit[]>()
-  for (const f of fits) {
-    const k = f.exposure_label
-    if (!fitsByGroup.has(k)) fitsByGroup.set(k, [])
-    fitsByGroup.get(k)!.push(f)
-  }
-  const displayedEvents = showAllEvents ? recent_events : recent_events.slice(0, 5)
-
-  const timelineMinStart = themes.length > 0
-    ? Math.min(...themes.map((th) => new Date(th.first_seen_at).getTime()))
-    : Date.now()
-  const now = Date.now()
-  const timelineMaxEnd = themes.length > 0
-    ? Math.max(
-        ...themes.map((th) => {
-          const ceiling = th.typical_duration_days_max ?? 180
-          return new Date(th.first_seen_at).getTime() + ceiling * 86400000
-        }),
-        now
-      )
-    : now
-  const timelineSpan = Math.max(1, timelineMaxEnd - timelineMinStart)
-
   return (
-    <div className="min-h-screen bg-white text-zinc-900">
-      <header className="border-b border-zinc-200">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="font-semibold text-lg">{t('homepage.title')}</span>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link href="/" className="text-zinc-400 hover:text-zinc-900">{t('nav.themes')}</Link>
-            <Link href="/tickers" className="text-zinc-400 hover:text-zinc-900">{t('nav_tickers.hot_tickers')}</Link>
-            <LocaleToggle />
-          </nav>
-        </div>
-      </header>
-
-      <main className="max-w-3xl mx-auto px-4 pb-10">
-        <button
-          onClick={() => router.back()}
-          className="mt-4 text-sm text-zinc-500 hover:text-zinc-900"
-        >
-          {t('ticker_detail.back')}
-        </button>
-
-        <section className="mt-4 pb-6 border-b border-zinc-100">
-          <div className="flex items-center gap-3 mb-2">
-            <TickerBadge
-              symbol={ticker.symbol}
-              name={ticker.company_name ?? ticker.symbol}
-              logoUrl={ticker.logo_url}
-              size="lg"
-              showName
-            />
-          </div>
-          {ticker.sector && (
-            <p className="text-sm text-zinc-500">{ticker.sector}</p>
-          )}
-          {scores && (
-            <div className="mt-4 grid grid-cols-2 gap-3 max-w-sm">
-              <ScoreBox label={t('ticker_detail.thematic_score')} value={scores.thematic_score} accent="emerald" />
-              <ScoreBox label={t('ticker_detail.potential_score')} value={scores.potential_score} accent="blue" />
-            </div>
-          )}
-          {scores && (
-            <div className="mt-3 flex flex-wrap gap-3 text-xs text-zinc-500">
-              <span>
-                {t('ticker_detail.themes_count_label')}:{' '}
-                <span className="font-mono text-zinc-700">{scores.themes_count}</span>
-              </span>
-              <span>
-                {t('ticker_detail.recent_events_7d')}:{' '}
-                <span className="font-mono text-zinc-700">{scores.recent_events_7d}</span>
-              </span>
-              <span>
-                {t('ticker_detail.recent_events_30d')}:{' '}
-                <span className="font-mono text-zinc-700">{scores.recent_events_30d}</span>
-              </span>
-              {scores.dominant_category && (
-                <span>
-                  {t('ticker_detail.dominant_category')}:{' '}
-                  <span className="text-zinc-700">{t(`categories.${scores.dominant_category}`)}</span>
-                </span>
-              )}
-            </div>
-          )}
-        </section>
-
-        {fits.length > 0 && (
-          <section className="py-6 border-b border-zinc-100">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <span className="text-xs uppercase tracking-wide text-zinc-500">{t('ticker_detail.net_position')}</span>
-              <span className={`text-sm font-semibold ${
-                net.net === 'positive' ? 'text-emerald-600' :
-                net.net === 'negative' ? 'text-amber-600' : 'text-zinc-700'
-              }`}>
-                {t(`ticker_detail.net_${net.net}`)}
-              </span>
-              <span className="text-zinc-300">·</span>
-              <span className="text-xs uppercase tracking-wide text-zinc-500">{t('ticker_detail.convergence')}</span>
-              <span className={`text-sm font-semibold ${net.convergence === 'convergent' ? 'text-blue-600' : 'text-zinc-700'}`}>
-                {t(`ticker_detail.${net.convergence}`)}
-              </span>
-            </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              {t('ticker_detail.fit_summary_line', { total: fits.length, positive: net.positive, negative: net.negative })}
-            </p>
-          </section>
-        )}
-
-        <section className="py-6 border-b border-zinc-100">
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="text-base font-semibold">
-              {t('ticker_detail.archetype_fit_profile')} ({fits.length})
-            </h2>
-          </div>
-          <p className="text-xs text-zinc-500 mb-3">{t('ticker_detail.archetype_fit_profile_subtitle')}</p>
-          {fits.length === 0 ? (
-            <p className="text-sm text-zinc-400">{t('ticker_detail.no_archetype_fits')}</p>
-          ) : (
-            <div className="space-y-5">
-              {EXPOSURE_GROUP_ORDER.map((grp) => {
-                const rows = fitsByGroup.get(grp)
-                if (!rows || rows.length === 0) return null
-                const grpKey = grp ?? 'uncertain'
-                const grpLabel = t(EXPOSURE_KEY[grpKey] ?? EXPOSURE_KEY.uncertain)
-                return (
-                  <div key={grpKey}>
-                    <div className="text-xs uppercase tracking-wide text-zinc-500 mb-2">
-                      {grpLabel} ({rows.length})
-                    </div>
-                    <div className="space-y-2">
-                      {rows.map((f) => {
-                        const name = pickField(locale, f.archetype_name, f.archetype_name_zh)
-                        const evidence = pickField(locale, f.evidence_summary, f.evidence_summary_zh)
-                        const category = pickField(locale, f.category, f.category_zh)
-                        const expColor = EXPOSURE_COLOR[grpKey] ?? EXPOSURE_COLOR.uncertain
-                        const srcKey = f.data_source
-                        const srcColor = SOURCE_COLOR[srcKey] ?? SOURCE_COLOR.ai_generated
-                        return (
-                          <div key={f.archetype_id} className="border border-zinc-200 rounded-lg p-3 hover:border-zinc-400 transition">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <Link
-                                  href={`/archetypes/${f.archetype_id}`}
-                                  className="text-sm font-medium text-blue-600 hover:underline"
-                                >
-                                  {name}
-                                </Link>
-                                <div className="flex flex-wrap gap-1.5 mt-1 text-[11px]">
-                                  {category && (
-                                    <span className="px-1.5 py-0.5 rounded border border-zinc-200 text-zinc-500">
-                                      {category}
-                                    </span>
-                                  )}
-                                  <span className={`px-1.5 py-0.5 rounded border ${expColor}`}>
-                                    {t(EXPOSURE_KEY[grpKey] ?? EXPOSURE_KEY.uncertain)}
-                                  </span>
-                                  <span className={`px-1.5 py-0.5 rounded border ${srcColor}`}>
-                                    {t(SOURCE_KEY[srcKey] ?? SOURCE_KEY.ai_generated)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="shrink-0 text-right">
-                                <div className={`font-mono text-xl font-semibold ${fitScoreColor(f.fit_score)}`}>
-                                  {f.fit_score.toFixed(1)}
-                                </div>
-                                <div className="text-[10px] uppercase tracking-wide text-zinc-400">
-                                  {t('ticker_detail.fit_score')}
-                                </div>
-                              </div>
-                            </div>
-                            {f.relationship_type && (
-                              <p className="text-xs text-zinc-600 mt-2">
-                                <span className="text-zinc-400">·</span> {f.relationship_type}
-                              </p>
-                            )}
-                            {evidence && (
-                              <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed">
-                                {evidence}
-                              </p>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </section>
-
-        <section className="py-6 border-b border-zinc-100">
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="text-base font-semibold">
-              {t('ticker_detail.active_themes')} ({themes.length})
-            </h2>
-          </div>
-          <p className="text-xs text-zinc-500 mb-3">{t('ticker_detail.active_themes_subtitle')}</p>
-          {themes.length === 0 ? (
-            <p className="text-sm text-zinc-400">{t('ticker_detail.no_themes')}</p>
-          ) : (
-            <div className="space-y-2">
-              {themes.map((th) => {
-                const statusKey = STATUS_KEY[th.status] ?? 'theme_card.status_active'
-                const dirKey = DIRECTION_KEY[th.exposure_direction] ?? DIRECTION_KEY.uncertain
-                const dirColor = DIRECTION_COLOR[th.exposure_direction] ?? DIRECTION_COLOR.uncertain
-                const themeName = pickField(locale, th.name, th.name_zh)
-                const reasoning = pickField(locale, th.role_reasoning, th.role_reasoning_zh)
-                return (
-                  <div key={th.id} className="border border-zinc-200 rounded-lg p-3 hover:border-zinc-400 transition">
-                    <div className="flex items-start justify-between gap-3">
-                      <Link href={`/themes/${th.id}`} className="text-sm font-medium text-blue-600 hover:underline">
-                        {themeName}
-                      </Link>
-                      <span className={`text-xs px-2 py-0.5 rounded border ${dirColor} shrink-0`}>
-                        {t(dirKey)}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-1.5 text-xs text-zinc-500">
-                      <span>{t('ticker_detail.tier_label', { n: th.tier })}</span>
-                      <span>·</span>
-                      <span>{t(statusKey)}</span>
-                      <span>·</span>
-                      <span>{t('ticker_detail.days_active', { n: th.days_active })}</span>
-                      {th.playbook_stage !== 'unknown' && (
-                        <>
-                          <span>·</span>
-                          <span>
-                            {t('ticker_detail.stage')} {stageLabel(th.playbook_stage, t)}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    {reasoning && (
-                      <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                        {reasoning}
-                      </p>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </section>
-
-        {themes.length > 0 && (
-          <section className="py-6 border-b border-zinc-100">
-            <h2 className="text-base font-semibold mb-3">{t('ticker_detail.theme_timeline')}</h2>
-            <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
-              <span>{formatDateShort(new Date(timelineMinStart).toISOString(), locale)}</span>
-              <span className="text-zinc-500">{t('theme_detail.now_marker')}</span>
-              <span>{formatDateShort(new Date(timelineMaxEnd).toISOString(), locale)}</span>
-            </div>
-            <div className="space-y-2">
-              {themes.map((th) => {
-                const startTime = new Date(th.first_seen_at).getTime()
-                const ceiling = th.typical_duration_days_max ?? 180
-                const endTime = startTime + ceiling * 86400000
-                const leftPct = ((startTime - timelineMinStart) / timelineSpan) * 100
-                const widthPct = ((endTime - startTime) / timelineSpan) * 100
-                const nowPct = ((now - timelineMinStart) / timelineSpan) * 100
-                const barColor = STAGE_COLORS[th.playbook_stage] ?? 'bg-zinc-300'
-                const themeName = pickField(locale, th.name, th.name_zh)
-                return (
-                  <div key={th.id} className="flex items-center gap-2">
-                    <Link
-                      href={`/themes/${th.id}`}
-                      className="text-xs text-blue-600 hover:underline w-36 truncate shrink-0"
-                      title={themeName}
-                    >
-                      {themeName}
-                    </Link>
-                    <div className="flex-1 relative h-3 bg-zinc-50 rounded">
-                      <div
-                        className={`absolute top-0 h-full rounded ${barColor} opacity-70`}
-                        style={{ left: `${leftPct}%`, width: `${Math.max(2, widthPct)}%` }}
-                        title={`${themeName} · ${th.days_active}d / ~${ceiling}d`}
-                      />
-                      <div
-                        className="absolute top-0 h-full w-0.5 bg-zinc-900"
-                        style={{ left: `${Math.min(99, Math.max(0, nowPct))}%` }}
-                        title={t('theme_detail.now_marker')}
-                      />
-                    </div>
-                    <span className="text-[11px] text-zinc-400 font-mono w-12 text-right shrink-0">
-                      {th.days_active}d
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )}
-
-        <section className="py-6 border-b border-zinc-100">
-          <h2 className="text-base font-semibold mb-3">{t('ticker_detail.recent_events')}</h2>
-          {recent_events.length === 0 ? (
-            <p className="text-sm text-zinc-400">{t('ticker_detail.no_events')}</p>
-          ) : (
-            <>
-              <div className="space-y-3">
-                {displayedEvents.map((e) => {
-                  const daysAgo = Math.floor(
-                    (now - new Date(e.event_date).getTime()) / 86400000
-                  )
-                  return (
-                    <div key={e.id}>
-                      {e.source_url ? (
-                        <a
-                          href={e.source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          {e.headline}
-                        </a>
-                      ) : (
-                        <p className="text-sm text-zinc-900">{e.headline}</p>
-                      )}
-                      <p className="text-xs text-zinc-400 mt-0.5 flex flex-wrap gap-1 items-center">
-                        <span>{getDisplayPublisher(e.source_name, e.source_url)}</span>
-                        <span>·</span>
-                        <span>
-                          {daysAgo === 0
-                            ? t('theme_detail.today')
-                            : t('relative_time.days_ago', { n: daysAgo })}
-                        </span>
-                        {e.theme_id && e.theme_name && (
-                          <>
-                            <span>·</span>
-                            <Link
-                              href={`/themes/${e.theme_id}`}
-                              className="text-blue-500 hover:underline"
-                            >
-                              {pickField(locale, e.theme_name, e.theme_name_zh)}
-                            </Link>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-              {recent_events.length > 5 && (
-                <button
-                  onClick={() => setShowAllEvents((v) => !v)}
-                  className="mt-3 text-sm text-blue-600 hover:underline"
-                >
-                  {showAllEvents
-                    ? t('ticker_detail.collapse_events')
-                    : t('ticker_detail.view_all_events', { n: recent_events.length })}
-                </button>
-              )}
-            </>
-          )}
-        </section>
-
-        <section className="py-6">
-          <h2 className="text-base font-semibold mb-3">{t('ticker_detail.exit_signals')}</h2>
-          {exit_signals.length === 0 ? (
-            <p className="text-sm text-zinc-400">{t('ticker_detail.no_exit_signals')}</p>
-          ) : (
-            <ul className="space-y-2">
-              {exit_signals.map((s) => (
-                <li key={s.signal} className="text-sm text-zinc-700">
-                  <span className="text-amber-600 mr-1">•</span>
-                  {s.signal}
-                  {s.themes.length > 1 && (
-                    <span className="text-xs text-zinc-400 ml-2">
-                      ({s.themes.length})
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-4 text-xs text-zinc-400">
-            {t('theme_detail.disclaimer_observation')}
-          </p>
-        </section>
-      </main>
-
-      <footer className="border-t border-zinc-200">
-        <p className="max-w-3xl mx-auto px-4 py-6 text-center text-xs text-zinc-400">
-          {t('common.disclaimer_footer')}
-        </p>
-      </footer>
-    </div>
+    <NarrativeBlocks
+      coreTension={narrative.core_tension ?? '—'}
+      whyBenefits={narrative.why_benefits ?? '—'}
+      riskSources={narrative.risk_sources ?? '—'}
+      labels={{
+        coreTension: labels.coreTension,
+        whyBenefits: labels.whyBenefits,
+        riskSources: labels.riskSources,
+      }}
+    />
   )
 }
 
-function ScoreBox({
-  label,
-  value,
-  accent,
+function ThemesSection({
+  loading,
+  failed,
+  topThemes,
+  allActive,
+  labels,
+  token,
 }: {
-  label: string
-  value: number
-  accent: 'emerald' | 'amber' | 'blue' | 'zinc'
+  loading: boolean
+  failed: boolean
+  topThemes: ThemeCardItem[]
+  allActive: AllThemesItem[]
+  labels: {
+    viewFullTheme: string
+    exposure: string
+    events: string
+    expected: string
+    tier1: string
+    tier2: string
+    tier3: string
+    directionBenefits: string
+    directionHeadwind: string
+    directionMixed: string
+    directionUncertain: string
+    allToggle: string
+    allSummary: string
+    daysShort: string
+    unavailable: string
+  }
+  token: ReturnType<typeof useToken>['token']
 }) {
-  const bg = {
-    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    amber: 'bg-amber-50 border-amber-200 text-amber-800',
-    blue: 'bg-blue-50 border-blue-200 text-blue-800',
-    zinc: 'bg-zinc-50 border-zinc-200 text-zinc-800',
-  }[accent]
+  if (loading) {
+    return (
+      <div style={{ marginTop: 12 }}>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </div>
+    )
+  }
+  if (failed) {
+    return <PlaceholderBox token={token} text={labels.unavailable} />
+  }
   return (
-    <div className={`border rounded-lg px-3 py-2 ${bg}`}>
-      <p className="text-[11px] uppercase tracking-wide opacity-70">{label}</p>
-      <p className="text-xl font-mono font-semibold mt-0.5">{value.toFixed(1)}</p>
+    <>
+      <ThemeCards
+        items={topThemes}
+        labels={{
+          viewFullTheme: labels.viewFullTheme,
+          exposure: labels.exposure,
+          events: labels.events,
+          expected: labels.expected,
+          tier1: labels.tier1,
+          tier2: labels.tier2,
+          tier3: labels.tier3,
+          directionBenefits: labels.directionBenefits,
+          directionHeadwind: labels.directionHeadwind,
+          directionMixed: labels.directionMixed,
+          directionUncertain: labels.directionUncertain,
+        }}
+      />
+      <AllThemesCollapsed
+        items={allActive}
+        labels={{
+          toggle: labels.allToggle,
+          summary: labels.allSummary,
+          daysShort: labels.daysShort,
+          tier1: labels.tier1,
+          tier2: labels.tier2,
+          tier3: labels.tier3,
+          directionBenefits: labels.directionBenefits,
+          directionHeadwind: labels.directionHeadwind,
+          directionMixed: labels.directionMixed,
+          directionUncertain: labels.directionUncertain,
+        }}
+      />
+    </>
+  )
+}
+
+function PlaybookSection({
+  loading,
+  playbooks,
+  labels,
+  token,
+}: {
+  loading: boolean
+  playbooks: PlaybookData[]
+  labels: { observation: string; historicalCases: string; exitSignals: string; empty: string }
+  token: ReturnType<typeof useToken>['token']
+}) {
+  if (loading) {
+    return (
+      <div style={{ marginTop: 12 }}>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </div>
+    )
+  }
+  if (playbooks.length === 0) {
+    return <PlaceholderBox token={token} text={labels.empty} />
+  }
+  return (
+    <PlaybookTabs
+      playbooks={playbooks}
+      labels={{
+        observation: labels.observation,
+        historicalCases: labels.historicalCases,
+        exitSignals: labels.exitSignals,
+      }}
+    />
+  )
+}
+
+function EventsSection({
+  loading,
+  events,
+  isDark,
+  labels,
+  token,
+}: {
+  loading: boolean
+  events: EventItem[]
+  isDark: boolean
+  labels: {
+    showAll: string
+    collapse: string
+    today: string
+    hoursAgo: string
+    daysAgo: string
+    weeksAgo: string
+    impactHigh: string
+    impactMedium: string
+    impactLow: string
+    linkedTheme: string
+    empty: string
+  }
+  token: ReturnType<typeof useToken>['token']
+}) {
+  if (loading) {
+    return (
+      <div style={{ marginTop: 12 }}>
+        <Skeleton active paragraph={{ rows: 3 }} />
+      </div>
+    )
+  }
+  if (events.length === 0) {
+    return <PlaceholderBox token={token} text={labels.empty} />
+  }
+  return (
+    <EventsList
+      items={events}
+      isDark={isDark}
+      labels={{
+        showAll: labels.showAll,
+        collapse: labels.collapse,
+        today: labels.today,
+        hoursAgo: labels.hoursAgo,
+        daysAgo: labels.daysAgo,
+        weeksAgo: labels.weeksAgo,
+        impactHigh: labels.impactHigh,
+        impactMedium: labels.impactMedium,
+        impactLow: labels.impactLow,
+        linkedTheme: labels.linkedTheme,
+      }}
+    />
+  )
+}
+
+function PlaceholderBox({
+  token,
+  text,
+  action,
+}: {
+  token: ReturnType<typeof useToken>['token']
+  text: string
+  action?: { text: string; onClick: () => void }
+}) {
+  return (
+    <div
+      style={{
+        marginTop: 12,
+        padding: 24,
+        border: `1px dashed ${token.colorBorder}`,
+        borderRadius: token.borderRadius,
+        textAlign: 'center',
+        color: token.colorTextSecondary,
+      }}
+    >
+      <div style={{ fontSize: 13, marginBottom: action ? 8 : 0 }}>{text}</div>
+      {action && (
+        <Button size="small" onClick={action.onClick}>
+          {action.text}
+        </Button>
+      )}
     </div>
   )
 }
 
+// ─── Page shell ─────────────────────────────────────────────────────────────
+
+function PageShell({
+  symbol,
+  sidePad,
+  mode,
+  toggle,
+  setLocale,
+  locale,
+  t,
+  token,
+  children,
+}: {
+  symbol: string
+  sidePad: number
+  mode: 'light' | 'dark'
+  toggle: () => void
+  setLocale: (l: 'en' | 'zh') => void
+  locale: 'en' | 'zh'
+  t: (k: string, vars?: Record<string, string | number>) => string
+  token: ReturnType<typeof useToken>['token']
+  children: React.ReactNode
+}) {
+  return (
+    <div className="radar-page">
+      <div className="app">
+        <Sidebar />
+        <Layout style={{ background: 'transparent' }}>
+          <Topbar sidePad={sidePad} />
+
+          <Content style={{ padding: `0 ${sidePad}px 40px`, minWidth: 0 }}>
+            <Breadcrumb
+              style={{ margin: '20px 0 4px', fontSize: 12 }}
+              items={[
+                { title: <Link href="/">{t('sidebar.radar')}</Link> },
+                { title: <Link href="/tickers">{t('sidebar.tickers')}</Link> },
+                { title: symbol },
+              ]}
+            />
+            {children}
+          </Content>
+        </Layout>
+      </div>
+    </div>
+  )
+}
