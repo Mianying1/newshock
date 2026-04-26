@@ -14,3 +14,18 @@ results/
 *.save
 .claude/
 .vercel
+
+# Build artifacts
+tsconfig.tsbuildinfo
+
+# Local-only directories
+tmp/
+app/debug/
+app/design-preview/
+
+# Backup files
+*.bak
+
+# Throwaway / probe scripts (underscore-prefixed only)
+scripts/_*.ts
+scripts/_archive/
