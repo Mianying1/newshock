@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "Checkpoint Inhibitor Immuno-Oncology Wave (2013–2016)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Leading immuno-oncology names (BMS, Merck, early-stage biotechs) observed multi-hundred-percent moves from trough to peak; sector ETFs rose substantially as CTLA-4 and PD-1/PD-L1 data readouts cascaded through major oncology conferences",
+      "exit_trigger": "Competitive crowding across dozens of PD-1 combination trials, several high-profile combination failures (e.g., CheckMate-026 NSCLC disappointment in 2016), and valuation compression as the mechanism became consensus drove sentiment rotation",
+      "confidence": "high"
+    },
+    {
+      "name": "PCSK9 Inhibitor Cardiovascular Surge (2012–2017)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Regeneron, Amgen, and Sanofi saw significant appreciation during Phase 2/3 build-up; biotech sector broadly re-rated on the novelty of the LDL-lowering mechanism and large addressable market narrative",
+      "exit_trigger": "Praluent and Repatha received FDA approval but commercial uptake sharply disappointed due to payer resistance and high list prices; the gap between clinical promise and real-world reimbursement collapsed the investment thesis for many participants",
+      "confidence": "high"
+    },
+    {
+      "name": "Amyloid-Beta Alzheimer's Hypothesis Cycle (2010–2021)",
+      "approximate_duration": "约 10 年（含多轮反弹与崩溃）",
+      "peak_move": "Individual names saw episodic large moves around ADAS-Cog readouts; the cycle included sharp rallies (Biogen aducanumab 2019 Phase 3 surprise reversal) and catastrophic selloffs (multiple Phase 3 failures across Lilly, Roche, Merck programs)",
+      "exit_trigger": "Cumulative weight of Phase 3 failures (solanezumab, bapineuzumab, verubecestat, aducanumab initial failure) and publication of scientific integrity questions around foundational amyloid cascade papers eroded consensus; aducanumab's contested 2021 FDA approval marked a cynical endpoint rather than a triumphant one",
+      "confidence": "high"
+    },
+    {
+      "name": "GLP-1 / Obesity Therapeutics Re-Rating (2021–2024)",
+      "approximate_duration": "约 2–3 年主升浪",
+      "peak_move": "Novo Nordisk and Eli Lilly achieved historic market capitalizations; the theme spread to adjacencies (sleep apnea devices, surgical equipment, renal disease) and drove broad sector rotation into metabolic disease platforms",
+      "exit_trigger": "As of observation period, the theme has not fully exited but has shown rotation fatigue, competitive pipeline crowding (oral GLP-1s, combinatorial peptides), and early signs of payer pushback moderating the initial euphoria",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "technology",
+        "description": "Biomarker infrastructure has matured fundamentally. Blood-based plasma p-tau217 and p-tau231 assays, along with amyloid PET and tau PET imaging, now allow patient stratification and early-stage enrollment that was structurally impossible during the amyloid hypothesis era. This reduces the 'wrong patient population' failure mode that plagued prior trials and may compress time-to-signal in Phase 2 readouts.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Demographic pressure has intensified materially. The leading edge of the Baby Boomer cohort is now entering peak Alzheimer's risk years (ages 75–85), creating a secular demand urgency that was more distant during prior therapeutic waves. Payer systems and health policy in the US, EU, and Japan are under explicit fiscal pressure to find disease-modifying solutions, elevating political and commercial willingness to pay.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The FDA's Accelerated Approval pathway, following the aducanumab and lecanemab precedents, has established biomarker endpoints (amyloid clearance, tau reduction, synaptic marker normalization) as approvable surrogate endpoints. This lowers the regulatory bar for initial approval and may shorten the trial-to-approval window, but also introduces post-market confirmation risk that could create binary events later in the cycle.",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Unlike prior waves dominated by 2–3 large pharma bets on a single mechanism, the 2026 cohort features 8–10 distinct late-stage mechanisms (tau aggregation inhibitors, TREM2 neuroinflammation agonists, synaptic vesicle modulators, complement pathway inhibitors) across a distributed set of mid-cap biotechs and large pharma partnerships. This diversification reduces single-point-of-failure risk for the theme but also fragments capital concentration, potentially muting the explosive single-name moves seen in prior cycles.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "The fundamental tension between compelling mechanistic science and clinical translation failure risk remains structurally unchanged; Alzheimer's CNS complexity continues to confound even well-designed trials, and the blood-brain barrier problem persists across multiple new modalities.",
+      "Investor behavior patterns observed in prior biotech theme cycles—front-running conference readouts (CTAD, AAIC), crowding into pre-Phase 3 names, and binary event volatility around top-line data—appear to be repeating in this cohort.",
+      "Commercial execution risk post-approval (reimbursement, patient identification infrastructure, infusion center capacity for antibody therapies) mirrors the structural challenges that undermined PCSK9 inhibitor commercial launches despite strong clinical data."
+    ],
+    "observation": "The 2026 next-generation Alzheimer's wave may be structurally more durable than prior cycles due to genuine biomarker and mechanistic diversification, but the historical pattern of Alzheimer's drug development suggests that clinical translation risk and commercial realization gaps remain the dominant exit accelerants regardless of scientific sophistication."
+  },
+  "exit_signals": [
+    "A cluster of Phase 3 top-line failures across two or more distinct non-amyloid mechanisms within a 6-month window, particularly in tau-targeting or neuroinflammation programs, would likely trigger a broad de-rating of the theme similar to the 2016–2018 amyloid failure cascade.",
+    "CMS or major private payer formal non-coverage determinations for approved next-generation Alzheimer's agents, citing lack of functional outcome improvement (as observed with early aducanumab payer pushback), would signal commercial thesis breakdown.",
+    "Emergence of safety signals—particularly ARIA (amyloid-related imaging abnormalities) analogs in tau or neuroinflammatory agents—that trigger FDA clinical holds or black box warnings across multiple programs simultaneously.",
+    "Scientific credibility events: publication of meta-analyses or replication failures undermining the tau cascade or TREM2 hypotheses in the peer-reviewed literature, potentially echoing the 2022 Science paper raising questions about foundational amyloid research.",
+    "Valuation exhaustion signal: when forward pipeline risk-adjusted NPVs across the sector compress to near-zero implied probability of success despite continued enrollment, suggesting the market has fully discounted failure and institutional capital rotation out of the theme is underway."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Next-generation Alzheimer's therapeutics represents a multi-year structural R&D and commercial cycle driven by demographic inevitability, diversified mechanism exploration, and biomarker infrastructure maturation, without a single bounded event as catalyst or terminus.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q1",
+    "description": "The theme's current wave crystallized around lecanemab's full FDA approval in January 2023 (the first validated amyloid-clearing therapy), which simultaneously closed the prior amyloid chapter and catalyzed institutional interest in what comes next—redirecting R&D and capital toward tau, neuroinflammation, and synaptic mechanisms as the next frontier.",
+    "current_maturity_estimate": "mid"
+  }
+}

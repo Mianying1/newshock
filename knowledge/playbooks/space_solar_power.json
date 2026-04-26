@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1825
+  ],
+  "historical_cases": [
+    {
+      "name": "1970s–1980s NASA SPS Concept Wave",
+      "approximate_duration": "约 5–8 年",
+      "peak_move": "Sustained government funding enthusiasm and contractor interest (Boeing, Raytheon) followed by near-complete collapse when 1979 DOE reference study estimated costs too prohibitive; no liquid equity market analog but defense/aerospace contractor sentiment mirrored the cycle",
+      "exit_trigger": "DOE/NASA joint study concluded projected cost per kWh was orders of magnitude above terrestrial alternatives; Reagan-era budget cuts eliminated program funding entirely by 1981",
+      "confidence": "high"
+    },
+    {
+      "name": "2000s Terrestrial Solar 'Thin-Film' Commercialization Wave",
+      "approximate_duration": "约 4–6 年（2005–2011）",
+      "peak_move": "First Solar, Nanosolar, and peers attracted multi-billion dollar valuations; FSLR peak-to-trough move exceeded 80% decline from 2008 highs by 2012",
+      "exit_trigger": "Chinese crystalline silicon cost curve collapsed faster than thin-film learning rates; grid parity narrative shifted away from specialty materials toward commodity silicon scale",
+      "confidence": "high"
+    },
+    {
+      "name": "2007–2008 Microwave/Wireless Power Transmission Hype Cycle",
+      "approximate_duration": "约 12–18 个月",
+      "peak_move": "WiTricity MIT demo (2007) sparked a wave of venture funding and media coverage for wireless power broadly; short-lived equity moves in component suppliers before consolidating to niche consumer electronics applications",
+      "exit_trigger": "Efficiency losses at distance proved commercially limiting for high-power applications; investor focus migrated to near-field consumer charging (Qi standard)",
+      "confidence": "medium"
+    },
+    {
+      "name": "2010s Commercial Small Satellite / NewSpace Infrastructure Cycle",
+      "approximate_duration": "约 7–10 年（2013–2023）",
+      "peak_move": "SpaceX, Planet Labs, RocketLab, and SPAC-era peers drove sustained multi-year enthusiasm; ARK Space ETF and sector peaked ~2021 then corrected 60–70% by 2023 on execution delays and cost overruns",
+      "exit_trigger": "SPAC unwind, rising rates compressing long-duration asset valuations, and repeated launch/constellation schedule slippage eroded narrative momentum; survivors consolidated around proven revenue models",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "AI data center baseload power demand represents a structurally new and urgent pull that did not exist in any prior SBSP cycle. Hyperscalers facing grid interconnection queues of 5–10 years in key markets may tolerate a higher levelized cost of energy for guaranteed continuous power, meaningfully shifting the economics threshold required for SBSP viability.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Launch cost reductions driven by SpaceX Falcon 9 and emerging Starship economics (targeting sub-$100/kg to LEO) represent a step-change versus all prior SBSP analyses. The 1979 DOE study's fatal cost assumption was ~$3,000–10,000/kg to GEO; current trajectories may reduce that barrier by 1–2 orders of magnitude, altering the entire capital cost structure.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "Coordinated government programs—ESA's SOLARIS initiative, JAXA's multi-decade roadmap, UK SBSP Catapult funding, and US DoD/DARPA SSPIDR demonstrations—represent simultaneous multi-sovereign institutional commitment not observed in the 1970s–1980s era, which was largely a single-agency US effort. Military and energy-security motivations add policy durability beyond pure economics.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Demonstrated wireless power transmission efficiency exceeding 40% (JAXA 2023 ground demonstration; DARPA SSPIDR 2023 orbital test) moves the technology from purely theoretical to empirically validated at sub-scale. All prior investment cycles lacked this proof-of-concept anchor, making the current cycle structurally more credible to institutional capital.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "Cost-to-orbit at scale remains unproven at GEO altitudes where SBSP requires deployment; the gap between LEO demonstration and operational GEO infrastructure mirrors the gap that killed prior cycles when detailed engineering cost estimates emerged.",
+      "The theme may observed to repeat the pattern of attracting early-cycle speculative capital into a small number of pure-play names, followed by multi-year consolidation as timelines extend beyond initial market expectations—consistent with the NewSpace SPAC cycle of 2020–2023.",
+      "Regulatory and spectrum allocation complexity for high-power microwave transmission to Earth surfaces remains a structural friction point comparable to historical barriers, with ITU coordination requirements likely adding years to commercial deployment timelines."
+    ],
+    "observation": "The current SBSP cycle may be structurally more durable than all prior analogs due to converging demand pull from AI infrastructure and unprecedented launch cost reduction, yet it still exhibits the classic 'infrastructure-ahead-of-economics' pattern that has historically produced extended multi-year cycles with sharp interim corrections before any commercial revenue materialization."
+  },
+  "exit_signals": [
+    "A major government program (ESA SOLARIS, JAXA, or DoD SSPIDR successor) announces funding pause, scope reduction, or indefinite schedule delay—historically the single most reliable exit trigger for frontier energy infrastructure themes.",
+    "Independent levelized cost of energy (LCOE) studies from credible institutions (NREL, IEA, or equivalent) publish analyses showing SBSP remains uncompetitive versus grid-scale storage plus renewables even under optimistic launch cost assumptions, eroding the economic narrative anchor.",
+    "A high-profile demonstration failure—orbital assembly malfunction, beam transmission accuracy miss, or thermal management problem at scale—shifts expert consensus from 'engineering challenge' to 'fundamental physics barrier,' consistent with how the 1970s SPS concept collapsed after detailed feasibility review.",
+    "Competing baseload solutions for AI data centers (advanced nuclear SMRs, long-duration storage, or dedicated transmission corridors) achieve commercial contracts at scale, removing the specific demand-side urgency that differentiates this cycle from predecessors.",
+    "Early-stage pure-play SBSP equities and SPACs that attracted speculative capital begin serial equity dilutions or restructurings as development timelines extend past investor horizons, signaling that the 'narrative phase' has exhausted available patient capital—analogous to the 2022–2023 NewSpace SPAC unwind."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "SBSP represents a multi-decade frontier infrastructure buildout with no fixed commercial endpoint, driven by structural demand (AI power, energy security) and technology maturation curves rather than any single bounded catalyst, placing it in the same category as the energy transition or semiconductor supercycle archetypes.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q3",
+    "description": "The current SBSP investment cycle may be observed to have crystallized around mid-2022 when the UK government published its SBSP Feasibility Study, ESA formally proposed SOLARIS, and DARPA's SSPIDR program achieved its first orbital wireless power transmission milestone—converging signals that moved the theme from academic to institutional investment consideration.",
+    "current_maturity_estimate": "early"
+  }
+}

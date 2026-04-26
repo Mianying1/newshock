@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    730,
+    3650
+  ],
+  "historical_cases": [
+    {
+      "name": "Post-9/11 US Water Security Spending Wave (2001–2005)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Water utility and infrastructure equipment stocks observed meaningful multi-year outperformance vs. broader industrials; companies like Pall Corporation and ITT Industries saw sustained elevated revenue from government contracts",
+      "exit_trigger": "Federal appropriations normalized after initial Bioterrorism Act (2002) implementation cycle completed and DHS spending priorities shifted; urgency narrative faded as no major attack materialized",
+      "confidence": "medium"
+    },
+    {
+      "name": "Flint, Michigan Water Crisis Regulatory Response (2015–2019)",
+      "approximate_duration": "约 3–5 年",
+      "peak_move": "Triggered visible re-rating of water quality monitoring and lead pipe replacement equipment suppliers; companies in municipal water testing and treatment observed elevated order backlogs; broader water sector ETFs (PHO, FIW) outperformed during 2016–2018 window",
+      "exit_trigger": "Federal emergency declaration lifted; Lead and Copper Rule revision finalized but implementation timelines extended; public attention cycle exhausted without systemic national mandate passing",
+      "confidence": "high"
+    },
+    {
+      "name": "US Water Infrastructure Investment Post-ARRA (2009–2013)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "American Recovery and Reinvestment Act directed approximately $6B to clean water and drinking water state revolving funds; municipal equipment and pipe manufacturers observed elevated demand; Xylem, Watts Water, and Mueller Water Products benefited through sustained elevated capex cycle",
+      "exit_trigger": "ARRA stimulus disbursement completed; federal spending reverted to baseline; municipal budgets tightened under post-crisis fiscal constraints reducing incremental orders",
+      "confidence": "high"
+    },
+    {
+      "name": "UK Water Privatization Infrastructure Underinvestment Crisis (2023–2025)",
+      "approximate_duration": "约 2–3 年（进行中）",
+      "peak_move": "Thames Water near-insolvency and systemic sewage discharge violations triggered political crisis; water sector equipment and monitoring companies serving UK market observed increased tender activity; regulatory-mandated £96B 5-year investment plan (PR24) re-rated water technology suppliers",
+      "exit_trigger": "Theme remains active as of early 2026; historical analog suggests fade may occur upon political resolution of ownership structure and long-term financing certainty",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "policy",
+        "description": "The EPA's enforceable PFAS Maximum Contaminant Levels (effective 2026) represent the first hard federal compliance deadline in decades for water treatment, creating non-discretionary capital expenditure obligations for approximately 66,000 public water systems — unlike prior crisis episodes which were largely voluntary or locally driven",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Simultaneous convergence of three independent demand vectors — PFAS remediation mandates, lead service line replacement requirements under the revised Lead and Copper Rule (all lines replaced by 2037), and drought-driven Southwest water scarcity requiring desalination and recycled water infrastructure — creates compounding and non-substitutable demand unlike prior single-catalyst episodes",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "macro",
+        "description": "The Infrastructure Investment and Jobs Act (2021) allocated approximately $55B specifically to water infrastructure — the largest dedicated federal water investment in US history — providing multi-year obligated federal funding backstop that was absent in prior crisis cycles, partially insulating the theme from normal municipal budget cyclicality",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Advanced water treatment technology supply chains (membrane filtration, PFAS-specific ion exchange resins, real-time contaminant sensors) face meaningful capacity constraints and specialized manufacturing requirements, suggesting supply elasticity may be lower than during prior infrastructure waves dominated by commodity pipe and pump replacement",
+        "direction": "may_extend",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in prior cycles, implementation lag between legislative authorization and actual project disbursement may compress the equity re-rating window relative to the physical spending timeline",
+      "Municipal credit quality and state revolving fund capacity constraints — observed as a binding factor in the post-ARRA cycle — remain a structural bottleneck that may slow project velocity in fiscally stressed jurisdictions",
+      "Historical water infrastructure cycles have consistently shown that public urgency narratives peak early and fade before physical replacement is complete, creating risk of investor attention cycle shortening relative to the multi-decade physical replacement need"
+    ],
+    "observation": "The current water infrastructure cycle may be structurally more durable than prior episodic analogs due to the simultaneous presence of hard regulatory deadlines, unprecedented federal funding commitments, and multi-contaminant remediation requirements — though implementation execution risk and attention cycle dynamics observed in all prior cases remain relevant constraints."
+  },
+  "exit_signals": [
+    "Meaningful deceleration in EPA enforcement actions or legislative signals suggesting PFAS compliance deadline extensions, which would remove the hard-deadline urgency premium embedded in water treatment technology valuations",
+    "Large-cap water infrastructure equipment companies (e.g., Xylem, Veolia, AECOM water divisions) begin reporting order backlog normalization or book-to-bill ratios falling below 1.0x after extended elevated periods, suggesting demand pull-forward has been absorbed",
+    "State revolving fund award rates slow materially as IIJA water tranches are fully obligated and no successor federal legislation is enacted, shifting the spending driver back to discretionary municipal budgets — historically the weakest funding environment for water capex",
+    "PFAS remediation technology consolidation wave peaks, evidenced by major M&A transactions closing and acquirer stocks underperforming as deal premiums compress sector multiples, signaling late-cycle financial engineering replacing organic growth",
+    "Southwest drought conditions show multi-year normalization (above-average Colorado River flows, Lake Mead/Powell reservoir recovery to historical median levels), reducing scarcity-driven urgency for water recycling and conservation infrastructure investment"
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Water infrastructure replacement cycles are driven by physical asset decay timelines, hard regulatory compliance deadlines, and multi-decade federal funding commitments — structural factors with no natural near-term endpoint — placing this archetype alongside energy transition and semiconductor supercycle as a multi-year structural trend rather than an event-bounded or parent-dependent theme.",
+  "real_world_timeline": {
+    "approximate_start": "2021 Q4",
+    "description": "The Infrastructure Investment and Jobs Act signed in November 2021 and the subsequent EPA PFAS rulemaking process (culminating in April 2024 final rule with 2026–2029 compliance deadlines) jointly established the foundational policy architecture that catalyzed the current water infrastructure investment cycle.",
+    "current_maturity_estimate": "early"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1825
+  ],
+  "historical_cases": [
+    {
+      "name": "Molybdenum-99/Technetium-99m Global Supply Crisis (2009-2010)",
+      "approximate_duration": "约 18-24 个月",
+      "peak_move": "Diagnostic imaging stocks and nuclear pharmacy operators experienced elevated volatility; policy-driven emergency protocols triggered multi-government coordination and accelerated investment in alternative reactor sites across Canada, Netherlands, and Belgium",
+      "exit_trigger": "Staggered restart of NRU reactor in Canada and Petten reactor in Netherlands, combined with international supplier coordination agreements under OECD/NEA High-level Group on the Security of Supply of Medical Radioisotopes, restored baseline supply redundancy",
+      "confidence": "high"
+    },
+    {
+      "name": "GLP-1 Agonist Manufacturing Capacity Build-Out (2022-2025)",
+      "approximate_duration": "约 3-4 年，仍在持续",
+      "peak_move": "Novo Nordisk and Eli Lilly sustained multi-year re-rating; contract manufacturers, fill-finish specialists, and API suppliers saw prolonged elevated valuations as demand structurally exceeded supply; capacity announcements became recurring market catalysts",
+      "exit_trigger": "Theme has not fully exited; observed partial normalization as Novo and Lilly completed major Danish and US manufacturing expansions; competition from oral formulations beginning to alter supply-demand calculus",
+      "confidence": "high"
+    },
+    {
+      "name": "Lutetium-177 Commercialization Wave — Novartis Lutathera/Pluvicto (2017-2024)",
+      "approximate_duration": "约 5-7 年（从监管批准到供应链瓶颈高峰）",
+      "peak_move": "Novartis acquired AAA (Advanced Accelerator Applications) for ~$3.9B in 2018 and subsequently acquired Endocyte for ~$2.1B; PSMA-617 approval in 2022 exposed severe Lu-177 supply constraints that limited patient access and caused notable investor concern about revenue ramp; radiopharmacy buildout became a distinct investment sub-theme",
+      "exit_trigger": "Capacity expansion by Isotopen Technologien München, Bruce Power, and SHINE Medical Technologies, alongside new FDA-cleared no-carrier-added Lu-177 sources, began alleviating acute shortage by 2023-2024; supply constraint narrative shifted from crisis to managed ramp",
+      "confidence": "high"
+    },
+    {
+      "name": "Uranium Supply Disruption and Domestic Production Imperative (2021-2024)",
+      "approximate_duration": "约 2-3 年",
+      "peak_move": "Uranium spot prices rose from approximately $30/lb to over $100/lb; Cameco, Kazatomprom, and junior uranium miners sustained multi-year re-rating; US domestic production and strategic reserve policy became explicit legislative priorities following Russian supply concerns post-2022",
+      "exit_trigger": "Price normalization began as new supply contracts were signed and Kazatomprom production guidance was clarified; US domestic enrichment capacity policy provided partial floor but speculative premium compressed",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "Actinium-225 targeted alpha therapy (TAT) represents a fundamentally new demand category with no historical analog at scale. Multiple late-stage clinical programs (Ac-225 PSMA, Ac-225 FAPi, Ac-225 CD33) are simultaneously approaching potential FDA approval, creating a demand step-function rather than gradual ramp. Historical radioisotope shortages involved diagnostics (Mo-99) or beta therapies (Lu-177) with narrower addressable populations; TAT pipelines may address hundreds of thousands of patients annually if approved, implying demand volumes that dwarf current global Ac-225 production capacity by orders of magnitude.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Ac-225 production physics impose structural constraints absent in prior isotope cycles. Primary production routes — legacy Ra-226 targets from Cold War stockpiles (Oak Ridge, Dimitrovgrad), proton bombardment of Ra-226 in cyclotrons, and linear accelerator methods — each face distinct bottlenecks in target material availability, specialized shielding infrastructure, and isotopic purity requirements. Unlike Mo-99 (reactor-based, relatively replicable) or Lu-177 (neutron activation, broadly accessible), Ac-225 production cannot be rapidly replicated by generic nuclear infrastructure. This supply inelasticity may extend the constraint cycle materially beyond historical radioisotope shortage episodes.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "policy",
+        "description": "The 2022 Russian invasion of Ukraine and subsequent sanctions created explicit geopolitical urgency around RIAR (Dimitrovgrad) Ac-225 supply, prompting DOE, NNSA, and Congressional action including the CHIPS-analog framing of domestic isotope production as a national security matter. The DOE Isotope Program's accelerated funding, NorthStar Medical Radioisotopes' domestic Ra-226 recycling initiative, and SHINE Medical's expansion reflect a policy environment actively subsidizing supply-chain reshoring that was absent in prior radioisotope shortage cycles. This bipartisan policy tailwind may sustain investment longer than market fundamentals alone would support.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Small modular reactor (SMR) deployment timelines are now credibly within the 2028-2032 window for select designs (e.g., BWXT, X-energy), opening a potential new Ac-225 and other actinide production pathway that did not exist as a near-term reality in prior shortage cycles. If SMR-based isotope co-production proves technically and economically viable, it could eventually break the supply ceiling — but the 5-10 year development horizon means the near-term shortage dynamic remains structurally intact, creating an unusual situation where the long-term solution is visible but the intermediate scarcity is guaranteed.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in the Mo-99 crisis and Lu-177 ramp, supply chain resolution tends to follow a multi-actor coordination pattern rather than a single-company solution, suggesting the investment opportunity may be distributed across producers, logistics/radiopharmacy infrastructure, and end-use therapy developers rather than concentrated.",
+      "Historical radioisotope capacity build-outs have consistently taken longer and cost more than initial industry projections, with regulatory, shielding, and skilled-labor constraints repeatedly surprising investors accustomed to conventional pharmaceutical manufacturing timelines.",
+      "Demand pull-through from major pharma acquirers (analogous to Novartis/AAA and Novartis/Endocyte) has historically been the primary mechanism for accelerating capital deployment into supply infrastructure, suggesting M&A activity may remain a leading indicator of cycle maturity rather than a lagging one."
+    ],
+    "observation": "The Ac-225 supply chain theme may exhibit a structurally longer and more capital-intensive resolution cycle than any prior medical radioisotope shortage, given the simultaneous presence of physics-constrained supply inelasticity, geopolitically-motivated reshoring policy, and a potential demand step-function from multiple concurrent late-stage TAT approvals — a combination without close historical precedent."
+  },
+  "exit_signals": [
+    "Credible public capacity announcements from two or more non-Russian, non-legacy Ac-225 producers (e.g., SHINE, NorthStar, TRIUMF, CERN MEDICIS, or DOE ORNL expansions) citing specific GBq/year throughput targets with regulatory clearance timelines, suggesting the supply gap is entering a defined closure trajectory.",
+    "FDA approval of a second or third Ac-225-based therapy accompanied by commercial launch without patient access delays attributed to isotope scarcity, indicating supply has sufficiently caught up to initial approved-indication demand.",
+    "Spot or contract pricing signals for Ac-225 (currently informal and opaque) showing meaningful compression from peak levels, analogous to the Lu-177 price normalization observed in 2023-2024 as no-carrier-added sources multiplied.",
+    "Major pharma acquirers (e.g., Bristol-Myers Squibb, AstraZeneca, Pfizer) completing large-scale vertical integration into radiopharmacy logistics or isotope production, historically a late-cycle signal indicating that infrastructure value is being internalized rather than remaining as a standalone investment opportunity.",
+    "Congressional or DOE reporting indicating domestic Ac-225 production has achieved a defined percentage (e.g., 30-50%) of projected near-term US clinical demand, shifting the policy narrative from crisis-response to managed domestic sufficiency."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "The Ac-225/Lu-177/Ra-223 supply chain buildout is a multi-year structural infrastructure investment cycle driven by compounding demand from new FDA approvals, geopolitically-motivated reshoring, and fundamental production physics constraints — analogous to the GLP-1 manufacturing wave or semiconductor capital intensity cycles — without a single bounded catalytic event that would define a clear endpoint.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q2",
+    "description": "The theme crystallized in mid-2022 when Novartis's Pluvicto (Lu-177 PSMA-617) FDA approval exposed acute supply chain fragility, Russian/European supply geopolitical risk became explicit post-Ukraine invasion, and DOE began accelerating its Isotope Program funding with specific Ac-225 production mandates.",
+    "current_maturity_estimate": "mid"
+  }
+}

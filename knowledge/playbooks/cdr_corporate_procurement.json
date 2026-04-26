@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    730,
+    2190
+  ],
+  "historical_cases": [
+    {
+      "name": "Early Voluntary Carbon Market Boom (2020–2022)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Voluntary carbon credit prices surged roughly 4–6x across nature-based and tech-based offset categories; CBL Global Emissions Offset futures rose from under $2/ton to above $13/ton at peak; major corporate net-zero pledges drove unprecedented demand aggregation",
+      "exit_trigger": "Guardian/Zeit investigative reporting on Verra REDD+ credit quality (early 2023) collapsed buyer confidence; corporate legal and reputational exposure led to procurement freezes; the 'zombie credits' narrative unwound speculative positioning and caused broad VCM liquidity collapse",
+      "confidence": "high"
+    },
+    {
+      "name": "First-Generation Corn Ethanol Mandate Buildout (2005–2008)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "U.S. ethanol capacity roughly tripled; dozens of merchant ethanol plants financed and constructed; feedstock and blending infrastructure scaled rapidly ahead of Renewable Fuel Standard volume mandates; equity valuations for pure-play ethanol producers peaked at extreme multiples",
+      "exit_trigger": "Food-vs-fuel political backlash, corn price spike reducing margins, blend wall constraints limiting incremental demand, and the 2008 credit crisis froze project finance for marginal facilities; several merchant producers entered bankruptcy by 2009",
+      "confidence": "high"
+    },
+    {
+      "name": "DOE Loan Guarantee Cleantech Wave (2009–2012)",
+      "approximate_duration": "约 2–4 年",
+      "peak_move": "Over $16B in DOE Section 1705 loan guarantees catalyzed large-scale deployment of solar thermal, wind, and biofuel projects; anchor policy support plus early corporate PPA demand attracted significant private capital into first-of-kind commercial facilities",
+      "exit_trigger": "Solyndra bankruptcy (2011) created political toxicity for government-backed cleantech lending; Chinese solar manufacturing cost deflation made first-generation U.S. facilities uncompetitive; several guaranteed facilities restructured or were abandoned; program authority expired",
+      "confidence": "high"
+    },
+    {
+      "name": "California LCFS + RFS-Driven Cellulosic Biofuel Commercialization (2012–2016)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Multiple commercial-scale cellulosic ethanol plants (POET-DSM, Abengoa, DuPont) financed and commissioned under blended mandate + credit price support; LCFS credit prices above $150/ton provided viable blended economics for California-linked projects",
+      "exit_trigger": "Abengoa bankruptcy (2016), persistent feedstock logistics cost overruns, failure to achieve projected enzyme cost curves, and RFS cellulosic volume mandate reductions via EPA waivers collectively destroyed project finance appetite for subsequent facilities",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "The Frontier procurement model represents pre-committed offtake from creditworthy corporate buyers (Stripe, Alphabet, Meta, Shopify, McKinsey) paying above-market prices specifically to accelerate learning curves — a structurally different demand mechanism from speculative offset purchasing or compliance-driven volume. This 'advance market commitment' architecture more closely resembles GAVI vaccine AMCs than traditional commodity procurement, potentially providing more durable project finance anchoring than historical VCM demand which was largely unbankable.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "The Inflation Reduction Act's 45Q expansion to $180/ton for DAC (direct air capture) represents the first time a U.S. federal tax credit has been explicitly sized to bridge the cost gap for engineered CDR at commercial scale, with transferability provisions allowing developers to monetize credits without tax appetite. Combined with California LCFS credits pricing above $200/ton for certain CDR pathways, the blended policy support stack materially exceeds anything available to first-generation biofuel or solar thermal projects, potentially compressing the typical 'valley of death' financing window.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Current DAC and enhanced weathering projects benefit from modular, replicable unit designs informed by decades of industrial CO2 capture experience and accelerated materials science, in contrast to bespoke cellulosic biorefinery or solar thermal trough projects that required site-specific engineering. Modular scaling pathways may allow faster cost curve descent if early facilities achieve operational targets, though first-of-kind cost overruns remain a persistent risk.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "description": "Elevated interest rates in 2024–2026 materially increase the cost of capital for capital-intensive first-of-kind CDR facilities relative to the near-zero rate environment that enabled the 2020–2022 VCM boom; project IRRs that appeared viable under 2021 financing assumptions require meaningfully higher carbon credit prices or additional subsidy stacking to remain bankable, introducing financing fragility not present during the prior cycle's peak.",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "First-of-kind commercial facility cost overruns and schedule delays have historically eroded investor confidence in every analogous cleantech procurement wave, and CDR projects face identical feedstock, logistics, and engineering unknowns that plagued cellulosic biofuel and solar thermal commercialization.",
+      "Policy support continuity risk is structurally similar to prior cycles — 45Q credit availability depends on IRS regulatory implementation stability and potential legislative revision, mirroring how RFS cellulosic mandates were repeatedly waived by EPA when commercial volumes underdelivered.",
+      "The gap between announced corporate procurement commitments and actual contracted, bankable offtake agreements has historically been wide enough to strand project finance in early cleantech cycles, and CDR faces the same credibility-to-contract conversion challenge."
+    ],
+    "observation": "The Frontier AMC model and 45Q policy stack represent genuinely novel demand and subsidy architecture that may sustain CDR commercialization longer than prior cleantech waves, but the macro rate environment and persistent first-of-kind execution risk create conditions where a single high-profile facility failure could trigger the same confidence collapse observed in the 2016 cellulosic and 2023 VCM cycles."
+  },
+  "exit_signals": [
+    "A major first-of-kind DAC or enhanced weathering facility announces material cost overruns (>50% above projected), significant schedule delays, or operational underperformance relative to contracted removal tonnage, triggering a project finance freeze for subsequent facilities seeking construction debt.",
+    "One or more Frontier coalition members publicly reduces, pauses, or restructures their forward CDR purchase commitments, citing delivery failures, MRV (measurement, reporting, verification) disputes, or internal carbon strategy reprioritization — analogous to corporate offset buyer pullback following 2023 credit quality investigations.",
+    "IRS 45Q credit implementation guidance is revised unfavorably, narrowed in scope, or faces legislative rollback, materially degrading blended unit economics for projects in development pipeline and causing sponsor withdrawals from announced facilities.",
+    "California LCFS credit prices decline sustained below $150/ton (from >$200 levels), reducing the policy subsidy stack sufficiently that CDR projects cannot achieve bankable IRRs without additional concessional capital, stalling project finance closes.",
+    "A credible third-party MRV audit or scientific publication raises systematic questions about permanence, additionality, or net carbon accounting for a leading CDR methodology (particularly enhanced weathering or ocean-based approaches), triggering corporate legal and reputational risk reassessment analogous to the Verra REDD+ quality crisis that collapsed the 2022 VCM."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "CDR procurement scaling is a multi-year structural commercialization cycle driven by overlapping policy incentive stacks, corporate net-zero commitment timelines extending to 2030–2050, and technology learning curve dynamics that do not resolve within a bounded event window — more analogous to the solar PV or wind buildout arc than to a single policy announcement or geopolitical shock.",
+  "real_world_timeline": {
+    "approximate_start": "2021 Q4",
+    "description": "Frontier's advance market commitment was publicly launched in April 2022 (with pre-formation activity in late 2021), marking the first structured corporate coalition explicitly targeting engineered CDR commercialization at scale, coinciding with IRA legislative momentum and early 45Q expansion discussions.",
+    "current_maturity_estimate": "mid"
+  }
+}

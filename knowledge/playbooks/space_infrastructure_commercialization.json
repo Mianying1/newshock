@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1460
+  ],
+  "historical_cases": [
+    {
+      "name": "1990s Commercial Satellite Broadband Boom (Teledesic / Iridium / Globalstar)",
+      "approximate_duration": "约 4-6 年（1994–2000）",
+      "peak_move": "Satellite and launch-adjacent equities observed multi-hundred-percent appreciation during constellation buildout phase; subsequent collapse erased most gains as business models failed to achieve projected subscriber economics",
+      "exit_trigger": "Iridium and Globalstar bankruptcy filings (1999–2000) exposed fatal unit economics — terrestrial cellular buildout undercut addressable market assumptions while per-subscriber costs remained structurally uncompetitive; capital markets closed to follow-on raises",
+      "confidence": "high"
+    },
+    {
+      "name": "Post-2015 SmallSat / NewSpace Venture Cycle (Planet Labs, Spire, OneWeb Genesis)",
+      "approximate_duration": "约 3-5 年（2015–2021 峰值）",
+      "peak_move": "Private valuations and SPAC-driven public listings produced observed peak multiples of 15-25x forward revenue for constellation operators; sector-wide re-rating followed as launch cadence lagged projections and revenue ramp disappointed",
+      "exit_trigger": "SPAC redemption wave and rising rate environment (2022) collapsed speculative multiples; several operators (OneWeb bankruptcy 2020, AST SpaceMobile near-distress) required restructuring before re-emerging under revised capital structures",
+      "confidence": "high"
+    },
+    {
+      "name": "GPS Dual-Use Commercialization Wave (1990s–2000s)",
+      "approximate_duration": "约 8-10 年（1993–2003 主要投资周期）",
+      "peak_move": "Defense-to-commercial technology transfer created durable multi-year revenue streams for chipset and device manufacturers; theme proved genuinely multi-cycle rather than episodic, rewarding holders through multiple market dislocations",
+      "exit_trigger": "Theme did not end abruptly — it matured into commodity infrastructure; margin compression in hardware and commoditization of chipsets gradually rotated value to application-layer companies rather than infrastructure providers",
+      "confidence": "medium"
+    },
+    {
+      "name": "Pentagon MILSATCOM Modernization / WGS & AEHF Procurement Cycle (2004–2014)",
+      "approximate_duration": "约 8-10 年",
+      "peak_move": "Defense prime contractors with satellite communications exposure observed sustained above-market earnings growth and contract backlog expansion; theme wound down gradually rather than collapsing",
+      "exit_trigger": "Budget Control Act sequestration (2013) and shifting DoD procurement priorities toward cyber and unmanned systems compressed new contract awards; legacy MILSATCOM primes experienced multi-year revenue plateaus",
+      "confidence": "medium"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "supply_side",
+        "factor": "Launch cost structure has undergone an observed step-change discontinuity. Falcon 9 reusability and Starship's projected fully-reusable economics represent a supply-side shift with no credible historical analog — the 1990s constellation failures occurred with expendable launch vehicles at $10,000–$30,000/kg to LEO. Current and near-term economics may approach $100–$500/kg at scale, qualitatively altering which applications are economically viable and dramatically expanding the addressable satellite mass that can be deployed per dollar of capex.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "factor": "Sovereign and allied-nation defense demand (pLEO / proliferated architecture) now constitutes a structurally different demand floor compared to purely commercial subscriber projections that underpinned 1990s analog. Pentagon's explicit doctrine shift toward resilient, distributed LEO architectures — formalized through SDA Tranche contracts — creates government-backstopped demand that does not depend on consumer adoption curves or competitive terrestrial substitution, substantially reducing the demand-side failure mode that destroyed prior cycle operators.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "factor": "Space-based AI inference and on-orbit processing represent a genuinely new application layer with no historical analog in prior satellite cycles. Prior cycles competed primarily on connectivity bandwidth economics against terrestrial alternatives. Current architectures increasingly embed compute at the edge of the constellation, potentially enabling persistent ISR, real-time synthetic aperture processing, and low-latency inference that terrestrial infrastructure structurally cannot replicate — creating defensible moats that bandwidth-only constellations historically lacked.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "macro",
+        "factor": "The current macro environment combines elevated base rates with significant defense budget expansion pressure — a combination that historically compresses speculative multiples while simultaneously sustaining government-contracted revenue streams. This bifurcates the sector: pure commercial constellation operators with unproven subscriber economics may face financing pressure analogous to 1999–2002, while defense-contracted infrastructure providers may prove more durable. The macro regime thus introduces differentiated rather than uniform outcomes across the archetype.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "The fundamental tension between constellation capex commitments made during low-rate / high-liquidity environments and the operational cash flow timeline required to service that capital remains structurally identical to prior cycles — operators who over-capitalized relative to realistic revenue ramp timelines remain vulnerable regardless of improved launch economics.",
+      "Incumbent defense primes face the same make-vs-buy strategic dilemma observed in prior transition cycles — large integrators historically struggled to capture margin in rapidly commoditizing launch and bus hardware, with value migrating toward payload differentiation and software-defined capabilities, a pattern that appears to be repeating.",
+      "Regulatory and spectrum coordination complexity (ITU filings, orbital debris frameworks, frequency coordination among mega-constellation operators) represents a persistent structural friction that has slowed every prior commercial satellite cycle and shows no evidence of resolution in the current environment."
+    ],
+    "observation": "The current space infrastructure cycle may be structurally more durable than all prior analogs due to the simultaneous arrival of genuine launch cost discontinuity and government-mandated proliferated architecture demand, but this durability is likely to manifest unevenly — rewarding operators with locked defense contracts and on-orbit differentiation while potentially repeating prior cycle dynamics for pure commercial bandwidth players dependent on consumer adoption curves."
+  },
+  "exit_signals": [
+    "Observable saturation or competitive pricing collapse in LEO bandwidth markets — if per-Mbps pricing for Starlink/Kuiper/OneWeb converges toward terrestrial fiber equivalence, the commercial margin thesis for additional constellation capacity is structurally impaired, historically preceding operator distress.",
+    "SDA or Pentagon pLEO contract award cadence materially slowing, deferring, or being restructured under budget pressure — government-backstopped demand is the key differentiation from prior cycles; any observable drawdown in Tranche awards or continuing resolution-driven procurement freezes would signal the defense demand floor is eroding.",
+    "Starship operational launch cadence failing to achieve cost targets within 12-18 months of commercial debut — if launch economics do not materialize as projected, the entire downstream economics of new constellation business cases revert toward prior cycle unit economics, removing the primary structural differentiator.",
+    "Secondary capital market closure for constellation operators — historically, when high-yield or equity markets become unavailable for constellation follow-on raises (as observed in 2000 and 2022), operators with multi-year capex programs face existential liquidity risk regardless of operational progress; monitoring bond spreads and SPAC/IPO availability for space names may provide leading indication.",
+    "Emergence of a credible orbital debris incident or regulatory moratorium — a high-profile collision event or ITU/FCC enforcement action imposing constellation size limits or deorbit mandates would introduce regulatory overhang that historically has caused rapid multiple compression in infrastructure-heavy capital-intensive sectors, analogous to nuclear power regulatory inflection post-Three Mile Island."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Space infrastructure commercialization driven by structural launch cost deflation, government pLEO doctrine, and on-orbit compute represents a multi-year capital deployment cycle with no identifiable near-term terminus — analogous to semiconductor supercycle or energy transition dynamics rather than event-bounded or derivative themes.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q4",
+    "description": "The current cycle's structural foundations became observable in late 2022 when SDA awarded initial Tranche 1 transport layer contracts, Starship completed its first integrated static fire tests signaling near-term operational potential, and Amazon publicly committed to Kuiper production timelines — collectively marking the transition from conceptual to funded-execution phase.",
+    "current_maturity_estimate": "early"
+  }
+}

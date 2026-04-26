@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    730,
+    2190
+  ],
+  "historical_cases": [
+    {
+      "name": "U.S. Wind Power Buildout Cycle (PTC-Driven, 2012–2013)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Wind turbine manufacturers and developers saw order backlogs surge 2–3x; sector equities broadly outperformed until PTC expiration uncertainty triggered abrupt investment halt",
+      "exit_trigger": "Policy uncertainty around Production Tax Credit renewal caused developers to front-load installations, followed by a sharp multi-year investment cliff once the credit lapsed; overcapacity in turbine manufacturing compressed margins",
+      "confidence": "high"
+    },
+    {
+      "name": "U.S. Utility-Scale Solar Deployment Wave (2016–2020)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Levelized cost of solar fell ~80% over the period; leading developers (NextEra, First Solar) and inverter/tracker manufacturers saw sustained multiple expansion; interconnection queues grew from ~100 GW to ~900 GW",
+      "exit_trigger": "Theme did not sharply end but matured into a commodity phase as module prices stabilized, ITC step-down concerns intensified, and margin compression hit pure-play developers; investor attention rotated to storage as the next bottleneck",
+      "confidence": "high"
+    },
+    {
+      "name": "German Energiewende Battery Storage Incentive Cycle (2013–2018)",
+      "approximate_duration": "约 4–5 年",
+      "peak_move": "Residential and small commercial storage deployments grew ~10x; SMA Solar, Sonnen, and related integrators saw elevated valuations; grid-scale pilot projects proliferated",
+      "exit_trigger": "Federal subsidy program (KfW) hit funding caps; grid integration rules lagged deployment, creating curtailment and regulatory uncertainty; theme consolidated as pure storage plays were absorbed by larger utilities",
+      "confidence": "medium"
+    },
+    {
+      "name": "U.S. Grid-Scale Lithium-Ion Storage Inflection (2020–2023)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Annual U.S. utility-scale battery installations grew from ~1 GWh (2019) to ~15 GWh (2023); Fluence, Stem, and storage-adjacent equities saw significant premium valuations in 2021 before a sharp de-rating in 2022–2023 as rate hikes compressed growth multiples",
+      "exit_trigger": "Rising interest rates structurally impaired project economics for capital-intensive storage; supply chain disruptions (LFP cell shortages, freight costs) delayed projects; SPACs in the sector collapsed; theme entered a digestion/consolidation phase pending IRA clarity",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "policy",
+        "description": "The IRA's 45X Advanced Manufacturing Production Credit ($35/kWh for battery cells manufactured domestically) represents a durable, volume-linked subsidy structure rather than the binary on/off PTC/ITC cliff dynamics of prior cycles. Manufacturers receive credits per unit produced regardless of installation timing, reducing the boom-bust front-loading behavior observed in wind and early solar cycles.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Renewable curtailment in CAISO and ERCOT has reached levels where storage is no longer an optional grid amenity but an economic necessity for project viability — curtailment-driven negative pricing episodes now materially impair merchant solar and wind revenue, creating organic demand pull that did not exist at scale in prior storage cycles.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "Commercial deployment of sodium-ion and iron-air long-duration chemistries (8–100+ hour systems) opens market segments structurally inaccessible to 4-hour lithium-ion, including peaker plant replacement and multi-day grid balancing. This expands the total addressable market rather than merely intensifying competition within a fixed segment, a dynamic absent in prior cycles.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Domestic LFP and sodium-ion manufacturing capacity is being built from near-zero U.S. base (driven by 45X incentives and tariff barriers on Chinese cells), meaning supply elasticity is currently constrained by factory construction timelines of 2–4 years rather than by raw material cycles alone. This may sustain pricing power for early domestic producers but also creates execution risk that could shorten the investment thesis if factory ramp timelines slip.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in both the wind PTC cycle and early solar buildout, interconnection queue backlogs remain a structural bottleneck that may cause installation timelines to lag announced capacity commitments by 2–4 years, creating a gap between financial momentum and physical deployment.",
+      "Policy-dependent investment cycles historically attract capital well ahead of project cash flows, observed in solar 2016–2020 and wind 2012–2013; current storage valuations may similarly embed multi-year optimism that is vulnerable to any legislative rollback or permitting reform failure.",
+      "Technology cost curves in energy storage appear to follow a pattern analogous to early solar — rapid learning-rate-driven cost declines attract incremental demand that further accelerates scale, a self-reinforcing dynamic that has historically extended infrastructure deployment cycles beyond initial analyst forecasts."
+    ],
+    "observation": "The combination of a production-linked (rather than installation-linked) federal subsidy, structurally painful curtailment economics, and chemistry diversification into long-duration systems may sustain this cycle materially longer than prior policy-driven energy infrastructure waves, though interconnection queue clearing and domestic manufacturing ramp execution remain the key variables that could compress or extend the timeline."
+  },
+  "exit_signals": [
+    "Announced U.S. utility-scale storage project cancellation rates rise above 25–30% of the interconnection queue (analogous to the solar queue attrition spike of 2022–2023), signaling that project economics have deteriorated faster than policy support can offset.",
+    "LFP or sodium-ion cell spot prices in the U.S. domestic market converge with Chinese import prices net of tariffs, eliminating the 45X-driven manufacturing margin premium and triggering consolidation among domestic cell producers.",
+    "CAISO and ERCOT curtailment volumes plateau or decline as storage deployment catches up with renewable generation growth, removing the primary demand-pull economic justification and shifting the marginal storage project back to policy-dependent rather than market-driven economics.",
+    "Congressional appropriations or IRS guidance materially restrict or phase down 45X production credit eligibility, introducing the binary policy cliff risk historically observed in PTC/ITC expiration cycles.",
+    "Long-duration storage (iron-air, sodium-ion) commercial deployments report sustained capacity factor or cycle-life underperformance versus specifications, triggering a technology credibility reassessment and causing project developers to revert exclusively to proven 4-hour lithium-ion systems, capping TAM expansion."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Grid-scale energy storage deployment is a multi-year structural infrastructure buildout driven by embedded policy incentives, secular renewable penetration growth, and fundamental grid reliability needs — it lacks a discrete endpoint and is more analogous to the AI infrastructure capex wave or semiconductor capacity expansion than to a bounded event-driven trade.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q4",
+    "description": "The IRA's passage in August 2022 and subsequent IRS guidance on standalone storage ITC eligibility (clarified late 2022–2023) marked the structural inflection point for U.S. grid-scale storage investment, transitioning the theme from pilot-scale to policy-anchored commercial deployment at scale.",
+    "current_maturity_estimate": "mid"
+  }
+}

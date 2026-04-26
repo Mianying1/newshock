@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "Genomics/Bioinformatics Platform M&A Wave (2000–2002)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "Genomics platform companies (Human Genome Sciences, Incyte Genomics) commanded 10–30x revenue multiples at peak; major pharma struck licensing and acquisition deals at substantial premiums before clinical validation materially arrived",
+      "exit_trigger": "Phase 2 failures of genomics-derived candidates combined with dot-com capital withdrawal exposed lack of clinical translation; multiples collapsed and acquirers wrote down platform investments",
+      "confidence": "high"
+    },
+    {
+      "name": "Rational Drug Design / Structure-Based Platform Wave (1994–1998)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Companies like Agouron Pharmaceuticals and Vertex Pharmaceuticals attracted sustained premium valuations as structure-based HIV protease inhibitor programs advanced; Agouron acquired by Warner-Lambert at significant premium upon nelfinavir approval",
+      "exit_trigger": "Market saturation of protease inhibitors, resistance emergence, and realization that platform generalizability was narrower than initially priced in; acquirer focus shifted to late-stage assets rather than platforms",
+      "confidence": "high"
+    },
+    {
+      "name": "Combinatorial Chemistry & HTS Platform Acquisition Cycle (1996–2001)",
+      "approximate_duration": "约 4–5 年",
+      "peak_move": "Pharmacopeia, ArQule, and OSI Pharmaceuticals (née British Biotech's combinatorial unit) received multi-hundred-million dollar valuations and partnership deals; large pharma paid premiums to license combinatorial libraries believing platform economics would transform discovery productivity",
+      "exit_trigger": "Clinical attrition rates from combinatorially derived compounds proved no better than traditional chemistry; platform narrative deflated as hit-to-lead quality concerns emerged and partnerships were not renewed",
+      "confidence": "high"
+    },
+    {
+      "name": "First-Generation AI/ML Drug Discovery Enthusiasm Peak (2018–2021)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Recursion Pharmaceuticals, Exscientia, Insilico Medicine, and Absci received venture and public market premiums of 15–40x forward revenue; Exscientia reached ~$2.9B valuation at IPO; multiple Big Pharma struck nine-figure platform partnerships",
+      "exit_trigger": "Biotech funding winter of 2022, rising rates compressing long-duration growth multiples, and absence of Phase 2+ clinical readouts to validate AI-specific efficacy advantage; sector corrected 50–70% from peak",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "technology",
+        "description": "Foundation model architectures (protein language models, diffusion-based generative chemistry, multimodal biological encoders) represent a qualitative capability shift versus earlier QSAR, docking, or first-generation ML approaches. AlphaFold2/3 and successor models have materially altered the cost and speed of target-to-hit identification, providing an observable structural basis — not just a narrative basis — for platform claims.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "demand_side",
+        "description": "Pharma R&D productivity pressure has intensified structurally: patent cliffs exceeding $200B in revenue exposure through 2030 for major incumbents create unusually strong M&A motivation to acquire validated computational pipelines rather than build internally. This demand intensity appears greater than in prior platform waves where internal build remained a credible alternative.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "Differentiation between foundation model generalists (Recursion, Insilico) and vertical specialists (e.g., RNA-targeting, PROTAC design, covalent chemistry platforms) is emerging earlier in the cycle than in prior waves, potentially compressing the period during which undifferentiated platform premiums are sustained and accelerating a bifurcation in valuation outcomes.",
+        "direction": "may_shorten",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "FDA's emerging frameworks for AI-assisted drug development (discussed under PDUFA VII commitments and the AI Action Plan) may provide regulatory clarity that accelerates IND filings and review timelines for AI-derived candidates, reducing one historical source of cycle uncertainty. However, regulatory conservatism on AI explainability in clinical contexts remains an open variable.",
+        "direction": "uncertain",
+        "confidence": "medium"
+      }
+    ],
+    "similarities": [
+      "As observed in prior platform waves, clinical translation risk remains the primary terminal validator — no computational platform has yet demonstrated statistically superior Phase 3 success rates relative to traditional discovery, meaning the valuation premium remains largely hypothesis-driven until late-stage readouts accumulate.",
+      "Large pharma acquirers historically overpay at the enthusiasm peak and subsequently write down platform acquisitions when generalizability proves narrower than modeled; this behavioral pattern in corporate development may recur regardless of underlying technology quality.",
+      "Capital cycle dynamics appear similar: a surge of venture-backed entrants in 2019–2023 has created a crowded landscape that may compress margins on platform licensing even if clinical validation is achieved, echoing the combinatorial chemistry oversupply dynamic of the late 1990s."
+    ],
+    "observation": "The 2024–2026 cycle may observed to be the first in computational drug discovery where clinical validation data (rather than platform narrative alone) is driving M&A premiums, which structurally differentiates it from prior waves — but the historical pattern of acquirer over-extrapolation and platform generalizability disappointment remains a plausible risk that has not yet been tested at scale."
+  },
+  "exit_signals": [
+    "Two or more high-profile Phase 2/3 failures of AI-platform-derived lead candidates within a 6–12 month window, particularly if failures are attributed to target selection or molecule quality rather than trial execution — this would directly challenge the platform productivity narrative.",
+    "Major acquirer (post-acquisition) publicly revising down pipeline value of an acquired computational platform asset, signaling that due diligence on model generalizability revealed narrower applicability than the acquisition thesis assumed.",
+    "Convergence of large pharma internal AI capabilities to near-parity with independent platform companies, reducing the strategic scarcity premium that drives M&A multiples — observable via major pharma announcing material internal model benchmarks or poaching of key platform scientists.",
+    "Sustained compression of partnership deal economics — observable if disclosed upfront payments and milestone structures in new Big Pharma / AI biotech collaborations decline materially from 2023–2025 peak structures, signaling buyer pricing power has shifted.",
+    "Broad biotech funding environment deterioration (rate shock, equity market risk-off) causing valuation benchmarks to reset independent of clinical progress, as observed in 2022 — this would accelerate exit from the theme even if fundamental clinical thesis remains intact."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "Computational drug design platform adoption is a multi-year structural shift in pharma R&D methodology driven by compounding technology capabilities and persistent patent cliff pressures, without a single bounded trigger or parent event whose fading would end the theme — clinical readout cycles alone span 3–7 years per program.",
+  "real_world_timeline": {
+    "approximate_start": "2023 Q3",
+    "description": "The current cycle's inflection point may be observed around mid-2023, when the first AI-native IND filings progressed to Phase 1 readouts (notably Insilico Medicine's ISM001-055 Phase 1 data and Exscientia/Sanofi program disclosures), combined with post-AlphaFold2 adoption reaching critical mass inside major pharma R&D organizations and triggering a new wave of platform partnership and M&A activity.",
+    "current_maturity_estimate": "mid"
+  }
+}

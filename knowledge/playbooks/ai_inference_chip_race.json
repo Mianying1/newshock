@@ -1,0 +1,85 @@
+{
+  "typical_duration_label": "12+ months",
+  "typical_duration_days_approx": [
+    365,
+    1095
+  ],
+  "historical_cases": [
+    {
+      "name": "ASIC Displacement of FPGAs in Bitcoin Mining (2013–2015)",
+      "approximate_duration": "约 18–24 个月",
+      "peak_move": "ASIC-focused semiconductor and mining hardware names observed multi-hundred-percent moves during the adoption ramp; incumbent FPGA miners rapidly became uneconomical, compressing margins industry-wide",
+      "exit_trigger": "Market saturation of ASIC supply, Bitcoin price correction in late 2014, and declining marginal economics per unit of hashing power ended the acute arms-race dynamic; subsequent cycles became more muted as tooling commoditized",
+      "confidence": "high"
+    },
+    {
+      "name": "Networking ASIC vs. Merchant Silicon Cycle (Broadcom/Marvell vs. Cisco Internal, 2016–2019)",
+      "approximate_duration": "约 2–3 年",
+      "peak_move": "Merchant silicon providers (Broadcom Tomahawk family) observed sustained multiple expansion as hyperscalers shifted white-box strategies; EDA and IP licensors (Arm, Synopsys) saw compounding revenue growth over the period",
+      "exit_trigger": "Hyperscaler custom silicon programs (Google TPU v2/v3 broader rollout, Microsoft Catapult maturation) absorbed incremental workloads, reducing urgency for merchant silicon upgrades and plateauing the displacement narrative",
+      "confidence": "medium"
+    },
+    {
+      "name": "Google TPU Custom Silicon Arms Race Catalyst (2016–2018)",
+      "approximate_duration": "约 18–30 个月",
+      "peak_move": "Announcement of TPU v1 (2016) and subsequent v2/v3 disclosures triggered sustained re-rating of EDA vendors (Synopsys, Cadence), foundry proxies (TSMC ADRs), and Arm Holdings licensing narratives; NVIDIA de-rated briefly on custom displacement fears before recovering on training dominance",
+      "exit_trigger": "Recognition that TPUs addressed narrow inference/training niches while NVIDIA retained ecosystem lock-in (CUDA, software stack) caused the displacement narrative to partially deflate; theme cycled into a longer-duration structural trend rather than a clean exit",
+      "confidence": "medium"
+    },
+    {
+      "name": "Smartphone SoC In-House Silicon Wave — Apple A-series / Qualcomm vs. MediaTek (2010–2014)",
+      "approximate_duration": "约 3–4 年",
+      "peak_move": "Apple's vertical integration into custom ARM-based SoCs drove sustained outperformance for TSMC (foundry share gains), Arm Holdings royalty growth, and EDA vendor revenue; merchant chipmakers (older Qualcomm competitors) faced prolonged multiple compression",
+      "exit_trigger": "Consolidation of the SoC landscape (Qualcomm and Apple as dominant survivors), maturation of process node transitions, and commoditization of baseline smartphone performance ended the acute arms-race premium; theme transitioned to a slow-burn IP licensing royalty story",
+      "confidence": "high"
+    }
+  ],
+  "this_time_different": {
+    "differences": [
+      {
+        "dimension": "demand_side",
+        "description": "The scale of simultaneous hyperscaler ASIC programs (Google TPU v5, Amazon Trainium/Inferentia, Microsoft Maia, Meta MTIA, Apple Neural Engine at edge) is historically unprecedented — multiple $10B+ annual capex commitments flowing into custom silicon concurrently, rather than one pioneer creating a template others slowly follow. Inference workload economics (cost-per-token, watts-per-query) are now a boardroom-level competitive differentiation metric, creating durable pull demand rather than episodic project spending.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "supply_side",
+        "description": "EDA toolchain complexity (3nm/2nm GAA node design rules, chiplet integration, advanced packaging co-design) has increased structural barriers to custom silicon entry, benefiting a concentrated duopoly (Synopsys/Cadence) and a narrow set of packaging-capable foundries (TSMC CoWoS, Intel 18A). Unlike prior cycles where new entrants could access comparable tooling within 1–2 years, the current design-to-tape-out timeline for leading-edge inference ASICs may span 3–4 years, dampening supply elasticity and sustaining enabler revenue visibility.",
+        "direction": "may_extend",
+        "confidence": "high"
+      },
+      {
+        "dimension": "technology",
+        "description": "The maturation of transformer-based model architectures into relatively stable inference graphs (versus the chaotic training-era model churn) makes fixed-function ASIC investment more economically defensible than in prior AI hardware cycles. Historically, rapid model architecture shifts (e.g., CNN to RNN to Transformer) obsoleted custom silicon before ROI was realized; the current relative stabilization around attention mechanisms and MoE variants may extend the useful life of inference ASIC investments, altering the obsolescence risk calculus.",
+        "direction": "may_extend",
+        "confidence": "medium"
+      },
+      {
+        "dimension": "policy",
+        "description": "U.S. export controls on advanced AI chips (BIS Entity List restrictions, NVIDIA H100/H20 export licensing requirements) are creating geopolitically segmented demand pools, accelerating domestic and allied-nation custom silicon development (Japan/Rapidus, EU Chips Act, India semiconductor incentives, China's domestic ASIC push under Huawei Ascend ecosystem). This policy-driven fragmentation is a structural amplifier without close historical analog in prior semiconductor arms races.",
+        "direction": "may_extend",
+        "confidence": "high"
+      }
+    ],
+    "similarities": [
+      "As observed in the smartphone SoC cycle and Bitcoin ASIC wave, the initial phase of custom silicon arms races tends to benefit EDA vendors and foundries more reliably than the chip designers themselves, whose economics depend on execution and yield — this pattern appears to be repeating in the current cycle.",
+      "Historical analogs consistently show that incumbent general-purpose chip leaders (Intel in networking, NVIDIA in inference today) retain ecosystem moat longer than displacement narratives imply, typically because software switching costs are underestimated by the market at cycle onset.",
+      "Prior custom silicon waves have eventually resulted in a two-tier market structure — a small number of vertically integrated hyperscalers with proprietary ASICs and a remaining merchant market for the long tail — suggesting the current dynamic may compress rather than eliminate third-party inference chip demand."
+    ],
+    "observation": "The AI inference ASIC arms race exhibits the architectural pattern of prior custom silicon displacement cycles but may be structurally elongated by the simultaneous confluence of unprecedented capex scale, policy-driven supply fragmentation, and a rare window of model architecture stability that makes fixed-function silicon economics more defensible than at any prior inflection point in semiconductor history."
+  },
+  "exit_signals": [
+    "Observable plateau or sequential deceleration in hyperscaler custom silicon tape-out announcements and foundry advanced packaging capacity bookings — particularly CoWoS allocation data from TSMC quarterly disclosures — would suggest the acute arms-race phase is maturing into steady-state procurement.",
+    "NVIDIA's inference revenue mix (as disclosed in datacenter segment commentary) stabilizing or growing faster than custom ASIC deployment narratives would signal that ecosystem lock-in (CUDA, NIM microservices) is successfully defending market share and reducing the displacement urgency driving competitor ASIC investment.",
+    "EDA vendor (Synopsys, Cadence) forward guidance revisions citing lumpy or declining custom ASIC design starts, or a reduction in cloud/hyperscaler-segment revenue growth rates, would historically mark the point where the design pipeline is saturating rather than accelerating.",
+    "Consolidation or cancellation of announced custom inference chip programs among second-tier hyperscalers or AI-native companies (e.g., program delays, foundry capacity releases, or pivot back to merchant silicon procurement) would indicate that cost-per-inference economics have not justified the NRE investment at scale.",
+    "A meaningful architectural discontinuity — such as the emergence of neuromorphic, photonic, or next-generation non-transformer model paradigms achieving commercial viability — that renders current inference ASIC design investments partially obsolete would historically catalyze a reset of the arms-race dynamic and rotation of capital toward new architectural enablers."
+  ],
+  "duration_type": "extended",
+  "duration_type_reasoning": "The AI inference ASIC arms race is driven by a multi-year structural shift in how AI compute is procured and deployed at hyperscale, with no finite trigger event or binary resolution catalyst, making it analogous to the broader semiconductor capex supercycle rather than a bounded event-driven theme.",
+  "real_world_timeline": {
+    "approximate_start": "2022 Q4",
+    "description": "The inference ASIC arms race accelerated meaningfully in late 2022 through 2023 as ChatGPT's viral adoption exposed the cost and power inefficiency of using training-optimized NVIDIA GPUs for production inference at scale, triggering urgent hyperscaler ASIC development programs and EDA/foundry capacity commitments.",
+    "current_maturity_estimate": "mid"
+  }
+}
