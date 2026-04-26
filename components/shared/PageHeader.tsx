@@ -38,102 +38,100 @@ export function PageHeader({
         borderBottom: `1px solid ${token.colorSplit}`,
       }}
     >
-      <Flex
-        align="flex-end"
-        justify="space-between"
-        wrap
-        gap={16}
-      >
-        <Flex align="center" gap={14}>
-          {icon && (
-            <span
-              aria-hidden
-              className="page-header-icon"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 24,
-                height: 24,
-                color: token.colorTextSecondary,
-              }}
-            >
-              {icon}
-            </span>
-          )}
-          <Title
-            level={1}
+      <Flex align="center" gap={14}>
+        {icon && (
+          <span
+            aria-hidden
+            className="page-header-icon"
             style={{
-              margin: 0,
-              fontWeight: 600,
-              letterSpacing: '-0.02em',
-              lineHeight: 1.05,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 24,
+              height: 24,
+              color: token.colorTextSecondary,
+              flexShrink: 0,
             }}
           >
-            {title}
-          </Title>
-        </Flex>
-        {meta && (
-          <Text
-            style={{
-              fontSize: 11.5,
-              color: token.colorTextQuaternary,
-              fontFamily: token.fontFamilyCode,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {meta}
-          </Text>
+            {icon}
+          </span>
         )}
+        <Title
+          level={1}
+          style={{
+            margin: 0,
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.05,
+          }}
+        >
+          {title}
+        </Title>
       </Flex>
 
-      {(live || stats.length > 0) && (
+      {(live || stats.length > 0 || meta) && (
         <Flex
           align="center"
-          gap={0}
+          justify="space-between"
           wrap
+          gap={12}
           style={{ marginTop: 14, rowGap: 8 }}
         >
-          {live && (
-            <span
-              className="page-header-pulse"
-              style={{ background: token.colorSuccess, marginRight: 12 }}
-              aria-hidden
-              title={typeof liveLabel === 'string' ? liveLabel : undefined}
-            />
-          )}
+          <Flex align="center" wrap style={{ rowGap: 8 }}>
+            {live && (
+              <span
+                className="page-header-pulse"
+                style={{ background: token.colorSuccess, marginRight: 12 }}
+                aria-hidden
+                title={typeof liveLabel === 'string' ? liveLabel : undefined}
+              />
+            )}
 
-          {stats.map((s, i) => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline' }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: token.colorText,
-                  fontFamily: token.fontFamilyCode,
-                  fontVariantNumeric: 'tabular-nums',
-                  letterSpacing: '-0.01em',
-                  lineHeight: 1,
-                }}
-              >
-                {s.value}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: token.colorTextTertiary,
-                  marginLeft: 6,
-                  letterSpacing: '0.01em',
-                }}
-              >
-                {s.label}
-              </Text>
-              {i < stats.length - 1 && (
-                <PageHeaderDivider color={token.colorBorderSecondary} />
-              )}
-            </span>
-          ))}
+            {stats.map((s, i) => (
+              <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline' }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: token.colorText,
+                    fontFamily: token.fontFamilyCode,
+                    fontVariantNumeric: 'tabular-nums',
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1,
+                  }}
+                >
+                  {s.value}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: token.colorTextTertiary,
+                    marginLeft: 6,
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  {s.label}
+                </Text>
+                {i < stats.length - 1 && (
+                  <PageHeaderDivider color={token.colorBorderSecondary} />
+                )}
+              </span>
+            ))}
+          </Flex>
+
+          {meta && (
+            <Text
+              style={{
+                fontSize: 11.5,
+                color: token.colorTextQuaternary,
+                fontFamily: token.fontFamilyCode,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {meta}
+            </Text>
+          )}
         </Flex>
       )}
     </div>
