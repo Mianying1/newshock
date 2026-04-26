@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { supabaseAdmin } from './supabase-admin'
 import { anthropic, MODEL_SONNET } from './anthropic'
@@ -206,13 +207,24 @@ export async function computeConviction(themeId: string): Promise<ConvictionResu
     `}\n` +
     `Do NOT include overall_conviction — it is computed server-side.`
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 800,
-    temperature: 0,
-    system,
-    messages: [{ role: 'user', content: user }],
-  })
+  let msg
+  try {
+    msg = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 800,
+      temperature: 0,
+      system,
+      messages: [{ role: 'user', content: user }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'computeConviction', file: 'lib/conviction-score.ts', model: MODEL_SONNET },
+        extra: { theme_id: themeId, theme_name: theme.name, archetype_id: theme.archetype_id ?? null },
+      })
+    }
+    throw error
+  }
 
   const raw = msg.content
     .flatMap((c) => (c.type === 'text' ? [c.text] : []))

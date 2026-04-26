@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { anthropic, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 
@@ -117,20 +118,31 @@ export async function classifyEventDirection(eventId: string): Promise<ClassifyR
     .single()
   if (thErr || !theme) return null
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 500,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: 'user',
-        content: buildUserPrompt(
-          { name: theme.name, summary: theme.summary },
-          { headline: event.headline, raw: event.raw_content ?? null }
-        ),
-      },
-    ],
-  })
+  let msg
+  try {
+    msg = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 500,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: buildUserPrompt(
+            { name: theme.name, summary: theme.summary },
+            { headline: event.headline, raw: event.raw_content ?? null }
+          ),
+        },
+      ],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'classifyEventDirection', file: 'lib/counter-evidence.ts', model: MODEL_SONNET },
+        extra: { event_id: event.id, theme_id: theme.id, theme_name: theme.name },
+      })
+    }
+    throw error
+  }
 
   const text = msg.content
     .flatMap((c) => (c.type === 'text' ? [c.text] : []))

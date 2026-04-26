@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { anthropic, MODEL_HAIKU } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import {
@@ -178,6 +179,12 @@ export async function classify8KEvent(
       reasoning_zh: parsed.reasoning_zh ?? null,
     }
   } catch (err) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(err, {
+        tags: { function: 'classify8KEvent', file: 'lib/sec-8k-classifier.ts', model: MODEL_HAIKU },
+        extra: { event_id: event.id, ticker: context.ticker, cik: context.cik, items: context.items },
+      })
+    }
     return {
       event_id: event.id,
       ticker: context.ticker,

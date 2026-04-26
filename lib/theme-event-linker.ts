@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { anthropic, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import { classifyEventDirection, refreshThemeCounterSummary } from './counter-evidence'
@@ -97,12 +98,23 @@ export async function linkEventsToTheme(themeId: string, lookbackDays = LOOKBACK
     candidates.map((c, i) => `${i + 1}. [${c.id}] ${c.headline}`).join('\n') +
     `\n\nReturn a JSON array of event ids that clearly belong to this theme. Example: ["id1","id2"]. Empty array if none match.`
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 800,
-    system,
-    messages: [{ role: 'user', content: user }],
-  })
+  let msg
+  try {
+    msg = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 800,
+      system,
+      messages: [{ role: 'user', content: user }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'linkEventsToTheme', file: 'lib/theme-event-linker.ts', model: MODEL_SONNET },
+        extra: { theme_id: themeId, theme_name: theme.name, candidate_count: candidates.length },
+      })
+    }
+    throw error
+  }
 
   const text = msg.content
     .flatMap((c) => (c.type === 'text' ? [c.text] : []))

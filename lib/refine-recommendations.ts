@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
 
@@ -243,16 +244,27 @@ function tokenCost(input: number, output: number): number {
 export async function callRefine(input: RefineInput): Promise<{ output: RefineOutput; stats: RefineStats }> {
   const prompt = buildPrompt(input)
   const started = Date.now()
-  const stream = anthropic.messages.stream({
-    model: MODEL_SONNET,
-    max_tokens: 5000,
-    messages: [{ role: 'user', content: prompt }],
-  })
   let text = ''
-  stream.on('text', (delta) => {
-    text += delta
-  })
-  const final = await stream.finalMessage()
+  let final
+  try {
+    const stream = anthropic.messages.stream({
+      model: MODEL_SONNET,
+      max_tokens: 5000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+    stream.on('text', (delta) => {
+      text += delta
+    })
+    final = await stream.finalMessage()
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'callRefine', file: 'lib/refine-recommendations.ts', model: MODEL_SONNET },
+        extra: { theme_id: input.theme.id, theme_name: input.theme.name, recs_count: input.current_recs.length },
+      })
+    }
+    throw error
+  }
   const elapsed = (Date.now() - started) / 1000
   const output = lenientParse(text)
   const input_tokens = final.usage?.input_tokens ?? 0

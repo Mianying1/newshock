@@ -1,5 +1,6 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import * as Sentry from '@sentry/nextjs'
 import { supabaseAdmin } from './supabase-admin'
 import { anthropic, MODEL_SONNET } from './anthropic'
 import { enrichThemeRecommendations } from './theme-enrichment'
@@ -115,11 +116,22 @@ export async function callSonnetForPlaybook(arch: PlaybookArchetypeInput): Promi
     .replace('{description}', arch.description ?? '')
     .replace('{category}', arch.category)
 
-  const response = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 8000,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  let response
+  try {
+    response = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'callSonnetForPlaybook', file: 'lib/archetype-pipeline.ts', model: MODEL_SONNET, archetype_id: arch.id },
+        extra: { archetype_name: arch.name, archetype_category: arch.category },
+      })
+    }
+    throw error
+  }
 
   const block = response.content[0]
   const text = block && block.type === 'text' ? block.text : ''

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
 import { normalizeSector } from '@/lib/sector-normalize'
@@ -448,11 +449,22 @@ export async function callSelfConsistencyPass(input: {
     `}`
 
   const started = Date.now()
-  const resp = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 3000,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  let resp
+  try {
+    resp = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'callSelfConsistencyPass', file: 'lib/deep-recommendations.ts', model: MODEL_SONNET },
+        extra: { theme_id: input.theme.id, theme_name: input.theme.name, recs_count: input.recs.length },
+      })
+    }
+    throw error
+  }
   const elapsed = (Date.now() - started) / 1000
   const text = resp.content
     .filter((x: { type: string }) => x.type === 'text')
@@ -496,16 +508,27 @@ export async function callDeepReasoning(input: {
 }): Promise<{ output: DeepOutput; stats: DeepRunStats }> {
   const prompt = buildPrompt(input)
   const started = Date.now()
-  const stream = anthropic.messages.stream({
-    model: MODEL_SONNET,
-    max_tokens: 6000,
-    messages: [{ role: 'user', content: prompt }],
-  })
   let text = ''
-  stream.on('text', (delta) => {
-    text += delta
-  })
-  const final = await stream.finalMessage()
+  let final
+  try {
+    const stream = anthropic.messages.stream({
+      model: MODEL_SONNET,
+      max_tokens: 6000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+    stream.on('text', (delta) => {
+      text += delta
+    })
+    final = await stream.finalMessage()
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'callDeepReasoning', file: 'lib/deep-recommendations.ts', model: MODEL_SONNET },
+        extra: { theme_id: input.theme.id, theme_name: input.theme.name, archetype_id: input.arch?.id ?? null, recs_count: input.currentRecs.length },
+      })
+    }
+    throw error
+  }
   const elapsed = (Date.now() - started) / 1000
 
   const output = lenientParse(text)

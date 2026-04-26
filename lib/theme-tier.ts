@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { anthropic, MODEL_HAIKU } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 
@@ -40,12 +41,23 @@ export async function classifySubthemeParent(
     `Summary: ${(subtheme.summary ?? '').slice(0, 600)}\n\n` +
     `Respond with ONLY the umbrella number (1-${umbs.length}) or "none". No other text.`
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_HAIKU,
-    max_tokens: 10,
-    system,
-    messages: [{ role: 'user', content: user }],
-  })
+  let msg
+  try {
+    msg = await anthropic.messages.create({
+      model: MODEL_HAIKU,
+      max_tokens: 10,
+      system,
+      messages: [{ role: 'user', content: user }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'classifySubthemeParent', file: 'lib/theme-tier.ts', model: MODEL_HAIKU },
+        extra: { subtheme_name: subtheme.name, umbrella_count: umbs.length },
+      })
+    }
+    throw error
+  }
 
   const text = msg.content
     .flatMap((c) => (c.type === 'text' ? [c.text] : []))

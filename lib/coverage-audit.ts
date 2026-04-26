@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
 
@@ -346,11 +347,27 @@ export async function runCoverageAudit(): Promise<AuditReportRow> {
     subthemes,
   })
 
-  const response = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 8000,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  let response
+  try {
+    response = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'runCoverageAudit', file: 'lib/coverage-audit.ts', model: MODEL_SONNET },
+        extra: {
+          archetype_count: archetypes.length,
+          unmatched_count: unmatched.length,
+          umbrella_count: umbrellas.length,
+          subtheme_count: subthemes.length,
+        },
+      })
+    }
+    throw error
+  }
 
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
   const parsed = parseAuditResponse(text)

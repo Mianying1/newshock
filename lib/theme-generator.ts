@@ -1,4 +1,5 @@
 import pLimit from 'p-limit'
+import * as Sentry from '@sentry/nextjs'
 import { anthropic, MODEL_HAIKU, MODEL_SONNET } from './anthropic'
 import { supabaseAdmin } from './supabase-admin'
 import { isSecFiling } from './sec-filter'
@@ -524,31 +525,42 @@ export async function sonnetIdentifyTheme(event: EventRow): Promise<SonnetThemeR
     `- ticker_reasoning / ticker_reasoning_zh: same ticker keys; Chinese version uses standard finance terms (受益 / 承压 / 供应链 / 暴露). Preserve any [benefits]/[headwind]/[mixed]/[uncertain] direction prefix in BOTH versions.\n` +
     `- When action is "irrelevant", all *_zh fields may be null.`
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 1500,
-    temperature: 0,
-    system: [
-      {
-        type: 'text',
-        text: SYSTEM_PROMPT,
-        cache_control: { type: 'ephemeral' },
-      },
-    ],
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: cachedContext,
-            cache_control: { type: 'ephemeral' },
-          },
-          { type: 'text', text: newsBlock },
-        ],
-      },
-    ],
-  })
+  let msg
+  try {
+    msg = await anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 1500,
+      temperature: 0,
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: cachedContext,
+              cache_control: { type: 'ephemeral' },
+            },
+            { type: 'text', text: newsBlock },
+          ],
+        },
+      ],
+    })
+  } catch (error) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error, {
+        tags: { function: 'sonnetIdentifyTheme', file: 'lib/theme-generator.ts', model: MODEL_SONNET },
+        extra: { event_id: event.id, headline: event.headline?.slice(0, 200) ?? null },
+      })
+    }
+    throw error
+  }
 
   console.log('[theme-gen cache]', JSON.stringify(msg.usage))
 
@@ -734,6 +746,12 @@ async function checkArchetypeExclusionForStrengthen(
     }
     return { shouldBypass: false, reason: '' }
   } catch (err) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(err, {
+        tags: { function: 'checkArchetypeExclusionForStrengthen', file: 'lib/theme-generator.ts', model: MODEL_HAIKU },
+        extra: { event_id: event.id, archetype_name: archetypeName, target_theme_name: targetThemeName, exclusion_rules_count: exclusionRules.length },
+      })
+    }
     // Fail-open: don't block strengthen on a check error.
     console.warn(`[strengthen-exclusion-check] Haiku error, allowing through: ${err instanceof Error ? err.message : String(err)}`)
     return { shouldBypass: false, reason: 'check_error' }
