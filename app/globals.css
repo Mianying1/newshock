@@ -34,6 +34,16 @@ body {
   }
 }
 
+.scroll-x-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-x-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .ticker-row {
   display: flex;
   align-items: center;

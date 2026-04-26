@@ -32,3 +32,22 @@ export function getTodayPriority(theme: ThemeRadarItem): number {
 
   return strength * 0.4 + velocity * 10 * 0.3 + urgency * 0.3 + tierBonus
 }
+
+export function getFocusRank(theme: ThemeRadarItem): number {
+  const s = theme.theme_strength_score ?? 0
+  if (s >= 80) return 4
+  if (s >= 55) return 3
+  if (s >= 30) return 2
+  return 1
+}
+
+export function getOngoingTop3(themes: ThemeRadarItem[]): ThemeRadarItem[] {
+  return themes
+    .filter((th) => th.status === 'active')
+    .sort((a, b) => {
+      const focusDiff = getFocusRank(b) - getFocusRank(a)
+      if (focusDiff !== 0) return focusDiff
+      return (b.days_active ?? 0) - (a.days_active ?? 0)
+    })
+    .slice(0, 3)
+}
