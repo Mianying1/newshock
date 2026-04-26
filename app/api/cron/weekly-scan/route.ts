@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { anthropic, MODEL_SONNET } from '@/lib/anthropic'
 
@@ -41,6 +42,11 @@ export async function GET(request: NextRequest) {
     .gte('created_at', cutoff24h)
 
   if ((unmatched24h ?? 0) < 10) {
+    Sentry.captureMessage('weekly-scan skipped: low unmatched_24h', {
+      level: 'warning',
+      tags: { stage: 'ws_skip_low_24h' },
+      extra: { scan_date: now, unmatched_24h: unmatched24h ?? 0, threshold: 10 },
+    })
     return Response.json({
       ok: true,
       skipped: true,
@@ -165,6 +171,15 @@ Return JSON array only.`
   const unmatchedIdSet = new Set(unmatched.map((e) => e.id))
   const candidates: SonnetCandidate[] = JSON.parse(jsonMatch[0])
 
+  // Silent-skip class 2: Sonnet returned 0 candidates from real unmatched signal
+  if (candidates.length === 0) {
+    Sentry.captureMessage('weekly-scan: Sonnet returned 0 candidates', {
+      level: 'warning',
+      tags: { stage: 'ws_sonnet_zero' },
+      extra: { scan_date: now, unmatched_count: unmatched.length, total_events: all.length },
+    })
+  }
+
   let inserted = 0
   let skippedDuplicate = 0
   let skippedLowEvidence = 0
@@ -221,9 +236,28 @@ Return JSON array only.`
 
     if (error) {
       console.error(`Insert failed for ${c.proposed_archetype_id}:`, error.message)
+      Sentry.captureException(error, {
+        tags: { stage: 'ws_insert' },
+        extra: { proposed_archetype_id: c.proposed_archetype_id },
+      })
     } else {
       inserted++
     }
+  }
+
+  // Silent-skip class 3: Sonnet returned candidates but every one got filtered
+  // (duplicate of existing archetype/pending candidate, or evidence < 3).
+  if (candidates.length > 0 && inserted === 0) {
+    Sentry.captureMessage('weekly-scan: all candidates filtered out (no inserts)', {
+      level: 'warning',
+      tags: { stage: 'ws_all_filtered' },
+      extra: {
+        scan_date: now,
+        total_candidates: candidates.length,
+        skipped_as_duplicate: skippedDuplicate,
+        skipped_low_evidence: skippedLowEvidence,
+      },
+    })
   }
 
   return Response.json({
