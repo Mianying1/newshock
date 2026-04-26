@@ -392,6 +392,7 @@ export async function buildThemeRadar(options: {
   limit?: number
   statuses?: string[]
   tier?: ThemeTier
+  include_children?: boolean
 } = {}): Promise<{ themes: ThemeRadarItem[]; summary: ThemeRadarSummary }> {
   const {
     include_exploratory = false,
@@ -400,6 +401,7 @@ export async function buildThemeRadar(options: {
     limit = 50,
     statuses,
     tier,
+    include_children = false,
   } = options
 
   // Build status filter
@@ -464,17 +466,19 @@ export async function buildThemeRadar(options: {
     )
   }
 
-  // Fetch recs + catalysts + earliest event date for each theme (in parallel)
+  // Fetch recs + catalysts + earliest event date for each theme (in parallel).
+  // include_children: optional fetchChildren(row.id) for hierarchy views (Theme Map).
   const items = await Promise.all(
     themeRows.map(async (row) => {
-      const [recs, catalysts, earliestEventDate] = await Promise.all([
+      const [recs, catalysts, earliestEventDate, children] = await Promise.all([
         fetchRecommendations(row.id),
         fetchCatalysts(row.id, 5),
         fetchEarliestEventDate(row.id),
+        include_children ? fetchChildren(row.id) : Promise.resolve([] as ThemeChildRef[]),
       ])
       row.recent_drivers = null
       row.recent_drivers_generated_at = null
-      return buildItem(row, recs, catalysts, earliestEventDate)
+      return buildItem(row, recs, catalysts, earliestEventDate, null, children)
     })
   )
 
