@@ -48,12 +48,13 @@ export function PageHeader({
           {icon && (
             <span
               aria-hidden
+              className="page-header-icon"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 22,
-                height: 22,
+                width: 24,
+                height: 24,
                 color: token.colorTextSecondary,
               }}
             >

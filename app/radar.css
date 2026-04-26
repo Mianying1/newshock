@@ -264,6 +264,13 @@
   70%, 100% { transform: scale(1.8); opacity: 0; }
 }
 
+/* ===== Page header icon ===== */
+.radar-page .page-header-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* ===== Page header pulse (live indicator) ===== */
 .radar-page .page-header-pulse {
   display: inline-block;
