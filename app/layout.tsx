@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 import { Providers } from '@/lib/providers'
 import { inter } from '@/lib/fonts'
@@ -30,6 +32,8 @@ export default function RootLayout({
         <AntdRegistry>
           <Providers>{children}</Providers>
         </AntdRegistry>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
