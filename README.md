@@ -124,3 +124,7 @@ Pattern #01 跑完 PASS 之后，对剩下 6 个 pattern 重复：
 4. PASS 的进产品，FAIL 的调整或扔掉
 
 **所有 PASS 的 pattern 才是你产品 v1 真正的 knowledge base。**
+
+## Sentry (LLM error tracking)
+
+拿 DSN: sentry.io → Settings → Projects → `newshock` → Client Keys (DSN). 复制到 `.env.local` 的 `SENTRY_DSN` 和 `NEXT_PUBLIC_SENTRY_DSN`. Source map 上传需 `SENTRY_AUTH_TOKEN` (scopes: `project:releases`, `org:read`). 模板见 `.env.example`. 生产环境用 `vercel env add` 添加同样的 keys.
