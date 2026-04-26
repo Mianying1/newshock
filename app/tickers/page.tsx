@@ -158,7 +158,7 @@ export default function TickersPage() {
         href: `/tickers/${tk.symbol}`,
         symbol: tk.symbol,
         company_name: tk.company_name,
-        group: (tk.sector ?? 'other').toLowerCase(),
+        group: (tk.sector ?? 'other').toLowerCase().replace(/[\s/]+/g, '_'),
         category_label: tk.category ? t(`categories.${tk.category}`) : null,
         score: tk.ticker_maturity_score !== null ? Math.round(tk.ticker_maturity_score * 10) : null,
       }))
