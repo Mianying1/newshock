@@ -285,17 +285,42 @@ function buildItem(
   const daysSinceLast = Math.max(0, Math.floor((Date.now() - lastEventDate.getTime()) / 86400000))
 
   // Theme-specific playbook overrides the archetype baseline when present.
-  // Both locales fall through specific → archetype, with cross-locale specific
-  // reuse so a single zh-or-en specific generation covers both views.
-  const archetype_playbook =
-    row.specific_playbook ?? row.theme_archetypes?.playbook ?? null
-  const archetype_playbook_zh =
-    row.specific_playbook_zh
-      ?? row.specific_playbook
-      ?? row.theme_archetypes?.playbook_zh
-      ?? null
+  // CJK-aware routing: legacy data wrote zh content into the en column on both
+  // themes.specific_playbook and theme_archetypes.playbook, so we detect
+  // language and route accordingly to keep EN view from leaking zh.
+  // Sampled-field check: only inspect the prose the user actually reads as a
+  // sentence (observation + first case name + first exit_trigger). Numeric
+  // strings like `approximate_duration: "约 12-18 个月"` are minor and don't
+  // count, so a partially-translated playbook still counts as EN.
+  const isCJK = (pb: unknown) => {
+    if (!pb || typeof pb !== 'object') return false
+    const p = pb as { historical_cases?: Array<{ name?: string; exit_trigger?: string }>; this_time_different?: { observation?: string } }
+    const sample = [
+      p.this_time_different?.observation ?? '',
+      p.historical_cases?.[0]?.name ?? '',
+      p.historical_cases?.[0]?.exit_trigger ?? '',
+    ].join(' ')
+    return /[\u4e00-\u9fff]/.test(sample)
+  }
+  const sp = row.specific_playbook
+  const spZh = row.specific_playbook_zh
+  const ap = row.theme_archetypes?.playbook ?? null
+  const apZh = row.theme_archetypes?.playbook_zh ?? null
+
+  const archetype_playbook = (() => {
+    if (sp && !isCJK(sp)) return sp
+    if (ap && !isCJK(ap)) return ap
+    return null
+  })()
+  const archetype_playbook_zh = (() => {
+    if (spZh) return spZh
+    if (sp && isCJK(sp)) return sp
+    if (apZh) return apZh
+    if (ap && isCJK(ap)) return ap
+    return null
+  })()
   const playbook_source: 'theme' | 'archetype' =
-    row.specific_playbook || row.specific_playbook_zh ? 'theme' : 'archetype'
+    sp || spZh ? 'theme' : 'archetype'
   const playbook_stage = computePlaybookStage(daysHot, archetype_playbook)
 
   return {

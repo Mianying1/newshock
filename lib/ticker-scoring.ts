@@ -37,6 +37,7 @@ interface RecRow {
   theme_id: string
   ticker_symbol: string
   tier: number
+  exposure_pct: number | null
 }
 
 interface EventRow {
@@ -52,6 +53,18 @@ interface TickerRow {
 }
 
 const TIER_WEIGHTS: Record<number, number> = { 1: 3, 2: 1.5 }
+
+// Phase 2B sub-task 4: continuous exposure_pct → weight (replaces TIER_WEIGHTS lookup).
+// Mapping: exposure 100 → 3 (matches old T1 max), 50 → 1.5 (matches old T2 mid),
+// 0 → 0. Linear so a 95-exposure pure play meaningfully outranks a 70-exposure
+// borderline T1 instead of being clipped to the same flat weight.
+// Falls back to TIER_WEIGHTS when exposure_pct is null (pre-backfill rows).
+function exposureWeight(exposure_pct: number | null, tier: number): number {
+  if (exposure_pct !== null && exposure_pct !== undefined) {
+    return Math.max(0, Math.min(100, exposure_pct)) * 0.03
+  }
+  return TIER_WEIGHTS[tier] ?? 0
+}
 const RECENT_ARCHETYPE_WINDOW_DAYS = 30
 const ACTIVE_WINDOW_DAYS = 30
 const LONG_TERM_MIN_DAYS = 365
@@ -78,7 +91,7 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       .select('symbol, company_name, sector, logo_url'),
     supabaseAdmin
       .from('theme_recommendations')
-      .select('theme_id, ticker_symbol, tier')
+      .select('theme_id, ticker_symbol, tier, exposure_pct')
       .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
@@ -147,7 +160,7 @@ export async function computeTickerScores(): Promise<TickerScores[]> {
       const factor = coolingFactor(theme.status, theme.last_active_at, now)
       if (factor <= 0) continue
 
-      const tierWeight = TIER_WEIGHTS[r.tier] ?? 0
+      const tierWeight = exposureWeight(r.exposure_pct, r.tier)
       const themeEvents7 = eventsByTheme7[theme.id] ?? 0
       const themeEvents30 = eventsByTheme30[theme.id] ?? 0
       events7 += themeEvents7
@@ -240,7 +253,7 @@ export async function getThematicTickers(
     supabaseAdmin.from('tickers').select('symbol, company_name, sector, logo_url'),
     supabaseAdmin
       .from('theme_recommendations')
-      .select('theme_id, ticker_symbol, tier')
+      .select('theme_id, ticker_symbol, tier, exposure_pct')
       .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
@@ -303,7 +316,7 @@ export async function getThematicTickers(
       const factor = coolingFactor(theme.status, theme.last_active_at, now)
       if (factor <= 0) continue
 
-      const tierWeight = TIER_WEIGHTS[r.tier] ?? 0
+      const tierWeight = exposureWeight(r.exposure_pct, r.tier)
       const themeWeight = eventsByTheme[theme.id] ?? 0
       if (themeWeight === 0) continue // no activity in window
 
@@ -356,7 +369,7 @@ export async function getPotentialTickers(
     supabaseAdmin.from('tickers').select('symbol, company_name, sector, logo_url'),
     supabaseAdmin
       .from('theme_recommendations')
-      .select('theme_id, ticker_symbol, tier')
+      .select('theme_id, ticker_symbol, tier, exposure_pct')
       .or('confidence_band.is.null,confidence_band.neq.low'),
     supabaseAdmin
       .from('themes')
@@ -430,7 +443,7 @@ export async function getPotentialTickers(
       if (r.tier !== 1 && r.tier !== 2) continue
       const entry = eligibleThemes.get(r.theme_id)
       if (!entry) continue
-      const tierWeight = TIER_WEIGHTS[r.tier] ?? 0
+      const tierWeight = exposureWeight(r.exposure_pct, r.tier)
       // Early themes get a boost — they are the whole point of this list
       const stageMult = entry.ratio < 0.3 ? 1.5 : entry.ratio <= 0.7 ? 1.0 : 0.7
       const strength = entry.strength > 0 ? entry.strength / 10 : 1

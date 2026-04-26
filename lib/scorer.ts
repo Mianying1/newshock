@@ -26,7 +26,14 @@ export interface ScoreSummary {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function baseScore(tier: number): number {
+// Phase 2B sub-task 4: exposure_pct (continuous, 0-100) drives base when present.
+// Falls back to legacy tier mapping for rows that pre-date the LLM exposure scoring.
+// pattern_ticker_map currently has no exposure_pct column, so this path is dormant
+// here — it activates once Phase 3 backfills exposure scores into pattern mappings.
+function baseScore(exposure_pct: number | null, tier: number): number {
+  if (exposure_pct !== null && exposure_pct !== undefined) {
+    return Math.max(0, Math.min(100, Math.round(exposure_pct)))
+  }
   if (tier === 1) return 70
   if (tier === 2) return 55
   return 40
@@ -126,7 +133,9 @@ export async function scoreEvent(eventId: string): Promise<ScoreResult> {
   const run_id = new Date().toISOString().slice(0, 16) // minute-level run_id
 
   const scoreRows = candidateMappings.map((mapping) => {
-    const base = baseScore(mapping.tier)
+    // pattern_ticker_map has no exposure_pct yet (Phase 3 will populate);
+    // pass null so we keep the legacy tier mapping until then.
+    const base = baseScore(null, mapping.tier)
 
     // Historical alpha
     const t5Values = extractT5(historical ?? [], mapping.ticker_symbol)

@@ -94,6 +94,29 @@ function parseArgs(): CliArgs {
   return args
 }
 
+const CALL_TIMEOUT_MS = 180_000
+const CALL_RETRIES = 2
+
+async function callWithTimeoutAndRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown = null
+  for (let attempt = 0; attempt <= CALL_RETRIES; attempt++) {
+    try {
+      return await Promise.race([
+        fn(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`timeout ${CALL_TIMEOUT_MS}ms`)), CALL_TIMEOUT_MS)
+        ),
+      ])
+    } catch (e) {
+      lastErr = e
+      const msg = e instanceof Error ? e.message : String(e)
+      console.log(`  [retry ${attempt + 1}/${CALL_RETRIES + 1}] ${msg.slice(0, 120)}`)
+      if (attempt < CALL_RETRIES) await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)))
+    }
+  }
+  throw lastErr
+}
+
 async function countExistingFitRows(archetypeId: string): Promise<number> {
   const { count } = await supabaseAdmin
     .from('ticker_archetype_fit')
@@ -175,13 +198,15 @@ async function proposeCandidates(
     `}]\n\n` +
     `Return ONLY the JSON array.`
 
-  const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 16000,
-    temperature: 0,
-    system,
-    messages: [{ role: 'user', content: user }],
-  })
+  const msg = await callWithTimeoutAndRetry(() =>
+    anthropic.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 16000,
+      temperature: 0,
+      system,
+      messages: [{ role: 'user', content: user }],
+    })
+  )
 
   const text = msg.content
     .flatMap((c) => (c.type === 'text' ? [c.text] : []))
