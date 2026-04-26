@@ -24,6 +24,8 @@ import {
 import useSWR from 'swr'
 import { Sidebar } from '@/components/Sidebar'
 import { FilterPill } from '@/components/shared/FilterPill'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { ClockIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { formatRelativeTime } from '@/lib/utils'
@@ -511,53 +513,33 @@ export default function EventsPage() {
               flexDirection: 'column',
             }}
           >
-            <div
-              style={{
-                padding: '34px 2px 20px',
-                borderBottom: `1px solid ${token.colorSplit}`,
-              }}
-            >
-              <Title
-                level={1}
-                style={{ margin: 0, fontWeight: 600, letterSpacing: '-0.02em' }}
-              >
-                {t('events_page.title')}
-              </Title>
-              <Flex
-                align="center"
-                justify="space-between"
-                wrap
-                gap={16}
-                style={{ marginTop: 12 }}
-              >
-                <Flex align="center" gap={20} wrap>
-                  <Flex align="center" gap={8}>
-                    <Badge color={token.colorSuccess} />
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        color: token.colorTextSecondary,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {t('events_page.subtitle_total', { n: total })}
-                    </Text>
-                  </Flex>
-                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
-                    {timeRange === 'latest'
-                      ? t('events_page.time_latest')
-                      : timeRange === 'week'
-                      ? t('events_page.time_week')
-                      : t('events_page.time_older')}
-                  </Text>
-                </Flex>
-              </Flex>
-            </div>
+            <PageHeader
+              title={t('sidebar.events')}
+              icon={<ClockIcon />}
+              stats={[
+                {
+                  value: total,
+                  label: locale === 'zh' ? '事件' : 'Events',
+                },
+              ]}
+              meta={
+                timeRange === 'latest'
+                  ? t('events_page.time_latest')
+                  : timeRange === 'week'
+                  ? t('events_page.time_week')
+                  : t('events_page.time_older')
+              }
+            />
 
             <Flex
               vertical
               gap={10}
-              style={{ marginTop: 18, marginBottom: 18 }}
+              style={{
+                marginTop: 18,
+                marginBottom: 22,
+                paddingBottom: 18,
+                borderBottom: `1px solid ${token.colorSplit}`,
+              }}
             >
               <Flex gap={8} wrap align="center">
                 <Text
@@ -568,6 +550,8 @@ export default function EventsPage() {
                     textTransform: 'uppercase',
                     color: token.colorTextQuaternary,
                     marginRight: 4,
+                    minWidth: 100,
+                    display: "inline-block",
                   }}
                 >
                   {t('events_page.filter_time')}
@@ -591,6 +575,8 @@ export default function EventsPage() {
                     textTransform: 'uppercase',
                     color: token.colorTextQuaternary,
                     marginRight: 4,
+                    minWidth: 100,
+                    display: "inline-block",
                   }}
                 >
                   {t('events_page.filter_importance')}
@@ -606,21 +592,56 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={10} wrap align="center">
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: token.colorTextQuaternary,
+                    marginRight: 4,
+                    minWidth: 100,
+                    display: "inline-block",
+                  }}
+                >
+                  {t('events_page.filter_source')}
+                </Text>
                 <Select
                   mode="multiple"
                   allowClear
+                  variant="filled"
+                  size="small"
                   placeholder={t('events_page.all_sources')}
                   value={selectedSources}
                   onChange={setSelectedSources}
                   options={sourceOptions}
-                  style={{ minWidth: 240, flex: '1 1 280px' }}
+                  style={{ width: 260 }}
                   maxTagCount="responsive"
                 />
+              </Flex>
+
+              <Flex gap={10} wrap align="center">
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: token.colorTextQuaternary,
+                    marginRight: 4,
+                    minWidth: 100,
+                    display: "inline-block",
+                  }}
+                >
+                  {t('events_page.filter_theme')}
+                </Text>
                 <Select
+                  variant="filled"
+                  size="small"
                   value={themeId}
                   onChange={setThemeId}
                   options={themeOptions}
-                  style={{ minWidth: 240, flex: '1 1 280px' }}
+                  style={{ width: 260 }}
                   showSearch
                   optionFilterProp="label"
                   placeholder={t('events_page.all_themes')}

@@ -17,6 +17,8 @@ import {
 import { DownOutlined, FireFilled, MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { ThemeCard } from '@/components/radar/ThemeCard'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { LayersIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { useField } from '@/lib/useField'
@@ -333,55 +335,21 @@ export default function ThemeMapPage() {
               flexDirection: 'column',
             }}
           >
-            <div
-              style={{
-                padding: '34px 2px 20px',
-                borderBottom: `1px solid ${token.colorSplit}`,
-              }}
-            >
-              <Title
-                level={1}
-                style={{
-                  margin: 0,
-                  fontWeight: 600,
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {locale === 'zh' ? '主题地图' : 'Theme Map'}
-              </Title>
-              <Flex
-                align="center"
-                justify="space-between"
-                wrap
-                gap={16}
-                style={{ marginTop: 12 }}
-              >
-                <Flex align="center" gap={20} wrap>
-                  <Flex align="center" gap={8}>
-                    <Badge color={token.colorSuccess} />
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        color: token.colorTextSecondary,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {locale === 'zh'
-                        ? `${sorted.length} 个核心主题`
-                        : `${sorted.length} core themes`}
-                    </Text>
-                  </Flex>
-                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
-                    {locale === 'zh'
-                      ? `${subCount} 个次要主题`
-                      : `${subCount} subthemes`}
-                  </Text>
-                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
-                    {locale === 'zh' ? '按主题强度排序' : 'Sorted by strength'}
-                  </Text>
-                </Flex>
-              </Flex>
-            </div>
+            <PageHeader
+              title={t('sidebar.themes')}
+              icon={<LayersIcon />}
+              stats={[
+                {
+                  value: sorted.length,
+                  label: locale === 'zh' ? '核心主题' : 'Core themes',
+                },
+                {
+                  value: subCount,
+                  label: locale === 'zh' ? '次要主题' : 'Subthemes',
+                },
+              ]}
+              meta={locale === 'zh' ? '按主题强度排序' : 'Sorted by strength'}
+            />
 
             {loading && (
               <div style={{ padding: '40px 0', textAlign: 'center' }}>

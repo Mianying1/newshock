@@ -23,6 +23,8 @@ import { Sidebar } from '@/components/Sidebar'
 import { MarketRegimeCard } from '@/components/MarketRegimeCard'
 import { TopTickersSection } from '@/components/TopTickersSection'
 import { SectionHeader } from '@/components/shared/SectionHeader'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { RadarIcon } from '@/components/shared/NavIcons'
 import { TodayTopNarratives } from '@/components/radar/TodayTopNarratives'
 import { SecondaryThemesWithFilter } from '@/components/radar/SecondaryThemesWithFilter'
 import { EventStreamCompact } from '@/components/radar/EventStreamCompact'
@@ -173,51 +175,16 @@ export default function HomePage() {
           </Header>
 
           <Content style={{ padding: `0 ${sidePad}px 40px`, minWidth: 0 }}>
-            <div
-              style={{
-                padding: '34px 2px 20px',
-                borderBottom: `1px solid ${token.colorSplit}`,
-              }}
-            >
-              <Title
-                level={1}
-                style={{
-                  margin: 0,
-                  fontWeight: 600,
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {t('radar.today_on_radar')}
-              </Title>
-              <Flex align="center" justify="space-between" wrap gap={16} style={{ marginTop: 12 }}>
-                <Flex align="center" gap={20} wrap>
-                  <Flex align="center" gap={8}>
-                    <Badge color={token.colorSuccess} />
-                    <Text style={{ fontSize: 13, color: token.colorTextSecondary, fontWeight: 500 }}>
-                      {t('radar.narratives_count', { n: narrativesCount })}
-                    </Text>
-                  </Flex>
-                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
-                    {t('radar.active_themes_count', { n: totalThemes })}
-                  </Text>
-                  <Text style={{ fontSize: 13, color: token.colorTextTertiary }}>
-                    {t('radar.events_scanned_7d', { n: eventsWeek })}
-                  </Text>
-                </Flex>
-                {headerDate && (
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: token.colorTextQuaternary,
-                      fontFamily: token.fontFamilyCode,
-                      letterSpacing: '0.04em',
-                    }}
-                  >
-                    {headerDate}
-                  </Text>
-                )}
-              </Flex>
-            </div>
+            <PageHeader
+              title={t('sidebar.radar')}
+              icon={<RadarIcon />}
+              stats={[
+                { value: narrativesCount, label: locale === 'zh' ? '叙事' : 'Narratives' },
+                { value: totalThemes, label: locale === 'zh' ? '主题' : 'Themes' },
+                { value: eventsWeek, label: locale === 'zh' ? '事件 / 7天' : 'Events / 7d' },
+              ]}
+              meta={headerDate}
+            />
 
             <Row gutter={[24, 24]} style={{ marginTop: 8 }}>
               <Col xs={24} lg={17}>

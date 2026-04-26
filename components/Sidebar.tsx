@@ -1,10 +1,12 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { Badge, theme } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
+import { RadarIcon, LayersIcon, TrendingUpIcon, ClockIcon } from '@/components/shared/NavIcons'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -14,51 +16,6 @@ interface Overview {
   rec_count: number
   events_7d: number
   updated_minutes: number | null
-}
-
-function BrandMark() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 3v9l6 6" />
-    </svg>
-  )
-}
-
-function RadarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4.5" />
-      <path d="M12 12 18.5 5.5" />
-    </svg>
-  )
-}
-function LayersIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-      <polyline points="2 17 12 22 22 17" />
-      <polyline points="2 12 12 17 22 12" />
-    </svg>
-  )
-}
-function TrendingUpIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
-    </svg>
-  )
-}
-function ClockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  )
 }
 
 export function Sidebar() {
@@ -90,16 +47,16 @@ export function Sidebar() {
   return (
     <>
       <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark">
-            <BrandMark />
-          </span>
-          <div>
-            <div className="brand-name">Newshock</div>
-            <div className="brand-sub">Radar</div>
-          </div>
-          <span className="brand-v">v1.0</span>
-        </div>
+        <Link href="/" className="brand-logo" aria-label="Newshock">
+          <Image
+            src="/newshock-logo.png"
+            alt="Newshock"
+            width={2403}
+            height={456}
+            priority
+            sizes="160px"
+          />
+        </Link>
 
         <div className="nav-section">{t('sidebar.workspace')}</div>
 
@@ -123,6 +80,7 @@ export function Sidebar() {
         <div className="sidebar-foot">
           <div className="line">
             <span>
+              <span className="pulse" aria-hidden />
               <span className="k">{t('sidebar.last_sync')}</span>
               {lastSync}
             </span>
