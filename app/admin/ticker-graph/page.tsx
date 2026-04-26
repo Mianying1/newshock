@@ -1,6 +1,7 @@
 'use client'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -188,12 +189,11 @@ export default function AdminTickerGraphPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: 24 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>Ticker Graph · Review</h1>
-      <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>
-        AI-generated ticker × archetype fits. Approve (→ manual) · Reject (delete) · Edit score/label/evidence.
-      </p>
-
+    <AdminShell
+      title="Ticker Graph · Review"
+      subtitle="AI-generated ticker × archetype fits · Approve (→ manual) · Reject (delete) · Edit score/label/evidence"
+      maxWidth={1200}
+    >
       <div
         style={{
           display: 'flex',
@@ -439,6 +439,6 @@ export default function AdminTickerGraphPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminShell>
   )
 }

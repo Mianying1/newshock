@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import useSWR from 'swr'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -108,12 +109,11 @@ export default function AdminCasesPage() {
   const groups = data?.groups ?? []
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>Case Library</h1>
-      <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>
-        Historical cases keyed by archetype. Phase 5 playbook generator will select from here.
-      </p>
-
+    <AdminShell
+      title="Case Library"
+      subtitle="Historical cases keyed by archetype · Phase 5 playbook generator selects from here"
+      maxWidth={1000}
+    >
       {isLoading && <p style={{ fontSize: 13 }}>Loading…</p>}
       {error && <p style={{ fontSize: 13, color: '#c00' }}>Failed to load cases.</p>}
 
@@ -333,6 +333,6 @@ export default function AdminCasesPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminShell>
   )
 }

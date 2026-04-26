@@ -1,38 +1,103 @@
-import Link from 'next/link'
+'use client'
 
-const LINKS: Array<{ href: string; label: string; desc: string }> = [
-  { href: '/admin/health', label: 'Health Dashboard', desc: 'Pipeline, crons, coverage, alerts' },
-  { href: '/admin/candidates', label: 'Archetype Candidates', desc: 'Weekly scan review queue' },
-  { href: '/admin/angles', label: 'New Angle Candidates', desc: 'Long-horizon angle proposals from events' },
-  { href: '/admin/coverage-audit', label: 'Coverage Audit', desc: 'Archetype coverage + suggestions' },
-  { href: '/admin/cases', label: 'Historical Cases', desc: 'Case library' },
-  { href: '/admin/ticker-graph', label: 'Ticker Graph', desc: 'Ticker ↔ archetype relationships' },
+import Link from 'next/link'
+import { Card, Flex, Tag, Typography, theme } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons'
+import { AdminShell } from '@/components/admin/AdminShell'
+
+const { Title, Text } = Typography
+
+interface AdminLink {
+  href: string
+  label: string
+  desc: string
+  tag?: string
+}
+
+const LINKS: AdminLink[] = [
+  { href: '/admin/health', label: 'Health Dashboard', desc: 'Pipeline, crons, coverage, alerts', tag: 'monitor' },
+  { href: '/admin/candidates', label: 'Archetype Candidates', desc: 'Weekly scan review queue', tag: 'review' },
+  // 隐藏 · ticker 重构后 / 0 用户阶段不需要
+  // { href: '/admin/angles', label: 'New Angle Candidates', desc: 'Long-horizon angle proposals from events' },
+  { href: '/admin/coverage-audit', label: 'Coverage Audit', desc: 'Archetype coverage + suggestions', tag: 'review' },
+  // 隐藏 · ticker 重构后 / 0 用户阶段不需要
+  // { href: '/admin/cases', label: 'Historical Cases', desc: 'Case library' },
+  // 隐藏 · ticker 重构后 / 0 用户阶段不需要
+  // { href: '/admin/ticker-graph', label: 'Ticker Graph', desc: 'Ticker ↔ archetype relationships' },
 ]
 
 export default function AdminHubPage() {
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <h1 className="text-lg font-semibold text-zinc-900">Admin</h1>
-          <p className="text-sm text-zinc-500">Internal tools · no end-user UI</p>
-        </div>
-      </header>
-      <main className="max-w-3xl mx-auto px-4 py-6">
-        <div className="space-y-2">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="block border border-zinc-200 bg-white rounded-lg px-4 py-3 hover:border-zinc-400 transition-colors"
+    <AdminShell
+      title="Admin"
+      subtitle="Internal tools · no end-user UI"
+      showBack={false}
+      maxWidth={760}
+    >
+      <Flex vertical gap={10}>
+        {LINKS.map((l) => (
+          <AdminLinkCard key={l.href} link={l} />
+        ))}
+      </Flex>
+    </AdminShell>
+  )
+}
+
+function AdminLinkCard({ link }: { link: AdminLink }) {
+  const { token } = theme.useToken()
+  return (
+    <Link href={link.href} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <Card
+        size="small"
+        styles={{ body: { padding: '16px 20px' } }}
+        style={{ borderColor: token.colorBorderSecondary }}
+        hoverable
+      >
+        <Flex justify="space-between" align="center" gap={12}>
+          <div>
+            <Flex align="center" gap={8}>
+              <Title
+                level={5}
+                style={{ margin: 0, fontSize: 15, fontWeight: 600, color: token.colorText }}
+              >
+                {link.label}
+              </Title>
+              {link.tag && (
+                <Tag
+                  bordered={false}
+                  style={{
+                    fontSize: 10,
+                    padding: '0 6px',
+                    lineHeight: '18px',
+                    background: token.colorFillTertiary,
+                    color: token.colorTextTertiary,
+                    margin: 0,
+                  }}
+                >
+                  {link.tag}
+                </Tag>
+              )}
+            </Flex>
+            <Text
+              style={{ fontSize: 12, color: token.colorTextTertiary, display: 'block', marginTop: 2 }}
             >
-              <div className="font-medium text-zinc-900">{l.label}</div>
-              <div className="text-xs text-zinc-500 mt-0.5">{l.desc}</div>
-              <div className="text-[11px] text-zinc-400 mt-0.5 font-mono">{l.href}</div>
-            </Link>
-          ))}
-        </div>
-      </main>
-    </div>
+              {link.desc}
+            </Text>
+            <Text
+              style={{
+                fontFamily: token.fontFamilyCode,
+                fontSize: 11,
+                color: token.colorTextQuaternary,
+                display: 'block',
+                marginTop: 2,
+              }}
+            >
+              {link.href}
+            </Text>
+          </div>
+          <ArrowRightOutlined style={{ color: token.colorTextQuaternary }} />
+        </Flex>
+      </Card>
+    </Link>
   )
 }
