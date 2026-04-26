@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Badge,
   Button,
@@ -16,14 +16,20 @@ import {
 } from 'antd'
 import { DownOutlined, FireFilled, MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
+import { Topbar } from '@/components/shared/Topbar'
 import { ThemeCard } from '@/components/radar/ThemeCard'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { FilterPill } from '@/components/shared/FilterPill'
+import { FilterLabel } from '@/components/shared/FilterLabel'
 import { LayersIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { useField } from '@/lib/useField'
-import type { ThemeRadarItem, ThemeChildRef } from '@/types/recommendations'
+import type { ThemeRadarItem, ThemeChildRef, PlaybookStage } from '@/types/recommendations'
 import '../radar.css'
+
+type StatusFilter = 'all' | 'active' | 'cooling'
+type StageFilter = 'all' | PlaybookStage
 
 const { Text, Title } = Typography
 const { Header, Content } = Layout
@@ -236,6 +242,10 @@ export default function ThemeMapPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [stageFilter, setStageFilter] = useState<StageFilter>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+
   useEffect(() => {
     fetch('/api/themes/map')
       .then((r) => {
@@ -252,11 +262,34 @@ export default function ThemeMapPage() {
       })
   }, [])
 
-  const sorted = [...themes].sort(
-    (a, b) => (b.theme_strength_score ?? 0) - (a.theme_strength_score ?? 0),
+  const sorted = useMemo(
+    () =>
+      [...themes].sort(
+        (a, b) => (b.theme_strength_score ?? 0) - (a.theme_strength_score ?? 0),
+      ),
+    [themes],
   )
-  const subCount = sorted.reduce(
-    (n, t) => n + (t.child_themes?.length ?? 0),
+
+  const filtered = useMemo(() => {
+    return sorted.filter((th) => {
+      if (statusFilter !== 'all' && th.status !== statusFilter) return false
+      if (stageFilter !== 'all' && th.playbook_stage !== stageFilter) return false
+      if (categoryFilter !== 'all' && th.category !== categoryFilter) return false
+      return true
+    })
+  }, [sorted, statusFilter, stageFilter, categoryFilter])
+
+  const categoryPills = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const th of sorted) {
+      if (!th.category) continue
+      counts.set(th.category, (counts.get(th.category) ?? 0) + 1)
+    }
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
+  }, [sorted])
+
+  const subCount = filtered.reduce(
+    (n, th) => n + (th.child_themes?.length ?? 0),
     0,
   )
 
@@ -265,67 +298,7 @@ export default function ThemeMapPage() {
       <div className="app">
         <Sidebar />
         <Layout style={{ background: 'transparent' }}>
-          <Header
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 30,
-              height: 52,
-              padding: `10px ${sidePad}px`,
-              background: 'var(--topbar-bg)',
-              backdropFilter: 'saturate(160%) blur(16px)',
-              WebkitBackdropFilter: 'saturate(160%) blur(16px)',
-              borderBottom: `1px solid ${token.colorBorder}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Input
-              disabled
-              prefix={<SearchOutlined />}
-              placeholder={t('topbar.search_placeholder')}
-              suffix={
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 10,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                  }}
-                >
-                  {t('topbar.search_soon')}
-                </Text>
-              }
-              style={{ flex: 1 }}
-            />
-            <Space.Compact className="topbar-actions">
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t('topbar.toggle_locale')}
-                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
-              >
-                <span key={locale} className="topbar-iconbtn-inner">
-                  {locale === 'en' ? 'EN' : '中'}
-                </span>
-              </Button>
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t(
-                  mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark',
-                )}
-                icon={
-                  <span key={mode} className="topbar-iconbtn-inner">
-                    {mode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
-                  </span>
-                }
-                onClick={toggle}
-              />
-            </Space.Compact>
-          </Header>
+          <Topbar sidePad={sidePad} />
 
           <Content
             style={{
@@ -340,16 +313,81 @@ export default function ThemeMapPage() {
               icon={<LayersIcon />}
               stats={[
                 {
-                  value: sorted.length,
-                  label: locale === 'zh' ? '核心主题' : 'Core themes',
+                  value: filtered.length,
+                  label: t('themes_page.core_themes'),
                 },
                 {
                   value: subCount,
-                  label: locale === 'zh' ? '次要主题' : 'Subthemes',
+                  label: t('themes_page.subthemes'),
                 },
               ]}
-              meta={locale === 'zh' ? '按主题强度排序' : 'Sorted by strength'}
+              meta={
+                filtered.length !== sorted.length
+                  ? t('themes_page.showing_filtered', {
+                      n: filtered.length,
+                      total: sorted.length,
+                    })
+                  : locale === 'zh' ? '按主题强度排序' : 'Sorted by strength'
+              }
             />
+
+            {!loading && !error && sorted.length > 0 && (
+              <Flex
+                vertical
+                gap={10}
+                style={{
+                  marginTop: 18,
+                  marginBottom: 22,
+                  paddingBottom: 18,
+                  borderBottom: `1px solid ${token.colorSplit}`,
+                }}
+              >
+                <Flex gap={8} wrap align="center">
+                  <FilterLabel locale={locale}>{t('themes_page.filter_status')}</FilterLabel>
+                  {(['all', 'active', 'cooling'] as StatusFilter[]).map((s) => (
+                    <FilterPill
+                      key={s}
+                      label={t(`themes_page.status_${s}`)}
+                      active={statusFilter === s}
+                      onClick={() => setStatusFilter(s)}
+                    />
+                  ))}
+                </Flex>
+
+                <Flex gap={8} wrap align="center">
+                  <FilterLabel locale={locale}>{t('themes_page.filter_category')}</FilterLabel>
+                  <FilterPill
+                    label={t('themes_page.status_all')}
+                    active={categoryFilter === 'all'}
+                    onClick={() => setCategoryFilter('all')}
+                  />
+                  {categoryPills.map(([cat, count]) => (
+                    <FilterPill
+                      key={cat}
+                      label={t(`categories.${cat}`) || cat}
+                      count={count}
+                      active={categoryFilter === cat}
+                      onClick={() => setCategoryFilter(cat)}
+                    />
+                  ))}
+                </Flex>
+
+                <Flex gap={8} wrap align="center">
+                  <FilterLabel locale={locale}>{t('themes_page.filter_stage')}</FilterLabel>
+                  {(['all', 'early', 'mid', 'late', 'beyond', 'unknown'] as StageFilter[]).map(
+                    (s) => (
+                      <FilterPill
+                        key={s}
+                        label={t(`themes_page.stage_${s}`)}
+                        active={stageFilter === s}
+                        onClick={() => setStageFilter(s)}
+                      />
+                    ),
+                  )}
+                </Flex>
+
+              </Flex>
+            )}
 
             {loading && (
               <div style={{ padding: '40px 0', textAlign: 'center' }}>
@@ -370,7 +408,14 @@ export default function ThemeMapPage() {
               />
             )}
 
-            {!loading && !error && sorted.length > 0 && (
+            {!loading && !error && sorted.length > 0 && filtered.length === 0 && (
+              <Empty
+                description={t('themes_page.empty_filtered')}
+                style={{ padding: '60px 0' }}
+              />
+            )}
+
+            {!loading && !error && filtered.length > 0 && (
               <div
                 style={{
                   display: 'grid',
@@ -382,10 +427,10 @@ export default function ThemeMapPage() {
                 }}
                 className="theme-map-grid"
               >
-                {sorted.map((th) => (
+                {filtered.map((th) => (
                   <div
                     key={th.id}
-                    className="theme-map-cell"
+                    className="theme-map-cell hover-card"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -427,10 +472,6 @@ export default function ThemeMapPage() {
         :global(.theme-map-cell) > div > a {
           display: block;
           height: 100%;
-        }
-        :global(.theme-map-cell):hover {
-          border-color: var(--ink-3) !important;
-          box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.18);
         }
         @media (max-width: 1100px) {
           :global(.theme-map-grid) {

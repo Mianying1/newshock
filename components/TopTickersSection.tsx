@@ -52,9 +52,15 @@ export function TopTickersSection() {
   )
 
   return (
-    <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-      <Col xs={24} md={12}>
-        <Card size="small" title={<SectionTitle>{t('top_tickers.thematic_title')}</SectionTitle>} extra={thematicExtra}>
+    <Row gutter={[16, 16]} style={{ marginTop: 16 }} align="stretch">
+      <Col xs={24} md={12} style={{ display: 'flex' }}>
+        <Card
+          size="small"
+          title={<SectionTitle>{t('top_tickers.thematic_title')}</SectionTitle>}
+          extra={thematicExtra}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+          styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}
+        >
           {tickersLoading && tickerTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {t('tickers_ranked.loading')}
@@ -91,8 +97,13 @@ export function TopTickersSection() {
         </Card>
       </Col>
 
-      <Col xs={24} md={12}>
-        <Card size="small" title={<SectionTitle>{t('top_tickers.potential_title')}</SectionTitle>}>
+      <Col xs={24} md={12} style={{ display: 'flex' }}>
+        <Card
+          size="small"
+          title={<SectionTitle>{t('top_tickers.potential_title')}</SectionTitle>}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+          styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}
+        >
           {anglesLoading && angleTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {t('tickers_ranked.loading')}

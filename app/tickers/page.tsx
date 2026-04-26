@@ -22,7 +22,9 @@ import {
   SunOutlined,
 } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
+import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
+import { FilterLabel } from '@/components/shared/FilterLabel'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { TrendingUpIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
@@ -67,31 +69,6 @@ function tierFromScore(s: number | null): 'strong' | 'medium' | 'weak' {
   if (s >= 80) return 'strong'
   if (s >= 60) return 'medium'
   return 'weak'
-}
-
-function FilterLabel({
-  token,
-  children,
-}: {
-  token: ReturnType<typeof useToken>['token']
-  children: React.ReactNode
-}) {
-  return (
-    <Text
-      style={{
-        fontSize: 10,
-        fontWeight: 600,
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        color: token.colorTextQuaternary,
-        marginRight: 4,
-        minWidth: 72,
-        display: 'inline-block',
-      }}
-    >
-      {children}
-    </Text>
-  )
 }
 
 export default function TickersPage() {
@@ -234,65 +211,7 @@ export default function TickersPage() {
       <div className="app">
         <Sidebar />
         <Layout style={{ background: 'transparent' }}>
-          <Header
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 30,
-              height: 52,
-              padding: `10px ${sidePad}px`,
-              background: 'var(--topbar-bg)',
-              backdropFilter: 'saturate(160%) blur(16px)',
-              WebkitBackdropFilter: 'saturate(160%) blur(16px)',
-              borderBottom: `1px solid ${token.colorBorder}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Input
-              disabled
-              prefix={<SearchOutlined />}
-              placeholder={t('topbar.search_placeholder')}
-              suffix={
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 10,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                  }}
-                >
-                  {t('topbar.search_soon')}
-                </Text>
-              }
-              style={{ flex: 1 }}
-            />
-            <Space.Compact className="topbar-actions">
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t('topbar.toggle_locale')}
-                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
-              >
-                <span key={locale} className="topbar-iconbtn-inner">
-                  {locale === 'en' ? 'EN' : '中'}
-                </span>
-              </Button>
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t(themeMode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark')}
-                icon={
-                  <span key={themeMode} className="topbar-iconbtn-inner">
-                    {themeMode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
-                  </span>
-                }
-                onClick={toggle}
-              />
-            </Space.Compact>
-          </Header>
+          <Topbar sidePad={sidePad} />
 
           <Content
             style={{
@@ -324,7 +243,7 @@ export default function TickersPage() {
 
             <Flex vertical gap={10} style={{ marginTop: 18, marginBottom: 18 }}>
               <Flex gap={8} wrap align="center">
-                <FilterLabel token={token}>{t('tickers_ranked.filter_type')}</FilterLabel>
+                <FilterLabel locale={locale}>{t('tickers_ranked.filter_type')}</FilterLabel>
                 <FilterPill
                   label={t('tickers_ranked.tab_thematic')}
                   active={topTab === 'thematic'}
@@ -339,7 +258,7 @@ export default function TickersPage() {
 
               {topTab === 'thematic' && (
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel token={token}>{t('tickers_ranked.filter_horizon')}</FilterLabel>
+                  <FilterLabel locale={locale}>{t('tickers_ranked.filter_horizon')}</FilterLabel>
                   <FilterPill
                     label={t('tickers_ranked.subtab_long')}
                     active={mode === 'long'}
@@ -355,7 +274,7 @@ export default function TickersPage() {
 
               {groups.length > 0 && (
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel token={token}>{t('tickers_ranked.filter_sector')}</FilterLabel>
+                  <FilterLabel locale={locale}>{t('tickers_ranked.filter_sector')}</FilterLabel>
                   <FilterPill
                     label={t('tickers_ranked.filter_all')}
                     count={totalCount}
@@ -413,7 +332,7 @@ export default function TickersPage() {
                     <Link
                       key={`${row.symbol}-${i}`}
                       href={row.href}
-                      className="ticker-card"
+                      className="ticker-card hover-card"
                       style={{
                         display: 'block',
                         padding: '14px 18px',
@@ -532,13 +451,6 @@ export default function TickersPage() {
           </Content>
         </Layout>
       </div>
-
-      <style jsx>{`
-        :global(.ticker-card:hover) {
-          border-color: var(--ink-3) !important;
-          box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.18);
-        }
-      `}</style>
     </div>
   )
 }

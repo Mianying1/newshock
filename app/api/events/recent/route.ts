@@ -8,6 +8,8 @@ type Mode = 'matched' | 'unmatched' | 'all'
 interface EventRow {
   id: string
   headline: string
+  short_headline: string | null
+  short_headline_zh: string | null
   source_name: string | null
   source_url: string | null
   event_date: string
@@ -39,7 +41,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabaseAdmin
     .from('events')
-    .select('id, headline, source_name, source_url, event_date, created_at, trigger_theme_id, level_of_impact')
+    .select('id, headline, short_headline, short_headline_zh, source_name, source_url, event_date, created_at, trigger_theme_id, level_of_impact')
     .gte('event_date', cutoff)
     .order('event_date', { ascending: false })
     .limit(limit)
@@ -88,7 +90,8 @@ export async function GET(request: NextRequest) {
     const theme = e.trigger_theme_id ? themeMap.get(e.trigger_theme_id) : null
     return {
       id: e.id,
-      headline: e.headline,
+      headline: e.short_headline ?? e.headline,
+      headline_zh: e.short_headline_zh,
       source_name: e.source_name,
       source_url: e.source_url,
       event_date: e.event_date,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Badge,
   Button,
@@ -23,7 +23,9 @@ import {
 } from '@ant-design/icons'
 import useSWR from 'swr'
 import { Sidebar } from '@/components/Sidebar'
+import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
+import { FilterLabel } from '@/components/shared/FilterLabel'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ClockIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
@@ -36,6 +38,14 @@ const { Text, Title } = Typography
 const { Header, Content } = Layout
 const { useToken } = theme
 const { useBreakpoint } = Grid
+
+function ChevronDownIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+      <path d="M2 3.75L5 6.5L8 3.75" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 type TimeRange = 'latest' | 'week' | 'older'
 type Importance = 'all' | 'high' | 'medium' | 'low'
@@ -118,7 +128,7 @@ function ImportanceTag({
   )
 }
 
-function EventCard({ ev }: { ev: EventItem }) {
+const EventCard = memo(function EventCard({ ev }: { ev: EventItem }) {
   const { t, locale } = useI18n()
   const { token } = useToken()
   const { mode } = useThemeMode()
@@ -141,7 +151,7 @@ function EventCard({ ev }: { ev: EventItem }) {
       href={ev.source_url ?? '#'}
       target="_blank"
       rel="noopener noreferrer"
-      className="event-card"
+      className="event-card hover-card"
       style={{
         display: 'block',
         padding: '14px 18px',
@@ -190,48 +200,69 @@ function EventCard({ ev }: { ev: EventItem }) {
           fontWeight: 500,
           color: token.colorText,
           lineHeight: 1.45,
-          marginBottom: themeName || tickers.length > 0 ? 10 : 0,
+          marginBottom: 10,
         }}
       >
         {title}
       </Text>
 
-      {(themeName || tickers.length > 0) && (
-        <Flex
-          align="center"
-          gap={14}
-          wrap
-          style={{
-            fontSize: 12,
-            color: token.colorTextTertiary,
-          }}
-        >
-          {themeName && (
-            <Flex align="center" gap={6}>
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  textTransform: 'uppercase',
-                  color: token.colorTextQuaternary,
-                }}
-              >
-                {t('events_page.linked_theme')}
-              </span>
-              <a
-                href={`/themes/${ev.theme!.id}`}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  color: token.colorTextSecondary,
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                }}
-              >
-                {themeName}
-              </a>
-            </Flex>
-          )}
+      <Flex
+        align="center"
+        gap={14}
+        wrap
+        style={{
+          fontSize: 12,
+          color: token.colorTextTertiary,
+        }}
+      >
+        {themeName ? (
+          <Flex align="center" gap={6}>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: token.colorTextQuaternary,
+              }}
+            >
+              {t('events_page.linked_theme')}
+            </span>
+            <a
+              href={`/themes/${ev.theme!.id}`}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                color: token.colorTextSecondary,
+                textDecoration: 'none',
+                fontWeight: 500,
+              }}
+            >
+              {themeName}
+            </a>
+          </Flex>
+        ) : (
+          <Flex align="center" gap={6}>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: token.colorTextQuaternary,
+              }}
+            >
+              {t('events_page.linked_theme')}
+            </span>
+            <span
+              style={{
+                color: token.colorTextSecondary,
+                fontWeight: 500,
+              }}
+            >
+              {t('events_page.unclassified')}
+            </span>
+          </Flex>
+        )}
           {tickers.length > 0 && (
             <Flex align="center" gap={6}>
               <span
@@ -270,10 +301,9 @@ function EventCard({ ev }: { ev: EventItem }) {
             </Flex>
           )}
         </Flex>
-      )}
     </a>
   )
-}
+})
 
 function SkeletonCard() {
   const { token } = useToken()
@@ -443,67 +473,7 @@ export default function EventsPage() {
       <div className="app">
         <Sidebar />
         <Layout style={{ background: 'transparent' }}>
-          <Header
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 30,
-              height: 52,
-              padding: `10px ${sidePad}px`,
-              background: 'var(--topbar-bg)',
-              backdropFilter: 'saturate(160%) blur(16px)',
-              WebkitBackdropFilter: 'saturate(160%) blur(16px)',
-              borderBottom: `1px solid ${token.colorBorder}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Input
-              disabled
-              prefix={<SearchOutlined />}
-              placeholder={t('topbar.search_placeholder')}
-              suffix={
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 10,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                  }}
-                >
-                  {t('topbar.search_soon')}
-                </Text>
-              }
-              style={{ flex: 1 }}
-            />
-            <Space.Compact className="topbar-actions">
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t('topbar.toggle_locale')}
-                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
-              >
-                <span key={locale} className="topbar-iconbtn-inner">
-                  {locale === 'en' ? 'EN' : '中'}
-                </span>
-              </Button>
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t(
-                  mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark',
-                )}
-                icon={
-                  <span key={mode} className="topbar-iconbtn-inner">
-                    {mode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
-                  </span>
-                }
-                onClick={toggle}
-              />
-            </Space.Compact>
-          </Header>
+          <Topbar sidePad={sidePad} />
 
           <Content
             style={{
@@ -542,20 +512,7 @@ export default function EventsPage() {
               }}
             >
               <Flex gap={8} wrap align="center">
-                <Text
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                    marginRight: 4,
-                    minWidth: 100,
-                    display: "inline-block",
-                  }}
-                >
-                  {t('events_page.filter_time')}
-                </Text>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_time')}</FilterLabel>
                 {(['latest', 'week', 'older'] as TimeRange[]).map((tr) => (
                   <FilterPill
                     key={tr}
@@ -567,20 +524,7 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={8} wrap align="center">
-                <Text
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                    marginRight: 4,
-                    minWidth: 100,
-                    display: "inline-block",
-                  }}
-                >
-                  {t('events_page.filter_importance')}
-                </Text>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_importance')}</FilterLabel>
                 {(['all', 'high', 'medium', 'low'] as Importance[]).map((imp) => (
                   <FilterPill
                     key={imp}
@@ -591,57 +535,33 @@ export default function EventsPage() {
                 ))}
               </Flex>
 
-              <Flex gap={10} wrap align="center">
-                <Text
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                    marginRight: 4,
-                    minWidth: 100,
-                    display: "inline-block",
-                  }}
-                >
-                  {t('events_page.filter_source')}
-                </Text>
+              <Flex gap={8} wrap align="center">
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_source')}</FilterLabel>
                 <Select
                   mode="multiple"
                   allowClear
                   variant="filled"
-                  size="small"
+                  className="filter-select"
+                  suffixIcon={<ChevronDownIcon />}
                   placeholder={t('events_page.all_sources')}
                   value={selectedSources}
                   onChange={setSelectedSources}
                   options={sourceOptions}
-                  style={{ width: 260 }}
+                  style={{ width: 240 }}
                   maxTagCount="responsive"
                 />
               </Flex>
 
-              <Flex gap={10} wrap align="center">
-                <Text
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: token.colorTextQuaternary,
-                    marginRight: 4,
-                    minWidth: 100,
-                    display: "inline-block",
-                  }}
-                >
-                  {t('events_page.filter_theme')}
-                </Text>
+              <Flex gap={8} wrap align="center">
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_theme')}</FilterLabel>
                 <Select
                   variant="filled"
-                  size="small"
+                  className="filter-select"
+                  suffixIcon={<ChevronDownIcon />}
                   value={themeId}
                   onChange={setThemeId}
                   options={themeOptions}
-                  style={{ width: 260 }}
+                  style={{ width: 240 }}
                   showSearch
                   optionFilterProp="label"
                   placeholder={t('events_page.all_themes')}
@@ -713,13 +633,6 @@ export default function EventsPage() {
           </Content>
         </Layout>
       </div>
-
-      <style jsx>{`
-        :global(.event-card:hover) {
-          border-color: var(--ink-3) !important;
-          box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.18);
-        }
-      `}</style>
     </div>
   )
 }

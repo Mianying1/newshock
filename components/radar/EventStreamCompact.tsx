@@ -32,6 +32,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 interface StreamEvent {
   id: string
   headline: string
+  headline_zh: string | null
   source_name: string | null
   source_url: string | null
   event_date: string
@@ -137,6 +138,7 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
           const publisher = getDisplayPublisher(e.source_name, e.source_url)
           const srcColors = SRC_COLOR[publisher]
           const themeName = pickField(locale, e.theme_name, e.theme_name_zh)
+          const headline = pickField(locale, e.headline, e.headline_zh)
           const timeAgo = formatRelativeTime(e.event_date, t, locale)
 
           return (
@@ -176,10 +178,10 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
                   rel="noreferrer"
                   style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4, textDecoration: 'none' }}
                 >
-                  {e.headline}
+                  {headline}
                 </a>
               ) : (
-                <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>{e.headline}</Text>
+                <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>{headline}</Text>
               )}
               {e.theme_id && themeName ? (
                 <Link
@@ -189,7 +191,7 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
                   → {themeName}
                 </Link>
               ) : (
-                <Text italic style={{ color: token.colorTextQuaternary, fontSize: 11 }}>
+                <Text style={{ color: token.colorTextQuaternary, fontSize: 11 }}>
                   {t('event_stream.no_theme_match')}
                 </Text>
               )}

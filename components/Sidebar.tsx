@@ -58,8 +58,6 @@ export function Sidebar() {
           />
         </Link>
 
-        <div className="nav-section">{t('sidebar.workspace')}</div>
-
         {items.map(({ href, labelKey, count, Icon }, i) => {
           const active = isActive(href, i)
           return (

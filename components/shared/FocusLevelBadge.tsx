@@ -18,15 +18,15 @@ interface FocusLevel {
 }
 
 const FOCUS_PALETTE_LIGHT = {
-  critical: { color: '#8B3A2E', background: '#F5E8E3' },
-  high: { color: '#8B5A00', background: '#FFF5E0' },
+  critical: { color: '#FFFFFF', background: '#7A2A1E' },
+  high: { color: '#8B5A00', background: '#FFEFC9' },
   medium: { color: '#5C6A1E', background: '#F0F2D8' },
   low: { color: '#6D6A63', background: '#EFEAE0' },
 } as const
 
 const FOCUS_PALETTE_DARK = {
-  critical: { color: '#D49285', background: 'rgba(200, 122, 107, 0.16)' },
-  high: { color: '#D4A862', background: 'rgba(200, 154, 82, 0.16)' },
+  critical: { color: '#FFE4DD', background: '#7A2A1E' },
+  high: { color: '#E2B36B', background: 'rgba(200, 154, 82, 0.22)' },
   medium: { color: '#B5C272', background: 'rgba(143, 160, 88, 0.16)' },
   low: { color: '#A8A196', background: 'rgba(143, 138, 126, 0.18)' },
 } as const

@@ -156,7 +156,7 @@ export default function CatalystList({ catalysts }: { catalysts: CatalystEvent[]
                             )}
                           </p>
                           {isExpanded && reasoning && (
-                            <p className="text-xs text-zinc-600 mt-1.5 italic leading-relaxed">
+                            <p className="text-xs text-zinc-600 mt-1.5 leading-relaxed">
                               {reasoning}
                             </p>
                           )}

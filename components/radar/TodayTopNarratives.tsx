@@ -2,7 +2,7 @@
 
 import { Col, Row, Space } from 'antd'
 import { TopNarrativeCard } from './TopNarrativeCard'
-import { getTodayPriority } from '@/lib/theme-priority'
+import { getOngoingTop3 } from '@/lib/theme-priority'
 import type { ThemeRadarItem } from '@/types/recommendations'
 
 interface Props {
@@ -10,10 +10,7 @@ interface Props {
 }
 
 export function TodayTopNarratives({ themes }: Props) {
-  const top3 = themes
-    .filter((th) => th.status === 'active')
-    .sort((a, b) => getTodayPriority(b) - getTodayPriority(a))
-    .slice(0, 3)
+  const top3 = getOngoingTop3(themes)
 
   if (top3.length === 0) return null
 

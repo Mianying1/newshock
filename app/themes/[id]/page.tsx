@@ -25,6 +25,7 @@ import {
   ApiOutlined,
   BankOutlined,
   BuildOutlined,
+  ClockCircleOutlined,
   GlobalOutlined,
   LineChartOutlined,
   MoonOutlined,
@@ -34,6 +35,7 @@ import {
   ThunderboltOutlined,
 } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
+import { Topbar } from '@/components/shared/Topbar'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { pickField } from '@/lib/useField'
@@ -252,57 +254,7 @@ export default function ThemeDetailPage() {
       <div className="app">
         <Sidebar />
         <Layout style={{ background: 'transparent' }}>
-          <Header
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 30,
-              height: 52,
-              padding: '10px 28px',
-              background: 'var(--topbar-bg)',
-              backdropFilter: 'saturate(160%) blur(16px)',
-              WebkitBackdropFilter: 'saturate(160%) blur(16px)',
-              borderBottom: `1px solid ${token.colorBorder}`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Input
-              disabled
-              prefix={<SearchOutlined />}
-              placeholder={t('topbar.search_placeholder')}
-              suffix={
-                <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: token.colorTextQuaternary }}>
-                  {t('topbar.search_soon')}
-                </Text>
-              }
-              style={{ flex: 1 }}
-            />
-            <Space.Compact className="topbar-actions">
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t('topbar.toggle_locale')}
-                onClick={() => setLocale(locale === 'en' ? 'zh' : 'en')}
-              >
-                <span key={locale} className="topbar-iconbtn-inner">
-                  {locale === 'en' ? 'EN' : '中'}
-                </span>
-              </Button>
-              <Button
-                className="topbar-iconbtn"
-                type="default"
-                aria-label={t(mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark')}
-                icon={
-                  <span key={mode} className="topbar-iconbtn-inner">
-                    {mode === 'dark' ? <SunOutlined /> : <MoonOutlined />}
-                  </span>
-                }
-                onClick={toggle}
-              />
-            </Space.Compact>
-          </Header>
+          <Topbar sidePad={28} />
 
           <Content style={{ padding: '0 28px 40px' }}>
             {loading && (
@@ -563,7 +515,7 @@ export default function ThemeDetailPage() {
                                 wrap
                                 style={{ marginTop: 14 }}
                               >
-                                <Text style={{ fontSize: 11, fontStyle: 'italic', color: token.colorTextTertiary }}>
+                                <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
                                   ℹ {t('theme_detail.ai_subjective_disclaimer')}
                                 </Text>
                                 {theme.conviction_generated_at && (
@@ -967,8 +919,11 @@ export default function ThemeDetailPage() {
                               }}
                             >
                               {timelineEvents.map((e, i) => {
-                                const shortHeadline =
-                                  pickField(locale, e.short_headline, e.short_headline_zh) || e.headline
+                                const zhHeadline =
+                                  locale === 'zh' ? e.short_headline_zh : null
+                                const enHeadline = e.short_headline || e.headline
+                                const shortHeadline = zhHeadline || enHeadline
+                                const isUntranslated = locale === 'zh' && !zhHeadline
                                 const isLatest = i === timelineEvents.length - 1
                                 return (
                                 <div
@@ -1023,10 +978,32 @@ export default function ThemeDetailPage() {
                                           WebkitBoxOrient: 'vertical',
                                           overflow: 'hidden',
                                           fontSize: 12.5,
-                                          color: token.colorText,
+                                          color: isUntranslated
+                                            ? token.colorTextSecondary
+                                            : token.colorText,
                                           lineHeight: 1.4,
                                         }}
                                       >
+                                        {isUntranslated && (
+                                          <span
+                                            style={{
+                                              display: 'inline-block',
+                                              fontSize: 9,
+                                              fontWeight: 600,
+                                              letterSpacing: '0.1em',
+                                              color: token.colorTextQuaternary,
+                                              border: `1px solid ${token.colorBorderSecondary}`,
+                                              borderRadius: 3,
+                                              padding: '0 4px',
+                                              marginRight: 6,
+                                              verticalAlign: 'middle',
+                                              lineHeight: 1.4,
+                                              fontFamily: token.fontFamilyCode,
+                                            }}
+                                          >
+                                            EN
+                                          </span>
+                                        )}
                                         {shortHeadline}
                                       </Text>
                                     </a>
@@ -1040,10 +1017,32 @@ export default function ThemeDetailPage() {
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
                                         fontSize: 12.5,
-                                        color: token.colorText,
+                                        color: isUntranslated
+                                          ? token.colorTextSecondary
+                                          : token.colorText,
                                         lineHeight: 1.4,
                                       }}
                                     >
+                                      {isUntranslated && (
+                                        <span
+                                          style={{
+                                            display: 'inline-block',
+                                            fontSize: 9,
+                                            fontWeight: 600,
+                                            letterSpacing: '0.1em',
+                                            color: token.colorTextQuaternary,
+                                            border: `1px solid ${token.colorBorderSecondary}`,
+                                            borderRadius: 3,
+                                            padding: '0 4px',
+                                            marginRight: 6,
+                                            verticalAlign: 'middle',
+                                            lineHeight: 1.4,
+                                            fontFamily: token.fontFamilyCode,
+                                          }}
+                                        >
+                                          EN
+                                        </span>
+                                      )}
                                       {shortHeadline}
                                     </Text>
                                   )}
@@ -1167,10 +1166,17 @@ export default function ThemeDetailPage() {
               )}
 
               {/* Historical Playbook */}
-              {(theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 && (() => {
-                const pb = (locale === 'zh' && theme.archetype_playbook_zh?.historical_cases?.length
-                  ? theme.archetype_playbook_zh
-                  : theme.archetype_playbook) as NonNullable<typeof theme.archetype_playbook>
+              {((theme.archetype_playbook?.historical_cases?.length ?? 0) > 0 ||
+                (theme.archetype_playbook_zh?.historical_cases?.length ?? 0) > 0) && (() => {
+                const pbForLocale =
+                  locale === 'zh'
+                    ? theme.archetype_playbook_zh ?? theme.archetype_playbook
+                    : theme.archetype_playbook ?? theme.archetype_playbook_zh
+                const hasLocaleVersion =
+                  locale === 'zh'
+                    ? (theme.archetype_playbook_zh?.historical_cases?.length ?? 0) > 0
+                    : (theme.archetype_playbook?.historical_cases?.length ?? 0) > 0
+                const pb = pbForLocale as NonNullable<typeof theme.archetype_playbook>
                 const ttd = pb.this_time_different
                 const allDiffs = (ttd?.differences ?? []).filter((d) => d.dimension && d.description)
                 const highConfDiffs = allDiffs.filter((d) => d.confidence === 'high')
@@ -1221,6 +1227,30 @@ export default function ThemeDetailPage() {
                       }
                     />
 
+                    {!hasLocaleVersion && (
+                      <Card
+                        size="small"
+                        styles={{ body: { padding: '12px 14px' } }}
+                        style={{
+                          background: token.colorFillAlter,
+                          borderColor: token.colorBorderSecondary,
+                          marginBottom: 8,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: token.colorTextSecondary,
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {t('theme_detail.playbook_locale_unavailable')}
+                        </Text>
+                      </Card>
+                    )}
+
+                    {hasLocaleVersion && (
+                    <>
                     {ttd?.observation && (
                       <Card
                         size="small"
@@ -1255,10 +1285,11 @@ export default function ThemeDetailPage() {
 
                     <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
                     <div
+                      className="scroll-x-hidden"
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(${pb.historical_cases.length + 1}, minmax(180px, 1fr))`,
-                        gap: 10,
+                        gridTemplateColumns: `repeat(${pb.historical_cases.length + 1}, minmax(240px, 1fr))`,
+                        gap: 12,
                         alignItems: 'stretch',
                         overflowX: 'auto',
                         paddingBottom: 4,
@@ -1273,65 +1304,122 @@ export default function ThemeDetailPage() {
                             size="small"
                             styles={{
                               body: {
-                                padding: '12px 14px',
+                                padding: '14px 16px',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: 8,
+                                gap: 12,
+                                overflow: 'hidden',
+                                minWidth: 0,
                               },
                             }}
-                            style={{ height: '100%' }}
+                            style={{ height: '100%', overflow: 'hidden', minWidth: 0 }}
                           >
                             <Text
                               strong
                               style={{
-                                display: 'block',
-                                fontSize: 12.5,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                fontSize: 13,
                                 color: token.colorText,
-                                lineHeight: 1.35,
+                                lineHeight: 1.4,
+                                minHeight: 'calc(13px * 1.4 * 2)',
+                                wordBreak: 'break-word',
                               }}
+                              title={c.name}
                             >
                               {c.name}
                             </Text>
-                            <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
-                                {t('theme_detail.duration_label')}
-                              </Text>
-                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextSecondary }}>
-                                {c.approximate_duration}
-                              </Text>
-                            </Flex>
-                            <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
+                            <span
+                              style={{
+                                alignSelf: 'flex-start',
+                                maxWidth: '100%',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '3px 10px',
+                                borderRadius: 12,
+                                background: token.colorFillTertiary,
+                                color: token.colorTextSecondary,
+                                fontSize: 11,
+                                fontFamily: token.fontFamilyCode,
+                                lineHeight: 1.4,
+                                wordBreak: 'break-word',
+                              }}
+                              title={t('theme_detail.duration_label')}
+                            >
+                              <ClockCircleOutlined style={{ fontSize: 10, color: token.colorTextTertiary, flexShrink: 0 }} />
+                              <span>{c.approximate_duration}</span>
+                            </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: 600,
+                                  letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
+                                  textTransform: 'uppercase',
+                                  color: token.colorTextQuaternary,
+                                }}
+                              >
                                 {t('theme_detail.peak_move_label')}
                               </Text>
-                              <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 12, color: peakColor }}>
+                              <Text
+                                style={{
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 5,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  minHeight: 'calc(12px * 1.55 * 5)',
+                                  fontSize: 12,
+                                  color: peakColor,
+                                  lineHeight: 1.55,
+                                  fontWeight: 500,
+                                  wordBreak: 'break-word',
+                                  overflowWrap: 'anywhere',
+                                }}
+                                title={c.peak_move}
+                              >
                                 {c.peak_move}
                               </Text>
-                            </Flex>
+                            </div>
                             {c.exit_trigger && (
                               <div
                                 style={{
                                   marginTop: 'auto',
-                                  paddingTop: 8,
+                                  paddingTop: 10,
                                   borderTop: `1px solid ${token.colorSplit}`,
                                   display: 'flex',
                                   flexDirection: 'column',
-                                  gap: 3,
+                                  gap: 4,
                                 }}
                               >
                                 <Text
                                   style={{
-                                    fontFamily: token.fontFamilyCode,
-                                    fontSize: 9.5,
-                                    letterSpacing: '0.1em',
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
                                     textTransform: 'uppercase',
                                     color: token.colorTextQuaternary,
                                   }}
                                 >
                                   {t('theme_detail.exit_reason_label')}
                                 </Text>
-                                <Text style={{ fontSize: 11, color: token.colorTextSecondary, lineHeight: 1.5 }}>
+                                <Text
+                                  style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 4,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    fontSize: 12,
+                                    color: token.colorTextSecondary,
+                                    lineHeight: 1.55,
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'anywhere',
+                                  }}
+                                  title={c.exit_trigger}
+                                >
                                   {c.exit_trigger}
                                 </Text>
                               </div>
@@ -1392,38 +1480,108 @@ export default function ThemeDetailPage() {
                             >
                               {t('theme_detail.current_badge')}
                             </div>
-                            <Text strong style={{ fontSize: 12.5, color: token.colorText, lineHeight: 1.35, paddingRight: 48 }}>
+                            <Text
+                              strong
+                              style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                fontSize: 13,
+                                color: token.colorText,
+                                lineHeight: 1.4,
+                                paddingRight: 48,
+                                wordBreak: 'break-word',
+                              }}
+                              title={locale === 'zh' ? (theme.name_zh || theme.name) : theme.name}
+                            >
                               {locale === 'zh' ? (theme.name_zh || theme.name) : theme.name}
                             </Text>
-                            <Flex justify="space-between" align="center" gap={8}>
-                              <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
-                                {t('theme_detail.duration_label')}
-                              </Text>
-                              <Text style={{ fontFamily: token.fontFamilyCode, fontSize: 11, color: token.colorTextSecondary }}>
-                                Day {theme.days_hot}{range ? ` / ${range[1]}${dayUnit}` : ''}
-                              </Text>
-                            </Flex>
+                            <span
+                              style={{
+                                alignSelf: 'flex-start',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '3px 9px',
+                                borderRadius: 999,
+                                background: token.colorFillTertiary,
+                                color: token.colorTextSecondary,
+                                fontSize: 11,
+                                fontFamily: token.fontFamilyCode,
+                                lineHeight: 1.3,
+                                whiteSpace: 'nowrap',
+                              }}
+                              title={t('theme_detail.duration_label')}
+                            >
+                              <ClockCircleOutlined style={{ fontSize: 10, color: token.colorTextTertiary }} />
+                              Day {theme.days_hot}{range ? ` / ${range[1]}${dayUnit}` : ''}
+                            </span>
                             {stageLabel && (
-                              <Flex justify="space-between" align="center" gap={8}>
-                                <Text style={{ fontSize: 10.5, color: token.colorTextTertiary }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <Text
+                                  style={{
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
+                                    textTransform: 'uppercase',
+                                    color: token.colorTextQuaternary,
+                                  }}
+                                >
                                   {t('theme_detail.current_stage')}
                                 </Text>
                                 <span
                                   style={{
+                                    alignSelf: 'flex-start',
                                     fontFamily: token.fontFamilyCode,
-                                    fontSize: 10.5,
+                                    fontSize: 11,
                                     fontWeight: 600,
                                     letterSpacing: '0.06em',
                                     color: stageColor,
                                     background: `${stageColor}1A`,
-                                    padding: '1px 8px',
-                                    borderRadius: 3,
+                                    padding: '2px 9px',
+                                    borderRadius: 4,
                                   }}
                                 >
                                   {stageLabel}
                                 </span>
-                              </Flex>
+                              </div>
                             )}
+                            {(() => {
+                              const summary = pickField(locale, theme.summary, theme.summary_zh)
+                              if (!summary) return null
+                              return (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                  <Text
+                                    style={{
+                                      fontSize: 10,
+                                      fontWeight: 600,
+                                      letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
+                                      textTransform: 'uppercase',
+                                      color: token.colorTextQuaternary,
+                                    }}
+                                  >
+                                    {t('theme_detail.current_summary')}
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 6,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden',
+                                      fontSize: 12,
+                                      color: token.colorTextSecondary,
+                                      lineHeight: 1.55,
+                                      wordBreak: 'break-word',
+                                      overflowWrap: 'anywhere',
+                                    }}
+                                    title={summary}
+                                  >
+                                    {summary}
+                                  </Text>
+                                </div>
+                              )
+                            })()}
                             {positionPct !== null && (
                               <div
                                 style={{
@@ -1587,7 +1745,6 @@ export default function ThemeDetailPage() {
                             fontSize: 12,
                             color: token.colorTextSecondary,
                             lineHeight: 1.5,
-                            fontStyle: 'italic',
                           }}
                         >
                           <span style={{ color: token.colorTextTertiary, fontWeight: 500 }}>
@@ -1598,6 +1755,8 @@ export default function ThemeDetailPage() {
                             : t('theme_detail.conclusion_aligned')}
                         </Text>
                       </div>
+                    )}
+                    </>
                     )}
 
                   </div>
@@ -1672,7 +1831,7 @@ export default function ThemeDetailPage() {
                                   <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>{signalDesc}</span>
                                 )}
                                 {evidenceLine && (
-                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary, fontStyle: 'italic' }}>
+                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>
                                     {evidenceLine}
                                   </span>
                                 )}
@@ -1964,25 +2123,28 @@ function ThemeEventSidebar({
                         {shortPublisher(publisher)}
                       </Tag>
                     </Flex>
-                    {c.source_url ? (
-                      <a
-                        href={c.source_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: token.colorText,
-                          fontSize: 12.5,
-                          lineHeight: 1.4,
-                          textDecoration: 'none',
-                        }}
-                      >
-                        {c.headline}
-                      </a>
-                    ) : (
-                      <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>
-                        {c.headline}
-                      </Text>
-                    )}
+                    {(() => {
+                      const headline = pickField(locale, c.short_headline ?? c.headline, c.short_headline_zh)
+                      return c.source_url ? (
+                        <a
+                          href={c.source_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: token.colorText,
+                            fontSize: 12.5,
+                            lineHeight: 1.4,
+                            textDecoration: 'none',
+                          }}
+                        >
+                          {headline}
+                        </a>
+                      ) : (
+                        <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>
+                          {headline}
+                        </Text>
+                      )
+                    })()}
                     {reasoning && (
                       <button
                         onClick={() => toggleExpand(c.id)}
@@ -2005,7 +2167,6 @@ function ThemeEventSidebar({
                         style={{
                           fontSize: 11.5,
                           color: token.colorTextSecondary,
-                          fontStyle: 'italic',
                           paddingLeft: 10,
                           borderLeft: `2px solid ${token.colorBorderSecondary}`,
                         }}
@@ -2041,7 +2202,6 @@ function ThemeEventSidebar({
           fontFamily: token.fontFamilyCode,
           fontSize: 10,
           color: token.colorTextQuaternary,
-          fontStyle: 'italic',
           marginTop: 10,
           letterSpacing: '0.06em',
         }}
@@ -2117,7 +2277,6 @@ function TierColumn({
         <Text
           style={{
             fontSize: 11,
-            fontStyle: 'italic',
             color: token.colorTextQuaternary,
             padding: '8px 2px',
           }}
@@ -2287,7 +2446,6 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
                   style={{
                     display: 'block',
                     fontSize: 10,
-                    fontStyle: 'italic',
                     color: token.colorTextTertiary,
                     lineHeight: 1.3,
                     marginTop: 2,

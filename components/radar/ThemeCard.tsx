@@ -61,6 +61,9 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
   const categoryLabel = th.category ? t(`categories.${th.category}`) : null
   const durationLabel = pb?.typical_duration_label ?? ''
   const sinceDate = pb?.real_world_timeline?.approximate_start ?? ''
+  const sinceDateDetail =
+    (pb?.real_world_timeline as { approximate_start_detail?: string } | null | undefined)
+      ?.approximate_start_detail ?? ''
 
   return (
     <Link
@@ -234,11 +237,31 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
               )}
             </span>
           </Flex>
-          <Flex justify="space-between" align="center" style={{ marginTop: 6, minHeight: 14 }}>
-            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
+          <Flex justify="space-between" align="center" gap={8} style={{ marginTop: 6, minHeight: 14 }}>
+            <Text
+              title={sinceDateDetail || sinceDate || undefined}
+              style={{
+                fontSize: 10,
+                color: token.colorTextTertiary,
+                letterSpacing: '0.02em',
+                minWidth: 0,
+                maxWidth: '60%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {sinceDate ? t('theme_card.since_short', { date: sinceDate }) : ''}
             </Text>
-            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.02em' }}>
+            <Text
+              style={{
+                fontSize: 10,
+                color: token.colorTextTertiary,
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
               {durationLabel ? `${t('theme_card.expected_duration')} ${durationLabel}` : ''}
             </Text>
           </Flex>

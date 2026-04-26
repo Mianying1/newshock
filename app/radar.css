@@ -96,33 +96,67 @@
 .radar-page .brand-logo {
   display: flex;
   justify-content: flex-start;
-  padding: 22px 8px 20px;
+  padding: 18px 8px 8px;
   line-height: 0;
-  margin-bottom: 6px;
+  margin-bottom: 18px;
   position: relative;
+  isolation: isolate;
 }
-.radar-page .brand-logo::after {
+.radar-page .brand-logo::before {
   content: '';
   position: absolute;
-  left: 8px;
-  right: 16px;
-  bottom: 6px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--line) 0%, transparent 100%);
+  left: 4px;
+  top: 50%;
+  width: 110px;
+  height: 56px;
+  transform: translateY(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 8%, transparent) 45%,
+    transparent 75%
+  );
+  filter: blur(14px);
+  pointer-events: none;
+  z-index: -1;
+  animation: brand-halo 6s ease-in-out infinite;
 }
 .radar-page .brand-logo img {
   display: block;
   width: 88px;
   height: auto;
   max-width: 100%;
-  transition: opacity 200ms ease, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: brand-float 6s ease-in-out infinite;
+  transition: opacity 200ms ease;
 }
 .radar-page .brand-logo:hover img {
-  opacity: 0.82;
-  transform: translateY(-1px);
+  opacity: 0.92;
+}
+.radar-page .brand-logo:hover::before {
+  animation-duration: 3.2s;
 }
 [data-theme="dark"] .radar-page .brand-logo img {
   filter: invert(1) brightness(1.05);
+}
+@keyframes brand-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+@keyframes brand-halo {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(-50%) scale(0.92);
+  }
+  50% {
+    opacity: 0.78;
+    transform: translateY(-50%) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar-page .brand-logo img,
+  .radar-page .brand-logo::before {
+    animation: none;
+  }
 }
 
 .radar-page .nav-section {
@@ -419,11 +453,81 @@
   outline-offset: 2px;
 }
 
+.radar-page .filter-select,
+.radar-page .filter-select .ant-select-selector {
+  border-radius: 999px !important;
+}
+.radar-page .filter-select .ant-select-selector {
+  background: var(--line-2) !important;
+  border-color: transparent !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding-inline: 16px !important;
+  overflow: hidden;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.radar-page .filter-select .ant-select-arrow {
+  inset-inline-end: 12px !important;
+  color: var(--ink-3) !important;
+  transition: transform 160ms ease;
+}
+.radar-page .filter-select.ant-select-open .ant-select-arrow {
+  transform: rotate(180deg);
+}
+.radar-page .filter-select.ant-select-focused .ant-select-selector {
+  background: var(--line-2) !important;
+}
+.radar-page .filter-select .ant-select-selection-search,
+.radar-page .filter-select .ant-select-selection-overflow {
+  height: 28px !important;
+}
+.radar-page .filter-select .ant-select-selection-placeholder,
+.radar-page .filter-select .ant-select-selection-item {
+  font-size: 13px !important;
+  line-height: 28px !important;
+}
+.radar-page .filter-select.ant-select-multiple .ant-select-selection-item {
+  border-radius: 999px !important;
+  height: 22px !important;
+  line-height: 20px !important;
+  background: var(--bg-elev) !important;
+  border-color: var(--line) !important;
+}
+.radar-page .filter-select:hover .ant-select-selector,
+.radar-page .filter-select.ant-select-open .ant-select-selector {
+  background: var(--line) !important;
+}
+.radar-page .filter-select.ant-select-focused .ant-select-selector {
+  box-shadow: none !important;
+}
+
 .radar-page .filter-lowsignal-toggle:hover {
   color: var(--ink) !important;
   background: var(--line-2) !important;
 }
+
+.radar-page .hover-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.radar-page .hover-card:hover {
+  border-color: var(--ink-3) !important;
+  box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.18);
+}
 .radar-page .filter-lowsignal-toggle:focus-visible {
+  outline: 2px solid var(--ink-3);
+  outline-offset: 2px;
+}
+
+.radar-page .latest-themes-cta:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.radar-page .latest-themes-cta:active {
+  transform: translateY(0);
+  opacity: 0.95;
+}
+.radar-page .latest-themes-cta:focus-visible {
   outline: 2px solid var(--ink-3);
   outline-offset: 2px;
 }
@@ -1036,7 +1140,6 @@
 }
 .radar-page .evt-link.muted {
   color: var(--ink-4);
-  font-style: italic;
 }
 
 /* ===== Themes ===== */

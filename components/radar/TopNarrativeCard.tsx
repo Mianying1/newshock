@@ -108,7 +108,17 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
     const tickerCount = th.recommendations.length
     const heroTickers = [...tier1, ...tier2].slice(0, 6)
     const heroOverflow = tickerCount - heroTickers.length
-    const exitSignal = pb?.exit_signals?.[0]
+    const exitSignalRaw = pb?.exit_signals?.[0] as unknown
+    const exitSignal: string =
+      typeof exitSignalRaw === 'string'
+        ? exitSignalRaw
+        : exitSignalRaw && typeof exitSignalRaw === 'object'
+        ? (locale === 'zh'
+            ? ((exitSignalRaw as { signal_zh?: string; signal?: string }).signal_zh ??
+              (exitSignalRaw as { signal?: string }).signal ??
+              '')
+            : ((exitSignalRaw as { signal?: string }).signal ?? '')) || ''
+        : ''
     const alertHeadline = getStageAlertHeadline(th, locale, t)
     const primaryWhyNow = whyNowReasons[0]
 

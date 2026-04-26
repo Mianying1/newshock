@@ -60,7 +60,7 @@ export default function RecommendationTier({
               {reasoning.trim().length > 0 ? (
                 <p className="text-sm text-zinc-500 mt-0.5 ml-9">{reasoning}</p>
               ) : (
-                <p className="text-xs text-zinc-400 italic mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
+                <p className="text-xs text-zinc-400 mt-0.5 ml-9">{t('theme_detail.exposure_fallback')}</p>
               )}
             </div>
           )

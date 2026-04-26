@@ -1,7 +1,30 @@
 'use client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import useSWR from 'swr'
+import {
+  Alert,
+  Button,
+  Card,
+  Empty,
+  Flex,
+  Modal,
+  Skeleton,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+  message,
+  theme,
+} from 'antd'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleFilled,
+  LinkOutlined,
+} from '@ant-design/icons'
+import { AdminShell } from '@/components/admin/AdminShell'
 
+const { Text, Paragraph } = Typography
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 interface Ticker { symbol: string; reasoning?: string }
@@ -41,103 +64,94 @@ interface Candidate {
   overall_assessment: string | null
 }
 
-function getRecommendation(candidate: Candidate): {
+function getRecommendation(c: Candidate): {
   type: 'approve' | 'reject' | 'review'
   reason: string
-  color: 'emerald' | 'red' | 'amber'
+  color: 'success' | 'error' | 'warning'
 } {
-  const warnings = candidate.similarity_warnings || []
-
-  if (warnings.length === 0) {
-    return { type: 'approve', reason: 'No overlap with existing archetypes', color: 'emerald' }
-  }
-
-  const strongMerge = warnings.find(
-    (w) => w.recommendation === 'merge_into_target' && w.similarity_score >= 0.75
-  )
-  if (strongMerge) {
+  const warnings = c.similarity_warnings || []
+  if (warnings.length === 0)
+    return { type: 'approve', reason: 'No overlap with existing archetypes', color: 'success' }
+  const strong = warnings.find((w) => w.recommendation === 'merge_into_target' && w.similarity_score >= 0.75)
+  if (strong)
     return {
       type: 'reject',
-      reason: `${Math.round(strongMerge.similarity_score * 100)}% overlap with "${strongMerge.target_name}". Core logic already covered.`,
-      color: 'red',
+      reason: `${Math.round(strong.similarity_score * 100)}% overlap with "${strong.target_name}". Core logic already covered.`,
+      color: 'error',
     }
-  }
-
-  const mediumMerge = warnings.find((w) => w.recommendation === 'merge_into_target')
-  if (mediumMerge) {
+  const med = warnings.find((w) => w.recommendation === 'merge_into_target')
+  if (med)
     return {
       type: 'review',
-      reason: `Possible overlap with "${mediumMerge.target_name}" (${Math.round(mediumMerge.similarity_score * 100)}%). Review carefully.`,
-      color: 'amber',
+      reason: `Possible overlap with "${med.target_name}" (${Math.round(med.similarity_score * 100)}%). Review carefully.`,
+      color: 'warning',
     }
-  }
-
-  const highApproveAsNew = warnings.find(
-    (w) => w.recommendation === 'approve_as_new' && w.similarity_score >= 0.75
-  )
-  if (highApproveAsNew) {
-    return {
-      type: 'approve',
-      reason: `Related to "${highApproveAsNew.target_name}" but distinct angle`,
-      color: 'emerald',
-    }
-  }
-
-  return { type: 'approve', reason: 'Related but independent theme', color: 'emerald' }
+  const high = warnings.find((w) => w.recommendation === 'approve_as_new' && w.similarity_score >= 0.75)
+  if (high)
+    return { type: 'approve', reason: `Related to "${high.target_name}" but distinct angle`, color: 'success' }
+  return { type: 'approve', reason: 'Related but independent theme', color: 'success' }
 }
 
 export default function CandidatesPage() {
   const { data, mutate, isLoading } = useSWR('/api/admin/candidates', fetcher)
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected'>('pending')
   const [actioningId, setActioningId] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const [api, contextHolder] = message.useMessage()
+  const { token } = theme.useToken()
 
-  const candidates: Candidate[] = data?.candidates ?? []
-  const byStatus = {
-    pending: candidates.filter((c) => c.status === 'pending'),
-    approved: candidates.filter((c) => c.status === 'approved'),
-    rejected: candidates.filter((c) => c.status === 'rejected'),
-  }
+  const candidates: Candidate[] = useMemo(() => data?.candidates ?? [], [data])
+  const byStatus = useMemo(
+    () => ({
+      pending: candidates.filter((c) => c.status === 'pending'),
+      approved: candidates.filter((c) => c.status === 'approved'),
+      rejected: candidates.filter((c) => c.status === 'rejected'),
+    }),
+    [candidates]
+  )
   const filtered = byStatus[filter]
+  const grouped = useMemo(
+    () =>
+      filtered.reduce<Record<string, Candidate[]>>((acc, c) => {
+        const g = c.theme_group || 'Other'
+        if (!acc[g]) acc[g] = []
+        acc[g].push(c)
+        return acc
+      }, {}),
+    [filtered]
+  )
 
-  const grouped = filtered.reduce<Record<string, Candidate[]>>((acc, c) => {
-    const group = c.theme_group || 'Other'
-    if (!acc[group]) acc[group] = []
-    acc[group].push(c)
-    return acc
-  }, {})
-
-  const pendingCounts = candidates.reduce(
-    (acc, c) => {
-      if (c.status !== 'pending') return acc
-      const rec = getRecommendation(c)
-      acc[rec.type] = (acc[rec.type] || 0) + 1
-      return acc
-    },
-    { approve: 0, reject: 0, review: 0 }
+  const pendingCounts = useMemo(
+    () =>
+      candidates.reduce(
+        (acc, c) => {
+          if (c.status !== 'pending') return acc
+          acc[getRecommendation(c).type] = (acc[getRecommendation(c).type] || 0) + 1
+          return acc
+        },
+        { approve: 0, reject: 0, review: 0 } as Record<string, number>
+      ),
+    [candidates]
   )
 
   async function approve(id: string) {
     setActioningId(id)
-    setMessage(null)
     try {
       const res = await fetch(`/api/admin/candidates/${id}/approve`, { method: 'POST' })
       const result = await res.json()
       if (result.ok) {
         const n = result.new_tickers ?? 0
-        const pipelineMsg = result.pipeline_status
-          ? `Playbook + logos generating in background (~30s). Check archetype in a minute.`
+        const note = result.pipeline_status
+          ? `Playbook + logos generating (~30s)`
           : (result.note ?? '')
-        setMessage(`✅ Approved — ${n} new ticker(s) added. ${pipelineMsg}`)
+        api.success({ content: `Approved · +${n} ticker(s) · ${note}`, duration: 6 })
         mutate()
       } else {
-        setMessage(`❌ ${result.error ?? 'approval failed'}`)
+        api.error({ content: result.error ?? 'approval failed', duration: 8 })
       }
     } catch (e) {
-      setMessage(`❌ ${e instanceof Error ? e.message : 'network error'}`)
+      api.error({ content: e instanceof Error ? e.message : 'network error' })
     } finally {
       setActioningId(null)
-      setTimeout(() => setMessage(null), 8000)
     }
   }
 
@@ -145,101 +159,111 @@ export default function CandidatesPage() {
     setActioningId(id)
     try {
       await fetch(`/api/admin/candidates/${id}/reject`, { method: 'POST' })
+      api.success('Rejected')
       mutate()
     } finally {
       setActioningId(null)
     }
   }
 
-  async function bulkApproveRecommended() {
+  function bulkApprove() {
     const targets = candidates.filter((c) => c.status === 'pending' && getRecommendation(c).type === 'approve')
-    if (targets.length === 0) { setMessage('No candidates recommended for approval'); return }
-    if (!confirm(`Approve ${targets.length} recommended candidate(s)?`)) return
-    for (const c of targets) {
-      await fetch(`/api/admin/candidates/${c.id}/approve`, { method: 'POST' })
+    if (!targets.length) {
+      api.info('No candidates recommended for approval')
+      return
     }
-    mutate()
-    setMessage(`✅ Approved ${targets.length} candidate(s)`)
-    setTimeout(() => setMessage(null), 8000)
+    Modal.confirm({
+      title: `Approve ${targets.length} recommended candidate(s)?`,
+      onOk: async () => {
+        for (const c of targets) await fetch(`/api/admin/candidates/${c.id}/approve`, { method: 'POST' })
+        mutate()
+        api.success(`Approved ${targets.length}`)
+      },
+    })
   }
 
-  async function bulkRejectRecommended() {
+  function bulkReject() {
     const targets = candidates.filter((c) => c.status === 'pending' && getRecommendation(c).type === 'reject')
-    if (targets.length === 0) { setMessage('No candidates recommended for rejection'); return }
-    if (!confirm(`Reject ${targets.length} recommended candidate(s)?`)) return
-    for (const c of targets) {
-      await fetch(`/api/admin/candidates/${c.id}/reject`, { method: 'POST' })
+    if (!targets.length) {
+      api.info('No candidates recommended for rejection')
+      return
     }
-    mutate()
-    setMessage(`Rejected ${targets.length} candidate(s)`)
-    setTimeout(() => setMessage(null), 5000)
+    Modal.confirm({
+      title: `Reject ${targets.length} recommended candidate(s)?`,
+      onOk: async () => {
+        for (const c of targets) await fetch(`/api/admin/candidates/${c.id}/reject`, { method: 'POST' })
+        mutate()
+        api.success(`Rejected ${targets.length}`)
+      },
+    })
   }
-
-  if (isLoading) return <div className="p-8 text-zinc-500 text-sm">Loading...</div>
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-zinc-900 mb-1">Archetype Candidates</h1>
-        <p className="text-sm text-zinc-500">
-          Review new themes from weekly market scan. Approve to create archetype + seed tickers.
-        </p>
-      </div>
+    <AdminShell
+      title="Archetype Candidates"
+      subtitle="Review new themes from weekly market scan · Approve to create archetype + seed tickers"
+    >
+      {contextHolder}
 
-      {message && (
-        <div className="mb-4 p-3 bg-zinc-50 border border-zinc-200 rounded text-sm text-zinc-800">
-          {message}
-        </div>
-      )}
+      <Tabs
+        activeKey={filter}
+        onChange={(k) => setFilter(k as typeof filter)}
+        tabBarExtraContent={
+          filter === 'pending' && (
+            <Space>
+              <Button
+                size="small"
+                danger
+                disabled={pendingCounts.reject === 0}
+                icon={<CloseCircleFilled />}
+                onClick={bulkReject}
+              >
+                Reject all rec ({pendingCounts.reject})
+              </Button>
+              <Button
+                size="small"
+                type="primary"
+                disabled={pendingCounts.approve === 0}
+                icon={<CheckCircleFilled />}
+                onClick={bulkApprove}
+              >
+                Approve all rec ({pendingCounts.approve})
+              </Button>
+            </Space>
+          )
+        }
+        items={(['pending', 'approved', 'rejected'] as const).map((k) => ({
+          key: k,
+          label: (
+            <span style={{ textTransform: 'capitalize' }}>
+              {k} <Text type="secondary">({byStatus[k].length})</Text>
+            </span>
+          ),
+        }))}
+      />
 
-      {/* Filter tabs + batch actions */}
-      <div className="flex items-end justify-between mb-6 border-b border-zinc-200">
-        <div className="flex gap-6">
-          {(['pending', 'approved', 'rejected'] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`pb-3 text-sm capitalize transition-colors ${
-                filter === s
-                  ? 'border-b-2 border-zinc-900 font-medium text-zinc-900'
-                  : 'text-zinc-500 hover:text-zinc-700'
-              }`}
-            >
-              {s} ({byStatus[s].length})
-            </button>
-          ))}
-        </div>
-
-        {filter === 'pending' && (
-          <div className="flex gap-2 pb-3">
-            <button
-              onClick={bulkRejectRecommended}
-              disabled={pendingCounts.reject === 0}
-              className="px-3 py-1.5 text-xs bg-red-50 text-red-700 border border-red-200 rounded hover:bg-red-100 disabled:opacity-40 transition-colors"
-            >
-              ❌ Reject all recommended ({pendingCounts.reject})
-            </button>
-            <button
-              onClick={bulkApproveRecommended}
-              disabled={pendingCounts.approve === 0}
-              className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-40 transition-colors"
-            >
-              ✅ Approve all recommended ({pendingCounts.approve})
-            </button>
-          </div>
-        )}
-      </div>
-
-      {filtered.length === 0 ? (
-        <p className="text-center text-zinc-400 py-16 text-sm">No {filter} candidates</p>
+      {isLoading ? (
+        <Skeleton active paragraph={{ rows: 6 }} />
+      ) : filtered.length === 0 ? (
+        <Empty description={`No ${filter} candidates`} style={{ padding: '40px 0' }} />
       ) : (
-        <div>
+        <Flex vertical gap={20}>
           {Object.entries(grouped).map(([group, items]) => (
             <div key={group}>
-              <h2 className="text-xs font-medium text-zinc-400 uppercase tracking-widest mt-8 mb-3">
+              <Text
+                style={{
+                  fontFamily: token.fontFamilyCode,
+                  fontSize: 11,
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  color: token.colorTextQuaternary,
+                  display: 'block',
+                  marginBottom: 8,
+                }}
+              >
                 {group} ({items.length})
-              </h2>
-              <div className="space-y-3">
+              </Text>
+              <Flex vertical gap={10}>
                 {items.map((c) => (
                   <CandidateCard
                     key={c.id}
@@ -250,18 +274,21 @@ export default function CandidatesPage() {
                     showActions={filter === 'pending'}
                   />
                 ))}
-              </div>
+              </Flex>
             </div>
           ))}
-        </div>
+        </Flex>
       )}
 
-      <div className="mt-12 pt-6 border-t border-zinc-200 text-xs text-zinc-500">
-        <p>Approval now triggers playbook + logo generation automatically (~30s).
-        To re-run a failed pipeline:
-        <code className="ml-1 bg-zinc-100 px-1.5 py-0.5 rounded">POST /api/admin/archetypes/&lt;id&gt;/run-pipeline</code></p>
-      </div>
-    </div>
+      <Card size="small" style={{ marginTop: 24 }}>
+        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+          Approval triggers playbook + logo generation automatically (~30s). Re-run failed pipeline:{' '}
+          <Text code style={{ fontSize: 11 }}>
+            POST /api/admin/archetypes/&lt;id&gt;/run-pipeline
+          </Text>
+        </Text>
+      </Card>
+    </AdminShell>
   )
 }
 
@@ -279,189 +306,212 @@ function CandidateCard({
   showActions: boolean
 }) {
   const [expanded, setExpanded] = useState(false)
-
-  const importanceColor = {
-    high: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    medium: 'bg-amber-50 text-amber-700 border-amber-200',
-    low: 'bg-zinc-50 text-zinc-600 border-zinc-200',
-  }[c.estimated_importance]
-
+  const { token } = theme.useToken()
   const rec = getRecommendation(c)
-  const recBg = {
-    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-    red: 'bg-red-50 border-red-200 text-red-800',
-    amber: 'bg-amber-50 border-amber-200 text-amber-800',
-  }[rec.color]
-  const recIcon = rec.type === 'approve' ? '✅' : rec.type === 'reject' ? '❌' : '⚠️'
+  const recIcon =
+    rec.type === 'approve' ? <CheckCircleFilled /> : rec.type === 'reject' ? <CloseCircleFilled /> : <ExclamationCircleFilled />
   const recLabel =
-    rec.type === 'approve' ? 'Recommended: Approve' :
-    rec.type === 'reject' ? 'Recommended: Reject' :
-    'Needs Review'
+    rec.type === 'approve'
+      ? 'Recommended: Approve'
+      : rec.type === 'reject'
+        ? 'Recommended: Reject'
+        : 'Needs Review'
+  const importanceColor: Record<string, string> =
+    { high: 'success', medium: 'warning', low: 'default' }
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-lg p-5 hover:border-zinc-300 transition-colors">
-      {/* Recommendation badge — pending only */}
+    <Card size="small" styles={{ body: { padding: 16 } }}>
       {showActions && (
-        <div className={`mb-3 p-3 rounded border ${recBg}`}>
-          <div className="flex items-center gap-2 font-medium text-sm">
-            <span>{recIcon}</span>
-            <span>{recLabel}</span>
-          </div>
-          <div className="text-xs mt-1 opacity-80">{rec.reason}</div>
-        </div>
+        <Alert
+          showIcon
+          icon={recIcon}
+          type={rec.color === 'success' ? 'success' : rec.color === 'error' ? 'error' : 'warning'}
+          message={recLabel}
+          description={rec.reason}
+          style={{ marginBottom: 12 }}
+        />
       )}
 
-      <div className="flex justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-base leading-snug text-zinc-900">{c.title}</h3>
-          <div className="flex flex-wrap gap-2 mt-2">
-            <span className="text-xs px-2 py-0.5 bg-zinc-100 border border-zinc-200 rounded text-zinc-600">
-              {c.category}
-            </span>
-            <span className={`text-xs px-2 py-0.5 rounded border ${importanceColor}`}>
+      <Flex justify="space-between" align="flex-start" gap={12}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Text strong style={{ fontSize: 15, color: token.colorText }}>
+            {c.title}
+          </Text>
+          <Flex gap={6} wrap style={{ marginTop: 6 }}>
+            <Tag bordered={false}>{c.category}</Tag>
+            <Tag color={importanceColor[c.estimated_importance]} bordered={false}>
               {c.estimated_importance}
-            </span>
-            <span className="text-xs text-zinc-400">scanned {c.scan_date}</span>
-          </div>
+            </Tag>
+            <Text style={{ fontSize: 11, color: token.colorTextQuaternary, alignSelf: 'center' }}>
+              scanned {c.scan_date}
+            </Text>
+          </Flex>
         </div>
 
         {showActions && (
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              onClick={onApprove}
-              disabled={isActioning}
-              className="px-4 py-1.5 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700 disabled:opacity-40 transition-colors"
-            >
-              {isActioning ? '…' : 'Approve'}
-            </button>
-            <button
-              onClick={onReject}
-              disabled={isActioning}
-              className="px-4 py-1.5 bg-white border border-zinc-300 text-zinc-700 text-sm rounded hover:bg-zinc-50 disabled:opacity-40 transition-colors"
-            >
+          <Space>
+            <Button type="primary" size="small" loading={isActioning} onClick={onApprove}>
+              Approve
+            </Button>
+            <Button size="small" disabled={isActioning} onClick={onReject}>
               Reject
-            </button>
-          </div>
+            </Button>
+          </Space>
         )}
-      </div>
+      </Flex>
 
       {c.similarity_warnings && c.similarity_warnings.length > 0 && (
-        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded">
-          <div className="text-xs font-medium text-amber-900 mb-1.5">
-            ⚠️ Similar to {c.similarity_warnings.length} existing theme(s)
-          </div>
-          <ul className="space-y-2">
-            {c.similarity_warnings.map((w, i) => (
-              <li key={i} className="text-xs text-amber-800">
-                <span className="font-medium">{w.target_name}</span>
-                <span className="text-amber-600 ml-1">
-                  ({(w.similarity_score * 100).toFixed(0)}% match)
-                </span>
-                <div className="text-amber-700 mt-0.5">{w.reason}</div>
-                <div className="text-amber-500 mt-0.5 italic">
-                  Suggestion: {w.recommendation.replace(/_/g, ' ')}
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginTop: 12 }}
+          message={`Similar to ${c.similarity_warnings.length} existing theme(s)`}
+          description={
+            <Flex vertical gap={8}>
+              {c.similarity_warnings.map((w, i) => (
+                <div key={i}>
+                  <Text strong style={{ fontSize: 12 }}>
+                    {w.target_name}
+                  </Text>{' '}
+                  <Text style={{ fontSize: 11, color: token.colorWarning }}>
+                    ({(w.similarity_score * 100).toFixed(0)}% match)
+                  </Text>
+                  <Paragraph style={{ fontSize: 11, marginTop: 2, marginBottom: 2 }}>{w.reason}</Paragraph>
+                  <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>
+                    Suggestion: {w.recommendation.replace(/_/g, ' ')}
+                  </Text>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              ))}
+            </Flex>
+          }
+        />
       )}
 
-      <p className="text-sm text-zinc-700 mt-3 leading-relaxed">{c.description}</p>
+      <Paragraph
+        style={{ marginTop: 12, marginBottom: 0, fontSize: 13, color: token.colorTextSecondary }}
+      >
+        {c.description}
+      </Paragraph>
 
-      <button
+      <Button
+        type="link"
+        size="small"
+        style={{ paddingLeft: 0, marginTop: 6 }}
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-blue-600 hover:underline mt-3"
       >
         {expanded ? 'Hide details ▲' : 'Show details ▼'}
-      </button>
+      </Button>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-zinc-100 space-y-4 text-sm">
+        <Flex
+          vertical
+          gap={14}
+          style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${token.colorBorderSecondary}` }}
+        >
           {c.why_this_matters && (
-            <div>
-              <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-1">
-                Why this is a theme
-              </div>
-              <p className="text-zinc-700">{c.why_this_matters}</p>
-            </div>
+            <Section label="Why this is a theme">
+              <Paragraph style={{ fontSize: 13, marginBottom: 0 }}>{c.why_this_matters}</Paragraph>
+            </Section>
           )}
 
           {c.initial_tickers?.length > 0 && (
-            <div>
-              <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-2">
-                Initial tickers ({c.initial_tickers.length})
-              </div>
-              <div className="space-y-1.5">
+            <Section label={`Initial tickers (${c.initial_tickers.length})`}>
+              <Flex vertical gap={6}>
                 {c.initial_tickers.map((t, i) => (
-                  <div key={i} className="flex gap-2 items-start">
-                    <span className="font-mono text-xs bg-zinc-100 px-1.5 py-0.5 rounded flex-shrink-0">
-                      ${t.symbol}
-                    </span>
-                    <span className="text-xs text-zinc-600">{t.reasoning}</span>
-                  </div>
+                  <Flex key={i} gap={8} align="flex-start">
+                    <Tag style={{ fontFamily: token.fontFamilyCode, margin: 0 }}>${t.symbol}</Tag>
+                    <Text style={{ fontSize: 12, color: token.colorTextSecondary }}>{t.reasoning}</Text>
+                  </Flex>
                 ))}
-              </div>
-            </div>
+              </Flex>
+            </Section>
           )}
 
           {c.evidence_events?.length > 0 ? (
-            <div>
-              <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-2">
-                📰 Evidence events ({c.evidence_events.length})
-              </div>
-              <ul className="space-y-2">
+            <Section label={`Evidence events (${c.evidence_events.length})`}>
+              <Flex vertical gap={8}>
                 {c.evidence_events.map((e) => (
-                  <li key={e.id} className="text-xs pl-3 border-l-2 border-blue-200">
+                  <div
+                    key={e.id}
+                    style={{ paddingLeft: 10, borderLeft: `2px solid ${token.colorPrimaryBorder}` }}
+                  >
                     {e.source_url ? (
-                      <a
-                        href={e.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {e.headline}
+                      <a href={e.source_url} target="_blank" rel="noopener noreferrer">
+                        {e.headline} <LinkOutlined style={{ fontSize: 10 }} />
                       </a>
                     ) : (
-                      <span className="text-zinc-800">{e.headline}</span>
+                      <Text style={{ fontSize: 12 }}>{e.headline}</Text>
                     )}
-                    <div className="text-zinc-400 mt-0.5">
+                    <Text
+                      style={{ display: 'block', fontSize: 11, color: token.colorTextQuaternary, marginTop: 2 }}
+                    >
                       {e.source_name ?? 'Press'} · {e.event_date}
-                    </div>
-                  </li>
+                    </Text>
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </Flex>
+            </Section>
           ) : (
             c.recent_events?.length > 0 && (
-              <div>
-                <div className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-2">
-                  Recent events (legacy, no IDs)
-                </div>
-                <ul className="space-y-1.5">
+              <Section label="Recent events (legacy, no IDs)">
+                <Flex vertical gap={4}>
                   {c.recent_events.map((e, i) => (
-                    <li key={i} className="text-xs text-zinc-600 pl-3 border-l-2 border-zinc-200">
+                    <Text
+                      key={i}
+                      style={{
+                        fontSize: 12,
+                        color: token.colorTextSecondary,
+                        paddingLeft: 10,
+                        borderLeft: `2px solid ${token.colorBorderSecondary}`,
+                      }}
+                    >
                       {e}
-                    </li>
+                    </Text>
                   ))}
-                </ul>
-              </div>
+                </Flex>
+              </Section>
             )
           )}
 
           {c.similar_to_existing && (
-            <div className="text-xs p-2 rounded bg-blue-50 border border-blue-200 text-blue-800">
-              🔍 Sonnet flagged similarity to existing archetype:{' '}
-              <code className="bg-white px-1 rounded">{c.similar_to_existing}</code>
-            </div>
+            <Alert
+              type="info"
+              showIcon
+              message={
+                <Text style={{ fontSize: 12 }}>
+                  Sonnet flagged similarity to <Text code>{c.similar_to_existing}</Text>
+                </Text>
+              }
+            />
           )}
 
-          <div className="text-xs text-zinc-400 pt-2 border-t border-zinc-100">
-            Proposed ID:{' '}
-            <code className="bg-zinc-100 px-1.5 py-0.5 rounded">{c.proposed_archetype_id}</code>
-          </div>
-        </div>
+          <Text style={{ fontSize: 11, color: token.colorTextQuaternary }}>
+            Proposed ID: <Text code>{c.proposed_archetype_id}</Text>
+          </Text>
+        </Flex>
       )}
+    </Card>
+  )
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  const { token } = theme.useToken()
+  return (
+    <div>
+      <Text
+        style={{
+          display: 'block',
+          fontFamily: token.fontFamilyCode,
+          fontSize: 10,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: token.colorTextQuaternary,
+          marginBottom: 6,
+        }}
+      >
+        {label}
+      </Text>
+      {children}
     </div>
   )
 }
