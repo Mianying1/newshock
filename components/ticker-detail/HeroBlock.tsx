@@ -104,16 +104,14 @@ function ScoreStat({
   tooltip?: string
 }) {
   const { token } = useToken()
-  const inner = (
+  return (
     <span
       style={{
         display: 'inline-flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
         gap: 8,
-        cursor: tooltip ? 'help' : 'default',
       }}
-      tabIndex={tooltip ? 0 : undefined}
     >
       <span style={{ display: 'inline-flex', alignItems: 'baseline', lineHeight: 1 }}>
         <Text
@@ -157,18 +155,20 @@ function ScoreStat({
       >
         {label}
         {tooltip && (
-          <InfoCircleOutlined
-            style={{
-              fontSize: 10,
-              color: token.colorTextQuaternary,
-              cursor: 'help',
-            }}
-          />
+          <Tooltip title={tooltip}>
+            <InfoCircleOutlined
+              style={{
+                fontSize: 10,
+                color: token.colorTextQuaternary,
+                cursor: 'help',
+              }}
+              tabIndex={0}
+            />
+          </Tooltip>
         )}
       </span>
     </span>
   )
-  return tooltip ? <Tooltip title={tooltip}>{inner}</Tooltip> : inner
 }
 
 export function HeroBlock({

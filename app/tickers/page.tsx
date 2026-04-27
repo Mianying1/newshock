@@ -17,6 +17,7 @@ import {
 } from 'antd'
 import {
   ArrowRightOutlined,
+  InfoCircleOutlined,
   MoonOutlined,
   SearchOutlined,
   SunOutlined,
@@ -242,7 +243,7 @@ export default function TickersPage() {
 
             <Flex vertical gap={10} style={{ marginTop: 18, marginBottom: 18 }}>
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale}>{t('tickers_ranked.filter_type')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_type')}</FilterLabel>
                 <FilterPill
                   label={t('tickers_ranked.tab_thematic')}
                   active={topTab === 'thematic'}
@@ -257,7 +258,7 @@ export default function TickersPage() {
 
               {topTab === 'thematic' && (
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale}>{t('tickers_ranked.filter_horizon')}</FilterLabel>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_horizon')}</FilterLabel>
                   <FilterPill
                     label={t('tickers_ranked.subtab_long')}
                     active={mode === 'long'}
@@ -273,7 +274,7 @@ export default function TickersPage() {
 
               {groups.length > 0 && (
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale}>{t('tickers_ranked.filter_sector')}</FilterLabel>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_sector')}</FilterLabel>
                   <FilterPill
                     label={t('tickers_ranked.filter_all')}
                     count={totalCount}
@@ -432,60 +433,74 @@ export default function TickersPage() {
                             )}
                           </Flex>
                         </Flex>
-                        <Tooltip title={scoreTooltip}>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-end',
+                            gap: 6,
+                            flexShrink: 0,
+                          }}
+                        >
                           <span
                             style={{
                               display: 'inline-flex',
                               alignItems: 'baseline',
-                              gap: 8,
-                              cursor: 'help',
-                              flexShrink: 0,
+                              fontFamily: token.fontFamilyCode,
+                              fontFeatureSettings: '"tnum", "zero"',
+                              lineHeight: 1,
+                              letterSpacing: '-0.01em',
                             }}
                           >
                             <Text
                               style={{
-                                fontSize: 12,
-                                color: token.colorTextTertiary,
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {scoreLabel}
-                            </Text>
-                            <span
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'baseline',
                                 fontFamily: token.fontFamilyCode,
-                                fontFeatureSettings: '"tnum", "zero"',
+                                fontSize: 24,
+                                fontWeight: 500,
+                                color: token.colorText,
                                 lineHeight: 1,
-                                letterSpacing: '-0.01em',
                               }}
                             >
-                              <Text
-                                style={{
-                                  fontFamily: token.fontFamilyCode,
-                                  fontSize: 24,
-                                  fontWeight: 500,
-                                  color: token.colorText,
-                                  lineHeight: 1,
-                                }}
-                              >
-                                {row.score ?? '—'}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontFamily: token.fontFamilyCode,
-                                  fontSize: 12,
-                                  color: token.colorTextQuaternary,
-                                  marginLeft: 4,
-                                  lineHeight: 1,
-                                }}
-                              >
-                                / 100
-                              </Text>
-                            </span>
+                              {row.score ?? '—'}
+                            </Text>
+                            <Text
+                              style={{
+                                fontFamily: token.fontFamilyCode,
+                                fontSize: 12,
+                                color: token.colorTextQuaternary,
+                                marginLeft: 4,
+                                lineHeight: 1,
+                              }}
+                            >
+                              / 100
+                            </Text>
                           </span>
-                        </Tooltip>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              fontSize: 10,
+                              fontWeight: 500,
+                              color: token.colorTextTertiary,
+                              letterSpacing: '0.08em',
+                              lineHeight: 1,
+                            }}
+                          >
+                            {scoreLabel}
+                            <Tooltip title={scoreTooltip}>
+                              <InfoCircleOutlined
+                                style={{
+                                  fontSize: 10,
+                                  color: token.colorTextQuaternary,
+                                  cursor: 'help',
+                                }}
+                                tabIndex={0}
+                                onClick={(e) => e.preventDefault()}
+                              />
+                            </Tooltip>
+                          </span>
+                        </span>
                       </Flex>
                     </Link>
                   )

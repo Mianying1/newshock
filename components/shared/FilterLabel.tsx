@@ -14,7 +14,6 @@ interface FilterLabelProps {
 
 export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
   const { token } = useToken()
-  const resolvedMinWidth = minWidth ?? (locale === 'zh' ? 52 : 80)
   return (
     <Text
       style={{
@@ -24,7 +23,9 @@ export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
         textTransform: 'none',
         color: token.colorTextQuaternary,
         marginRight: 12,
-        minWidth: resolvedMinWidth,
+        minWidth,
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
         display: 'inline-block',
       }}
     >

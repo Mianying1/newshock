@@ -343,7 +343,7 @@ export default function ThemeMapPage() {
                 }}
               >
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale}>{t('themes_page.filter_status')}</FilterLabel>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_status')}</FilterLabel>
                   {(['all', 'active', 'cooling'] as StatusFilter[]).map((s) => (
                     <FilterPill
                       key={s}
@@ -355,7 +355,7 @@ export default function ThemeMapPage() {
                 </Flex>
 
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale}>{t('themes_page.filter_category')}</FilterLabel>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_category')}</FilterLabel>
                   <FilterPill
                     label={t('themes_page.status_all')}
                     active={categoryFilter === 'all'}
@@ -373,7 +373,7 @@ export default function ThemeMapPage() {
                 </Flex>
 
                 <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale}>{t('themes_page.filter_stage')}</FilterLabel>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_stage')}</FilterLabel>
                   {(['all', 'early', 'mid', 'late', 'beyond', 'unknown'] as StageFilter[]).map(
                     (s) => (
                       <FilterPill
