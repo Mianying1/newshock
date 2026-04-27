@@ -12,7 +12,6 @@ import {
   Layout,
   Space,
   Spin,
-  Tooltip,
   Typography,
   theme,
 } from 'antd'
@@ -31,7 +30,7 @@ import { TrendingUpIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { formatMinutesAgo } from '@/lib/utils'
-import type { LongShortTickerRow, PotentialTickerRow, LongShortMode } from '@/lib/ticker-scoring'
+import type { LongShortTickerRow, AngleDirectionRow, LongShortMode } from '@/lib/ticker-scoring'
 import '../radar.css'
 
 const { Text, Title } = Typography
@@ -49,8 +48,8 @@ interface LongShortResponse {
   updated_at: string
 }
 
-interface PotentialResponse {
-  tickers: PotentialTickerRow[]
+interface AnglesResponse {
+  directions: AngleDirectionRow[]
   total: number
   limit: number
   updated_at: string
@@ -85,7 +84,7 @@ export default function TickersPage() {
   const [activeGroup, setActiveGroup] = useState<string>('')
 
   const [longShortData, setLongShortData] = useState<LongShortResponse | null>(null)
-  const [potentialData, setPotentialData] = useState<PotentialResponse | null>(null)
+  const [anglesData, setAnglesData] = useState<AnglesResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -121,14 +120,14 @@ export default function TickersPage() {
     setLoading(true)
     setError(false)
     setActiveGroup('')
-    fetch('/api/tickers/potential?limit=100')
+    fetch('/api/new-angle-candidates?limit=100')
       .then((r) => {
         if (!r.ok) throw new Error('fetch failed')
         return r.json()
       })
       .then((d) => {
         if (cancelled) return
-        setPotentialData(d)
+        setAnglesData(d)
         setLoading(false)
       })
       .catch(() => {
@@ -142,7 +141,7 @@ export default function TickersPage() {
   }, [topTab])
 
   const activeUpdatedAt =
-    topTab === 'thematic' ? longShortData?.updated_at : potentialData?.updated_at
+    topTab === 'thematic' ? longShortData?.updated_at : anglesData?.updated_at
 
   const updatedLabel = activeUpdatedAt
     ? formatMinutesAgo(
@@ -155,30 +154,28 @@ export default function TickersPage() {
   // For thematic: collapse case variants (Pharma/pharma) by lowercasing the sector key.
   const allRows: NormalizedRow[] = useMemo(() => {
     if (topTab === 'thematic') {
-      return (longShortData?.tickers ?? []).map((tk) => {
-        const raw = mode === 'long' ? tk.long_score : tk.short_score
-        return {
-          href: `/tickers/${tk.symbol}`,
-          symbol: tk.symbol,
-          company_name: tk.company_name,
-          group: (tk.sector ?? 'other').toLowerCase().replace(/[\s/]+/g, '_'),
-          category_label: tk.category ? t(`categories.${tk.category}`) : null,
-          score: raw !== null && raw !== undefined ? Math.round(raw) : null,
-        }
-      })
+      return (longShortData?.tickers ?? []).map((tk) => ({
+        href: `/tickers/${tk.symbol}`,
+        symbol: tk.symbol,
+        company_name: tk.company_name,
+        group: (tk.sector ?? 'other').toLowerCase().replace(/[\s/]+/g, '_'),
+        category_label: tk.category ? t(`categories.${tk.category}`) : null,
+        score: tk.ticker_maturity_score !== null ? Math.round(tk.ticker_maturity_score * 10) : null,
+      }))
     }
-    return (potentialData?.tickers ?? []).map((tk) => ({
-      href: `/tickers/${tk.symbol}`,
-      symbol: tk.symbol,
-      company_name: tk.company_name,
-      group: (tk.sector ?? 'other').toLowerCase().replace(/[\s/]+/g, '_'),
-      category_label: tk.category ? t(`categories.${tk.category}`) : null,
-      score: Math.round(tk.potential_score),
+    return (anglesData?.directions ?? []).map((d) => ({
+      href: `/tickers/${d.ticker_symbol}`,
+      symbol: d.ticker_symbol,
+      company_name: null,
+      group: d.umbrella_name,
+      category_label: d.category ? t(`categories.${d.category}`) : null,
+      score: d.confidence !== null ? Math.round(d.confidence * 100) : null,
     }))
-  }, [topTab, mode, longShortData, potentialData, t])
+  }, [topTab, longShortData, anglesData, t])
 
   // Resolve a sector key to its locale-aware display label, with raw fallback.
   const groupLabel = (key: string): string => {
+    if (topTab !== 'thematic') return key
     const tr = t(`tickers_ranked.sectors.${key}`)
     return tr === `tickers_ranked.sectors.${key}` ? key : tr
   }
@@ -206,13 +203,8 @@ export default function TickersPage() {
   )
 
   const totalCount = allRows.length
+  const shownCount = filteredRows.length
   const visibilityTagText = topTab === 'thematic' ? t('tickers_ranked.tag_mature') : t('tickers_ranked.tag_emerging')
-  const headerDescription =
-    topTab === 'thematic'
-      ? mode === 'long'
-        ? t('tickers_ranked.score_tagline_long')
-        : t('tickers_ranked.score_tagline_short')
-      : t('tickers_ranked.score_tagline_potential')
 
   return (
     <div className="radar-page">
@@ -232,7 +224,16 @@ export default function TickersPage() {
             <PageHeader
               title={t('sidebar.tickers')}
               icon={<TrendingUpIcon />}
-              description={headerDescription}
+              stats={[
+                {
+                  value: totalCount,
+                  label: locale === 'zh' ? '股票' : 'Tickers',
+                },
+                {
+                  value: shownCount,
+                  label: locale === 'zh' ? '显示' : 'Shown',
+                },
+              ]}
               meta={
                 updatedLabel
                   ? t('tickers_ranked.updated', { time: updatedLabel })
@@ -327,18 +328,6 @@ export default function TickersPage() {
                       : tier === 'medium'
                       ? token.colorTextSecondary
                       : token.colorTextQuaternary
-                  const scoreTooltip =
-                    topTab === 'thematic'
-                      ? mode === 'long'
-                        ? t('ticker_detail.long_score_tooltip')
-                        : t('ticker_detail.short_score_tooltip')
-                      : t('ticker_detail.potential_score_tooltip')
-                  const scoreLabel =
-                    topTab === 'thematic'
-                      ? mode === 'long'
-                        ? t('tickers_ranked.score_label_long')
-                        : t('tickers_ranked.score_label_short')
-                      : t('tickers_ranked.score_label_potential')
                   return (
                     <Link
                       key={`${row.symbol}-${i}`}
@@ -355,121 +344,104 @@ export default function TickersPage() {
                         transition: 'border-color 0.15s, box-shadow 0.15s',
                       }}
                     >
-                      <Flex align="center" justify="space-between" gap={16}>
-                        <Flex vertical gap={8} style={{ minWidth: 0, flex: 1 }}>
-                          <Flex
-                            align="center"
-                            gap={10}
+                      <Flex
+                        align="center"
+                        gap={10}
+                        style={{
+                          fontSize: 11,
+                          color: token.colorTextTertiary,
+                          letterSpacing: '0.04em',
+                          marginBottom: 8,
+                          fontFeatureSettings: '"tnum"',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: token.fontFamilyCode,
+                            color: token.colorTextQuaternary,
+                          }}
+                        >
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span style={{ color: token.colorTextQuaternary }}>·</span>
+                        <span
+                          style={{
+                            fontSize: 9,
+                            fontWeight: 600,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            color: token.colorTextQuaternary,
+                          }}
+                        >
+                          {visibilityTagText}
+                        </span>
+                        {row.category_label && (
+                          <>
+                            <span style={{ color: token.colorTextQuaternary }}>·</span>
+                            <span style={{ color: token.colorTextSecondary }}>
+                              {row.category_label}
+                            </span>
+                          </>
+                        )}
+                        <span style={{ color: token.colorTextQuaternary }}>·</span>
+                        <span
+                          style={{
+                            fontSize: 9,
+                            fontWeight: 600,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            color: tierColor,
+                          }}
+                        >
+                          {tierLabel}
+                        </span>
+                        <span style={{ flex: 1 }} />
+                        <ArrowRightOutlined
+                          style={{ fontSize: 12, color: token.colorTextQuaternary }}
+                        />
+                      </Flex>
+
+                      <Flex align="baseline" justify="space-between" gap={12}>
+                        <Flex align="baseline" gap={10} style={{ minWidth: 0, flex: 1 }}>
+                          <Text
                             style={{
-                              fontSize: 11,
-                              color: token.colorTextTertiary,
-                              letterSpacing: '0.04em',
-                              fontFeatureSettings: '"tnum"',
+                              fontFamily: token.fontFamilyCode,
+                              fontSize: 18,
+                              fontWeight: 600,
+                              color: token.colorText,
+                              letterSpacing: '0.01em',
+                              lineHeight: 1.2,
                             }}
                           >
-                            <span
-                              style={{
-                                fontFamily: token.fontFamilyCode,
-                                color: token.colorTextQuaternary,
-                              }}
-                            >
-                              {String(i + 1).padStart(2, '0')}
-                            </span>
-                            <span style={{ color: token.colorTextQuaternary }}>·</span>
-                            <span
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 600,
-                                letterSpacing: '0.16em',
-                                textTransform: 'uppercase',
-                                color: token.colorTextQuaternary,
-                              }}
-                            >
-                              {visibilityTagText}
-                            </span>
-                            {row.category_label && (
-                              <>
-                                <span style={{ color: token.colorTextQuaternary }}>·</span>
-                                <span style={{ color: token.colorTextSecondary }}>
-                                  {row.category_label}
-                                </span>
-                              </>
-                            )}
-                            <span style={{ color: token.colorTextQuaternary }}>·</span>
-                            <span
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 600,
-                                letterSpacing: '0.16em',
-                                textTransform: 'uppercase',
-                                color: tierColor,
-                              }}
-                            >
-                              {tierLabel}
-                            </span>
-                          </Flex>
-                          <Flex align="baseline" gap={10} style={{ minWidth: 0 }}>
-                            <Text
-                              style={{
-                                fontFamily: token.fontFamilyCode,
-                                fontSize: 18,
-                                fontWeight: 600,
-                                color: token.colorText,
-                                letterSpacing: '0.01em',
-                                lineHeight: 1.2,
-                              }}
-                            >
-                              {row.symbol}
-                            </Text>
-                            {row.company_name && (
-                              <Text
-                                style={{
-                                  fontSize: 12,
-                                  color: token.colorTextTertiary,
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                {row.company_name}
-                              </Text>
-                            )}
-                          </Flex>
-                        </Flex>
-                        <Tooltip title={scoreTooltip}>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'baseline',
-                              gap: 8,
-                              cursor: 'help',
-                              flexShrink: 0,
-                            }}
-                          >
+                            {row.symbol}
+                          </Text>
+                          {row.company_name && (
                             <Text
                               style={{
                                 fontSize: 12,
                                 color: token.colorTextTertiary,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                               }}
                             >
-                              {scoreLabel}
+                              {row.company_name}
                             </Text>
-                            <Text
-                              style={{
-                                fontFamily: token.fontFamilyCode,
-                                fontFeatureSettings: '"tnum", "zero"',
-                                fontSize: 24,
-                                fontWeight: 500,
-                                color: token.colorText,
-                                lineHeight: 1,
-                                letterSpacing: '-0.01em',
-                              }}
-                            >
-                              {row.score ?? '—'}
-                            </Text>
-                          </span>
-                        </Tooltip>
+                          )}
+                        </Flex>
+                        <Text
+                          style={{
+                            fontFamily: token.fontFamilyCode,
+                            fontFeatureSettings: '"tnum", "zero"',
+                            fontSize: 22,
+                            fontWeight: 500,
+                            color: token.colorText,
+                            lineHeight: 1,
+                            letterSpacing: '-0.01em',
+                          }}
+                        >
+                          {row.score ?? '—'}
+                        </Text>
                       </Flex>
                     </Link>
                   )

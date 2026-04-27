@@ -64,7 +64,6 @@ interface Props {
   symbol: string
   rightText?: string
   rightSmall?: string
-  rightTooltip?: string
   sentiment?: 'bullish' | 'mixed' | 'bearish' | 'neutral' | null
   inlineBadges?: TickerRowBadge[]
   rightBadge?: TickerRowBadge | null
@@ -116,7 +115,6 @@ export default function TickerRow({
   symbol,
   rightText,
   rightSmall,
-  rightTooltip,
   sentiment,
   inlineBadges,
   rightBadge,
@@ -192,7 +190,6 @@ export default function TickerRow({
       )}
       {rightText && (
         <span
-          title={rightTooltip}
           style={{
             fontFamily: token.fontFamilyCode,
             fontSize: token.fontSize,
@@ -201,7 +198,6 @@ export default function TickerRow({
             textAlign: 'right',
             flexShrink: 0,
             minWidth: 42,
-            cursor: rightTooltip ? 'help' : undefined,
           }}
         >
           {rightText}

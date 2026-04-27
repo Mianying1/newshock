@@ -443,15 +443,3 @@ B 阶段 · 前端 UI (Next.js + Tailwind, 主题雷达 + 详情页)
 **依据**:
 - Admin API 使用 service role 执行写入/删除，公开暴露会直接破坏数据完整性。
 - 当前阶段还没有完整 Supabase Auth/role model，`ADMIN_SECRET` middleware 是最小可用防线；正式付费前仍需迁移到真实登录、角色、审计日志。
-
-## 2026-04-26
-
-### Backlog · Umbrella 库覆盖缺口(月内 review)
-1.2 dry-run 中 LLM 对 4 个 active 候选返回 "none"，结构上不属于现有 11 个 umbrella:
-- AI Risk & Governance (e.g. AI Model Security Breach · Enterprise Trust Erosion)
-- Space Commerce (e.g. Space Infrastructure Commercialization · LEO & Launch)
-- Climate & Resource Scarcity (e.g. Water Infrastructure Stress · Scarcity Trade)
-- Consumer Stress (e.g. Low-Income Consumer Stress · Discount Retail Slowdown)
-
-**决策**: 不今天建。等月底累计更多 "none" verdicts 后再决定建哪几个 umbrella。
-**理由**: 7 天产品过度结构化风险高于覆盖缺口风险；先观察实际事件流分布再扩 umbrella 库。

@@ -65,18 +65,11 @@ export interface TickerDetailEvent {
   themeName: string | null
 }
 
-export interface TickerDetailScores {
-  short: number | null
-  long: number | null
-  potential: number | null
-}
-
 export interface TickerDetailBundle {
   topThemes: TickerDetailThemeCard[]
   allActive: TickerDetailAllThemes[]
   playbooks: TickerDetailPlaybook[]
   events: TickerDetailEvent[]
-  scores: TickerDetailScores
   totals: { coreCount: number; activeCount: number }
 }
 
@@ -226,9 +219,6 @@ interface RecRow {
   exposure_direction: string | null
   role_reasoning: string | null
   role_reasoning_zh: string | null
-  short_score: number | null
-  long_score: number | null
-  potential_score: number | null
   themes: {
     id: string
     name: string
@@ -274,7 +264,6 @@ export async function fetchTickerDetail(
       .from('theme_recommendations')
       .select(
         `theme_id, tier, exposure_pct, exposure_direction, role_reasoning, role_reasoning_zh,
-         short_score, long_score, potential_score,
          themes!inner (
            id, name, name_zh, status, archetype_id, theme_strength_score,
            first_seen_at, last_active_at, event_count, expected_coverage,
@@ -301,21 +290,9 @@ export async function fetchTickerDetail(
   let coreCount = 0
   let activeCount = 0
   const themeNameById = new Map<string, string>()
-  const scores: TickerDetailScores = { short: null, long: null, potential: null }
 
   if (recsRes.status === 'fulfilled' && !recsRes.value.error) {
     const rows = (recsRes.value.data ?? []) as unknown as RecRow[]
-    for (const r of rows) {
-      if (r.short_score !== null && (scores.short === null || r.short_score > scores.short)) {
-        scores.short = r.short_score
-      }
-      if (r.long_score !== null && (scores.long === null || r.long_score > scores.long)) {
-        scores.long = r.long_score
-      }
-      if (r.potential_score !== null && (scores.potential === null || r.potential_score > scores.potential)) {
-        scores.potential = r.potential_score
-      }
-    }
     const active = rows.filter((r) => r.themes?.status === 'active')
     activeCount = active.length
 
@@ -412,7 +389,6 @@ export async function fetchTickerDetail(
     allActive,
     playbooks,
     events,
-    scores,
     totals: { coreCount, activeCount },
   }
 }
