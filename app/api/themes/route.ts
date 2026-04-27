@@ -23,7 +23,9 @@ export async function GET(request: Request) {
       limit: limitParam ? Math.min(parseInt(limitParam, 10) || 50, 200) : 50,
       tier,
     })
-    return Response.json(result)
+    return Response.json(result, {
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
+    })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     return Response.json({ error: msg }, { status: 500 })

@@ -6,7 +6,9 @@ export async function GET(
 ) {
   try {
     const theme = await buildSingleTheme(params.id)
-    return Response.json(theme)
+    return Response.json(theme, {
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
+    })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     const status = msg.includes('not found') ? 404 : 500

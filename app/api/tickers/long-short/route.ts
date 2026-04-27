@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server'
 import { getLongShortTickers, type LongShortMode } from '@/lib/ticker-scoring'
 
 export const maxDuration = 30
-export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams
@@ -13,13 +12,16 @@ export async function GET(request: NextRequest) {
 
   try {
     const rows = await getLongShortTickers(mode, limit)
-    return Response.json({
-      mode,
-      tickers: rows,
-      total: rows.length,
-      limit,
-      updated_at: new Date().toISOString(),
-    })
+    return Response.json(
+      {
+        mode,
+        tickers: rows,
+        total: rows.length,
+        limit,
+        updated_at: new Date().toISOString(),
+      },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+    )
   } catch (e) {
     return Response.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
   }

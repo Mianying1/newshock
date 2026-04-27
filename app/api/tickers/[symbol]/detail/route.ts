@@ -6,8 +6,6 @@ import {
   type Loc,
 } from '@/lib/queries/ticker-detail'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 type Resp =
   | (TickerDetailBundle & { ok: true })
@@ -23,7 +21,7 @@ export async function GET(
     const bundle = await fetchTickerDetail(symbol, loc)
     const body: Resp = { ok: true, ...bundle }
     return Response.json(body, {
-      headers: { 'Cache-Control': 'private, max-age=120' },
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
     })
   } catch (e) {
     Sentry.captureException(e, { tags: { stage: 'ticker_detail', symbol } })
