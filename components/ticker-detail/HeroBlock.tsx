@@ -3,6 +3,7 @@
 import { Fragment } from 'react'
 import Link from 'next/link'
 import { Flex, Tag, Tooltip, Typography, theme } from 'antd'
+import { InfoCircleOutlined } from '@ant-design/icons'
 
 const { Title, Text } = Typography
 const { useToken } = theme
@@ -107,46 +108,64 @@ function ScoreStat({
     <span
       style={{
         display: 'inline-flex',
-        alignItems: 'baseline',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 8,
         cursor: tooltip ? 'help' : 'default',
       }}
+      tabIndex={tooltip ? 0 : undefined}
     >
-      <Text
+      <span style={{ display: 'inline-flex', alignItems: 'baseline', lineHeight: 1 }}>
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: 500,
+            color: token.colorText,
+            fontFamily: token.fontFamilyCode,
+            fontVariantNumeric: 'tabular-nums',
+            letterSpacing: '-0.01em',
+            lineHeight: 1,
+          }}
+        >
+          {Math.round(value)}
+        </Text>
+        <Text
+          style={{
+            fontSize: 10,
+            fontWeight: 400,
+            color: token.colorTextQuaternary,
+            fontFamily: token.fontFamilyCode,
+            marginLeft: 4,
+            lineHeight: 1,
+          }}
+        >
+          /100
+        </Text>
+      </span>
+      <span
         style={{
-          fontSize: 18,
-          fontWeight: 600,
-          color: token.colorText,
-          fontFamily: token.fontFamilyCode,
-          fontVariantNumeric: 'tabular-nums',
-          letterSpacing: '-0.02em',
-          lineHeight: 1,
-        }}
-      >
-        {Math.round(value)}
-      </Text>
-      <Text
-        style={{
-          fontSize: 11,
-          color: token.colorTextQuaternary,
-          fontFamily: token.fontFamilyCode,
-          marginLeft: 3,
-          lineHeight: 1,
-        }}
-      >
-        / 100
-      </Text>
-      <Text
-        style={{
-          fontSize: 10.5,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          fontSize: 10,
           fontWeight: 500,
           color: token.colorTextTertiary,
-          marginLeft: 8,
-          letterSpacing: '0.06em',
+          letterSpacing: '0.08em',
           textTransform: 'uppercase',
+          lineHeight: 1,
         }}
       >
         {label}
-      </Text>
+        {tooltip && (
+          <InfoCircleOutlined
+            style={{
+              fontSize: 10,
+              color: token.colorTextQuaternary,
+              cursor: 'help',
+            }}
+          />
+        )}
+      </span>
     </span>
   )
   return tooltip ? <Tooltip title={tooltip}>{inner}</Tooltip> : inner
@@ -174,18 +193,18 @@ export function HeroBlock({
   return (
     <div
       style={{
-        padding: '20px 2px 24px',
+        padding: '18px 2px 20px',
         borderBottom: `1px solid ${token.colorSplit}`,
       }}
     >
-      <Flex align="baseline" gap={12} wrap style={{ marginBottom: 14 }}>
+      <Flex align="baseline" gap={10} wrap style={{ marginBottom: 14 }}>
         <Title
           level={1}
           style={{
             margin: 0,
-            fontSize: 32,
+            fontSize: 22,
             fontWeight: 600,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.01em',
             lineHeight: 1.2,
             color: token.colorText,
           }}
@@ -199,13 +218,43 @@ export function HeroBlock({
         )}
       </Flex>
 
-      <Flex
-        align="center"
-        justify="space-between"
-        gap={16}
-        wrap
-        style={{ marginBottom: 14, rowGap: 10 }}
+      {stats.length > 0 && (
+        <Flex align="center" gap={0} style={{ marginBottom: 14 }}>
+          {stats.map((s, i) => (
+            <Fragment key={s.key}>
+              {i > 0 && (
+                <span
+                  aria-hidden
+                  style={{
+                    display: 'inline-block',
+                    width: 1,
+                    height: 32,
+                    background: token.colorBorderSecondary,
+                    margin: '0 28px',
+                    verticalAlign: 'middle',
+                  }}
+                />
+              )}
+              <ScoreStat value={s.value} label={s.label} tooltip={s.tooltip} />
+            </Fragment>
+          ))}
+        </Flex>
+      )}
+
+      <Text
+        style={{
+          display: 'block',
+          fontSize: 13,
+          lineHeight: 1.6,
+          color: token.colorTextTertiary,
+          maxWidth: 640,
+          marginBottom: 12,
+        }}
       >
+        {heroLine ?? '—'}
+      </Text>
+
+      {(sector || topThemes.length > 0) && (
         <Flex align="center" gap={8} wrap>
           {sector && <MetaTag>{sector}</MetaTag>}
           {topThemes.map((th) => (
@@ -218,42 +267,7 @@ export function HeroBlock({
             </MetaTag>
           ))}
         </Flex>
-
-        {stats.length > 0 && (
-          <Flex align="center" gap={0} style={{ flexShrink: 0 }}>
-            {stats.map((s, i) => (
-              <Fragment key={s.key}>
-                {i > 0 && (
-                  <span
-                    aria-hidden
-                    style={{
-                      display: 'inline-block',
-                      width: 1,
-                      height: 22,
-                      background: token.colorBorder,
-                      margin: '0 18px',
-                      verticalAlign: 'middle',
-                    }}
-                  />
-                )}
-                <ScoreStat value={s.value} label={s.label} tooltip={s.tooltip} />
-              </Fragment>
-            ))}
-          </Flex>
-        )}
-      </Flex>
-
-      <Text
-        style={{
-          display: 'block',
-          fontSize: 13,
-          lineHeight: 1.6,
-          color: token.colorTextTertiary,
-          maxWidth: 640,
-        }}
-      >
-        {heroLine ?? '—'}
-      </Text>
+      )}
     </div>
   )
 }

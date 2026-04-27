@@ -11,7 +11,6 @@ import {
   Input,
   Layout,
   Space,
-  Spin,
   Tooltip,
   Typography,
   theme,
@@ -28,6 +27,7 @@ import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { TrendingUpIcon } from '@/components/shared/NavIcons'
+import { TickerRowSkeletonList } from '@/components/skeleton'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { formatMinutesAgo } from '@/lib/utils'
@@ -293,11 +293,7 @@ export default function TickersPage() {
               )}
             </Flex>
 
-            {loading && (
-              <div style={{ padding: '60px 0', textAlign: 'center' }}>
-                <Spin />
-              </div>
-            )}
+            {loading && <TickerRowSkeletonList count={10} />}
 
             {error && !loading && (
               <Empty description={t('common.error')} style={{ padding: '60px 0' }} />

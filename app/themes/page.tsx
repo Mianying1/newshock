@@ -10,7 +10,6 @@ import {
   Input,
   Layout,
   Space,
-  Spin,
   Typography,
   theme,
 } from 'antd'
@@ -22,6 +21,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
 import { LayersIcon } from '@/components/shared/NavIcons'
+import { ThemeMapGridSkeleton } from '@/components/skeleton'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { useField } from '@/lib/useField'
@@ -389,11 +389,7 @@ export default function ThemeMapPage() {
               </Flex>
             )}
 
-            {loading && (
-              <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                <Spin />
-              </div>
-            )}
+            {loading && <ThemeMapGridSkeleton count={6} />}
 
             {error && !loading && (
               <div style={{ padding: 40, color: token.colorError }}>

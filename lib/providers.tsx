@@ -27,16 +27,25 @@ const ThemeModeContext = createContext<ThemeModeContextValue>({
 
 export const useThemeMode = () => useContext(ThemeModeContext)
 
-export function Providers({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<Mode>('light')
+export function Providers({
+  children,
+  initialMode = 'light',
+}: {
+  children: ReactNode
+  initialMode?: Mode
+}) {
+  const [mode, setModeState] = useState<Mode>(initialMode)
 
+  // one-time reconcile with whatever the inline <head> script set on first paint.
+  // Why: when cookie is missing but localStorage has 'dark', SSR uses light but
+  // the inline script flips dataset.theme to dark before hydration. Sync state to it.
   useEffect(() => {
-    const saved = (typeof window !== 'undefined'
-      ? (localStorage.getItem('theme-mode') as Mode | null)
-      : null)
-    if (saved === 'light' || saved === 'dark') {
-      setModeState(saved)
+    if (typeof document === 'undefined') return
+    const attr = document.documentElement.dataset.theme
+    if ((attr === 'dark' || attr === 'light') && attr !== mode) {
+      setModeState(attr)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -48,7 +57,10 @@ export function Providers({ children }: { children: ReactNode }) {
   const setMode = (m: Mode) => {
     setModeState(m)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('theme-mode', m)
+      try {
+        localStorage.setItem('theme-mode', m)
+      } catch {}
+      document.cookie = `theme-mode=${m};path=/;max-age=31536000;samesite=lax`
     }
   }
 

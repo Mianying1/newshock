@@ -17,6 +17,15 @@
 
   --topbar-bg: rgba(26, 24, 21, 0.78);
 
+  --tabbar-glass-bg: rgba(36, 33, 30, 0.32);
+  --tabbar-glass-border: rgba(255, 246, 224, 0.06);
+  --tabbar-glass-highlight: rgba(255, 246, 224, 0.06);
+  --tabbar-glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --tabbar-indicator-bg: rgba(237, 230, 216, 0.14);
+  --tabbar-indicator-border: rgba(237, 230, 216, 0.14);
+  --tabbar-indicator-shadow: none;
+  --tabbar-active-ink: #E8C078;
+
   --accent: #EDE6D8;
   --link: #D4C8B2;
   --up: #8FA058;
@@ -37,6 +46,15 @@
   --line-card: #EAE4D8;
 
   --topbar-bg: rgba(244, 241, 236, 0.78);
+
+  --tabbar-glass-bg: rgba(255, 252, 246, 0.32);
+  --tabbar-glass-border: rgba(31, 28, 25, 0.05);
+  --tabbar-glass-highlight: rgba(255, 255, 255, 0.18);
+  --tabbar-glass-shadow: 0 8px 24px rgba(58, 48, 32, 0.10);
+  --tabbar-indicator-bg: rgba(255, 255, 255, 0.42);
+  --tabbar-indicator-border: rgba(31, 28, 25, 0.06);
+  --tabbar-indicator-shadow: none;
+  --tabbar-active-ink: #A86C00;
 
   --accent: #1F1C19;
   --link: #1F1C19;
@@ -1312,48 +1330,93 @@
   }
 
   .radar-page .mobile-tabbar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    justify-content: center;
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: calc(14px + env(safe-area-inset-bottom));
     z-index: 40;
-    height: calc(72px + env(safe-area-inset-bottom));
-    padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
-    backdrop-filter: saturate(160%) blur(16px);
-    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    padding: 0 16px;
+    pointer-events: none;
+    background: transparent !important;
+    border-top: none !important;
+  }
+  .radar-page .mobile-tabbar-pill {
+    pointer-events: auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: min(320px, 100%);
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--tabbar-glass-bg);
+    border: 1px solid var(--tabbar-glass-border);
+    box-shadow: var(--tabbar-glass-shadow);
+    backdrop-filter: saturate(160%) blur(20px);
+    -webkit-backdrop-filter: saturate(160%) blur(20px);
+    isolation: isolate;
+  }
+  .radar-page .mobile-tabbar-indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc((100% - 8px) / 4);
+    border-radius: 999px;
+    background: var(--tabbar-indicator-bg);
+    border: 1px solid var(--tabbar-indicator-border);
+    box-shadow: var(--tabbar-indicator-shadow);
+    transform: translate3d(calc(var(--active-index, 0) * 100%), 0, 0);
+    transition: transform 420ms cubic-bezier(0.34, 1.32, 0.64, 1);
+    pointer-events: none;
+    z-index: 0;
   }
   .radar-page .mobile-tab {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 2px;
+    padding: 6px 2px;
     color: var(--ink-3);
     text-decoration: none;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1;
+    border-radius: 999px;
     -webkit-tap-highlight-color: transparent;
+    transition: color 240ms ease, transform 260ms cubic-bezier(0.34, 1.32, 0.64, 1);
+  }
+  .radar-page .mobile-tab:active {
+    transform: scale(0.94);
   }
   .radar-page .mobile-tab .mobile-tab-icon {
     display: inline-flex;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     align-items: center;
     justify-content: center;
+    transition: transform 320ms cubic-bezier(0.34, 1.32, 0.64, 1);
   }
   .radar-page .mobile-tab svg {
-    width: 19px;
-    height: 19px;
+    width: 15px;
+    height: 15px;
     color: inherit;
   }
   .radar-page .mobile-tab.active {
     color: var(--ink);
   }
+  .radar-page .mobile-tab.active .mobile-tab-icon {
+    transform: translateY(-0.5px) scale(1.05);
+  }
   .radar-page .mobile-tab-label {
     letter-spacing: 0.02em;
     white-space: nowrap;
+    font-weight: 500;
+    color: var(--ink-3);
+    font-size: 10px;
   }
   /* Use a dot indicator instead of numeric count — keeps all 4 icons the same size. */
   .radar-page .mobile-tab .ant-badge-dot {
@@ -1362,9 +1425,16 @@
     height: 5px;
     box-shadow: none;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .radar-page .mobile-tabbar-indicator,
+    .radar-page .mobile-tab,
+    .radar-page .mobile-tab .mobile-tab-icon {
+      transition: none;
+    }
+  }
   /* Reserve space so floating content (e.g. sticky CTAs) doesn't sit under the bar. */
   .radar-page .ant-layout-content {
-    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
   }
   .radar-page .topbar {
     margin: 0 -16px;

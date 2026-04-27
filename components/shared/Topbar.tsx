@@ -37,13 +37,13 @@ export function Topbar({ sidePad }: TopbarProps) {
     >
       <Input
         disabled
-        prefix={<SearchOutlined />}
+        prefix={<SearchOutlined style={{ fontSize: 12 }} />}
         placeholder={t('topbar.search_placeholder')}
         suffix={
           <Text
             style={{
               fontFamily: token.fontFamilyCode,
-              fontSize: 10,
+              fontSize: 12,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               color: token.colorTextQuaternary,
@@ -52,7 +52,7 @@ export function Topbar({ sidePad }: TopbarProps) {
             {t('topbar.search_soon')}
           </Text>
         }
-        style={{ flex: 1 }}
+        style={{ flex: 1, fontSize: 12 }}
       />
       <Space.Compact className="topbar-actions">
         <Button

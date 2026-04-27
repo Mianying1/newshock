@@ -4,9 +4,12 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { Badge, theme } from 'antd'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
 import { RadarIcon, LayersIcon, TrendingUpIcon, ClockIcon } from '@/components/shared/NavIcons'
+
+const TABBAR_INDEX_KEY = 'newshock:mobile-tab-index'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -43,6 +46,22 @@ export function Sidebar() {
 
   const isActive = (href: string, i: number) =>
     i === 0 ? pathname === '/' : href !== '/' && pathname.startsWith(href)
+
+  const targetIndex = Math.max(0, items.findIndex((it, i) => isActive(it.href, i)))
+  const [renderedIndex, setRenderedIndex] = useState(targetIndex)
+
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? window.sessionStorage.getItem(TABBAR_INDEX_KEY) : null
+    const prev = stored !== null ? Number(stored) : targetIndex
+    setRenderedIndex(prev)
+    const raf = requestAnimationFrame(() => {
+      setRenderedIndex(targetIndex)
+      try {
+        window.sessionStorage.setItem(TABBAR_INDEX_KEY, String(targetIndex))
+      } catch {}
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [targetIndex])
 
   return (
     <>
@@ -92,35 +111,28 @@ export function Sidebar() {
         </div>
       </aside>
 
-      <nav
-        className="mobile-tabbar"
-        style={{
-          background: 'var(--topbar-bg)',
-          borderTop: `1px solid ${token.colorBorder}`,
-        }}
-      >
-        {items.map(({ href, labelKey, count, Icon }, i) => {
-          const active = isActive(href, i)
-          return (
-            <Link
-              key={`m-${labelKey}-${i}`}
-              href={href}
-              className={`mobile-tab${active ? ' active' : ''}`}
-            >
-              <Badge
-                dot={typeof count === 'number' && count > 0}
-                color={token.colorPrimary}
-                offset={[-1, 3]}
-                styles={{ indicator: { boxShadow: 'none' } }}
+      <nav className="mobile-tabbar" aria-label="Primary">
+        <div
+          className="mobile-tabbar-pill"
+          style={{ '--active-index': renderedIndex } as CSSProperties}
+        >
+          <span className="mobile-tabbar-indicator" aria-hidden />
+          {items.map(({ href, labelKey, count, Icon }, i) => {
+            const active = isActive(href, i)
+            return (
+              <Link
+                key={`m-${labelKey}-${i}`}
+                href={href}
+                className={`mobile-tab${active ? ' active' : ''}`}
               >
                 <span className="mobile-tab-icon">
                   <Icon />
                 </span>
-              </Badge>
-              <span className="mobile-tab-label">{t(labelKey)}</span>
-            </Link>
-          )
-        })}
+                <span className="mobile-tab-label">{t(labelKey)}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
     </>
   )

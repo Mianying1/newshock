@@ -5,13 +5,56 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --skeleton-bg: rgba(0, 0, 0, 0.06);
+  --skeleton-bg-shine: rgba(0, 0, 0, 0.12);
+  --skeleton-card-bg: #ffffff;
+  --skeleton-card-border: rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --skeleton-bg: rgba(255, 255, 255, 0.08);
+    --skeleton-bg-shine: rgba(255, 255, 255, 0.16);
+    --skeleton-card-bg: #141414;
+    --skeleton-card-border: rgba(255, 255, 255, 0.10);
   }
+}
+
+[data-theme='dark'] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --skeleton-bg: rgba(255, 255, 255, 0.08);
+  --skeleton-bg-shine: rgba(255, 255, 255, 0.16);
+  --skeleton-card-bg: #141414;
+  --skeleton-card-border: rgba(255, 255, 255, 0.10);
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.nshock-skel-bar {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg) 0%,
+    var(--skeleton-bg-shine) 50%,
+    var(--skeleton-bg) 100%
+  );
+  background-size: 800px 100%;
+  border-radius: 4px;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nshock-skel-bar { animation: none; }
+}
+
+.nshock-skel-card {
+  background: var(--skeleton-card-bg);
+  border: 1px solid var(--skeleton-card-border);
 }
 
 html,
@@ -98,5 +141,29 @@ body {
 }
 .tier-toggle-btn:active {
   transform: translateY(0.5px);
+}
+
+.nshock-card-hover {
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  cursor: pointer;
+}
+.nshock-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.nshock-card-hover:active {
+  transform: translateY(-2px) scale(0.98);
+  transition: transform 100ms ease-out, box-shadow 100ms ease-out;
+}
+[data-theme='dark'] .nshock-card-hover:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nshock-card-hover,
+  .nshock-card-hover:hover,
+  .nshock-card-hover:active {
+    transition: none;
+    transform: none;
+  }
 }
 

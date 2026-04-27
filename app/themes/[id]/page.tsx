@@ -55,6 +55,7 @@ import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { ThemeCard } from '@/components/radar/ThemeCard'
+import { TickerTileColumnSkeleton } from '@/components/skeleton'
 import { stageColor as getStageColor } from '@/lib/design-tokens'
 import '../../radar.css'
 
@@ -275,9 +276,18 @@ export default function ThemeDetailPage() {
 
           <Content style={{ padding: '0 28px 40px' }}>
             {loading && (
-              <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: token.colorTextQuaternary }}>
-                {t('theme_detail.loading')}
-              </p>
+              <div
+                style={{
+                  display: 'grid',
+                  gap: 12,
+                  marginTop: 24,
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                }}
+              >
+                <TickerTileColumnSkeleton count={6} />
+                <TickerTileColumnSkeleton count={5} />
+                <TickerTileColumnSkeleton count={4} />
+              </div>
             )}
             {error && (
               <p style={{ padding: '60px 0', textAlign: 'center', fontSize: 12, color: token.colorTextQuaternary }}>

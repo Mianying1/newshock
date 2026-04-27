@@ -12,7 +12,6 @@ import {
   Layout,
   Row,
   Space,
-  Spin,
   Typography,
   theme,
 } from 'antd'
@@ -27,6 +26,7 @@ import { RadarIcon } from '@/components/shared/NavIcons'
 import { TodayTopNarratives } from '@/components/radar/TodayTopNarratives'
 import { LatestThemes } from '@/components/radar/LatestThemes'
 import { EventStreamCompact } from '@/components/radar/EventStreamCompact'
+import { NarrativeSectionSkeleton } from '@/components/skeleton'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { getOngoingTop3 } from '@/lib/theme-priority'
@@ -126,11 +126,7 @@ export default function HomePage() {
 
             <Row gutter={[24, 24]} style={{ marginTop: 8 }}>
               <Col xs={24} lg={17}>
-                {loading && (
-                  <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                    <Spin />
-                  </div>
-                )}
+                {loading && <NarrativeSectionSkeleton count={3} />}
                 {error && (
                   <Empty description={t('common.error')} style={{ padding: '40px 0' }} />
                 )}

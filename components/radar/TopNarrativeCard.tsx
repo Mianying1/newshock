@@ -13,11 +13,7 @@ import {
   Typography,
   theme,
 } from 'antd'
-import {
-  ArrowRightOutlined,
-  FileTextOutlined,
-  WarningFilled,
-} from '@ant-design/icons'
+import { WarningFilled } from '@ant-design/icons'
 import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
@@ -466,28 +462,6 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             </div>
           )}
 
-          {/* 8 · CTA (visual only — parent Link handles navigation) */}
-          <div
-            role="presentation"
-            style={{
-              background: token.colorText,
-              border: `1px solid ${token.colorText}`,
-              borderRadius: token.borderRadius,
-              height: 42,
-              width: '100%',
-              fontSize: 13,
-              fontWeight: 500,
-              color: token.colorBgContainer,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-            }}
-          >
-            <FileTextOutlined />
-            <span>{t('narratives.view_full_analysis')}</span>
-            <ArrowRightOutlined style={{ fontSize: 12 }} />
-          </div>
         </Card>
       </Link>
     )

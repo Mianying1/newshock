@@ -6,6 +6,7 @@ import { Card, Col, Row, Segmented } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
 import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
 import { SectionTitle } from '@/components/shared/SectionTitle'
+import { TickerCardSkeletonList } from '@/components/skeleton'
 import type { LongShortTickerRow, PotentialTickerRow, LongShortMode } from '@/lib/ticker-scoring'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -56,15 +57,14 @@ export function TopTickersSection() {
       <Col xs={24} md={12} style={{ display: 'flex' }}>
         <Card
           size="small"
+          className="nshock-card-hover"
           title={<SectionTitle>{t('top_tickers.thematic_title')}</SectionTitle>}
           extra={thematicExtra}
           style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}
         >
           {tickersLoading && tickerTop.length === 0 ? (
-            <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
-              {t('tickers_ranked.loading')}
-            </p>
+            <TickerCardSkeletonList count={5} />
           ) : tickerTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {mode === 'long'
@@ -104,14 +104,13 @@ export function TopTickersSection() {
       <Col xs={24} md={12} style={{ display: 'flex' }}>
         <Card
           size="small"
+          className="nshock-card-hover"
           title={<SectionTitle>{t('top_tickers.potential_title')}</SectionTitle>}
           style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}
         >
           {potentialLoading && potentialTop.length === 0 ? (
-            <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
-              {t('tickers_ranked.loading')}
-            </p>
+            <TickerCardSkeletonList count={5} />
           ) : potentialTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {t('tickers_ranked.no_angles')}
