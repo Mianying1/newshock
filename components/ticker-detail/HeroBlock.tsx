@@ -1,7 +1,8 @@
 'use client'
 
+import { Fragment } from 'react'
 import Link from 'next/link'
-import { Flex, Tag, Typography, theme } from 'antd'
+import { Flex, Tag, Tooltip, Typography, theme } from 'antd'
 
 const { Title, Text } = Typography
 const { useToken } = theme
@@ -16,11 +17,13 @@ interface Props {
   symbol: string
   companyName: string | null
   sector: string | null
-  thematicScore: number | null
+  shortScore: number | null
+  longScore: number | null
   potentialScore: number | null
   heroLine: string | null
   themes?: HeroThemeTag[]
-  heroLabels: { thematic: string; potential: string }
+  heroLabels: { short: string; long: string; potential: string }
+  scoreTooltips?: { short: string; long: string; potential: string }
 }
 
 const DIRECTION_DOT = {
@@ -93,18 +96,24 @@ function MetaTag({
 function ScoreStat({
   value,
   label,
-  emphasis = false,
+  tooltip,
 }: {
   value: number
   label: string
-  emphasis?: boolean
+  tooltip?: string
 }) {
   const { token } = useToken()
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'baseline' }}>
+  const inner = (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'baseline',
+        cursor: tooltip ? 'help' : 'default',
+      }}
+    >
       <Text
         style={{
-          fontSize: emphasis ? 22 : 18,
+          fontSize: 18,
           fontWeight: 600,
           color: token.colorText,
           fontFamily: token.fontFamilyCode,
@@ -113,7 +122,7 @@ function ScoreStat({
           lineHeight: 1,
         }}
       >
-        {value.toFixed(1)}
+        {Math.round(value)}
       </Text>
       <Text
         style={{
@@ -129,21 +138,27 @@ function ScoreStat({
       </Text>
     </span>
   )
+  return tooltip ? <Tooltip title={tooltip}>{inner}</Tooltip> : inner
 }
 
 export function HeroBlock({
   symbol,
   companyName,
   sector,
-  thematicScore,
+  shortScore,
+  longScore,
   potentialScore,
   heroLine,
   themes = [],
   heroLabels,
+  scoreTooltips,
 }: Props) {
   const { token } = useToken()
   const topThemes = themes.slice(0, 3)
-  const hasScores = thematicScore != null || potentialScore != null
+  const stats: Array<{ key: 'short' | 'long' | 'potential'; value: number; label: string; tooltip?: string }> = []
+  if (shortScore != null) stats.push({ key: 'short', value: shortScore, label: heroLabels.short, tooltip: scoreTooltips?.short })
+  if (longScore != null) stats.push({ key: 'long', value: longScore, label: heroLabels.long, tooltip: scoreTooltips?.long })
+  if (potentialScore != null) stats.push({ key: 'potential', value: potentialScore, label: heroLabels.potential, tooltip: scoreTooltips?.potential })
 
   return (
     <div
@@ -193,27 +208,26 @@ export function HeroBlock({
           ))}
         </Flex>
 
-        {hasScores && (
+        {stats.length > 0 && (
           <Flex align="center" gap={0} style={{ flexShrink: 0 }}>
-            {thematicScore != null && (
-              <ScoreStat value={thematicScore} label={heroLabels.thematic} emphasis />
-            )}
-            {thematicScore != null && potentialScore != null && (
-              <span
-                aria-hidden
-                style={{
-                  display: 'inline-block',
-                  width: 1,
-                  height: 22,
-                  background: token.colorBorder,
-                  margin: '0 18px',
-                  verticalAlign: 'middle',
-                }}
-              />
-            )}
-            {potentialScore != null && (
-              <ScoreStat value={potentialScore} label={heroLabels.potential} />
-            )}
+            {stats.map((s, i) => (
+              <Fragment key={s.key}>
+                {i > 0 && (
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'inline-block',
+                      width: 1,
+                      height: 22,
+                      background: token.colorBorder,
+                      margin: '0 18px',
+                      verticalAlign: 'middle',
+                    }}
+                  />
+                )}
+                <ScoreStat value={s.value} label={s.label} tooltip={s.tooltip} />
+              </Fragment>
+            ))}
           </Flex>
         )}
       </Flex>
