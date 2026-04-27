@@ -5,7 +5,7 @@ import { processTheme } from '@/lib/deep-recommendations'
 export const maxDuration = 300
 export const dynamic = 'force-dynamic'
 
-const BATCH_SIZE = 5
+const BATCH_SIZE = 8
 const CONCURRENCY = 3
 const STALE_DAYS = 7
 
@@ -41,7 +41,8 @@ export async function GET(request: NextRequest) {
     const { data: themes, error } = await supabaseAdmin
       .from('themes')
       .select('id, name, event_count, deep_generated_at')
-      .eq('status', 'active')
+      .in('status', ['active', 'cooling'])
+      .not('archetype_id', 'is', null)
       .or(`deep_generated_at.is.null,deep_generated_at.lt.${staleCutoff}`)
       .order('deep_generated_at', { ascending: true, nullsFirst: true })
       .order('event_count', { ascending: false })
@@ -72,7 +73,8 @@ export async function GET(request: NextRequest) {
     const { count: remaining } = await supabaseAdmin
       .from('themes')
       .select('id', { count: 'exact', head: true })
-      .eq('status', 'active')
+      .in('status', ['active', 'cooling'])
+      .not('archetype_id', 'is', null)
       .or(`deep_generated_at.is.null,deep_generated_at.lt.${staleCutoff}`)
 
     return Response.json({
