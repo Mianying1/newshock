@@ -15,7 +15,6 @@ import {
 } from '@/lib/ticker-narrative'
 
 export const maxDuration = 45
-export const dynamic = 'force-dynamic'
 
 type Status = 'fresh' | 'stale_served' | 'no_active_themes' | 'unknown_ticker' | 'generated' | 'failed'
 
@@ -66,7 +65,7 @@ export async function GET(
   if (bundle.themes.length === 0) {
     return Response.json(
       { symbol: sym, locale, narrative: null, status: 'no_active_themes', generated_at: null, model_version: null, ticker: tickerInfo, active_theme_count: 0 } satisfies Resp,
-      { headers: { 'Cache-Control': 'private, max-age=300' } }
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
     )
   }
 
@@ -87,7 +86,7 @@ export async function GET(
         ticker: tickerInfo,
         active_theme_count: activeThemeCount,
       } satisfies Resp,
-      { headers: { 'Cache-Control': 'private, max-age=300' } }
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
     )
   }
 
@@ -131,6 +130,6 @@ export async function GET(
       ticker: tickerInfo,
       active_theme_count: activeThemeCount,
     } satisfies Resp,
-    { headers: { 'Cache-Control': 'private, max-age=300' } }
+    { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
   )
 }

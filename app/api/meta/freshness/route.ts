@@ -9,7 +9,10 @@ export async function GET() {
     .single()
 
   if (!data) {
-    return Response.json({ last_event_at: null, age_label: '暂无数据' })
+    return Response.json(
+      { last_event_at: null, age_label: '暂无数据' },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+    )
   }
 
   const lastTime = new Date(data.created_at)
@@ -25,10 +28,13 @@ export async function GET() {
     label = `${days} 天前`
   }
 
-  return Response.json({
-    last_event_at: data.created_at,
-    age_minutes: ageMinutes,
-    age_label: label,
-    is_stale: ageMinutes > 60 * 24,
-  })
+  return Response.json(
+    {
+      last_event_at: data.created_at,
+      age_minutes: ageMinutes,
+      age_label: label,
+      is_stale: ageMinutes > 60 * 24,
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

@@ -105,5 +105,8 @@ export async function GET() {
       return (b.tier_distribution[1] ?? 0) - (a.tier_distribution[1] ?? 0)
     })
 
-  return Response.json({ total_hot_tickers: result.length, tickers: result })
+  return Response.json(
+    { total_hot_tickers: result.length, tickers: result },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

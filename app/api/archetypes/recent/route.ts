@@ -1,7 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export const dynamic = 'force-dynamic'
-
 export async function GET() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
   const { data } = await supabaseAdmin
@@ -11,5 +9,8 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(10)
 
-  return Response.json({ archetypes: data ?? [] })
+  return Response.json(
+    { archetypes: data ?? [] },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

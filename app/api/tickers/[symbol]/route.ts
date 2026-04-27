@@ -4,7 +4,6 @@ import { calcPlaybookStage } from '@/lib/time-utils'
 import { computeTickerScores } from '@/lib/ticker-scoring'
 
 export const maxDuration = 60
-export const dynamic = 'force-dynamic'
 
 interface ArchetypeRow {
   id: string
@@ -72,14 +71,17 @@ export async function GET(
   const recThemeIds = Array.from(new Set(recRows.map((r) => r.theme_id)))
 
   if (recThemeIds.length === 0) {
-    return Response.json({
-      ticker,
-      scores: null,
-      themes: [],
-      archetype_fits: archetypeFits,
-      recent_events: [],
-      exit_signals: [],
-    })
+    return Response.json(
+      {
+        ticker,
+        scores: null,
+        themes: [],
+        archetype_fits: archetypeFits,
+        recent_events: [],
+        exit_signals: [],
+      },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+    )
   }
 
   const { data: themes } = await supabaseAdmin
@@ -186,14 +188,17 @@ export async function GET(
   const allScores = await computeTickerScores()
   const scoreRow = allScores.find((s) => s.symbol === upper) ?? null
 
-  return Response.json({
-    ticker,
-    scores: scoreRow,
-    themes: themeResults,
-    archetype_fits: archetypeFits,
-    recent_events: recentEvents,
-    exit_signals: Array.from(exitSignalSet.values()),
-  })
+  return Response.json(
+    {
+      ticker,
+      scores: scoreRow,
+      themes: themeResults,
+      archetype_fits: archetypeFits,
+      recent_events: recentEvents,
+      exit_signals: Array.from(exitSignalSet.values()),
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }
 
 interface ArchetypeFitRow {

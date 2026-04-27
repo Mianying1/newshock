@@ -1,7 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export const dynamic = 'force-dynamic'
-
 const FMP_BUCKET = 'FMP Backfill'
 
 export async function GET() {
@@ -29,5 +27,8 @@ export async function GET() {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
 
-  return Response.json({ sources })
+  return Response.json(
+    { sources },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

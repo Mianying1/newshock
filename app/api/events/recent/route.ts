@@ -1,8 +1,6 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export const dynamic = 'force-dynamic'
-
 type Mode = 'matched' | 'unmatched' | 'all'
 
 interface EventRow {
@@ -103,11 +101,14 @@ export async function GET(request: NextRequest) {
     }
   })
 
-  return Response.json({
-    events: hydrated,
-    unmatched_count: unmatchedCountRes.count ?? 0,
-    matched_count: matchedCountRes.count ?? 0,
-    limit,
-    mode,
-  })
+  return Response.json(
+    {
+      events: hydrated,
+      unmatched_count: unmatchedCountRes.count ?? 0,
+      matched_count: matchedCountRes.count ?? 0,
+      limit,
+      mode,
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

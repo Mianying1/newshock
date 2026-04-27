@@ -1,8 +1,6 @@
 import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export const dynamic = 'force-dynamic'
-
 type TimeRange = 'latest' | 'week' | 'older' | 'all'
 type Importance = 'high' | 'medium' | 'low' | 'all'
 
@@ -128,9 +126,12 @@ export async function GET(request: NextRequest) {
   })
 
   const total = count ?? 0
-  return Response.json({
-    events,
-    total,
-    has_more: offset + events.length < total,
-  })
+  return Response.json(
+    {
+      events,
+      total,
+      has_more: offset + events.length < total,
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

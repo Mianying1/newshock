@@ -12,7 +12,13 @@ export async function GET() {
     return Response.json({ error: error.message }, { status: 500 })
   }
   if (!data) {
-    return Response.json({ snapshot: null })
+    return Response.json(
+      { snapshot: null },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+    )
   }
-  return Response.json({ snapshot: data })
+  return Response.json(
+    { snapshot: data },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

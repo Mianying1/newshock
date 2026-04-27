@@ -21,5 +21,8 @@ export async function GET(request: Request) {
   if (error) {
     return Response.json({ error: error.message }, { status: 500 })
   }
-  return Response.json({ indicator, points: data ?? [] })
+  return Response.json(
+    { indicator, points: data ?? [] },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

@@ -1,7 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export const dynamic = 'force-dynamic'
-
 export async function GET() {
   const sevenAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]
 
@@ -52,19 +50,22 @@ export async function GET() {
   const updatedAt = lastEventRes.data?.created_at ?? null
   const lastIngestAt = lastIngestRes.data?.event_date ?? null
 
-  return Response.json({
-    active_count: activeRes.count ?? 0,
-    cooling_count: coolingRes.count ?? 0,
-    rec_count: recsRes.count ?? 0,
-    narratives_count: narrativesRes.count ?? 0,
-    events_7d: eventsWeekRes.count ?? 0,
-    updated_at: updatedAt,
-    updated_minutes: updatedAt
-      ? Math.floor((now - new Date(updatedAt).getTime()) / 60000)
-      : null,
-    last_ingest_at: lastIngestAt,
-    last_ingest_minutes: lastIngestAt
-      ? Math.floor((now - new Date(lastIngestAt).getTime()) / 60000)
-      : null,
-  })
+  return Response.json(
+    {
+      active_count: activeRes.count ?? 0,
+      cooling_count: coolingRes.count ?? 0,
+      rec_count: recsRes.count ?? 0,
+      narratives_count: narrativesRes.count ?? 0,
+      events_7d: eventsWeekRes.count ?? 0,
+      updated_at: updatedAt,
+      updated_minutes: updatedAt
+        ? Math.floor((now - new Date(updatedAt).getTime()) / 60000)
+        : null,
+      last_ingest_at: lastIngestAt,
+      last_ingest_minutes: lastIngestAt
+        ? Math.floor((now - new Date(lastIngestAt).getTime()) / 60000)
+        : null,
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

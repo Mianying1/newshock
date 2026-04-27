@@ -85,9 +85,12 @@ export async function GET() {
     else mixed.push(e)
   }
 
-  return Response.json({
-    strong: strong.slice(0, 10),
-    weak: weak.slice(0, 10),
-    mixed: mixed.slice(0, 10),
-  })
+  return Response.json(
+    {
+      strong: strong.slice(0, 10),
+      weak: weak.slice(0, 10),
+      mixed: mixed.slice(0, 10),
+    },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }
