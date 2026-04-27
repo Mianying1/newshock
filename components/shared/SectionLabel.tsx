@@ -26,7 +26,7 @@ export function SectionLabel({ label, extra }: SectionLabelProps) {
           fontSize: 10.5,
           letterSpacing: '0.16em',
           color: token.colorTextTertiary,
-          textTransform: 'uppercase',
+          textTransform: 'none',
           whiteSpace: 'nowrap',
         }}
       >

@@ -222,7 +222,7 @@ const EventCard = memo(function EventCard({ ev }: { ev: EventItem }) {
                 fontSize: 9,
                 fontWeight: 600,
                 letterSpacing: '0.16em',
-                textTransform: 'uppercase',
+                textTransform: 'none',
                 color: token.colorTextQuaternary,
               }}
             >
@@ -247,7 +247,7 @@ const EventCard = memo(function EventCard({ ev }: { ev: EventItem }) {
                 fontSize: 9,
                 fontWeight: 600,
                 letterSpacing: '0.16em',
-                textTransform: 'uppercase',
+                textTransform: 'none',
                 color: token.colorTextQuaternary,
               }}
             >
@@ -270,7 +270,7 @@ const EventCard = memo(function EventCard({ ev }: { ev: EventItem }) {
                   fontSize: 9,
                   fontWeight: 600,
                   letterSpacing: '0.16em',
-                  textTransform: 'uppercase',
+                  textTransform: 'none',
                   color: token.colorTextQuaternary,
                 }}
               >
@@ -492,13 +492,7 @@ export default function EventsPage() {
                   label: locale === 'zh' ? '事件' : 'Events',
                 },
               ]}
-              meta={
-                timeRange === 'latest'
-                  ? t('events_page.time_latest')
-                  : timeRange === 'week'
-                  ? t('events_page.time_week')
-                  : t('events_page.time_older')
-              }
+              meta={t('events_page.refresh_frequency')}
             />
 
             <Flex
@@ -608,7 +602,7 @@ export default function EventsPage() {
                   padding: '20px 0',
                   fontSize: 11,
                   letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
+                  textTransform: 'none',
                   color: token.colorTextQuaternary,
                 }}
               >
@@ -623,7 +617,7 @@ export default function EventsPage() {
                   padding: '20px 0',
                   fontSize: 10,
                   letterSpacing: '0.16em',
-                  textTransform: 'uppercase',
+                  textTransform: 'none',
                   color: token.colorTextQuaternary,
                 }}
               >

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
-import { Badge, theme } from 'antd'
+import { theme } from 'antd'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
@@ -14,10 +14,6 @@ const TABBAR_INDEX_KEY = 'newshock:mobile-tab-index'
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 interface Overview {
-  active_count: number
-  cooling_count: number
-  rec_count: number
-  events_7d: number
   updated_minutes: number | null
 }
 
@@ -29,19 +25,16 @@ export function Sidebar() {
     refreshInterval: 60_000,
   })
 
-  const themeCount = (data?.active_count ?? 0) + (data?.cooling_count ?? 0)
-  const tickerCount = data?.rec_count ?? 0
-  const events7d = data?.events_7d ?? 0
   const lastSync =
     data?.updated_minutes !== null && data?.updated_minutes !== undefined
       ? formatMinutesAgo(data.updated_minutes, t)
       : '—'
 
-  const items: { href: string; labelKey: string; count?: number; Icon: () => JSX.Element }[] = [
+  const items: { href: string; labelKey: string; Icon: () => JSX.Element }[] = [
     { href: '/', labelKey: 'sidebar.radar', Icon: RadarIcon },
-    { href: '/themes', labelKey: 'sidebar.themes', count: themeCount, Icon: LayersIcon },
-    { href: '/tickers', labelKey: 'sidebar.tickers', count: tickerCount, Icon: TrendingUpIcon },
-    { href: '/events', labelKey: 'sidebar.events', count: events7d, Icon: ClockIcon },
+    { href: '/themes', labelKey: 'sidebar.themes', Icon: LayersIcon },
+    { href: '/tickers', labelKey: 'sidebar.tickers', Icon: TrendingUpIcon },
+    { href: '/events', labelKey: 'sidebar.events', Icon: ClockIcon },
   ]
 
   const isActive = (href: string, i: number) =>
@@ -77,7 +70,7 @@ export function Sidebar() {
           />
         </Link>
 
-        {items.map(({ href, labelKey, count, Icon }, i) => {
+        {items.map(({ href, labelKey, Icon }, i) => {
           const active = isActive(href, i)
           return (
             <Link
@@ -87,9 +80,6 @@ export function Sidebar() {
             >
               <Icon />
               <span>{t(labelKey)}</span>
-              {typeof count === 'number' && count > 0 && (
-                <span className="count">{count}</span>
-              )}
             </Link>
           )
         })}
@@ -117,7 +107,7 @@ export function Sidebar() {
           style={{ '--active-index': renderedIndex } as CSSProperties}
         >
           <span className="mobile-tabbar-indicator" aria-hidden />
-          {items.map(({ href, labelKey, count, Icon }, i) => {
+          {items.map(({ href, labelKey, Icon }, i) => {
             const active = isActive(href, i)
             return (
               <Link

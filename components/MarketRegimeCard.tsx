@@ -85,38 +85,17 @@ export function MarketRegimeCard() {
 
   return (
     <div style={{ padding: '8px 12px 12px' }}>
-      <Flex justify="space-between" align="flex-start" gap={16} wrap>
-        <div style={{ flex: 1, minWidth: 180 }}>
-          <Statistic
-            title={t('market_regime.composite')}
-            value={snap.total_score}
-            suffix={
-              <Text type="secondary" style={{ fontSize: token.fontSize, fontWeight: 400 }}>
-                / 12
-              </Text>
-            }
-            valueStyle={{ fontWeight: 500, fontSize: 32, lineHeight: 1 }}
-          />
-          <Progress
-            percent={pct}
-            showInfo={false}
-            size={{ height: 4 }}
-            strokeColor={{ '0%': AMBER, '100%': SAGE }}
-            trailColor={token.colorFillSecondary}
-            style={{ maxWidth: 280, marginTop: 10 }}
-          />
-          <Paragraph
-            type="secondary"
-            style={{
-              margin: '10px 0 0',
-              fontSize: token.fontSize,
-              maxWidth: 460,
-              paddingRight: 12,
-            }}
-          >
-            {note}
-          </Paragraph>
-        </div>
+      <Flex justify="space-between" align="center" gap={12} wrap style={{ rowGap: 10 }}>
+        <Statistic
+          title={t('market_regime.composite')}
+          value={snap.total_score}
+          suffix={
+            <Text type="secondary" style={{ fontSize: token.fontSize, fontWeight: 400 }}>
+              / 12
+            </Text>
+          }
+          valueStyle={{ fontWeight: 500, fontSize: 32, lineHeight: 1 }}
+        />
 
         <Flex
           align="center"
@@ -126,6 +105,7 @@ export function MarketRegimeCard() {
             borderRadius: 99,
             background: token.colorBgContainer,
             border: `1px solid ${token.colorBorderSecondary}`,
+            flexShrink: 0,
           }}
         >
           <span
@@ -150,6 +130,24 @@ export function MarketRegimeCard() {
         </Flex>
       </Flex>
 
+      <Progress
+        percent={pct}
+        showInfo={false}
+        size={{ height: 4 }}
+        strokeColor={{ '0%': AMBER, '100%': SAGE }}
+        trailColor={token.colorFillSecondary}
+        style={{ marginTop: 10 }}
+      />
+      <Paragraph
+        type="secondary"
+        style={{
+          margin: '10px 0 0',
+          fontSize: token.fontSize,
+        }}
+      >
+        {note}
+      </Paragraph>
+
       <Divider style={{ margin: '18px 0 16px' }} />
 
       <Row gutter={[16, 16]}>
@@ -162,6 +160,18 @@ export function MarketRegimeCard() {
           )
         })}
       </Row>
+
+      <Text
+        style={{
+          display: 'block',
+          marginTop: 14,
+          fontSize: token.fontSizeSM,
+          color: token.colorTextTertiary,
+          textAlign: 'right',
+        }}
+      >
+        {t('market_regime.scores_refresh_twice_weekly')}
+      </Text>
     </div>
   )
 }
@@ -187,7 +197,7 @@ function DimensionCell({ label, score }: { label: string; score: number }) {
           fontFamily: token.fontFamilyCode,
           fontSize: token.fontSizeSM,
           letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          textTransform: 'none',
           color: token.colorTextTertiary,
           display: 'block',
           lineHeight: 1,

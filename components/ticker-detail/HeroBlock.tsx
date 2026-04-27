@@ -151,7 +151,7 @@ function ScoreStat({
           fontWeight: 500,
           color: token.colorTextTertiary,
           letterSpacing: '0.08em',
-          textTransform: 'uppercase',
+          textTransform: 'none',
           lineHeight: 1,
         }}
       >

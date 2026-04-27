@@ -297,8 +297,6 @@ export default function ThemeDetailPage() {
 
             {theme && (() => {
               const themeName = pickField(locale, theme.name, theme.name_zh)
-              let secCounter = 0
-              const nextIdx = () => String(++secCounter).padStart(2, '0')
               return (
               <>
                 <Breadcrumb
@@ -637,7 +635,7 @@ export default function ThemeDetailPage() {
                                     fontSize: 10,
                                     color: token.colorTextQuaternary,
                                     letterSpacing: '0.12em',
-                                    textTransform: 'uppercase',
+                                    textTransform: 'none',
                                     marginBottom: 4,
                                   }}
                                 >
@@ -835,7 +833,6 @@ export default function ThemeDetailPage() {
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
-                      index={nextIdx()}
                       title={t('sections.why_theme_title')}
                       subtitle={t('sections.why_theme_subtitle')}
                     />
@@ -972,7 +969,6 @@ export default function ThemeDetailPage() {
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
-                      index={nextIdx()}
                       title={t('sections.key_timeline_title')}
                       subtitle={t('sections.key_timeline_subtitle')}
                     />
@@ -1157,7 +1153,6 @@ export default function ThemeDetailPage() {
               {/* Exposure Mapping */}
               <div style={{ marginTop: 32 }}>
                 <SectionHeader
-                  index={nextIdx()}
                   title={t('sections.theme_exposure_title')}
                   subtitle={t('sections.theme_exposure_subtitle')}
                   meta={t('common.ai_disclaimer_short')}
@@ -1211,7 +1206,6 @@ export default function ThemeDetailPage() {
               {theme.child_themes.length > 0 && (
                 <div style={{ marginTop: 32 }}>
                   <SectionHeader
-                    index={nextIdx()}
                     title={t('sections.theme_subthemes_title')}
                     subtitle={t('sections.theme_subthemes_subtitle')}
                     meta={`${theme.child_themes.length}`}
@@ -1287,7 +1281,7 @@ export default function ThemeDetailPage() {
                   fontFamily: token.fontFamilyCode,
                   fontSize: 10,
                   letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
+                  textTransform: 'none',
                   color: token.colorTextTertiary,
                   margin: '14px 0 8px',
                 }
@@ -1295,7 +1289,6 @@ export default function ThemeDetailPage() {
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
-                      index={nextIdx()}
                       title={t('sections.theme_playbook_title')}
                       subtitle={t('sections.theme_playbook_subtitle')}
                       meta={t('common.ai_disclaimer_short')}
@@ -1306,7 +1299,7 @@ export default function ThemeDetailPage() {
                             fontFamily: token.fontFamilyCode,
                             fontSize: 10,
                             letterSpacing: '0.08em',
-                            textTransform: 'uppercase',
+                            textTransform: 'none',
                           }}
                           color={isThemeSpecific ? 'geekblue' : 'default'}
                         >
@@ -1353,7 +1346,7 @@ export default function ThemeDetailPage() {
                             fontFamily: token.fontFamilyCode,
                             fontSize: 10,
                             letterSpacing: '0.14em',
-                            textTransform: 'uppercase',
+                            textTransform: 'none',
                             color: token.colorTextQuaternary,
                             marginBottom: 6,
                           }}
@@ -1449,7 +1442,7 @@ export default function ThemeDetailPage() {
                                   fontSize: 10,
                                   fontWeight: 600,
                                   letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                  textTransform: 'uppercase',
+                                  textTransform: 'none',
                                   color: token.colorTextQuaternary,
                                 }}
                               >
@@ -1490,7 +1483,7 @@ export default function ThemeDetailPage() {
                                     fontSize: 10,
                                     fontWeight: 600,
                                     letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                    textTransform: 'uppercase',
+                                    textTransform: 'none',
                                     color: token.colorTextQuaternary,
                                   }}
                                 >
@@ -1559,7 +1552,7 @@ export default function ThemeDetailPage() {
                                 padding: '2px 8px',
                                 fontSize: 9.5,
                                 letterSpacing: '0.12em',
-                                textTransform: 'uppercase',
+                                textTransform: 'none',
                                 fontFamily: token.fontFamilyCode,
                                 fontWeight: 700,
                                 color: token.colorBgContainer,
@@ -1614,7 +1607,7 @@ export default function ThemeDetailPage() {
                                     fontSize: 10,
                                     fontWeight: 600,
                                     letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                    textTransform: 'uppercase',
+                                    textTransform: 'none',
                                     color: token.colorTextQuaternary,
                                   }}
                                 >
@@ -1647,7 +1640,7 @@ export default function ThemeDetailPage() {
                                       fontSize: 10,
                                       fontWeight: 600,
                                       letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                      textTransform: 'uppercase',
+                                      textTransform: 'none',
                                       color: token.colorTextQuaternary,
                                     }}
                                   >
@@ -1686,7 +1679,7 @@ export default function ThemeDetailPage() {
                                       fontFamily: token.fontFamilyCode,
                                       fontSize: 9.5,
                                       letterSpacing: '0.1em',
-                                      textTransform: 'uppercase',
+                                      textTransform: 'none',
                                       color: token.colorTextQuaternary,
                                     }}
                                   >
@@ -1862,7 +1855,6 @@ export default function ThemeDetailPage() {
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
-                      index={nextIdx()}
                       title={t('sections.exit_signals_title')}
                       subtitle={t('sections.exit_signals_subtitle')}
                       meta={t('common.ai_disclaimer_short')}
@@ -1912,7 +1904,7 @@ export default function ThemeDetailPage() {
                               <span style={{ color: markerColor, lineHeight: 1.5, flexShrink: 0, fontWeight: isTriggered ? 600 : 400 }}>{marker}</span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                                  <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                                  <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'none', letterSpacing: 0.4 }}>
                                     {t(labelKey)}{triggeredAt ? ` · ${triggeredAt}` : ''}
                                   </span>
                                 </div>
@@ -1949,7 +1941,6 @@ export default function ThemeDetailPage() {
                       setShowAllEvents={setShowAllEvents}
                       expanded={expanded}
                       toggleExpand={toggleExpand}
-                      sectionIndex={nextIdx()}
                       isCooling={theme.status === 'cooling'}
                       daysHot={theme.days_hot}
                       daysSinceLastEvent={theme.days_since_last_event}
@@ -1969,7 +1960,6 @@ export default function ThemeDetailPage() {
                 return (
                   <div style={{ marginTop: 32 }}>
                     <SectionHeader
-                      index={nextIdx()}
                       title={t('sections.emerging_section_title')}
                       subtitle={t('sections.emerging_section_subtitle')}
                     />
@@ -2138,7 +2128,7 @@ function KPICell({ label, value, token, tone }: KPICellProps) {
           fontSize: 10,
           fontWeight: 600,
           letterSpacing: '0.16em',
-          textTransform: 'uppercase',
+          textTransform: 'none',
           color: token.colorTextQuaternary,
           marginBottom: 6,
         }}
@@ -2192,7 +2182,6 @@ function ThemeEventSidebar({
   setShowAllEvents,
   expanded,
   toggleExpand,
-  sectionIndex,
   isCooling,
   daysHot,
   daysSinceLastEvent,
@@ -2207,7 +2196,6 @@ function ThemeEventSidebar({
   setShowAllEvents: (fn: (v: boolean) => boolean) => void
   expanded: Set<string>
   toggleExpand: (id: string) => void
-  sectionIndex: string
   isCooling: boolean
   daysHot: number
   daysSinceLastEvent: number
@@ -2267,7 +2255,6 @@ function ThemeEventSidebar({
       )}
 
       <SectionHeader
-        index={sectionIndex}
         title={t('sections.theme_events_title')}
         subtitle={t('sections.theme_events_subtitle')}
       />
@@ -2350,7 +2337,7 @@ function ThemeEventSidebar({
                           fontSize: 9.5,
                           fontWeight: 600,
                           letterSpacing: '0.08em',
-                          textTransform: 'uppercase',
+                          textTransform: 'none',
                           margin: 0,
                           background: srcColors?.bg ?? token.colorFillTertiary,
                           color: srcColors?.fg ?? token.colorTextSecondary,
@@ -2525,7 +2512,7 @@ function TierColumn({
               fontSize: 10,
               fontWeight: 600,
               letterSpacing: '0.16em',
-              textTransform: 'uppercase',
+              textTransform: 'none',
               color: tierColor,
             }}
           >

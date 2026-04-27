@@ -290,7 +290,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           >
             <Row gutter={20} align="middle">
               <Col xs={24} sm={8}>
-                <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+                <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block' }}>
                   {t('narratives.lifecycle_stage')}
                 </Text>
                 <Title
@@ -311,7 +311,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               </Col>
               <Col xs={24} sm={16}>
                 <Flex justify="space-between" align="baseline">
-                  <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none' }}>
                     {t('narratives.current_progress')}
                   </Text>
                   <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
@@ -351,7 +351,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             }}
           >
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block' }}>
                 {t('narratives.strength_label')}
               </Text>
               <Flex align="baseline" gap={3} style={{ marginTop: 4 }}>
@@ -362,7 +362,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               </Flex>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block' }}>
                 {t('narratives.events_48h')}
               </Text>
               <Flex align="baseline" gap={3} style={{ marginTop: 4 }}>
@@ -375,7 +375,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               </Flex>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block' }}>
                 {t('narratives.urgency_label')}
               </Text>
               <Text style={{ fontSize: 16, fontWeight: 600, color: token.colorText, display: 'block', marginTop: 6 }}>
@@ -383,7 +383,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               </Text>
             </Col>
             <Col xs={12} md={6}>
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block' }}>
                 {t('narratives.tickers_label')}
               </Text>
               <Flex align="baseline" gap={4} style={{ marginTop: 4 }}>
@@ -399,7 +399,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
 
           {/* 6 · Related tickers */}
           <div style={{ marginBottom: 14 }}>
-            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+            <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none', display: 'block', marginBottom: 6 }}>
               {t('narratives.related_tickers')}
             </Text>
             <ConfigProvider
@@ -453,7 +453,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 borderRadius: 4,
               }}
             >
-              <Text style={{ fontSize: 10, color: token.colorTextTertiary, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
+              <Text style={{ fontSize: 10, color: token.colorTextTertiary, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'none', display: 'block' }}>
                 {t('narratives.why_now')}
               </Text>
               <Text style={{ fontSize: 13, color: token.colorText, display: 'block', marginTop: 2, lineHeight: 1.5 }}>
@@ -501,7 +501,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 fontWeight: 600,
                 color: tone.accent,
                 letterSpacing: '0.1em',
-                textTransform: 'uppercase',
+                textTransform: 'none',
               }}
             >
               {rankGlyph} {t('narratives.narrative_prefix')} #{rank + 1}
@@ -621,7 +621,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                   fontWeight: 600,
                   color: token.colorTextTertiary,
                   letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
+                  textTransform: 'none',
                   marginBottom: 4,
                 }}
               >

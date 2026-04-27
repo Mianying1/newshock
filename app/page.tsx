@@ -50,17 +50,23 @@ interface Overview {
 function useHeaderDate(locale: 'en' | 'zh') {
   const [label, setLabel] = useState('')
   useEffect(() => {
-    const d = new Date()
-    const hh = String(d.getHours()).padStart(2, '0')
-    const mm = String(d.getMinutes()).padStart(2, '0')
-    if (locale === 'zh') {
-      const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()]
-      setLabel(`${weekday} · ${d.getMonth() + 1}月${d.getDate()}日 · ${hh}:${mm}`)
-    } else {
-      const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
-      const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]
-      setLabel(`${weekday} · ${month} ${d.getDate()} · ${hh}:${mm}`)
+    const tick = () => {
+      const d = new Date()
+      const hh = String(d.getHours()).padStart(2, '0')
+      const mm = String(d.getMinutes()).padStart(2, '0')
+      const ss = String(d.getSeconds()).padStart(2, '0')
+      if (locale === 'zh') {
+        const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()]
+        setLabel(`${weekday} · ${d.getMonth() + 1}月${d.getDate()}日 · ${hh}:${mm}:${ss}`)
+      } else {
+        const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
+        const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]
+        setLabel(`${weekday} · ${month} ${d.getDate()} · ${hh}:${mm}:${ss}`)
+      }
     }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
   }, [locale])
   return label
 }
@@ -138,7 +144,6 @@ export default function HomePage() {
                   <>
                     <SectionHeader
                       first
-                      index="01"
                       title={t('sections.ongoing_narratives_title')}
                       subtitle={t('sections.ongoing_narratives_subtitle')}
                     />
@@ -149,7 +154,6 @@ export default function HomePage() {
                 {!loading && !error && activeThemes.length > 0 && (
                   <>
                     <SectionHeader
-                      index="02"
                       title={t('sections.latest_themes_title')}
                       subtitle={t('sections.latest_themes_subtitle')}
                     />
@@ -162,7 +166,6 @@ export default function HomePage() {
                 )}
 
                 <SectionHeader
-                  index="03"
                   title={t('sections.stock_picks_title')}
                   subtitle={t('sections.stock_picks_subtitle')}
                 />
@@ -172,11 +175,8 @@ export default function HomePage() {
                 <div style={{ position: 'sticky', top: 80 }}>
                   <SectionHeader
                     first
-                    size="sm"
-                    index="01"
                     title={t('sections.market_regime_title')}
                     subtitle={t('sections.market_regime_subtitle')}
-                    meta={t('market_regime.scores_refresh_twice_weekly')}
                   />
                   <Card size="small">
                     <MarketRegimeCard />
@@ -184,8 +184,6 @@ export default function HomePage() {
 
                   <EventStreamCompact
                     section={{
-                      size: 'sm',
-                      index: '02',
                       title: t('sections.event_stream_title'),
                       subtitle: t('sections.event_stream_subtitle'),
                     }}

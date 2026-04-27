@@ -45,7 +45,7 @@ export function Topbar({ sidePad }: TopbarProps) {
               fontFamily: token.fontFamilyCode,
               fontSize: 12,
               letterSpacing: '0.1em',
-              textTransform: 'uppercase',
+              textTransform: 'none',
               color: token.colorTextQuaternary,
             }}
           >

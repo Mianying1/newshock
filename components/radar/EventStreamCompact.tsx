@@ -80,7 +80,6 @@ function buildUrl(mode: StreamMode): string {
 interface EventStreamCompactProps {
   headerless?: boolean
   section?: {
-    index?: string
     title: ReactNode
     subtitle?: ReactNode
     size?: 'lg' | 'sm'
@@ -161,7 +160,7 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
                     fontSize: 9.5,
                     fontWeight: 600,
                     letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
+                    textTransform: 'none',
                     margin: 0,
                     background: srcColors?.bg ?? token.colorFillTertiary,
                     color: srcColors?.fg ?? token.colorTextSecondary,
@@ -207,7 +206,6 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
   return (
     <>
       <SectionHeader
-        index={section.index}
         title={section.title}
         subtitle={section.subtitle}
         size={section.size}

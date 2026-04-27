@@ -228,7 +228,6 @@ export default function TickerDetailPage() {
       {/* 02 · Core Narrative */}
       <SectionHeader
         first
-        index="02"
         title={t('ticker_detail.section_narrative_title')}
         subtitle={t('ticker_detail.section_narrative_subtitle')}
       />
@@ -253,7 +252,6 @@ export default function TickerDetailPage() {
 
       {/* 03 · Theme Drivers */}
       <SectionHeader
-        index="03"
         title={t('ticker_detail.section_themes_title')}
         subtitle={
           detail
@@ -286,7 +284,6 @@ export default function TickerDetailPage() {
 
       {/* 04 · Investment Playbook */}
       <SectionHeader
-        index="04"
         title={t('ticker_detail.section_playbook_title')}
         subtitle={t('ticker_detail.section_playbook_subtitle')}
       />
@@ -304,7 +301,6 @@ export default function TickerDetailPage() {
 
       {/* 05 · Recent Events */}
       <SectionHeader
-        index="05"
         title={t('ticker_detail.section_events_title')}
         subtitle={
           detail

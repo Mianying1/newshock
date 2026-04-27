@@ -69,7 +69,7 @@ function Block({
             fontSize: 10.5,
             fontWeight: 600,
             letterSpacing: '0.16em',
-            textTransform: 'uppercase',
+            textTransform: 'none',
             color: accent,
           }}
         >

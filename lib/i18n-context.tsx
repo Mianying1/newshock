@@ -13,15 +13,15 @@ interface I18nContextValue {
 }
 
 const I18nContext = createContext<I18nContextValue>({
-  locale: 'zh',
+  locale: 'en',
   setLocale: () => {},
   t: (key) => key,
 })
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === 'undefined') return 'zh'
-    return (localStorage.getItem('locale') as Locale) || 'zh'
+    if (typeof window === 'undefined') return 'en'
+    return (localStorage.getItem('locale') as Locale) || 'en'
   })
 
   const setLocaleAndStore = (l: Locale) => {

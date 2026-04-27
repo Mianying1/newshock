@@ -7,7 +7,6 @@ const { Title, Text } = Typography
 const { useToken } = theme
 
 interface SectionHeaderProps {
-  index?: string
   title: ReactNode
   subtitle?: ReactNode
   meta?: ReactNode
@@ -17,7 +16,6 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({
-  index,
   title,
   subtitle,
   meta,
@@ -46,19 +44,6 @@ export function SectionHeader({
         }}
       >
         <Flex align="baseline" gap={12} wrap>
-          {index && (
-            <Text
-              style={{
-                fontFamily: token.fontFamilyCode,
-                fontSize: isSm ? 10 : 11,
-                fontWeight: 600,
-                letterSpacing: '0.16em',
-                color: token.colorTextQuaternary,
-              }}
-            >
-              {index}
-            </Text>
-          )}
           <Title
             level={isSm ? 5 : 4}
             style={{

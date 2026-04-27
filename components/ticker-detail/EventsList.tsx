@@ -185,7 +185,7 @@ const EventCard = memo(function EventCard({
               fontSize: 9,
               fontWeight: 600,
               letterSpacing: '0.16em',
-              textTransform: 'uppercase',
+              textTransform: 'none',
               color: token.colorTextQuaternary,
             }}
           >

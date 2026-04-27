@@ -141,7 +141,7 @@ export function PageHeader({
                 color: token.colorTextQuaternary,
                 fontFamily: token.fontFamilyCode,
                 letterSpacing: '0.06em',
-                textTransform: 'uppercase',
+                textTransform: 'none',
               }}
             >
               {meta}
