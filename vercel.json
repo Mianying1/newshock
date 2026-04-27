@@ -83,6 +83,14 @@
     {
       "path": "/api/cron/check-exit-signals",
       "schedule": "20 7 * * *"
+    },
+    {
+      "path": "/api/cron/compute-multi-scores",
+      "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/cron/compute-multi-scores?mode=full",
+      "schedule": "0 20 * * 1"
     }
   ]
 }
