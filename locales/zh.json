@@ -215,7 +215,11 @@
     "bear_warning": "反向证据占上风 · 重新评估主题",
     "counter_reasoning": "判定原因",
     "collapse": "收起",
-    "tab_all": "全部"
+    "tab_all": "全部",
+    "duration_tag_short": "短期主题",
+    "duration_tag_mid": "中期主题",
+    "duration_tag_long": "长期主题",
+    "tile_score_tooltip": "题材动能 {score} · 分类信心 {conf}%"
   },
   "hot_tickers": {
     "subtitle": "被多个主题同时列出的股票",
@@ -788,7 +792,9 @@
     "market_regime_title": "市场周期",
     "market_regime_subtitle": "宏观市场周期 · 交易决策参考",
     "event_stream_title": "事件流",
-    "event_stream_subtitle": "实时事件流 · 已按主题过滤"
+    "event_stream_subtitle": "实时事件流 · 已按主题过滤",
+    "emerging_section_title": "新角度发现",
+    "emerging_section_subtitle": "LLM 看到 · 市场未广泛覆盖"
   },
   "curator_strip": {
     "by": "本周策展",

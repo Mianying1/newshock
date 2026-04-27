@@ -126,10 +126,21 @@ function ScoreStat({
       </Text>
       <Text
         style={{
+          fontSize: 11,
+          color: token.colorTextQuaternary,
+          fontFamily: token.fontFamilyCode,
+          marginLeft: 3,
+          lineHeight: 1,
+        }}
+      >
+        / 100
+      </Text>
+      <Text
+        style={{
           fontSize: 10.5,
           fontWeight: 500,
           color: token.colorTextTertiary,
-          marginLeft: 6,
+          marginLeft: 8,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
         }}

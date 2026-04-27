@@ -52,7 +52,6 @@ import type {
 } from '@/types/recommendations'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { FilterPill } from '@/components/shared/FilterPill'
-import { HorizonBadge } from '@/components/shared/HorizonBadge'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { ThemeCard } from '@/components/radar/ThemeCard'
 import { stageColor as getStageColor } from '@/lib/design-tokens'
@@ -211,9 +210,26 @@ export default function ThemeDetailPage() {
 
   const recs = theme?.recommendations ?? []
   const tradableRecs = recs.filter((r) => r.exposure_type !== 'pressure' && r.exposure_direction !== 'headwind')
-  const tier1Recs = tradableRecs.filter((r) => r.tier === 1)
-  const tier2Recs = tradableRecs.filter((r) => r.tier === 2)
-  const tier3Recs = tradableRecs.filter((r) => r.tier === 3)
+  const durationMax = theme?.typical_duration_days_max ?? null
+  const scoreFor = (r: ThemeRecommendation): number => {
+    const long = r.long_score ?? 0
+    const short = r.short_score ?? 0
+    if (durationMax == null) return long || short
+    if (durationMax < 90) return short
+    if (durationMax > 365) return long
+    return long * 0.6 + short * 0.4
+  }
+  const sortByScore = (arr: ThemeRecommendation[]) =>
+    arr
+      .slice()
+      .sort((a, b) => {
+        const diff = scoreFor(b) - scoreFor(a)
+        if (diff !== 0) return diff
+        return a.ticker_symbol.localeCompare(b.ticker_symbol)
+      })
+  const tier1Recs = sortByScore(tradableRecs.filter((r) => r.tier === 1))
+  const tier2Recs = sortByScore(tradableRecs.filter((r) => r.tier === 2))
+  const tier3Recs = sortByScore(tradableRecs.filter((r) => r.tier === 3))
 
   const catalysts = useMemo(() => theme?.catalysts ?? [], [theme])
   const eventCounts = useMemo(() => ({
@@ -317,7 +333,64 @@ export default function ThemeDetailPage() {
                         {t('theme_detail.badge_umbrella')}
                       </Tag>
                     )}
-                    <HorizonBadge typicalDurationDaysUpper={theme.archetype_playbook?.typical_duration_days_approx?.[1]} />
+                    {(() => {
+                      const dmax = theme.typical_duration_days_max
+                        ?? theme.archetype_playbook?.typical_duration_days_approx?.[1]
+                        ?? null
+                      if (dmax == null) return null
+                      const isShort = dmax < 90
+                      const isLong = dmax > 365
+                      const labelKey = isShort
+                        ? 'theme_detail.duration_tag_short'
+                        : isLong
+                        ? 'theme_detail.duration_tag_long'
+                        : 'theme_detail.duration_tag_mid'
+                      const dotColor = isShort
+                        ? token.colorError
+                        : isLong
+                        ? token.colorSuccess
+                        : token.colorWarning
+                      const bgTint = isShort
+                        ? `${token.colorError}14`
+                        : isLong
+                        ? `${token.colorSuccess}14`
+                        : `${token.colorWarning}14`
+                      const borderTint = isShort
+                        ? `${token.colorError}40`
+                        : isLong
+                        ? `${token.colorSuccess}40`
+                        : `${token.colorWarning}40`
+                      return (
+                        <Tag
+                          style={{
+                            margin: 0,
+                            background: bgTint,
+                            color: dotColor,
+                            border: `1px solid ${borderTint}`,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            padding: '2px 10px',
+                            borderRadius: 4,
+                            lineHeight: 1.5,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                          }}
+                        >
+                          <span
+                            aria-hidden
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              background: dotColor,
+                              flexShrink: 0,
+                            }}
+                          />
+                          {t(labelKey)}
+                        </Tag>
+                      )
+                    })()}
                     <FocusLevelBadge strength={theme.theme_strength_score} />
                     {theme.parent_theme && (
                       <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
@@ -1097,12 +1170,16 @@ export default function ThemeDetailPage() {
                       title={t('theme_detail.tier1')}
                       subtitle={t('theme_detail.tier1_desc')}
                       items={tier1Recs}
+                      collapsedLimit={6}
+                      durationMax={durationMax}
                     />
                     <TierColumn
                       tier={2}
                       title={t('theme_detail.tier2')}
                       subtitle={t('theme_detail.tier2_desc')}
                       items={tier2Recs}
+                      collapsedLimit={5}
+                      durationMax={durationMax}
                     />
                     {tier3Recs.length > 0 && (
                       <TierColumn
@@ -1110,6 +1187,8 @@ export default function ThemeDetailPage() {
                         title={t('theme_detail.tier3')}
                         subtitle={t('theme_detail.tier3_desc')}
                         items={tier3Recs}
+                        collapsedLimit={4}
+                        durationMax={durationMax}
                       />
                     )}
                   </div>
@@ -1868,6 +1947,154 @@ export default function ThemeDetailPage() {
                 </Col>
               </Row>
 
+              {/* Emerging Tickers — angles surfaced by LLM, not yet mainstream */}
+              {(() => {
+                const candidates = theme.emerging_candidates ?? []
+                if (candidates.length === 0) return null
+                const truncate = (s: string | null, n: number) => {
+                  if (!s) return ''
+                  return s.length > n ? `${s.slice(0, n).trim()}…` : s
+                }
+                return (
+                  <div style={{ marginTop: 32 }}>
+                    <SectionHeader
+                      index={nextIdx()}
+                      title={t('sections.emerging_section_title')}
+                      subtitle={t('sections.emerging_section_subtitle')}
+                    />
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+                        gap: 16,
+                        alignItems: 'stretch',
+                      }}
+                    >
+                      {candidates.map((c) => {
+                        const score = c.emerging_score
+                        return (
+                          <Link
+                            key={c.id}
+                            href={`/tickers/${c.ticker_symbol}`}
+                            style={{ display: 'block', textDecoration: 'none', color: 'inherit', height: '100%' }}
+                          >
+                            <Card
+                              hoverable
+                              styles={{
+                                body: {
+                                  padding: '14px 16px',
+                                  height: '100%',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 10,
+                                },
+                              }}
+                              style={{
+                                height: '100%',
+                                background: token.colorFillAlter,
+                                borderColor: token.colorBorderSecondary,
+                                borderLeft: `3px solid ${token.colorSuccess}`,
+                              }}
+                            >
+                              <Flex align="baseline" justify="space-between" gap={10}>
+                                <Flex align="baseline" gap={8} style={{ minWidth: 0 }}>
+                                  <Text
+                                    strong
+                                    style={{
+                                      fontFamily: token.fontFamilyCode,
+                                      fontSize: 14,
+                                      color: token.colorText,
+                                      lineHeight: 1.2,
+                                    }}
+                                  >
+                                    {c.ticker_symbol}
+                                  </Text>
+                                  {c.company_name && (
+                                    <Text
+                                      ellipsis={{ tooltip: c.company_name }}
+                                      style={{
+                                        fontSize: 11,
+                                        color: token.colorTextTertiary,
+                                        lineHeight: 1.3,
+                                      }}
+                                    >
+                                      {c.company_name}
+                                    </Text>
+                                  )}
+                                </Flex>
+                                {score != null && (
+                                  <span style={{ display: 'inline-flex', alignItems: 'baseline', flexShrink: 0 }}>
+                                    <Text
+                                      style={{
+                                        fontFamily: token.fontFamilyCode,
+                                        fontSize: 14,
+                                        fontWeight: 600,
+                                        color: token.colorSuccess,
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      {score}
+                                    </Text>
+                                    <Text
+                                      style={{
+                                        fontFamily: token.fontFamilyCode,
+                                        fontSize: 10,
+                                        color: token.colorTextQuaternary,
+                                        marginLeft: 2,
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      / 100
+                                    </Text>
+                                  </span>
+                                )}
+                              </Flex>
+                              <Tag
+                                style={{
+                                  margin: 0,
+                                  alignSelf: 'flex-start',
+                                  background: token.colorBgContainer,
+                                  color: token.colorTextSecondary,
+                                  border: `1px solid ${token.colorBorderSecondary}`,
+                                  fontSize: 11,
+                                  fontWeight: 500,
+                                  padding: '1px 8px',
+                                  borderRadius: 3,
+                                  lineHeight: 1.4,
+                                  maxWidth: '100%',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}
+                                title={c.angle_label}
+                              >
+                                {c.angle_label}
+                              </Tag>
+                              {c.gap_reasoning && (
+                                <Text
+                                  style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    fontSize: 12,
+                                    color: token.colorTextSecondary,
+                                    lineHeight: 1.5,
+                                  }}
+                                  title={c.gap_reasoning}
+                                >
+                                  {truncate(c.gap_reasoning, 80)}
+                                </Text>
+                              )}
+                            </Card>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
+
                 <div style={{ marginTop: 32, padding: '16px 0', borderTop: `1px solid ${token.colorBorderSecondary}`, textAlign: 'center' }}>
                   <Text type="secondary" style={{ fontSize: 11, color: token.colorTextQuaternary, letterSpacing: '0.02em' }}>
                     {t('common.ai_disclaimer_full')}
@@ -2217,24 +2444,27 @@ function TierColumn({
   title,
   subtitle,
   items,
+  collapsedLimit = 4,
+  durationMax,
 }: {
   tier: 1 | 2 | 3
   title: string
   subtitle: string
   items: ThemeRecommendation[]
+  collapsedLimit?: number
+  durationMax: number | null
 }) {
   const { t } = useI18n()
   const { token } = useToken()
   const [expanded, setExpanded] = useState(false)
-  const COLLAPSED_LIMIT = 4
 
   const tierColor =
     tier === 1 ? token.colorSuccess
     : tier === 2 ? token.colorPrimary
     : token.colorTextTertiary
 
-  const visible = expanded ? items : items.slice(0, COLLAPSED_LIMIT)
-  const hasMore = items.length > COLLAPSED_LIMIT
+  const visible = expanded ? items : items.slice(0, collapsedLimit)
+  const hasMore = items.length > collapsedLimit
 
   return (
     <Card
@@ -2292,7 +2522,7 @@ function TierColumn({
           }}
         >
           {visible.map((r) => (
-            <TickerTile key={r.ticker_symbol} item={r} tierColor={tierColor} />
+            <TickerTile key={r.ticker_symbol} item={r} tierColor={tierColor} durationMax={durationMax} />
           ))}
         </div>
       )}
@@ -2317,18 +2547,45 @@ function TierColumn({
   )
 }
 
-function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor: string }) {
+function TickerTile({
+  item,
+  tierColor,
+  durationMax,
+}: {
+  item: ThemeRecommendation
+  tierColor: string
+  durationMax: number | null
+}) {
   const { token } = useToken()
   const { t } = useI18n()
   const [imgError, setImgError] = useState(false)
 
   const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
-  const confColor =
-    confNum === null ? token.colorTextQuaternary
-    : confNum >= 80 ? '#5C4A1E'
-    : confNum >= 65 ? '#8B5A00'
-    : confNum >= 50 ? token.colorTextTertiary
-    : token.colorTextQuaternary
+  const long = item.long_score
+  const short = item.short_score
+  const displayScore = ((): number | null => {
+    if (durationMax == null) {
+      if (long != null) return Math.round(long)
+      if (short != null) return Math.round(short)
+      return null
+    }
+    if (durationMax < 90) return short != null ? Math.round(short) : null
+    if (durationMax > 365) return long != null ? Math.round(long) : null
+    if (long != null && short != null) return Math.round(long * 0.6 + short * 0.4)
+    if (long != null) return Math.round(long)
+    if (short != null) return Math.round(short)
+    return null
+  })()
+  const scoreColor =
+    displayScore == null ? token.colorTextQuaternary
+    : displayScore >= 80 ? token.colorSuccess
+    : displayScore >= 60 ? token.colorText
+    : token.colorTextSecondary
+
+  const tileTooltip = t('theme_detail.tile_score_tooltip', {
+    score: displayScore != null ? String(displayScore) : '—',
+    conf: confNum != null ? String(confNum) : '—',
+  })
 
   const initials = item.ticker_symbol.slice(0, 1)
   const isMixed = item.exposure_type === 'mixed'
@@ -2458,19 +2715,35 @@ function TickerTile({ item, tierColor }: { item: ThemeRecommendation; tierColor:
           </div>
         </Flex>
 
-        {confNum !== null && (
+        {displayScore !== null && (
           <Flex align="center" justify="flex-end" style={{ marginTop: 'auto' }}>
-            <Text
-              style={{
-                fontFamily: token.fontFamilyCode,
-                fontSize: 14,
-                fontWeight: 600,
-                color: confColor,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {confNum}
-            </Text>
+            <Tooltip title={tileTooltip}>
+              <span style={{ display: 'inline-flex', alignItems: 'baseline', cursor: 'help' }}>
+                <Text
+                  style={{
+                    fontFamily: token.fontFamilyCode,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: scoreColor,
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1,
+                  }}
+                >
+                  {displayScore}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: token.fontFamilyCode,
+                    fontSize: 10,
+                    color: token.colorTextQuaternary,
+                    marginLeft: 2,
+                    lineHeight: 1,
+                  }}
+                >
+                  / 100
+                </Text>
+              </span>
+            </Tooltip>
           </Flex>
         )}
       </div>

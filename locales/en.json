@@ -215,7 +215,11 @@
     "bear_warning": "Counter-evidence is dominant — reassess the theme",
     "counter_reasoning": "Reasoning",
     "collapse": "Collapse",
-    "tab_all": "All"
+    "tab_all": "All",
+    "duration_tag_short": "Short-term",
+    "duration_tag_mid": "Mid-term",
+    "duration_tag_long": "Long-term",
+    "tile_score_tooltip": "Theme momentum {score} · Classification confidence {conf}%"
   },
   "hot_tickers": {
     "subtitle": "Tickers appearing across multiple themes",
@@ -788,7 +792,9 @@
     "market_regime_title": "Market Regime",
     "market_regime_subtitle": "Macro regime context for your trades",
     "event_stream_title": "Event Stream",
-    "event_stream_subtitle": "Real-time event signals filtered by your tracked themes"
+    "event_stream_subtitle": "Real-time event signals filtered by your tracked themes",
+    "emerging_section_title": "Emerging Tickers",
+    "emerging_section_subtitle": "Discovered by LLM · not yet mainstream"
   },
   "curator_strip": {
     "by": "This week curated by",

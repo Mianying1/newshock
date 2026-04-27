@@ -455,19 +455,39 @@ export default function TickersPage() {
                             >
                               {scoreLabel}
                             </Text>
-                            <Text
+                            <span
                               style={{
+                                display: 'inline-flex',
+                                alignItems: 'baseline',
                                 fontFamily: token.fontFamilyCode,
                                 fontFeatureSettings: '"tnum", "zero"',
-                                fontSize: 24,
-                                fontWeight: 500,
-                                color: token.colorText,
                                 lineHeight: 1,
                                 letterSpacing: '-0.01em',
                               }}
                             >
-                              {row.score ?? '—'}
-                            </Text>
+                              <Text
+                                style={{
+                                  fontFamily: token.fontFamilyCode,
+                                  fontSize: 24,
+                                  fontWeight: 500,
+                                  color: token.colorText,
+                                  lineHeight: 1,
+                                }}
+                              >
+                                {row.score ?? '—'}
+                              </Text>
+                              <Text
+                                style={{
+                                  fontFamily: token.fontFamilyCode,
+                                  fontSize: 12,
+                                  color: token.colorTextQuaternary,
+                                  marginLeft: 4,
+                                  lineHeight: 1,
+                                }}
+                              >
+                                / 100
+                              </Text>
+                            </span>
                           </span>
                         </Tooltip>
                       </Flex>

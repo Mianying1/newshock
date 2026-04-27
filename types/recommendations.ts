@@ -28,6 +28,19 @@ export interface ThemeRecommendation {
   is_thematic_tool: boolean | null
   context_label: string | null
   added_at: string
+  long_score: number | null
+  short_score: number | null
+  potential_score: number | null
+}
+
+export interface EmergingCandidate {
+  id: string
+  ticker_symbol: string
+  company_name: string | null
+  angle_label: string
+  gap_reasoning: string | null
+  confidence: number | null
+  emerging_score: number | null
 }
 
 export type EventDirection = 'supports' | 'contradicts' | 'neutral'
@@ -164,6 +177,8 @@ export interface ThemeRadarItem {
   recent_drivers: RecentDriver[] | null
   recent_drivers_generated_at: string | null
   exit_signal_triggers: ExitSignalTrigger[] | null
+  typical_duration_days_max: number | null
+  emerging_candidates: EmergingCandidate[]
 }
 
 export type ExitSignalRuleType = 'event_count' | 'stale' | 'manual_review'

@@ -18,6 +18,7 @@ import type {
   CounterEvidenceSummary,
   RecentDriver,
   DriverIcon,
+  EmergingCandidate,
 } from '@/types/recommendations'
 
 function computePlaybookStage(daysHot: number, playbook: ArchetypePlaybook | null): PlaybookStage {
@@ -67,6 +68,7 @@ interface ThemeRow {
     category: string
     playbook: ArchetypePlaybook | null
     playbook_zh: ArchetypePlaybook | null
+    typical_duration_days_max: number | null
   } | null
 }
 
@@ -98,6 +100,9 @@ interface RecRow {
   is_thematic_tool: boolean | null
   context_label: string | null
   added_at: string
+  long_score: number | null
+  short_score: number | null
+  potential_score: number | null
   tickers: TickerInfo | TickerInfo[] | null
 }
 
@@ -124,6 +129,7 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
       'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
       'exposure_type, confidence_band, is_thematic_tool, context_label, added_at, ' +
+      'long_score, short_score, potential_score, ' +
       'tickers(company_name, sector, market_cap_usd_b, logo_url)'
     )
     .eq('theme_id', themeId)
@@ -178,8 +184,95 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
       is_thematic_tool: r.is_thematic_tool,
       context_label: r.context_label ?? null,
       added_at: r.added_at,
+      long_score: r.long_score,
+      short_score: r.short_score,
+      potential_score: r.potential_score,
     }
   })
+}
+
+async function fetchEmergingCandidates(
+  themeId: string,
+  parentThemeId: string | null,
+): Promise<EmergingCandidate[]> {
+  try {
+    const ids = parentThemeId ? [themeId, parentThemeId] : [themeId]
+    const { data, error } = await supabaseAdmin
+      .from('new_angle_candidates')
+      .select('id, umbrella_theme_id, angle_label, gap_reasoning, confidence, proposed_tickers, status')
+      .in('umbrella_theme_id', ids)
+      .order('confidence', { ascending: false, nullsFirst: false })
+      .limit(20)
+    if (error || !data) return []
+
+    type CandidateRow = {
+      id: string
+      umbrella_theme_id: string
+      angle_label: string
+      gap_reasoning: string | null
+      confidence: number | null
+      proposed_tickers: string[] | null
+      status: string | null
+    }
+    const rows = data as unknown as CandidateRow[]
+
+    const tickerSymbols = Array.from(
+      new Set(
+        rows
+          .flatMap((r) => r.proposed_tickers ?? [])
+          .filter((s): s is string => typeof s === 'string' && s.length > 0),
+      ),
+    )
+
+    const companyByTicker = new Map<string, string | null>()
+    if (tickerSymbols.length > 0) {
+      const { data: tk } = await supabaseAdmin
+        .from('tickers')
+        .select('symbol, company_name')
+        .in('symbol', tickerSymbols)
+      for (const row of (tk ?? []) as Array<{ symbol: string; company_name: string | null }>) {
+        companyByTicker.set(row.symbol, row.company_name)
+      }
+    }
+
+    const scoreByPair = new Map<string, number>()
+    if (tickerSymbols.length > 0) {
+      const { data: scores } = await supabaseAdmin
+        .from('theme_recommendations')
+        .select('theme_id, ticker_symbol, potential_score')
+        .in('theme_id', ids)
+        .in('ticker_symbol', tickerSymbols)
+      for (const row of (scores ?? []) as Array<{ theme_id: string; ticker_symbol: string; potential_score: number | null }>) {
+        if (row.potential_score == null) continue
+        const key = `${row.theme_id}|${row.ticker_symbol}`
+        scoreByPair.set(key, row.potential_score)
+      }
+    }
+
+    const out: EmergingCandidate[] = []
+    for (const r of rows) {
+      const firstTicker = (r.proposed_tickers ?? []).find((s) => typeof s === 'string' && s.length > 0)
+      if (!firstTicker) continue
+      const score =
+        scoreByPair.get(`${r.umbrella_theme_id}|${firstTicker}`) ??
+        (parentThemeId ? scoreByPair.get(`${parentThemeId}|${firstTicker}`) : undefined) ??
+        scoreByPair.get(`${themeId}|${firstTicker}`) ??
+        null
+      out.push({
+        id: r.id,
+        ticker_symbol: firstTicker,
+        company_name: companyByTicker.get(firstTicker) ?? null,
+        angle_label: r.angle_label,
+        gap_reasoning: r.gap_reasoning,
+        confidence: r.confidence,
+        emerging_score: score == null ? null : Math.round(score),
+      })
+      if (out.length >= 5) break
+    }
+    return out
+  } catch {
+    return []
+  }
 }
 
 async function fetchRecentDrivers(
@@ -268,7 +361,8 @@ function buildItem(
   catalysts: CatalystEvent[],
   earliestEventDate: string | null,
   parent: ThemeParentRef | null = null,
-  children: ThemeChildRef[] = []
+  children: ThemeChildRef[] = [],
+  emergingCandidates: EmergingCandidate[] = [],
 ): ThemeRadarItem {
   const earliest = earliestEventDate ?? row.first_seen_at
   const latest = catalysts[0]?.published_at ?? row.last_active_at
@@ -366,6 +460,8 @@ function buildItem(
     recent_drivers: parseRecentDrivers(row.recent_drivers),
     recent_drivers_generated_at: row.recent_drivers_generated_at ?? null,
     exit_signal_triggers: null,
+    typical_duration_days_max: row.theme_archetypes?.typical_duration_days_max ?? null,
+    emerging_candidates: emergingCandidates,
   }
 }
 
@@ -446,7 +542,7 @@ export async function buildThemeRadar(options: {
       'theme_tier, parent_theme_id, ' +
       'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
       'specific_playbook, specific_playbook_zh, ' +
-      'theme_archetypes(category, playbook, playbook_zh)'
+      'theme_archetypes(category, playbook, playbook_zh, typical_duration_days_max)'
     )
     .in('status', statusValues)
     .order('theme_strength_score', { ascending: false })
@@ -554,7 +650,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
       'theme_tier, parent_theme_id, ' +
       'conviction_score, conviction_breakdown, conviction_reasoning, conviction_reasoning_zh, conviction_generated_at, counter_evidence_summary, ' +
       'specific_playbook, specific_playbook_zh, ' +
-      'theme_archetypes(category, playbook, playbook_zh)'
+      'theme_archetypes(category, playbook, playbook_zh, typical_duration_days_max)'
     )
     .eq('id', themeId)
     .single()
@@ -562,7 +658,7 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
   if (error || !row) throw new Error(`theme not found: ${themeId}`)
 
   const themeRow = row as unknown as ThemeRow
-  const [recs, catalysts, earliestEventDate, parent, children, drivers, exitTriggers] = await Promise.all([
+  const [recs, catalysts, earliestEventDate, parent, children, drivers, exitTriggers, emerging] = await Promise.all([
     fetchRecommendations(themeId),
     fetchCatalysts(themeId, 50),
     fetchEarliestEventDate(themeId),
@@ -570,11 +666,12 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
     fetchChildren(themeId),
     fetchRecentDrivers(themeId),
     fetchExitSignalTriggers(themeId),
+    fetchEmergingCandidates(themeId, themeRow.parent_theme_id),
   ])
   themeRow.recent_drivers = drivers.recent_drivers
   themeRow.recent_drivers_generated_at = drivers.recent_drivers_generated_at
 
-  const item = buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children)
+  const item = buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children, emerging)
   item.exit_signal_triggers = exitTriggers
   return item
 }
