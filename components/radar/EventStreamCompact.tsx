@@ -173,8 +173,6 @@ export function EventStreamCompact({ headerless = false, section }: EventStreamC
               {e.source_url ? (
                 <a
                   href={e.source_url}
-                  target="_blank"
-                  rel="noreferrer"
                   style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4, textDecoration: 'none' }}
                 >
                   {headline}

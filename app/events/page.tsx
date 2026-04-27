@@ -149,8 +149,6 @@ const EventCard = memo(function EventCard({ ev }: { ev: EventItem }) {
   return (
     <a
       href={ev.source_url ?? '#'}
-      target="_blank"
-      rel="noopener noreferrer"
       className="event-card hover-card"
       style={{
         display: 'block',

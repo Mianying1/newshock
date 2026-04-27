@@ -131,8 +131,6 @@ export function EventStream() {
             const headlineContent = e.source_url ? (
               <a
                 href={e.source_url}
-                target="_blank"
-                rel="noreferrer"
                 className="evt-headline"
                 style={{ color: 'inherit', textDecoration: 'none' }}
               >

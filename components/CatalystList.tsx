@@ -132,8 +132,6 @@ export default function CatalystList({ catalysts }: { catalysts: CatalystEvent[]
                           {c.source_url ? (
                             <a
                               href={c.source_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
                               className="text-blue-600 hover:underline text-sm"
                             >
                               {c.headline}

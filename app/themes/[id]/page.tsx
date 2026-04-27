@@ -1045,8 +1045,6 @@ export default function ThemeDetailPage() {
                                   {e.source_url ? (
                                     <a
                                       href={e.source_url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
                                       title={e.headline}
                                       style={{ color: 'inherit', textDecoration: 'none' }}
                                     >
@@ -2352,8 +2350,6 @@ function ThemeEventSidebar({
                       return c.source_url ? (
                         <a
                           href={c.source_url}
-                          target="_blank"
-                          rel="noreferrer"
                           style={{
                             color: token.colorText,
                             fontSize: 12.5,
