@@ -121,17 +121,67 @@ interface EventRow {
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
+function shapeRec(r: RecRow): ThemeRecommendation {
+  const validCapBands = new Set(['small', 'mid', 'large'])
+  const validExposureTypes = new Set(['direct', 'observational', 'pressure', 'mixed'])
+  const validConfBands = new Set(['high', 'medium', 'low'])
+  const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
+  const ticker = Array.isArray(r.tickers) ? r.tickers[0] : r.tickers
+  const direction = validDirections.has(r.exposure_direction ?? '')
+    ? (r.exposure_direction as ExposureDirection)
+    : 'uncertain'
+  const capBand = validCapBands.has(r.market_cap_band ?? '')
+    ? (r.market_cap_band as MarketCapBand)
+    : null
+  const exposureType = validExposureTypes.has(r.exposure_type ?? '')
+    ? (r.exposure_type as ExposureType)
+    : null
+  const confBand = validConfBands.has(r.confidence_band ?? '')
+    ? (r.confidence_band as ConfidenceBand)
+    : null
+  return {
+    ticker_symbol: r.ticker_symbol,
+    company_name: ticker?.company_name ?? r.ticker_symbol,
+    sector: ticker?.sector ?? '',
+    market_cap_usd_b: ticker?.market_cap_usd_b ?? null,
+    logo_url: ticker?.logo_url ?? null,
+    tier: r.tier as 1 | 2 | 3,
+    exposure_direction: direction,
+    role_reasoning: r.role_reasoning ?? '',
+    role_reasoning_zh: r.role_reasoning_zh ?? null,
+    business_exposure: r.business_exposure ?? null,
+    business_exposure_zh: r.business_exposure_zh ?? null,
+    catalyst: r.catalyst ?? null,
+    catalyst_zh: r.catalyst_zh ?? null,
+    risk: r.risk ?? null,
+    risk_zh: r.risk_zh ?? null,
+    market_cap_band: capBand,
+    is_pure_play: r.is_pure_play,
+    is_often_missed: r.is_often_missed,
+    confidence: r.confidence,
+    exposure_type: exposureType,
+    confidence_band: confBand,
+    is_thematic_tool: r.is_thematic_tool,
+    context_label: r.context_label ?? null,
+    added_at: r.added_at,
+    long_score: r.long_score,
+    short_score: r.short_score,
+    potential_score: r.potential_score,
+  }
+}
+
+const REC_SELECT =
+  'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
+  'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
+  'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
+  'exposure_type, confidence_band, is_thematic_tool, context_label, added_at, ' +
+  'long_score, short_score, potential_score, ' +
+  'tickers(company_name, sector, market_cap_usd_b, logo_url)'
+
 async function fetchRecommendations(themeId: string): Promise<ThemeRecommendation[]> {
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
-    .select(
-      'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
-      'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
-      'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
-      'exposure_type, confidence_band, is_thematic_tool, context_label, added_at, ' +
-      'long_score, short_score, potential_score, ' +
-      'tickers(company_name, sector, market_cap_usd_b, logo_url)'
-    )
+    .select(REC_SELECT)
     .eq('theme_id', themeId)
     // Hide LLM-flagged low-confidence picks. NULLs (pre-enrichment) stay visible.
     .or('confidence_band.is.null,confidence_band.neq.low')
@@ -139,56 +189,26 @@ async function fetchRecommendations(themeId: string): Promise<ThemeRecommendatio
     .order('ticker_symbol')
 
   if (error) throw new Error(`recs fetch failed: ${error.message}`)
+  return ((data ?? []) as unknown as RecRow[]).map(shapeRec)
+}
 
-  const validCapBands = new Set(['small', 'mid', 'large'])
-  const validExposureTypes = new Set(['direct', 'observational', 'pressure', 'mixed'])
-  const validConfBands = new Set(['high', 'medium', 'low'])
-
-  return ((data ?? []) as unknown as RecRow[]).map((r) => {
-    const ticker = Array.isArray(r.tickers) ? r.tickers[0] : r.tickers
-    const validDirections = new Set(['benefits', 'headwind', 'mixed', 'uncertain'])
-    const direction = validDirections.has(r.exposure_direction ?? '')
-      ? (r.exposure_direction as ExposureDirection)
-      : 'uncertain'
-    const capBand = validCapBands.has(r.market_cap_band ?? '')
-      ? (r.market_cap_band as MarketCapBand)
-      : null
-    const exposureType = validExposureTypes.has(r.exposure_type ?? '')
-      ? (r.exposure_type as ExposureType)
-      : null
-    const confBand = validConfBands.has(r.confidence_band ?? '')
-      ? (r.confidence_band as ConfidenceBand)
-      : null
-    return {
-      ticker_symbol: r.ticker_symbol,
-      company_name: ticker?.company_name ?? r.ticker_symbol,
-      sector: ticker?.sector ?? '',
-      market_cap_usd_b: ticker?.market_cap_usd_b ?? null,
-      logo_url: ticker?.logo_url ?? null,
-      tier: r.tier as 1 | 2 | 3,
-      exposure_direction: direction,
-      role_reasoning: r.role_reasoning ?? '',
-      role_reasoning_zh: r.role_reasoning_zh ?? null,
-      business_exposure: r.business_exposure ?? null,
-      business_exposure_zh: r.business_exposure_zh ?? null,
-      catalyst: r.catalyst ?? null,
-      catalyst_zh: r.catalyst_zh ?? null,
-      risk: r.risk ?? null,
-      risk_zh: r.risk_zh ?? null,
-      market_cap_band: capBand,
-      is_pure_play: r.is_pure_play,
-      is_often_missed: r.is_often_missed,
-      confidence: r.confidence,
-      exposure_type: exposureType,
-      confidence_band: confBand,
-      is_thematic_tool: r.is_thematic_tool,
-      context_label: r.context_label ?? null,
-      added_at: r.added_at,
-      long_score: r.long_score,
-      short_score: r.short_score,
-      potential_score: r.potential_score,
-    }
-  })
+async function fetchRecommendationsBatch(themeIds: string[]): Promise<Map<string, ThemeRecommendation[]>> {
+  const out = new Map<string, ThemeRecommendation[]>()
+  if (themeIds.length === 0) return out
+  const { data, error } = await supabaseAdmin
+    .from('theme_recommendations')
+    .select(`theme_id, ${REC_SELECT}`)
+    .in('theme_id', themeIds)
+    .or('confidence_band.is.null,confidence_band.neq.low')
+    .order('tier')
+    .order('ticker_symbol')
+  if (error) throw new Error(`recs batch fetch failed: ${error.message}`)
+  for (const row of (data ?? []) as unknown as Array<RecRow & { theme_id: string }>) {
+    let arr = out.get(row.theme_id)
+    if (!arr) { arr = []; out.set(row.theme_id, arr) }
+    arr.push(shapeRec(row))
+  }
+  return out
 }
 
 async function fetchEmergingCandidates(
@@ -322,23 +342,28 @@ async function fetchEarliestEventDate(themeId: string): Promise<string | null> {
   return data?.event_date ?? null
 }
 
-async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent[]> {
-  // Hide stale events from the theme catalyst stream — events older than 90 days
-  // lose the "today's narrative" framing the section is meant to convey.
-  // DB rows preserved; UI hide only.
-  const cutoff = new Date(Date.now() - 90 * 86400 * 1000).toISOString()
-  const { data, error } = await supabaseAdmin
+async function fetchEarliestEventDatesBatch(themeIds: string[]): Promise<Map<string, string | null>> {
+  const out = new Map<string, string | null>()
+  if (themeIds.length === 0) return out
+  for (const id of themeIds) out.set(id, null)
+  const { data } = await supabaseAdmin
     .from('events')
-    .select('id, headline, short_headline, short_headline_zh, source_name, source_url, event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh')
-    .eq('trigger_theme_id', themeId)
-    .gte('event_date', cutoff)
-    .order('event_date', { ascending: false })
-    .limit(limit)
+    .select('trigger_theme_id, event_date')
+    .in('trigger_theme_id', themeIds)
+    .not('event_date', 'is', null)
+    .order('event_date', { ascending: true })
+  for (const row of (data ?? []) as Array<{ trigger_theme_id: string; event_date: string | null }>) {
+    if (!row.trigger_theme_id) continue
+    if (out.get(row.trigger_theme_id) == null) {
+      out.set(row.trigger_theme_id, row.event_date ?? null)
+    }
+  }
+  return out
+}
 
-  if (error) throw new Error(`catalysts fetch failed: ${error.message}`)
-
+function shapeCatalyst(e: EventRow): CatalystEvent {
   const validDirections = new Set(['supports', 'contradicts', 'neutral'])
-  return (data ?? []).map((e: EventRow) => ({
+  return {
     id: e.id,
     headline: e.headline,
     short_headline: e.short_headline,
@@ -352,7 +377,47 @@ async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent
       : null,
     counter_evidence_reasoning: e.counter_evidence_reasoning,
     counter_evidence_reasoning_zh: e.counter_evidence_reasoning_zh,
-  }))
+  }
+}
+
+const CATALYST_SELECT =
+  'id, headline, short_headline, short_headline_zh, source_name, source_url, ' +
+  'event_date, supports_or_contradicts, counter_evidence_reasoning, counter_evidence_reasoning_zh'
+
+async function fetchCatalysts(themeId: string, limit = 5): Promise<CatalystEvent[]> {
+  // Hide stale events from the theme catalyst stream — events older than 90 days
+  // lose the "today's narrative" framing the section is meant to convey.
+  // DB rows preserved; UI hide only.
+  const cutoff = new Date(Date.now() - 90 * 86400 * 1000).toISOString()
+  const { data, error } = await supabaseAdmin
+    .from('events')
+    .select(CATALYST_SELECT)
+    .eq('trigger_theme_id', themeId)
+    .gte('event_date', cutoff)
+    .order('event_date', { ascending: false })
+    .limit(limit)
+
+  if (error) throw new Error(`catalysts fetch failed: ${error.message}`)
+  return ((data ?? []) as unknown as EventRow[]).map(shapeCatalyst)
+}
+
+async function fetchCatalystsBatch(themeIds: string[], perThemeLimit = 5): Promise<Map<string, CatalystEvent[]>> {
+  const out = new Map<string, CatalystEvent[]>()
+  if (themeIds.length === 0) return out
+  const cutoff = new Date(Date.now() - 90 * 86400 * 1000).toISOString()
+  const { data, error } = await supabaseAdmin
+    .from('events')
+    .select(`trigger_theme_id, ${CATALYST_SELECT}`)
+    .in('trigger_theme_id', themeIds)
+    .gte('event_date', cutoff)
+    .order('event_date', { ascending: false })
+  if (error) throw new Error(`catalysts batch fetch failed: ${error.message}`)
+  for (const row of (data ?? []) as Array<EventRow & { trigger_theme_id: string }>) {
+    let arr = out.get(row.trigger_theme_id)
+    if (!arr) { arr = []; out.set(row.trigger_theme_id, arr) }
+    if (arr.length < perThemeLimit) arr.push(shapeCatalyst(row))
+  }
+  return out
 }
 
 function buildItem(
@@ -587,21 +652,25 @@ export async function buildThemeRadar(options: {
     )
   }
 
-  // Fetch recs + catalysts + earliest event date for each theme (in parallel).
-  // include_children: optional fetchChildren(row.id) for hierarchy views (Theme Map).
-  const items = await Promise.all(
-    themeRows.map(async (row) => {
-      const [recs, catalysts, earliestEventDate, children] = await Promise.all([
-        fetchRecommendations(row.id),
-        fetchCatalysts(row.id, 5),
-        fetchEarliestEventDate(row.id),
-        include_children ? fetchChildren(row.id) : Promise.resolve([] as ThemeChildRef[]),
-      ])
-      row.recent_drivers = null
-      row.recent_drivers_generated_at = null
-      return buildItem(row, recs, catalysts, earliestEventDate, null, children)
-    })
-  )
+  // Batch fan-out: 4 queries with `IN (themeIds)` instead of N×4 per-theme fetches.
+  // Reduces ~121 queries (30 themes × 4 + 1) → 5 queries (1 themes + 4 batch).
+  const themeIds = themeRows.map((r) => r.id)
+  const [recsByTheme, catalystsByTheme, earliestByTheme, childrenByParent] = await Promise.all([
+    fetchRecommendationsBatch(themeIds),
+    fetchCatalystsBatch(themeIds, 5),
+    fetchEarliestEventDatesBatch(themeIds),
+    include_children ? fetchChildrenBatch(themeIds) : Promise.resolve(new Map<string, ThemeChildRef[]>()),
+  ])
+
+  const items = themeRows.map((row) => {
+    const recs = recsByTheme.get(row.id) ?? []
+    const catalysts = catalystsByTheme.get(row.id) ?? []
+    const earliestEventDate = earliestByTheme.get(row.id) ?? null
+    const children = childrenByParent.get(row.id) ?? []
+    row.recent_drivers = null
+    row.recent_drivers_generated_at = null
+    return buildItem(row, recs, catalysts, earliestEventDate, null, children)
+  })
 
   // Sort by latest_event_date DESC (most recently active first), strength as tiebreaker
   items.sort((a, b) => {
@@ -701,4 +770,35 @@ async function fetchChildren(themeId: string): Promise<ThemeChildRef[]> {
     theme_strength_score: r.theme_strength_score,
     event_count: r.event_count,
   }))
+}
+
+async function fetchChildrenBatch(parentIds: string[]): Promise<Map<string, ThemeChildRef[]>> {
+  const out = new Map<string, ThemeChildRef[]>()
+  if (parentIds.length === 0) return out
+  const { data } = await supabaseAdmin
+    .from('themes')
+    .select('id, name, name_zh, theme_strength_score, event_count, parent_theme_id')
+    .in('parent_theme_id', parentIds)
+    .in('status', ['active', 'cooling'])
+    .order('theme_strength_score', { ascending: false })
+  for (const r of (data ?? []) as Array<{
+    id: string
+    name: string
+    name_zh: string | null
+    theme_strength_score: number
+    event_count: number
+    parent_theme_id: string | null
+  }>) {
+    if (!r.parent_theme_id) continue
+    let arr = out.get(r.parent_theme_id)
+    if (!arr) { arr = []; out.set(r.parent_theme_id, arr) }
+    arr.push({
+      id: r.id,
+      name: r.name,
+      name_zh: r.name_zh ?? null,
+      theme_strength_score: r.theme_strength_score,
+      event_count: r.event_count,
+    })
+  }
+  return out
 }
