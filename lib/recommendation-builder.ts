@@ -85,6 +85,7 @@ interface RecRow {
   role_reasoning: string | null
   role_reasoning_zh: string | null
   exposure_direction: string | null
+  exposure_pct: number | null
   business_exposure: string | null
   business_exposure_zh: string | null
   catalyst: string | null
@@ -147,6 +148,7 @@ function shapeRec(r: RecRow): ThemeRecommendation {
     logo_url: ticker?.logo_url ?? null,
     tier: r.tier as 1 | 2 | 3,
     exposure_direction: direction,
+    exposure_pct: r.exposure_pct,
     role_reasoning: r.role_reasoning ?? '',
     role_reasoning_zh: r.role_reasoning_zh ?? null,
     business_exposure: r.business_exposure ?? null,
@@ -171,7 +173,7 @@ function shapeRec(r: RecRow): ThemeRecommendation {
 }
 
 const REC_SELECT =
-  'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, ' +
+  'ticker_symbol, tier, role_reasoning, role_reasoning_zh, exposure_direction, exposure_pct, ' +
   'business_exposure, business_exposure_zh, catalyst, catalyst_zh, risk, risk_zh, ' +
   'market_cap_band, is_pure_play, is_often_missed, confidence, ' +
   'exposure_type, confidence_band, is_thematic_tool, context_label, added_at, ' +

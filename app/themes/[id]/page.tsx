@@ -89,6 +89,37 @@ function convictionBand(score: number): 'high' | 'medium' | 'low' {
   if (score >= 4) return 'medium'
   return 'low'
 }
+
+// Composite "importance in this theme" score (0-100):
+//   40% duration-aware multi-score (long/short/blend)
+// + 30% exposure_pct       — theme-specific revenue exposure
+// + 20% pure_play bonus    — flagged by LLM as a clean play
+// + 10% high-confidence bonus — LLM confidence_band === 'high'
+// Falls back to base + bonuses (70/20/10) when exposure_pct is null.
+function computeImportance(
+  r: ThemeRecommendation,
+  durationMax: number | null,
+): number | null {
+  const long = r.long_score
+  const short = r.short_score
+  let base: number | null
+  if (long == null && short == null) base = null
+  else if (durationMax == null) base = long ?? short ?? null
+  else if (durationMax < 90) base = short ?? long ?? null
+  else if (durationMax > 365) base = long ?? short ?? null
+  else if (long != null && short != null) base = long * 0.6 + short * 0.4
+  else base = long ?? short ?? null
+  if (base == null) return null
+
+  const exp = typeof r.exposure_pct === 'number' ? Math.max(0, Math.min(100, r.exposure_pct)) : null
+  const pure = r.is_pure_play === true ? 100 : 0
+  const conf = r.confidence_band === 'high' ? 100 : 0
+  const composite = exp == null
+    ? 0.7 * base + 0.2 * pure + 0.1 * conf
+    : 0.4 * base + 0.3 * exp + 0.2 * pure + 0.1 * conf
+  return Math.round(Math.max(0, Math.min(100, composite)))
+}
+
 function barClass(score: number): 'up' | 'mid' | 'low' {
   if (score >= 7) return 'up'
   if (score >= 4) return 'mid'
@@ -213,14 +244,7 @@ export default function ThemeDetailPage() {
   const recs = theme?.recommendations ?? []
   const tradableRecs = recs.filter((r) => r.exposure_type !== 'pressure' && r.exposure_direction !== 'headwind')
   const durationMax = theme?.typical_duration_days_max ?? null
-  const scoreFor = (r: ThemeRecommendation): number => {
-    const long = r.long_score ?? 0
-    const short = r.short_score ?? 0
-    if (durationMax == null) return long || short
-    if (durationMax < 90) return short
-    if (durationMax > 365) return long
-    return long * 0.6 + short * 0.4
-  }
+  const scoreFor = (r: ThemeRecommendation): number => computeImportance(r, durationMax) ?? 0
   const sortByScore = (arr: ThemeRecommendation[]) =>
     arr
       .slice()
@@ -2636,21 +2660,7 @@ function TickerTile({
   const { t } = useI18n()
 
   const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
-  const long = item.long_score
-  const short = item.short_score
-  const displayScore = ((): number | null => {
-    if (durationMax == null) {
-      if (long != null) return Math.round(long)
-      if (short != null) return Math.round(short)
-      return null
-    }
-    if (durationMax < 90) return short != null ? Math.round(short) : null
-    if (durationMax > 365) return long != null ? Math.round(long) : null
-    if (long != null && short != null) return Math.round(long * 0.6 + short * 0.4)
-    if (long != null) return Math.round(long)
-    if (short != null) return Math.round(short)
-    return null
-  })()
+  const displayScore = computeImportance(item, durationMax)
   const scoreColor =
     displayScore == null ? token.colorTextQuaternary
     : displayScore >= 80 ? token.colorSuccess

@@ -11,6 +11,7 @@ export interface ThemeRecommendation {
   logo_url: string | null
   tier: 1 | 2 | 3
   exposure_direction: ExposureDirection
+  exposure_pct: number | null
   role_reasoning: string
   role_reasoning_zh: string | null
   business_exposure: string | null
