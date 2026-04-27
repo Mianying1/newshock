@@ -519,6 +519,15 @@
   box-shadow: none !important;
 }
 
+/* iOS Safari auto-zooms when an input has font-size < 16px on focus.
+   Bump the underlying search input to 16px on small viewports; the visible
+   label/placeholder stays at 13px via the rules above. */
+@media (max-width: 768px) {
+  .radar-page .filter-select .ant-select-selection-search-input {
+    font-size: 16px !important;
+  }
+}
+
 .radar-page .filter-lowsignal-toggle:hover {
   color: var(--ink) !important;
   background: var(--line-2) !important;
