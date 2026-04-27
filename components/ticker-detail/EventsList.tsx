@@ -211,16 +211,41 @@ const EventCard = memo(function EventCard({
 export function EventsList({ items, labels, isDark, initialDisplay = 5 }: Props) {
   const { token } = useToken()
   const [showAll, setShowAll] = useState(false)
-  const visible = showAll ? items : items.slice(0, initialDisplay)
+  const hasMore = items.length > initialDisplay
 
   return (
     <div style={{ marginTop: 12 }}>
       <Flex vertical gap={10}>
-        {visible.map((ev) => (
+        {items.slice(0, initialDisplay).map((ev) => (
           <EventCard key={ev.id} ev={ev} labels={labels} isDark={isDark} />
         ))}
       </Flex>
-      {items.length > initialDisplay && (
+      {hasMore && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateRows: showAll ? '1fr' : '0fr',
+            transition: 'grid-template-rows 280ms cubic-bezier(0.22, 0.9, 0.32, 1)',
+          }}
+        >
+          <div
+            style={{
+              overflow: 'hidden',
+              minHeight: 0,
+              opacity: showAll ? 1 : 0,
+              transition: 'opacity 200ms ease',
+              transitionDelay: showAll ? '120ms' : '0ms',
+            }}
+          >
+            <Flex vertical gap={10} style={{ paddingTop: 10 }}>
+              {items.slice(initialDisplay).map((ev) => (
+                <EventCard key={ev.id} ev={ev} labels={labels} isDark={isDark} />
+              ))}
+            </Flex>
+          </div>
+        </div>
+      )}
+      {hasMore && (
         <Button
           type="link"
           size="small"
@@ -230,7 +255,6 @@ export function EventsList({ items, labels, isDark, initialDisplay = 5 }: Props)
           {showAll ? labels.collapse : labels.showAll.replace('{n}', String(items.length))}
         </Button>
       )}
-
     </div>
   )
 }

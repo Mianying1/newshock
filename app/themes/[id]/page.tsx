@@ -26,6 +26,7 @@ import {
   BankOutlined,
   BuildOutlined,
   ClockCircleOutlined,
+  DownOutlined,
   GlobalOutlined,
   LineChartOutlined,
   MoonOutlined,
@@ -2204,7 +2205,6 @@ function ThemeEventSidebar({
   const { t, locale } = useI18n()
   const { token } = useToken()
 
-  const visibleEvents = showAllEvents ? filteredEvents : filteredEvents.slice(0, 8)
 
   const coolPct = Math.min(100, Math.max(0, Math.round(((daysSinceLastEvent - 30) / 30) * 100)))
 
@@ -2282,12 +2282,12 @@ function ThemeEventSidebar({
               </Flex>
             </div>
 
-            {visibleEvents.length === 0 ? (
+            {filteredEvents.length === 0 ? (
               <Text style={{ display: 'block', padding: '16px 14px', fontSize: 12, color: token.colorTextTertiary }}>
                 {t('theme_detail.no_catalysts')}
               </Text>
-            ) : (
-              visibleEvents.map((c, idx) => {
+            ) : (() => {
+              const renderEvent = (c: typeof filteredEvents[number], idx: number) => {
                 const publisher = getDisplayPublisher(c.source_name, c.source_url)
                 const srcColors = SIDEBAR_SRC_COLOR[publisher]
                 const reasoning = pickField(
@@ -2403,8 +2403,36 @@ function ThemeEventSidebar({
                     )}
                   </Flex>
                 )
-              })
-            )}
+              }
+              const head = filteredEvents.slice(0, 8)
+              const tail = filteredEvents.slice(8)
+              return (
+                <>
+                  {head.map((c, i) => renderEvent(c, i))}
+                  {tail.length > 0 && (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateRows: showAllEvents ? '1fr' : '0fr',
+                        transition: 'grid-template-rows 280ms cubic-bezier(0.22, 0.9, 0.32, 1)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          overflow: 'hidden',
+                          minHeight: 0,
+                          opacity: showAllEvents ? 1 : 0,
+                          transition: 'opacity 200ms ease',
+                          transitionDelay: showAllEvents ? '120ms' : '0ms',
+                        }}
+                      >
+                        {tail.map((c, i) => renderEvent(c, i + 8))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
 
             {filteredEvents.length > 8 && (
               <div style={{ padding: '8px 14px 12px' }}>
@@ -2463,7 +2491,6 @@ function TierColumn({
     : tier === 2 ? token.colorPrimary
     : token.colorTextTertiary
 
-  const visible = expanded ? items : items.slice(0, collapsedLimit)
   const hasMore = items.length > collapsedLimit
 
   return (
@@ -2497,6 +2524,42 @@ function TierColumn({
           <Text strong style={{ fontSize: 13.5, color: token.colorText }}>
             {title}
           </Text>
+          <span style={{ flex: 1 }} />
+          {hasMore && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+              aria-label={expanded ? t('theme_detail.collapse') : t('theme_detail.view_all_tickers').replace('{n}', String(items.length))}
+              className="tier-toggle-btn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                background: token.colorFillAlter,
+                border: `1px solid ${token.colorBorderSecondary}`,
+                borderRadius: 999,
+                padding: '3px 9px',
+                cursor: 'pointer',
+                fontFamily: token.fontFamilyCode,
+                fontSize: 10.5,
+                lineHeight: 1,
+                letterSpacing: '0.04em',
+                color: token.colorTextSecondary,
+                fontVariantNumeric: 'tabular-nums',
+                transition: 'background 160ms ease, border-color 160ms ease, color 160ms ease',
+              }}
+            >
+              <span>{expanded ? t('theme_detail.collapse') : `+${items.length - collapsedLimit}`}</span>
+              <DownOutlined
+                style={{
+                  fontSize: 9,
+                  transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 240ms cubic-bezier(0.22, 0.9, 0.32, 1)',
+                }}
+              />
+            </button>
+          )}
         </Flex>
         <Text style={{ display: 'block', fontSize: 11.5, color: token.colorTextTertiary, lineHeight: 1.5 }}>
           {subtitle}
@@ -2514,51 +2577,70 @@ function TierColumn({
           {t('theme_detail.no_exposure')}
         </Text>
       ) : (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-            gap: 8,
-          }}
-        >
-          {visible.map((r) => (
-            <TickerTile key={r.ticker_symbol} item={r} tierColor={tierColor} durationMax={durationMax} />
-          ))}
-        </div>
+        <>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+              gap: 8,
+            }}
+          >
+            {items.slice(0, collapsedLimit).map((r) => (
+              <TickerTile key={r.ticker_symbol} item={r} durationMax={durationMax} />
+            ))}
+          </div>
+          {hasMore && (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateRows: expanded ? '1fr' : '0fr',
+                transition: 'grid-template-rows 280ms cubic-bezier(0.22, 0.9, 0.32, 1)',
+              }}
+            >
+              <div
+                style={{
+                  overflow: 'hidden',
+                  minHeight: 0,
+                  opacity: expanded ? 1 : 0,
+                  transition: 'opacity 200ms ease',
+                  transitionDelay: expanded ? '120ms' : '0ms',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                    gap: 8,
+                    paddingTop: 8,
+                    maxHeight: 420,
+                    overflowY: 'auto',
+                    paddingRight: 4,
+                  }}
+                  className="tier-scroll"
+                >
+                  {items.slice(collapsedLimit).map((r) => (
+                    <TickerTile key={r.ticker_symbol} item={r} durationMax={durationMax} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {hasMore && !expanded && (
-        <Button
-          type="link"
-          size="small"
-          onClick={() => setExpanded(true)}
-          style={{
-            marginTop: 'auto',
-            padding: 0,
-            height: 'auto',
-            fontSize: 12,
-            color: token.colorTextSecondary,
-          }}
-        >
-          {t('theme_detail.view_all_tickers').replace('{n}', String(items.length))}
-        </Button>
-      )}
     </Card>
   )
 }
 
 function TickerTile({
   item,
-  tierColor,
   durationMax,
 }: {
   item: ThemeRecommendation
-  tierColor: string
   durationMax: number | null
 }) {
   const { token } = useToken()
   const { t } = useI18n()
-  const [imgError, setImgError] = useState(false)
 
   const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
   const long = item.long_score
@@ -2587,7 +2669,6 @@ function TickerTile({
     conf: confNum != null ? String(confNum) : '—',
   })
 
-  const initials = item.ticker_symbol.slice(0, 1)
   const isMixed = item.exposure_type === 'mixed'
   const contextLabel = item.context_label?.trim() || null
   const mixedTooltip = contextLabel ?? t('theme_detail.mixed_tooltip')
@@ -2599,134 +2680,68 @@ function TickerTile({
     >
       <div
         style={{
-          padding: '10px 12px',
+          padding: '12px 14px 10px',
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadius,
           background: token.colorBgContainer,
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
+          gap: 8,
           height: '100%',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
       >
-        <Flex align="center" gap={8} style={{ minWidth: 0 }}>
-          {item.logo_url && !imgError ? (
-            <div
+        <Flex align="baseline" justify="space-between" gap={10} style={{ minWidth: 0 }}>
+          <Flex align="baseline" gap={6} style={{ minWidth: 0, flex: 1 }}>
+            <Text
+              strong
               style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: token.colorFillAlter,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                flexShrink: 0,
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.logo_url}
-                alt={item.ticker_symbol}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                onError={() => setImgError(true)}
-              />
-            </div>
-          ) : (
-            <div
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: token.colorFillSecondary,
-                color: tierColor,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 11,
-                fontWeight: 600,
                 fontFamily: token.fontFamilyCode,
-                flexShrink: 0,
+                fontSize: 14,
+                color: token.colorText,
+                lineHeight: 1.15,
+                letterSpacing: '0.01em',
+                whiteSpace: 'nowrap',
               }}
             >
-              {initials}
-            </div>
-          )}
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <Flex align="center" gap={6} style={{ minWidth: 0 }}>
-              <Text
-                strong
-                style={{
-                  fontFamily: token.fontFamilyCode,
-                  fontSize: 13,
-                  color: token.colorText,
-                  lineHeight: 1.2,
-                }}
-              >
-                {item.ticker_symbol}
-              </Text>
-              {isMixed && (
-                <Tooltip title={mixedTooltip}>
-                  <Tag
-                    color="warning"
-                    style={{
-                      margin: 0,
-                      fontSize: 9.5,
-                      lineHeight: 1.3,
-                      padding: '0 5px',
-                      borderRadius: 3,
-                    }}
-                  >
-                    {t('theme_detail.mixed_badge')}
-                  </Tag>
-                </Tooltip>
-              )}
-            </Flex>
-            {item.company_name && item.company_name !== item.ticker_symbol && (
-              <Text
-                ellipsis={{ tooltip: item.company_name }}
-                style={{
-                  display: 'block',
-                  fontSize: 10.5,
-                  color: token.colorTextTertiary,
-                  lineHeight: 1.3,
-                  marginTop: 1,
-                }}
-              >
-                {item.company_name}
-              </Text>
-            )}
-            {contextLabel && !isMixed && (
-              <Tooltip title={contextLabel}>
-                <Text
-                  ellipsis
+              {item.ticker_symbol}
+            </Text>
+            {isMixed && (
+              <Tooltip title={mixedTooltip}>
+                <Tag
+                  color="warning"
                   style={{
-                    display: 'block',
-                    fontSize: 10,
-                    color: token.colorTextTertiary,
+                    margin: 0,
+                    fontSize: 9.5,
                     lineHeight: 1.3,
-                    marginTop: 2,
+                    padding: '0 5px',
+                    borderRadius: 3,
                   }}
                 >
-                  · {contextLabel}
-                </Text>
+                  {t('theme_detail.mixed_badge')}
+                </Tag>
               </Tooltip>
             )}
-          </div>
-        </Flex>
-
-        {displayScore !== null && (
-          <Flex align="center" justify="flex-end" style={{ marginTop: 'auto' }}>
+          </Flex>
+          {displayScore !== null && (
             <Tooltip title={tileTooltip}>
-              <span style={{ display: 'inline-flex', alignItems: 'baseline', cursor: 'help' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'baseline',
+                  cursor: 'help',
+                  flexShrink: 0,
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: token.fontFamilyCode,
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: 600,
                     color: scoreColor,
-                    letterSpacing: '-0.01em',
+                    letterSpacing: '-0.02em',
                     lineHeight: 1,
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {displayScore}
@@ -2744,8 +2759,39 @@ function TickerTile({
                 </Text>
               </span>
             </Tooltip>
-          </Flex>
+          )}
+        </Flex>
+
+        {item.company_name && item.company_name !== item.ticker_symbol && (
+          <Text
+            ellipsis={{ tooltip: item.company_name }}
+            style={{
+              display: 'block',
+              fontSize: 11,
+              color: token.colorTextTertiary,
+              lineHeight: 1.35,
+            }}
+          >
+            {item.company_name}
+          </Text>
         )}
+
+        {contextLabel && !isMixed && (
+          <Tooltip title={contextLabel}>
+            <Text
+              ellipsis
+              style={{
+                display: 'block',
+                fontSize: 10,
+                color: token.colorTextTertiary,
+                lineHeight: 1.3,
+              }}
+            >
+              · {contextLabel}
+            </Text>
+          </Tooltip>
+        )}
+
       </div>
     </Link>
   )
