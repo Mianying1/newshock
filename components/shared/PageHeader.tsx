@@ -16,6 +16,7 @@ interface PageHeaderProps {
   title: ReactNode
   icon?: ReactNode
   stats?: PageStat[]
+  description?: ReactNode
   live?: boolean
   liveLabel?: ReactNode
   meta?: ReactNode
@@ -25,6 +26,7 @@ export function PageHeader({
   title,
   icon,
   stats = [],
+  description,
   live = false,
   liveLabel = 'Live',
   meta,
@@ -69,7 +71,7 @@ export function PageHeader({
         </Title>
       </Flex>
 
-      {(live || stats.length > 0 || meta) && (
+      {(live || stats.length > 0 || description || meta) && (
         <Flex
           align="center"
           justify="space-between"
@@ -87,7 +89,20 @@ export function PageHeader({
               />
             )}
 
-            {stats.map((s, i) => (
+            {description && (
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: token.colorTextSecondary,
+                  letterSpacing: '0.01em',
+                  lineHeight: 1.5,
+                }}
+              >
+                {description}
+              </Text>
+            )}
+
+            {!description && stats.map((s, i) => (
               <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline' }}>
                 <Text
                   style={{

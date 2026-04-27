@@ -79,6 +79,7 @@ type DetailApiResponse =
       allActive: AllThemesItem[]
       playbooks: PlaybookData[]
       events: EventItem[]
+      scores: { short: number | null; long: number | null; potential: number | null }
       totals: { coreCount: number; activeCount: number }
     }
   | { ok: false; error: string }
@@ -207,13 +208,20 @@ export default function TickerDetailPage() {
         symbol={symbol}
         companyName={narrativeResp?.ticker?.company_name ?? null}
         sector={narrativeResp?.ticker?.sector ?? null}
-        thematicScore={null}
-        potentialScore={null}
+        shortScore={detail?.scores.short ?? null}
+        longScore={detail?.scores.long ?? null}
+        potentialScore={detail?.scores.potential ?? null}
         heroLine={narrativeResp?.narrative?.hero_line ?? null}
         themes={heroThemes}
         heroLabels={{
-          thematic: t('ticker_detail.thematic_score'),
+          short: t('ticker_detail.short_score'),
+          long: t('ticker_detail.long_score'),
           potential: t('ticker_detail.potential_score'),
+        }}
+        scoreTooltips={{
+          short: t('ticker_detail.short_score_tooltip'),
+          long: t('ticker_detail.long_score_tooltip'),
+          potential: t('ticker_detail.potential_score_tooltip'),
         }}
       />
 

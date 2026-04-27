@@ -4,9 +4,9 @@ import Link from 'next/link'
 import useSWR from 'swr'
 import { Card, Col, Row, Segmented } from 'antd'
 import { useI18n } from '@/lib/i18n-context'
-import TickerRow, { type TickerRowBadge, NewspaperIcon, BotIcon } from '@/components/TickerRow'
+import TickerRow, { type TickerRowBadge } from '@/components/TickerRow'
 import { SectionTitle } from '@/components/shared/SectionTitle'
-import type { LongShortTickerRow, AngleDirectionRow, LongShortMode } from '@/lib/ticker-scoring'
+import type { LongShortTickerRow, PotentialTickerRow, LongShortMode } from '@/lib/ticker-scoring'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -16,8 +16,8 @@ interface LongShortResponse {
   total: number
 }
 
-interface AnglesResponse {
-  directions: AngleDirectionRow[]
+interface PotentialResponse {
+  tickers: PotentialTickerRow[]
   total: number
 }
 
@@ -29,15 +29,15 @@ export function TopTickersSection() {
     `/api/tickers/long-short?mode=${mode}&limit=50`,
     fetcher
   )
-  const { data: angles, isLoading: anglesLoading } = useSWR<AnglesResponse>(
-    `/api/new-angle-candidates?limit=50`,
+  const { data: potential, isLoading: potentialLoading } = useSWR<PotentialResponse>(
+    `/api/tickers/potential?limit=50`,
     fetcher
   )
 
   const tickerTop = tickers?.tickers.slice(0, 5) ?? []
   const tickerTotal = tickers?.total ?? 0
-  const angleTop = angles?.directions?.slice(0, 5) ?? []
-  const angleTotal = angles?.total ?? 0
+  const potentialTop = potential?.tickers?.slice(0, 5) ?? []
+  const potentialTotal = potential?.total ?? 0
 
   const thematicExtra = (
     <Segmented
@@ -76,14 +76,18 @@ export function TopTickersSection() {
               const rightBadge: TickerRowBadge | null = tk.category
                 ? { label: t(`categories.${tk.category}`) }
                 : null
+              const raw = mode === 'long' ? tk.long_score : tk.short_score
+              const score = raw !== null && raw !== undefined ? Math.round(raw) : null
+              const tooltipKey = mode === 'long' ? 'ticker_detail.long_score_tooltip' : 'ticker_detail.short_score_tooltip'
               return (
                 <TickerRow
                   key={tk.symbol}
                   compact
                   href={`/tickers/${tk.symbol}`}
                   symbol={tk.symbol}
-                  rightText={tk.ticker_maturity_score?.toFixed(1) ?? '-'}
-                  rightSmall="/10"
+                  rightText={score !== null ? String(score) : '-'}
+                  rightSmall=" / 100"
+                  rightTooltip={t(tooltipKey)}
                   rightBadge={rightBadge}
                 />
               )
@@ -104,50 +108,37 @@ export function TopTickersSection() {
           style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}
         >
-          {anglesLoading && angleTop.length === 0 ? (
+          {potentialLoading && potentialTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {t('tickers_ranked.loading')}
             </p>
-          ) : angleTop.length === 0 ? (
+          ) : potentialTop.length === 0 ? (
             <p style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: 'var(--ink-4)' }}>
               {t('tickers_ranked.no_angles')}
             </p>
           ) : (
-            angleTop.map((d) => {
-              const inlineBadges: TickerRowBadge[] = []
-              if (d.is_ai_pending) {
-                inlineBadges.push({ label: <BotIcon />, title: t('top_tickers.ai_pending') })
-              }
-              inlineBadges.push({
-                label: (
-                  <>
-                    <NewspaperIcon />
-                    {t('top_tickers.recent_days', { days: d.last_event_days_ago })}
-                  </>
-                ),
-                title: d.angle_label,
-              })
-              const rightBadge: TickerRowBadge | null = d.category
-                ? { label: t(`categories.${d.category}`), title: d.angle_label }
+            potentialTop.map((tk) => {
+              const rightBadge: TickerRowBadge | null = tk.category
+                ? { label: t(`categories.${tk.category}`) }
                 : null
-              const confPct = d.confidence !== null ? Math.round(d.confidence * 100) : null
+              const score = Math.round(tk.potential_score)
               return (
                 <TickerRow
-                  key={`${d.ticker_symbol}-${d.umbrella_theme_id}`}
+                  key={tk.symbol}
                   compact
-                  href={`/tickers/${d.ticker_symbol}`}
-                  symbol={d.ticker_symbol}
-                  rightText={confPct !== null ? String(confPct) : undefined}
-                  rightSmall={confPct !== null ? '%' : undefined}
-                  inlineBadges={inlineBadges}
+                  href={`/tickers/${tk.symbol}`}
+                  symbol={tk.symbol}
+                  rightText={String(score)}
+                  rightSmall=" / 100"
+                  rightTooltip={t('ticker_detail.potential_score_tooltip')}
                   rightBadge={rightBadge}
                 />
               )
             })
           )}
-          {angleTotal > 5 && (
+          {potentialTotal > 5 && (
             <Link href="/tickers" className="rank-foot">
-              {t('top_tickers.show_all_potential', { n: angleTotal })}
+              {t('top_tickers.show_all_potential', { n: potentialTotal })}
             </Link>
           )}
         </Card>

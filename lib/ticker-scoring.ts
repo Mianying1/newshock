@@ -495,6 +495,8 @@ export interface LongShortTickerRow {
   sector: string | null
   logo_url: string | null
   ticker_maturity_score: number | null
+  long_score: number | null
+  short_score: number | null
   ticker_type: string | null                // core_hold / short_catalyst / watch
   theme_id: string
   theme_name: string
@@ -511,12 +513,15 @@ export async function getLongShortTickers(
 ): Promise<LongShortTickerRow[]> {
   const wantedTickerTypes = mode === 'long' ? ['core_hold', 'watch'] : ['short_catalyst']
   const wantedDurationTypes = mode === 'long' ? ['extended', 'dependent'] : ['bounded']
+  const sortField = mode === 'long' ? 'long_score' : 'short_score'
 
   const { data, error } = await supabaseAdmin
     .from('theme_recommendations')
     .select(`
       ticker_symbol,
       ticker_maturity_score,
+      long_score,
+      short_score,
       ticker_type,
       theme_id,
       themes!inner (
@@ -541,10 +546,10 @@ export async function getLongShortTickers(
       )
     `)
     .in('ticker_type', wantedTickerTypes)
-    .not('ticker_maturity_score', 'is', null)
+    .not(sortField, 'is', null)
     // Hide LLM-flagged low-confidence picks. NULLs (pre-enrichment) stay visible.
     .or('confidence_band.is.null,confidence_band.neq.low')
-    .order('ticker_maturity_score', { ascending: false })
+    .order(sortField, { ascending: false })
     .limit(500)
 
   if (error) throw new Error(`getLongShortTickers: ${error.message}`)
@@ -552,6 +557,8 @@ export async function getLongShortTickers(
   type Row = {
     ticker_symbol: string
     ticker_maturity_score: number | null
+    long_score: number | null
+    short_score: number | null
     ticker_type: string | null
     theme_id: string
     themes: {
@@ -588,6 +595,8 @@ export async function getLongShortTickers(
       sector: r.tickers?.sector ?? null,
       logo_url: r.tickers?.logo_url ?? null,
       ticker_maturity_score: r.ticker_maturity_score,
+      long_score: r.long_score,
+      short_score: r.short_score,
       ticker_type: r.ticker_type,
       theme_id: r.theme_id,
       theme_name: r.themes?.name ?? '',
@@ -598,10 +607,104 @@ export async function getLongShortTickers(
       category: r.themes?.theme_archetypes?.category ?? null,
     }))
 
-  // Dedup by ticker_symbol — keep the row with the highest ticker_maturity_score.
-  // Filtered is already sorted DESC on maturity_score, so first occurrence wins.
+  // Dedup by ticker_symbol — keep the row with the highest active score.
+  // Filtered is already sorted DESC on the active score field, so first occurrence wins.
   const seen = new Set<string>()
   const deduped: LongShortTickerRow[] = []
+  for (const r of filtered) {
+    if (seen.has(r.symbol)) continue
+    seen.add(r.symbol)
+    deduped.push(r)
+  }
+
+  return deduped.slice(0, limit)
+}
+
+// =============================================================================
+// UX-1 · Potential tickers (per-ticker rows ranked by potential_score)
+// =============================================================================
+
+export interface PotentialTickerRow {
+  symbol: string
+  company_name: string | null
+  sector: string | null
+  logo_url: string | null
+  potential_score: number
+  theme_id: string
+  theme_name: string
+  category: string | null
+}
+
+export async function getTopPotentialTickers(limit = 200): Promise<PotentialTickerRow[]> {
+  const { data, error } = await supabaseAdmin
+    .from('theme_recommendations')
+    .select(`
+      ticker_symbol,
+      potential_score,
+      theme_id,
+      themes!inner (
+        id,
+        name,
+        status,
+        archetype_id,
+        theme_archetypes (
+          id,
+          category
+        )
+      ),
+      tickers!inner (
+        symbol,
+        company_name,
+        sector,
+        logo_url
+      )
+    `)
+    .not('potential_score', 'is', null)
+    .or('confidence_band.is.null,confidence_band.neq.low')
+    .order('potential_score', { ascending: false })
+    .limit(500)
+
+  if (error) throw new Error(`getTopPotentialTickers: ${error.message}`)
+
+  type Row = {
+    ticker_symbol: string
+    potential_score: number | null
+    theme_id: string
+    themes: {
+      id: string
+      name: string
+      status: string
+      theme_archetypes: {
+        id: string
+        category: string | null
+      } | null
+    } | null
+    tickers: {
+      symbol: string
+      company_name: string | null
+      sector: string | null
+      logo_url: string | null
+    } | null
+  }
+
+  const rows = (data ?? []) as unknown as Row[]
+  const filtered = rows
+    .filter((r) => r.themes?.status === 'active' && r.potential_score !== null)
+    .map((r): PotentialTickerRow => ({
+      symbol: r.ticker_symbol,
+      company_name: r.tickers?.company_name ?? null,
+      sector: r.tickers?.sector ?? null,
+      logo_url: r.tickers?.logo_url ?? null,
+      potential_score: r.potential_score as number,
+      theme_id: r.theme_id,
+      theme_name: r.themes?.name ?? '',
+      category: r.themes?.theme_archetypes?.category ?? null,
+    }))
+
+  // Dedup by ticker_symbol — keep the row with the highest potential_score.
+  // Filtered is already sorted DESC on potential_score, so first occurrence wins.
+  const seen = new Set<string>()
+  const deduped: PotentialTickerRow[] = []
   for (const r of filtered) {
     if (seen.has(r.symbol)) continue
     seen.add(r.symbol)
