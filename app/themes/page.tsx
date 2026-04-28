@@ -20,6 +20,7 @@ import { ThemeCard } from '@/components/radar/ThemeCard'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
+import { FilterPillRow } from '@/components/shared/FilterPillRow'
 import { LayersIcon } from '@/components/shared/NavIcons'
 import { ThemeMapGridSkeleton } from '@/components/skeleton'
 import { useI18n } from '@/lib/i18n-context'
@@ -343,8 +344,13 @@ export default function ThemeMapPage() {
                   borderBottom: `1px solid ${token.colorSplit}`,
                 }}
               >
-                <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_status')}</FilterLabel>
+                <FilterPillRow
+                  label={
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                      {t('themes_page.filter_status')}
+                    </FilterLabel>
+                  }
+                >
                   {(['all', 'active', 'cooling'] as StatusFilter[]).map((s) => (
                     <FilterPill
                       key={s}
@@ -353,10 +359,15 @@ export default function ThemeMapPage() {
                       onClick={() => setStatusFilter(s)}
                     />
                   ))}
-                </Flex>
+                </FilterPillRow>
 
-                <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_category')}</FilterLabel>
+                <FilterPillRow
+                  label={
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                      {t('themes_page.filter_category')}
+                    </FilterLabel>
+                  }
+                >
                   <FilterPill
                     label={t('themes_page.status_all')}
                     active={categoryFilter === 'all'}
@@ -371,21 +382,24 @@ export default function ThemeMapPage() {
                       onClick={() => setCategoryFilter(cat)}
                     />
                   ))}
-                </Flex>
+                </FilterPillRow>
 
-                <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_stage')}</FilterLabel>
-                  {(['all', 'early', 'mid', 'late', 'beyond'] as StageFilter[]).map(
-                    (s) => (
-                      <FilterPill
-                        key={s}
-                        label={t(`themes_page.stage_${s}`)}
-                        active={stageFilter === s}
-                        onClick={() => setStageFilter(s)}
-                      />
-                    ),
-                  )}
-                </Flex>
+                <FilterPillRow
+                  label={
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                      {t('themes_page.filter_stage')}
+                    </FilterLabel>
+                  }
+                >
+                  {(['all', 'early', 'mid', 'late', 'beyond'] as StageFilter[]).map((s) => (
+                    <FilterPill
+                      key={s}
+                      label={t(`themes_page.stage_${s}`)}
+                      active={stageFilter === s}
+                      onClick={() => setStageFilter(s)}
+                    />
+                  ))}
+                </FilterPillRow>
 
               </Flex>
             )}

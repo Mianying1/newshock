@@ -26,6 +26,7 @@ import { Sidebar } from '@/components/Sidebar'
 import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
+import { FilterPillRow } from '@/components/shared/FilterPillRow'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ClockIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
@@ -504,8 +505,13 @@ export default function EventsPage() {
                 borderBottom: `1px solid ${token.colorSplit}`,
               }}
             >
-              <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_time')}</FilterLabel>
+              <FilterPillRow
+                label={
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>
+                    {t('events_page.filter_time')}
+                  </FilterLabel>
+                }
+              >
                 {(['latest', 'week', 'older'] as TimeRange[]).map((tr) => (
                   <FilterPill
                     key={tr}
@@ -514,10 +520,15 @@ export default function EventsPage() {
                     onClick={() => setTimeRange(tr)}
                   />
                 ))}
-              </Flex>
+              </FilterPillRow>
 
-              <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_importance')}</FilterLabel>
+              <FilterPillRow
+                label={
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>
+                    {t('events_page.filter_importance')}
+                  </FilterLabel>
+                }
+              >
                 {(['all', 'high', 'medium', 'low'] as Importance[]).map((imp) => (
                   <FilterPill
                     key={imp}
@@ -526,7 +537,7 @@ export default function EventsPage() {
                     onClick={() => setImportance(imp)}
                   />
                 ))}
-              </Flex>
+              </FilterPillRow>
 
               <Flex gap={8} wrap align="center">
                 <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_source')}</FilterLabel>

@@ -26,6 +26,7 @@ import { Sidebar } from '@/components/Sidebar'
 import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
+import { FilterPillRow } from '@/components/shared/FilterPillRow'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { TrendingUpIcon } from '@/components/shared/NavIcons'
 import { TickerRowSkeletonList } from '@/components/skeleton'
@@ -270,8 +271,13 @@ export default function TickersPage() {
             />
 
             <Flex vertical gap={10} className="filters-bar" style={{ marginTop: 18, marginBottom: 18 }}>
-              <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_type')}</FilterLabel>
+              <FilterPillRow
+                label={
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>
+                    {t('tickers_ranked.filter_type')}
+                  </FilterLabel>
+                }
+              >
                 <FilterPill
                   label={t('tickers_ranked.tab_thematic')}
                   active={topTab === 'thematic'}
@@ -282,11 +288,16 @@ export default function TickersPage() {
                   active={topTab === 'potential'}
                   onClick={() => setTopTab('potential')}
                 />
-              </Flex>
+              </FilterPillRow>
 
               {topTab === 'thematic' && (
-                <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_horizon')}</FilterLabel>
+                <FilterPillRow
+                  label={
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>
+                      {t('tickers_ranked.filter_horizon')}
+                    </FilterLabel>
+                  }
+                >
                   <FilterPill
                     label={t('tickers_ranked.subtab_long')}
                     active={mode === 'long'}
@@ -297,12 +308,17 @@ export default function TickersPage() {
                     active={mode === 'short'}
                     onClick={() => setMode('short')}
                   />
-                </Flex>
+                </FilterPillRow>
               )}
 
               {groups.length > 0 && (
-                <Flex gap={8} wrap align="center">
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_sector')}</FilterLabel>
+                <FilterPillRow
+                  label={
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>
+                      {t('tickers_ranked.filter_sector')}
+                    </FilterLabel>
+                  }
+                >
                   <FilterPill
                     label={t('tickers_ranked.filter_all')}
                     count={totalCount}
@@ -318,7 +334,7 @@ export default function TickersPage() {
                       onClick={() => setActiveGroup(g)}
                     />
                   ))}
-                </Flex>
+                </FilterPillRow>
               )}
             </Flex>
 

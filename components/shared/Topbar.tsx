@@ -51,7 +51,7 @@ export function Topbar({ sidePad }: TopbarProps) {
           nextTopbar = false
         } else if (delta > 6) {
           nextTopbar = true
-        } else if (delta < -6) {
+        } else if (delta < -2) {
           nextTopbar = false
         }
         if (nextTopbar !== hiddenRef.current) {
@@ -65,7 +65,7 @@ export function Topbar({ sidePad }: TopbarProps) {
           nextFilter = false
         } else if (delta > 6) {
           nextFilter = true
-        } else if (delta < -6) {
+        } else if (delta < -2) {
           nextFilter = false
         }
         const currentFilter = document.body.dataset.scrollHidden === 'true'
@@ -101,13 +101,13 @@ export function Topbar({ sidePad }: TopbarProps) {
         height: 60,
         margin: '14px 14px 0 14px',
         padding: '12px 14px',
-        background: 'var(--sidebar-glass-bg, var(--topbar-bg))',
+        background: 'var(--bg)',
         border: '1px solid var(--sidebar-glass-border, transparent)',
         borderRadius: 14,
         boxShadow:
-          '0 -28px 0 0 var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
-        backdropFilter: 'saturate(160%) blur(20px)',
-        WebkitBackdropFilter: 'saturate(160%) blur(20px)',
+          '0 -28px 0 0 var(--bg), 0 14px 0 14px var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
+        backdropFilter: 'none',
+        WebkitBackdropFilter: 'none',
         display: 'flex',
         alignItems: 'center',
         gap: 8,

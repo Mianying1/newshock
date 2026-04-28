@@ -278,6 +278,8 @@
     "filter_type": "类型",
     "filter_horizon": "周期",
     "filter_sector": "板块",
+    "filter_more": "更多 {n}",
+    "filter_collapse": "收起",
     "visibility_strong": "强",
     "visibility_medium": "中",
     "visibility_weak": "弱",

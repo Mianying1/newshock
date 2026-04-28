@@ -278,6 +278,8 @@
     "filter_type": "Type",
     "filter_horizon": "Horizon",
     "filter_sector": "Sector",
+    "filter_more": "{n} more",
+    "filter_collapse": "Collapse",
     "visibility_strong": "Strong",
     "visibility_medium": "Medium",
     "visibility_weak": "Weak",
