@@ -105,7 +105,7 @@ export function Topbar({ sidePad }: TopbarProps) {
         border: '1px solid var(--sidebar-glass-border, transparent)',
         borderRadius: 14,
         boxShadow:
-          '0 -28px 0 0 var(--bg), 0 14px 0 14px var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
+          '0 0 0 14px var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
         backdropFilter: 'none',
         WebkitBackdropFilter: 'none',
         display: 'flex',

@@ -14,12 +14,14 @@ interface FilterLabelProps {
 
 export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
   const { token } = useToken()
+  const isEn = locale === 'en'
   return (
     <Text
       style={{
-        fontSize: 10,
-        fontWeight: 600,
-        letterSpacing: locale === 'zh' ? '0.08em' : '0.18em',
+        fontFamily: token.fontFamily,
+        fontSize: 11,
+        fontWeight: 500,
+        letterSpacing: isEn ? '0.01em' : '0.04em',
         textTransform: 'none',
         color: token.colorTextQuaternary,
         marginRight: 4,

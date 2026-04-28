@@ -1620,22 +1620,6 @@
     z-index: 18;
     pointer-events: none;
   }
-  /* Fixed 14px bg strip directly below the topbar (y=74..88), full viewport width.
-     Active whenever the topbar is visible, regardless of filter state — so the gap
-     stays masked even when the filter has slid away (data-scroll-hidden=true) or
-     hasn't yet reached its sticky pin. Sits below page title (which starts at body
-     y≈108) so it never clips it. */
-  body[data-topbar-hidden="false"]::after {
-    content: '';
-    position: fixed;
-    top: 64px;
-    left: 0;
-    right: 0;
-    height: 28px;
-    background: var(--bg);
-    z-index: 29;
-    pointer-events: none;
-  }
   @media (prefers-reduced-motion: reduce) {
     .radar-page .filters-bar {
       transition: none;

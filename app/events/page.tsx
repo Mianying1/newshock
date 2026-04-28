@@ -507,7 +507,7 @@ export default function EventsPage() {
             >
               <FilterPillRow
                 label={
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>
                     {t('events_page.filter_time')}
                   </FilterLabel>
                 }
@@ -524,7 +524,7 @@ export default function EventsPage() {
 
               <FilterPillRow
                 label={
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>
+                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>
                     {t('events_page.filter_importance')}
                   </FilterLabel>
                 }
@@ -540,7 +540,7 @@ export default function EventsPage() {
               </FilterPillRow>
 
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_source')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>{t('events_page.filter_source')}</FilterLabel>
                 <Select
                   mode="multiple"
                   allowClear
@@ -557,7 +557,7 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_theme')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>{t('events_page.filter_theme')}</FilterLabel>
                 <Select
                   variant="filled"
                   className="filter-select"

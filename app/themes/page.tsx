@@ -346,7 +346,7 @@ export default function ThemeMapPage() {
               >
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
                       {t('themes_page.filter_status')}
                     </FilterLabel>
                   }
@@ -363,7 +363,7 @@ export default function ThemeMapPage() {
 
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
                       {t('themes_page.filter_category')}
                     </FilterLabel>
                   }
@@ -386,7 +386,7 @@ export default function ThemeMapPage() {
 
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>
+                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
                       {t('themes_page.filter_stage')}
                     </FilterLabel>
                   }
