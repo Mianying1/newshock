@@ -31,7 +31,7 @@ export function Topbar({ sidePad }: TopbarProps) {
         border: '1px solid var(--sidebar-glass-border, transparent)',
         borderRadius: 14,
         boxShadow:
-          '0 -14px 0 0 var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
+          '0 -28px 0 0 var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
         backdropFilter: 'saturate(160%) blur(20px)',
         WebkitBackdropFilter: 'saturate(160%) blur(20px)',
         display: 'flex',
@@ -53,10 +53,6 @@ export function Topbar({ sidePad }: TopbarProps) {
             style={{
               fontSize: 11,
               color: token.colorTextQuaternary,
-              padding: '2px 8px',
-              borderRadius: 999,
-              background: 'var(--topbar-search-bg-hover)',
-              border: '1px solid var(--sidebar-glass-border)',
             }}
           >
             {t('topbar.search_soon')}
@@ -69,7 +65,7 @@ export function Topbar({ sidePad }: TopbarProps) {
           borderRadius: 999,
           background: 'var(--topbar-search-bg)',
           border: '1px solid var(--sidebar-glass-border)',
-          boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+          boxShadow: 'none',
           paddingInline: 16,
           color: token.colorTextSecondary,
         }}

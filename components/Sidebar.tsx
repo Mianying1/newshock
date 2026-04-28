@@ -45,7 +45,6 @@ export function Sidebar() {
 
   const navRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([])
-  const hasMountedRef = useRef(false)
   const [indicator, setIndicator] = useState<{ top: number; height: number; ready: boolean; animate: boolean }>({
     top: 0,
     height: 0,
@@ -54,21 +53,40 @@ export function Sidebar() {
   })
 
   useLayoutEffect(() => {
-    const el = itemRefs.current[targetIndex]
-    const container = navRef.current
-    if (!el || !container) return
-    const top = el.offsetTop
-    const height = el.offsetHeight
-    const animate = hasMountedRef.current
-    hasMountedRef.current = true
-    setIndicator({ top, height, ready: true, animate })
-  }, [targetIndex])
+    const targetEl = itemRefs.current[targetIndex]
+    if (!targetEl) return
 
-  useEffect(() => {
-    const stored = typeof window !== 'undefined' ? window.sessionStorage.getItem(TABBAR_INDEX_KEY) : null
-    const prev = stored !== null ? Number(stored) : targetIndex
-    setRenderedIndex(prev)
+    const stored =
+      typeof window !== 'undefined'
+        ? window.sessionStorage.getItem(TABBAR_INDEX_KEY)
+        : null
+    const prevIndex =
+      stored !== null && !Number.isNaN(Number(stored)) ? Number(stored) : targetIndex
+    const prevEl = itemRefs.current[prevIndex] ?? targetEl
+
+    setIndicator({
+      top: prevEl.offsetTop,
+      height: prevEl.offsetHeight,
+      ready: true,
+      animate: false,
+    })
+
+    setRenderedIndex(prevIndex)
+
+    if (prevIndex === targetIndex) {
+      try {
+        window.sessionStorage.setItem(TABBAR_INDEX_KEY, String(targetIndex))
+      } catch {}
+      return
+    }
+
     const raf = requestAnimationFrame(() => {
+      setIndicator({
+        top: targetEl.offsetTop,
+        height: targetEl.offsetHeight,
+        ready: true,
+        animate: true,
+      })
       setRenderedIndex(targetIndex)
       try {
         window.sessionStorage.setItem(TABBAR_INDEX_KEY, String(targetIndex))
@@ -96,8 +114,8 @@ export function Sidebar() {
             aria-hidden
             className={`sidebar-nav-indicator${indicator.ready ? ' is-ready' : ''}${indicator.animate ? '' : ' is-instant'}`}
             style={{
-              height: indicator.height,
-              transform: `translateY(${indicator.top}px)`,
+              height: indicator.height + 10,
+              transform: `translateY(${indicator.top - 5}px)`,
             } as CSSProperties}
           />
           {items.map(({ href, labelKey, Icon }, i) => {
