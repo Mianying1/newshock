@@ -1,5 +1,6 @@
 import Parser from 'rss-parser'
 import { NEWS_SOURCES, NewsSource, NewsSlot } from './news-sources'
+import { extractCashtags, extractCompanyNames, loadCompanyMap } from './ticker-name-extractor'
 
 export interface FetchedNews {
   source_id: string
@@ -15,17 +16,6 @@ export interface SourceResult {
   id: string
   fetched: number
   errors: string[]
-}
-
-const TICKER_RE = /\$([A-Z]{1,5})\b|\((?:NYSE|NASDAQ|AMEX|NYSE MKT):\s*([A-Z]{1,5})\)/g
-
-function extractTickers(text: string): string[] {
-  const found = new Set<string>()
-  let m: RegExpExecArray | null
-  while ((m = TICKER_RE.exec(text)) !== null) {
-    found.add(m[1] ?? m[2])
-  }
-  return Array.from(found)
 }
 
 function extractText(v: unknown): string {
@@ -55,6 +45,7 @@ const parser = new Parser({
 export async function fetchFromSource(source: NewsSource): Promise<{ items: FetchedNews[]; errors: string[] }> {
   const errors: string[] = []
   const items: FetchedNews[] = []
+  const companyMap = await loadCompanyMap()
 
   try {
     const controller = new AbortController()
@@ -76,6 +67,11 @@ export async function fetchFromSource(source: NewsSource): Promise<{ items: Fetc
       const raw_content = stripHtml(snippet)
       const combined = `${headline} ${raw_content}`
 
+      const tickers = Array.from(new Set([
+        ...extractCashtags(combined),
+        ...extractCompanyNames(combined, companyMap),
+      ]))
+
       items.push({
         source_id: source.id,
         source_name: source.name,
@@ -83,7 +79,7 @@ export async function fetchFromSource(source: NewsSource): Promise<{ items: Fetc
         source_url: url,
         raw_content,
         published_at: item.pubDate ? new Date(item.pubDate) : new Date(),
-        mentioned_tickers: extractTickers(combined),
+        mentioned_tickers: tickers,
       })
     }
   } catch (err: unknown) {

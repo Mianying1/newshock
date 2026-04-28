@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -22,18 +22,12 @@ import {
   theme as antdTheme,
 } from 'antd'
 import {
-  ApiOutlined,
-  BankOutlined,
-  BuildOutlined,
   ClockCircleOutlined,
   DownOutlined,
-  GlobalOutlined,
-  LineChartOutlined,
+  InfoCircleOutlined,
   MoonOutlined,
-  SafetyCertificateOutlined,
   SearchOutlined,
   SunOutlined,
-  ThunderboltOutlined,
 } from '@ant-design/icons'
 import { Sidebar } from '@/components/Sidebar'
 import { Topbar } from '@/components/shared/Topbar'
@@ -45,9 +39,7 @@ import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { getDisplayPublisher } from '@/lib/source-display'
 import type {
   CatalystEvent,
-  DriverIcon,
   EventDirection,
-  RecentDriver,
   ThemeRadarItem,
   ThemeRecommendation,
 } from '@/types/recommendations'
@@ -90,16 +82,20 @@ function convictionBand(score: number): 'high' | 'medium' | 'low' {
   return 'low'
 }
 
-// Composite "importance in this theme" score (0-100):
-//   40% duration-aware multi-score (long/short/blend)
-// + 30% exposure_pct       — theme-specific revenue exposure
-// + 20% pure_play bonus    — flagged by LLM as a clean play
-// + 10% high-confidence bonus — LLM confidence_band === 'high'
-// Falls back to base + bonuses (70/20/10) when exposure_pct is null.
+// Per-ticker score within a theme (0-100):
+//   T1/T2 → composite importance (40% duration-aware base + 30% exposure_pct + 20% pure_play + 10% high-confidence;
+//           70/20/10 fallback when exposure_pct is null).
+//   T3    → raw potential_score (long-horizon discovery signal; not coloured by exposure).
 function computeImportance(
   r: ThemeRecommendation,
   durationMax: number | null,
 ): number | null {
+  if (r.tier === 3) {
+    const p = r.potential_score
+    if (typeof p !== 'number') return null
+    return Math.round(Math.max(0, Math.min(100, p)))
+  }
+
   const long = r.long_score
   const short = r.short_score
   let base: number | null
@@ -778,399 +774,8 @@ export default function ThemeDetailPage() {
               <Row gutter={[24, 24]} style={{ marginTop: 0 }}>
                 <Col xs={24} lg={17}>
 
-              {/* Why Now — Recent Drivers (backend-clustered, falls back to per-event synthesis) */}
-              {(() => {
-                const iconMap: Record<DriverIcon, typeof ThunderboltOutlined> = {
-                  bolt: ThunderboltOutlined,
-                  building: BankOutlined,
-                  chip: ApiOutlined,
-                  globe: GlobalOutlined,
-                  chart: LineChartOutlined,
-                  factory: BuildOutlined,
-                  shield: SafetyCertificateOutlined,
-                }
-
-                const formatDriverDate = (iso: string) => {
-                  const d = new Date(iso)
-                  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
-                }
-
-                type Card = {
-                  key: string
-                  Icon: typeof ThunderboltOutlined
-                  title: string
-                  description: string | null
-                  sourceLabel: string
-                  href: string | null
-                }
-
-                const cards: Card[] = []
-
-                if (theme.recent_drivers && theme.recent_drivers.length > 0) {
-                  for (const d of theme.recent_drivers as RecentDriver[]) {
-                    cards.push({
-                      key: d.title,
-                      Icon: iconMap[d.icon] ?? LineChartOutlined,
-                      title: pickField(locale, d.title, d.title_zh) || d.title,
-                      description: pickField(locale, d.description, d.description_zh),
-                      sourceLabel: d.source_label,
-                      href: d.source_url,
-                    })
-                  }
-                } else {
-                  const driverPool = catalysts.filter(
-                    (c) => c.supports_or_contradicts === 'supports' || c.supports_or_contradicts === null,
-                  )
-                  const seen = new Set<string>()
-                  const drivers: CatalystEvent[] = []
-                  for (const c of driverPool) {
-                    const key = (c.source_name || c.id).toLowerCase()
-                    if (seen.has(key)) continue
-                    seen.add(key)
-                    drivers.push(c)
-                    if (drivers.length >= 5) break
-                  }
-                  const iconForSource = (sourceName: string | null) => {
-                    const s = (sourceName || '').toLowerCase()
-                    if (/iea|power|grid|electric|energy|utility|util/.test(s)) return ThunderboltOutlined
-                    if (/aws|microsoft|google|meta|amazon|hyperscal|capex|earning/.test(s)) return BankOutlined
-                    if (/nvidia|tsmc|chip|gpu|semi|amd|intel|broadcom/.test(s)) return ApiOutlined
-                    if (/reuters|bloomberg|ft|wsj|nyt|economist|guardian/.test(s)) return GlobalOutlined
-                    return LineChartOutlined
-                  }
-                  for (const d of drivers) {
-                    const publisher = getDisplayPublisher(d.source_name, d.source_url)
-                    cards.push({
-                      key: d.id,
-                      Icon: iconForSource(d.source_name),
-                      title: d.headline,
-                      description: null,
-                      sourceLabel: `${publisher}, ${formatDriverDate(d.published_at)}`,
-                      href: d.source_url || null,
-                    })
-                  }
-                }
-
-                const summary = pickField(locale, theme.summary, theme.summary_zh)
-                if (cards.length === 0 && !summary) return null
-
-                return (
-                  <div style={{ marginTop: 32 }}>
-                    <SectionHeader
-                      title={t('sections.why_theme_title')}
-                      subtitle={t('sections.why_theme_subtitle')}
-                    />
-                    {summary && (
-                      <Text
-                        style={{
-                          display: 'block',
-                          fontSize: 14,
-                          color: token.colorTextSecondary,
-                          lineHeight: 1.65,
-                          marginBottom: 16,
-                        }}
-                      >
-                        {summary}
-                      </Text>
-                    )}
-                    {cards.length === 0 ? null : (
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                        gap: 16,
-                        alignItems: 'stretch',
-                      }}
-                    >
-                      {cards.map((c) => {
-                        const Icon = c.Icon
-                        const titleNode = (
-                          <Text
-                            strong
-                            style={{
-                              display: 'block',
-                              fontSize: 14,
-                              color: token.colorText,
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {c.title}
-                          </Text>
-                        )
-                        return (
-                          <Card
-                            key={c.key}
-                            hoverable={!!c.href}
-                            styles={{
-                              body: {
-                                padding: 20,
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 12,
-                              },
-                            }}
-                            style={{ height: '100%' }}
-                          >
-                            <div
-                              style={{
-                                width: 36,
-                                height: 36,
-                                borderRadius: token.borderRadius,
-                                background: token.colorFillSecondary,
-                                color: token.colorText,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 18,
-                              }}
-                            >
-                              <Icon />
-                            </div>
-                            {c.href ? (
-                              <a
-                                href={c.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: 'inherit', textDecoration: 'none' }}
-                              >
-                                {titleNode}
-                              </a>
-                            ) : (
-                              titleNode
-                            )}
-                            {c.description ? (
-                              <Text
-                                style={{
-                                  display: 'block',
-                                  fontSize: 13,
-                                  color: token.colorTextSecondary,
-                                  lineHeight: 1.6,
-                                }}
-                              >
-                                {c.description}
-                              </Text>
-                            ) : null}
-                            <Text
-                              style={{
-                                display: 'block',
-                                fontFamily: token.fontFamilyCode,
-                                fontSize: 11,
-                                color: token.colorTextQuaternary,
-                                letterSpacing: '0.06em',
-                                marginTop: 'auto',
-                              }}
-                            >
-                              {t('theme_detail.driver_source_label')}: {c.sourceLabel}
-                            </Text>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                    )}
-                  </div>
-                )
-              })()}
-
-
-              {/* Key Events Timeline (last 30 days) */}
-              {(() => {
-                const timelineEvents = catalysts
-                  .filter((c) => c.days_ago <= 30)
-                  .slice(0, 5)
-                  .slice()
-                  .reverse()
-                if (catalysts.length === 0) return null
-                const formatTimelineDate = (iso: string) => {
-                  const d = new Date(iso)
-                  return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
-                }
-                const dotColor = (dir: EventDirection | null) =>
-                  dir === 'supports' ? token.colorSuccess
-                  : dir === 'contradicts' ? token.colorError
-                  : token.colorTextQuaternary
-
-                return (
-                  <div style={{ marginTop: 32 }}>
-                    <SectionHeader
-                      title={t('sections.key_timeline_title')}
-                      subtitle={t('sections.key_timeline_subtitle')}
-                    />
-                    <Card size="small" styles={{ body: { padding: '20px 20px 16px' } }}>
-                      {timelineEvents.length === 0 ? (
-                        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
-                          {t('sections.key_timeline_empty')}
-                        </Text>
-                      ) : (
-                        <>
-                          <div style={{ position: 'relative' }}>
-                            <div
-                              style={{
-                                position: 'absolute',
-                                top: 7,
-                                left: 0,
-                                right: 0,
-                                height: 1,
-                                background: token.colorSplit,
-                              }}
-                            />
-                            <div
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: `repeat(${timelineEvents.length}, minmax(0, 1fr))`,
-                                gap: 12,
-                                position: 'relative',
-                              }}
-                            >
-                              {timelineEvents.map((e, i) => {
-                                const zhHeadline =
-                                  locale === 'zh' ? e.short_headline_zh : null
-                                const enHeadline = e.short_headline || e.headline
-                                const shortHeadline = zhHeadline || enHeadline
-                                const isUntranslated = locale === 'zh' && !zhHeadline
-                                const isLatest = i === timelineEvents.length - 1
-                                return (
-                                <div
-                                  key={e.id}
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 8,
-                                    minWidth: 0,
-                                  }}
-                                >
-                                  <div
-                                    className={isLatest ? 'timeline-dot-latest' : undefined}
-                                    style={{
-                                      width: 14,
-                                      height: 14,
-                                      borderRadius: '50%',
-                                      background: isLatest
-                                        ? token.colorText
-                                        : token.colorBgContainer,
-                                      border: `2px solid ${
-                                        isLatest ? token.colorText : dotColor(e.supports_or_contradicts)
-                                      }`,
-                                      boxSizing: 'border-box',
-                                      zIndex: 1,
-                                    }}
-                                  />
-                                  <Text
-                                    style={{
-                                      display: 'block',
-                                      fontFamily: token.fontFamilyCode,
-                                      fontSize: 11,
-                                      color: token.colorTextTertiary,
-                                      letterSpacing: '0.04em',
-                                    }}
-                                  >
-                                    {formatTimelineDate(e.published_at)}
-                                  </Text>
-                                  {e.source_url ? (
-                                    <a
-                                      href={e.source_url}
-                                      title={e.headline}
-                                      style={{ color: 'inherit', textDecoration: 'none' }}
-                                    >
-                                      <Text
-                                        strong
-                                        style={{
-                                          display: '-webkit-box',
-                                          WebkitLineClamp: 3,
-                                          WebkitBoxOrient: 'vertical',
-                                          overflow: 'hidden',
-                                          fontSize: 12.5,
-                                          color: isUntranslated
-                                            ? token.colorTextSecondary
-                                            : token.colorText,
-                                          lineHeight: 1.4,
-                                        }}
-                                      >
-                                        {isUntranslated && (
-                                          <span
-                                            style={{
-                                              display: 'inline-block',
-                                              fontSize: 9,
-                                              fontWeight: 600,
-                                              letterSpacing: '0.1em',
-                                              color: token.colorTextQuaternary,
-                                              border: `1px solid ${token.colorBorderSecondary}`,
-                                              borderRadius: 3,
-                                              padding: '0 4px',
-                                              marginRight: 6,
-                                              verticalAlign: 'middle',
-                                              lineHeight: 1.4,
-                                              fontFamily: token.fontFamilyCode,
-                                            }}
-                                          >
-                                            EN
-                                          </span>
-                                        )}
-                                        {shortHeadline}
-                                      </Text>
-                                    </a>
-                                  ) : (
-                                    <Text
-                                      strong
-                                      title={e.headline}
-                                      style={{
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden',
-                                        fontSize: 12.5,
-                                        color: isUntranslated
-                                          ? token.colorTextSecondary
-                                          : token.colorText,
-                                        lineHeight: 1.4,
-                                      }}
-                                    >
-                                      {isUntranslated && (
-                                        <span
-                                          style={{
-                                            display: 'inline-block',
-                                            fontSize: 9,
-                                            fontWeight: 600,
-                                            letterSpacing: '0.1em',
-                                            color: token.colorTextQuaternary,
-                                            border: `1px solid ${token.colorBorderSecondary}`,
-                                            borderRadius: 3,
-                                            padding: '0 4px',
-                                            marginRight: 6,
-                                            verticalAlign: 'middle',
-                                            lineHeight: 1.4,
-                                            fontFamily: token.fontFamilyCode,
-                                          }}
-                                        >
-                                          EN
-                                        </span>
-                                      )}
-                                      {shortHeadline}
-                                    </Text>
-                                  )}
-                                  {e.source_name && (
-                                    <Text
-                                      style={{
-                                        display: 'block',
-                                        fontSize: 10.5,
-                                        color: token.colorTextQuaternary,
-                                        marginTop: 'auto',
-                                      }}
-                                    >
-                                      {getDisplayPublisher(e.source_name, e.source_url)}
-                                    </Text>
-                                  )}
-                                </div>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </Card>
-                  </div>
-                )
-              })()}
+              {/* Key Events Timeline — one scrollable card per day (last 30 days) */}
+              <KeyEventsTimeline catalysts={catalysts} />
 
               {/* Exposure Mapping */}
               <div style={{ marginTop: 32 }}>
@@ -1390,14 +995,14 @@ export default function ThemeDetailPage() {
 
                     <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
                     <div
-                      className="scroll-x-hidden"
+                      className="scroll-x-faint"
                       style={{
                         display: 'grid',
                         gridTemplateColumns: `repeat(${pb.historical_cases.length + 1}, minmax(240px, 1fr))`,
                         gap: 12,
                         alignItems: 'stretch',
                         overflowX: 'auto',
-                        paddingBottom: 4,
+                        paddingBottom: 8,
                       }}
                     >
                       {pb.historical_cases.map((c, i) => {
@@ -1971,153 +1576,6 @@ export default function ThemeDetailPage() {
                 </Col>
               </Row>
 
-              {/* Emerging Tickers — angles surfaced by LLM, not yet mainstream */}
-              {(() => {
-                const candidates = theme.emerging_candidates ?? []
-                if (candidates.length === 0) return null
-                const truncate = (s: string | null, n: number) => {
-                  if (!s) return ''
-                  return s.length > n ? `${s.slice(0, n).trim()}…` : s
-                }
-                return (
-                  <div style={{ marginTop: 32 }}>
-                    <SectionHeader
-                      title={t('sections.emerging_section_title')}
-                      subtitle={t('sections.emerging_section_subtitle')}
-                    />
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
-                        gap: 16,
-                        alignItems: 'stretch',
-                      }}
-                    >
-                      {candidates.map((c) => {
-                        const score = c.emerging_score
-                        return (
-                          <Link
-                            key={c.id}
-                            href={`/tickers/${c.ticker_symbol}`}
-                            style={{ display: 'block', textDecoration: 'none', color: 'inherit', height: '100%' }}
-                          >
-                            <Card
-                              hoverable
-                              styles={{
-                                body: {
-                                  padding: '14px 16px',
-                                  height: '100%',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  gap: 10,
-                                },
-                              }}
-                              style={{
-                                height: '100%',
-                                background: token.colorFillAlter,
-                                borderColor: token.colorBorderSecondary,
-                                borderLeft: `3px solid ${token.colorSuccess}`,
-                              }}
-                            >
-                              <Flex align="baseline" justify="space-between" gap={10}>
-                                <Flex align="baseline" gap={8} style={{ minWidth: 0 }}>
-                                  <Text
-                                    strong
-                                    style={{
-                                      fontFamily: token.fontFamilyCode,
-                                      fontSize: 14,
-                                      color: token.colorText,
-                                      lineHeight: 1.2,
-                                    }}
-                                  >
-                                    {c.ticker_symbol}
-                                  </Text>
-                                  {c.company_name && (
-                                    <Text
-                                      ellipsis={{ tooltip: c.company_name }}
-                                      style={{
-                                        fontSize: 11,
-                                        color: token.colorTextTertiary,
-                                        lineHeight: 1.3,
-                                      }}
-                                    >
-                                      {c.company_name}
-                                    </Text>
-                                  )}
-                                </Flex>
-                                {score != null && (
-                                  <span style={{ display: 'inline-flex', alignItems: 'baseline', flexShrink: 0 }}>
-                                    <Text
-                                      style={{
-                                        fontFamily: token.fontFamilyCode,
-                                        fontSize: 14,
-                                        fontWeight: 600,
-                                        color: token.colorSuccess,
-                                        lineHeight: 1,
-                                      }}
-                                    >
-                                      {score}
-                                    </Text>
-                                    <Text
-                                      style={{
-                                        fontFamily: token.fontFamilyCode,
-                                        fontSize: 10,
-                                        color: token.colorTextQuaternary,
-                                        marginLeft: 2,
-                                        lineHeight: 1,
-                                      }}
-                                    >
-                                      / 100
-                                    </Text>
-                                  </span>
-                                )}
-                              </Flex>
-                              <Tag
-                                style={{
-                                  margin: 0,
-                                  alignSelf: 'flex-start',
-                                  background: token.colorBgContainer,
-                                  color: token.colorTextSecondary,
-                                  border: `1px solid ${token.colorBorderSecondary}`,
-                                  fontSize: 11,
-                                  fontWeight: 500,
-                                  padding: '1px 8px',
-                                  borderRadius: 3,
-                                  lineHeight: 1.4,
-                                  maxWidth: '100%',
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                }}
-                                title={c.angle_label}
-                              >
-                                {c.angle_label}
-                              </Tag>
-                              {c.gap_reasoning && (
-                                <Text
-                                  style={{
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 3,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    fontSize: 12,
-                                    color: token.colorTextSecondary,
-                                    lineHeight: 1.5,
-                                  }}
-                                  title={c.gap_reasoning}
-                                >
-                                  {truncate(c.gap_reasoning, 80)}
-                                </Text>
-                              )}
-                            </Card>
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })()}
-
                 <div style={{ marginTop: 32, padding: '16px 0', borderTop: `1px solid ${token.colorBorderSecondary}`, textAlign: 'center' }}>
                   <Text type="secondary" style={{ fontSize: 11, color: token.colorTextQuaternary, letterSpacing: '0.02em' }}>
                     {t('common.ai_disclaimer_full')}
@@ -2129,6 +1587,374 @@ export default function ThemeDetailPage() {
           </Content>
         </Layout>
       </div>
+    </div>
+  )
+}
+
+function KeyEventsTimeline({ catalysts }: { catalysts: CatalystEvent[] }) {
+  const { t, locale } = useI18n()
+  const { token } = antdTheme.useToken()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+
+  const within30 = useMemo(
+    () => catalysts.filter((c) => c.days_ago <= 30),
+    [catalysts],
+  )
+
+  const { days, latestKey } = useMemo(() => {
+    const groups = new Map<string, CatalystEvent[]>()
+    for (const e of within30) {
+      const k = e.published_at.slice(0, 10)
+      if (!groups.has(k)) groups.set(k, [])
+      groups.get(k)!.push(e)
+    }
+    const sorted = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))
+    return { days: sorted, latestKey: sorted[sorted.length - 1]?.[0] }
+  }, [within30])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollLeft = el.scrollWidth
+  }, [days.length])
+
+  if (catalysts.length === 0) return null
+
+  if (within30.length === 0) {
+    return (
+      <div style={{ marginTop: 32 }}>
+        <SectionHeader
+          title={t('sections.key_timeline_title')}
+          subtitle={t('sections.key_timeline_subtitle')}
+        />
+        <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
+          {t('sections.key_timeline_empty')}
+        </Text>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ marginTop: 32 }}>
+      <SectionHeader
+        title={t('sections.key_timeline_title')}
+        subtitle={t('sections.key_timeline_subtitle')}
+        meta={`${days.length}${locale === 'zh' ? ' 天' : ' days'} · ${within30.length}${locale === 'zh' ? ' 条' : ' events'}`}
+      />
+      <div
+        ref={scrollRef}
+        className="scroll-x-faint"
+        style={{
+          display: 'flex',
+          gap: 12,
+          overflowX: 'auto',
+          scrollSnapType: 'x mandatory',
+          padding: '4px 2px 10px',
+          scrollPaddingLeft: 2,
+          scrollPaddingRight: 2,
+          alignItems: 'flex-start',
+        }}
+      >
+        {days.map(([key, dayEvents]) => (
+          <TimelineDayCard
+            key={key}
+            dayKey={key}
+            events={dayEvents}
+            isLatest={key === latestKey}
+            locale={locale}
+            t={t}
+            token={token}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function TimelineDayCard({
+  dayKey,
+  events,
+  isLatest,
+  locale,
+  t,
+  token,
+}: {
+  dayKey: string
+  events: CatalystEvent[]
+  isLatest: boolean
+  locale: 'en' | 'zh'
+  t: (key: string, params?: Record<string, string | number>) => string
+  token: ReturnType<typeof useToken>['token']
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const COLLAPSED_LIMIT = 2
+  const hidden = Math.max(0, events.length - COLLAPSED_LIMIT)
+
+  const dirColor = (dir: EventDirection | null) =>
+    dir === 'supports' ? token.colorSuccess
+    : dir === 'contradicts' ? token.colorError
+    : token.colorTextQuaternary
+
+  const d = new Date(events[0].published_at)
+  const md = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+  const wk = locale === 'zh'
+    ? `周${['日', '一', '二', '三', '四', '五', '六'][d.getDay()]}`
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
+
+  return (
+    <div
+      style={{
+        flex: '0 0 240px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        padding: '12px 14px',
+        border: `1px solid ${isLatest ? token.colorText : token.colorBorderSecondary}`,
+        borderRadius: token.borderRadius,
+        background: token.colorBgContainer,
+        scrollSnapAlign: 'start',
+        position: 'relative',
+        alignSelf: 'flex-start',
+        minHeight: 220,
+      }}
+    >
+      <Flex align="center" gap={8} style={{ minWidth: 0 }}>
+        <span
+          aria-hidden
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: isLatest ? token.colorText : token.colorBgContainer,
+            border: `2px solid ${isLatest ? token.colorText : token.colorTextQuaternary}`,
+            flexShrink: 0,
+          }}
+        />
+        <Text
+          style={{
+            fontFamily: token.fontFamilyCode,
+            fontSize: 13,
+            fontWeight: 600,
+            color: token.colorText,
+            letterSpacing: '0.02em',
+          }}
+        >
+          {md}
+        </Text>
+        <Text
+          style={{
+            fontFamily: token.fontFamilyCode,
+            fontSize: 10.5,
+            color: token.colorTextQuaternary,
+            letterSpacing: '0.04em',
+          }}
+        >
+          {wk}
+        </Text>
+        <span style={{ flex: 1 }} />
+        {events.length > 1 && (
+          <Text
+            style={{
+              fontSize: 10.5,
+              color: token.colorTextQuaternary,
+              fontFamily: token.fontFamilyCode,
+            }}
+          >
+            ×{events.length}
+          </Text>
+        )}
+      </Flex>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {events.slice(0, COLLAPSED_LIMIT).map((e) => {
+          const zhHeadline = locale === 'zh' ? e.short_headline_zh : null
+          const enHeadline = e.short_headline || e.headline
+          const shortHeadline = zhHeadline || enHeadline
+          const isUntranslated = locale === 'zh' && !zhHeadline
+          const headlineNode = (
+            <Text
+              strong
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                fontSize: 12.5,
+                color: isUntranslated ? token.colorTextSecondary : token.colorText,
+                lineHeight: 1.45,
+              }}
+            >
+              {isUntranslated && (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    fontSize: 9,
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    color: token.colorTextQuaternary,
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                    borderRadius: 3,
+                    padding: '0 4px',
+                    marginRight: 6,
+                    verticalAlign: 'middle',
+                    lineHeight: 1.4,
+                    fontFamily: token.fontFamilyCode,
+                  }}
+                >
+                  EN
+                </span>
+              )}
+              {shortHeadline}
+            </Text>
+          )
+          return (
+            <div
+              key={e.id}
+              style={{
+                display: 'flex',
+                gap: 8,
+                alignItems: 'flex-start',
+                paddingLeft: 8,
+                borderLeft: `2px solid ${dirColor(e.supports_or_contradicts)}`,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {e.source_url ? (
+                  <a
+                    href={e.source_url}
+                    title={e.headline}
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                  >
+                    {headlineNode}
+                  </a>
+                ) : (
+                  <span title={e.headline}>{headlineNode}</span>
+                )}
+                {e.source_name && (
+                  <Text style={{ fontSize: 10.5, color: token.colorTextQuaternary }}>
+                    {getDisplayPublisher(e.source_name, e.source_url)}
+                  </Text>
+                )}
+              </div>
+            </div>
+          )
+        })}
+        </div>
+        {events.length > COLLAPSED_LIMIT && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateRows: expanded ? '1fr' : '0fr',
+              transition: 'grid-template-rows 0.32s ease',
+            }}
+          >
+            <div
+              style={{
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                paddingTop: 10,
+              }}
+            >
+              {events.slice(COLLAPSED_LIMIT).map((e) => {
+                const zhHeadline = locale === 'zh' ? e.short_headline_zh : null
+                const enHeadline = e.short_headline || e.headline
+                const shortHeadline = zhHeadline || enHeadline
+                const isUntranslated = locale === 'zh' && !zhHeadline
+                const headlineNode = (
+                  <Text
+                    strong
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      fontSize: 12.5,
+                      color: isUntranslated ? token.colorTextSecondary : token.colorText,
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    {isUntranslated && (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          fontSize: 9,
+                          fontWeight: 600,
+                          letterSpacing: '0.1em',
+                          color: token.colorTextQuaternary,
+                          border: `1px solid ${token.colorBorderSecondary}`,
+                          borderRadius: 3,
+                          padding: '0 4px',
+                          marginRight: 6,
+                          verticalAlign: 'middle',
+                          lineHeight: 1.4,
+                          fontFamily: token.fontFamilyCode,
+                        }}
+                      >
+                        EN
+                      </span>
+                    )}
+                    {shortHeadline}
+                  </Text>
+                )
+                return (
+                  <div
+                    key={e.id}
+                    style={{
+                      display: 'flex',
+                      gap: 8,
+                      alignItems: 'flex-start',
+                      paddingLeft: 8,
+                      borderLeft: `2px solid ${dirColor(e.supports_or_contradicts)}`,
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {e.source_url ? (
+                        <a
+                          href={e.source_url}
+                          title={e.headline}
+                          style={{ color: 'inherit', textDecoration: 'none' }}
+                        >
+                          {headlineNode}
+                        </a>
+                      ) : (
+                        <span title={e.headline}>{headlineNode}</span>
+                      )}
+                      {e.source_name && (
+                        <Text style={{ fontSize: 10.5, color: token.colorTextQuaternary }}>
+                          {getDisplayPublisher(e.source_name, e.source_url)}
+                        </Text>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+      {events.length > COLLAPSED_LIMIT && (
+        <button
+          type="button"
+          onClick={() => setExpanded((x) => !x)}
+          style={{
+            alignSelf: 'flex-start',
+            background: 'transparent',
+            border: 'none',
+            padding: '2px 0',
+            margin: 0,
+            cursor: 'pointer',
+            fontSize: 11,
+            fontFamily: token.fontFamilyCode,
+            color: token.colorTextTertiary,
+            letterSpacing: '0.02em',
+          }}
+        >
+          {expanded
+            ? (locale === 'zh' ? '收起' : 'Show less')
+            : (locale === 'zh' ? `+${hidden} 条` : `+${hidden} more`)}
+        </button>
+      )}
     </div>
   )
 }
@@ -2541,6 +2367,77 @@ function TierColumn({
           <Text strong style={{ fontSize: 13.5, color: token.colorText }}>
             {title}
           </Text>
+          <Tooltip
+            overlayStyle={{ maxWidth: 300 }}
+            overlayInnerStyle={{ padding: '12px 14px' }}
+            title={
+              tier === 3 ? (
+                <div style={{ fontSize: 11.5, lineHeight: 1.6 }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: '#fff',
+                      marginBottom: 4,
+                    }}
+                  >
+                    {t('theme_detail.score_explainer_t3_title')}
+                  </div>
+                  <div style={{ color: 'rgba(255,255,255,0.78)' }}>
+                    {t('theme_detail.score_explainer_t3_body')}
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(255,255,255,0.5)',
+                      marginTop: 4,
+                      fontSize: 11,
+                    }}
+                  >
+                    {t('theme_detail.score_explainer_t3_caveat')}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ fontSize: 11.5, lineHeight: 1.6 }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: '#fff',
+                      marginBottom: 4,
+                    }}
+                  >
+                    {t('theme_detail.score_explainer_t12_title')}
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(255,255,255,0.78)',
+                      fontFamily: token.fontFamilyCode,
+                      fontSize: 11,
+                      letterSpacing: '0.01em',
+                    }}
+                  >
+                    {t('theme_detail.score_explainer_t12_formula')}
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(255,255,255,0.6)',
+                      marginTop: 4,
+                    }}
+                  >
+                    {t('theme_detail.score_explainer_t12_body')}
+                  </div>
+                </div>
+              )
+            }
+          >
+            <InfoCircleOutlined
+              style={{
+                fontSize: 12,
+                color: token.colorTextTertiary,
+                marginLeft: 2,
+              }}
+            />
+          </Tooltip>
           <span style={{ flex: 1 }} />
           {hasMore && (
             <button
@@ -2659,18 +2556,29 @@ function TickerTile({
   const { token } = useToken()
   const { t } = useI18n()
 
-  const confNum = typeof item.confidence === 'number' ? Math.round(item.confidence) : null
-  const displayScore = computeImportance(item, durationMax)
+  const rawScore = computeImportance(item, durationMax)
+  // T1/T2 use composite (0-100, displayed as X.X / 10).
+  // T3 uses raw potential_score (0-100, displayed as N / 100 — native scale).
+  const isT3 = item.tier === 3
+  let scoreLabel: string | null = null
+  let scoreSuffix = ''
+  let scoreNorm: number | null = null   // 0-10 normalized, used for color thresholds
+  if (rawScore != null) {
+    if (isT3) {
+      scoreLabel = String(rawScore)
+      scoreSuffix = '/ 100'
+      scoreNorm = rawScore / 10
+    } else {
+      scoreLabel = (rawScore / 10).toFixed(1)
+      scoreSuffix = '/ 10'
+      scoreNorm = rawScore / 10
+    }
+  }
   const scoreColor =
-    displayScore == null ? token.colorTextQuaternary
-    : displayScore >= 80 ? token.colorSuccess
-    : displayScore >= 60 ? token.colorText
-    : token.colorTextSecondary
-
-  const tileTooltip = t('theme_detail.tile_score_tooltip', {
-    score: displayScore != null ? String(displayScore) : '—',
-    conf: confNum != null ? String(confNum) : '—',
-  })
+    scoreNorm == null ? token.colorTextQuaternary
+    : scoreNorm >= 8 ? token.colorSuccess
+    : scoreNorm >= 5 ? token.colorPrimary
+    : token.colorTextTertiary
 
   const isMixed = item.exposure_type === 'mixed'
   const contextLabel = item.context_label?.trim() || null
@@ -2726,48 +2634,45 @@ function TickerTile({
               </Tooltip>
             )}
           </Flex>
-          {displayScore !== null && (
-            <Tooltip title={tileTooltip}>
-              <span
+          {scoreLabel !== null && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'baseline',
+                flexShrink: 0,
+              }}
+            >
+              <Text
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'baseline',
-                  cursor: 'help',
-                  flexShrink: 0,
+                  fontFamily: token.fontFamilyCode,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: scoreColor,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1,
+                  fontVariantNumeric: 'tabular-nums',
                 }}
               >
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    color: scoreColor,
-                    letterSpacing: '-0.02em',
-                    lineHeight: 1,
-                    fontVariantNumeric: 'tabular-nums',
-                  }}
-                >
-                  {displayScore}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: token.fontFamilyCode,
-                    fontSize: 10,
-                    color: token.colorTextQuaternary,
-                    marginLeft: 2,
-                    lineHeight: 1,
-                  }}
-                >
-                  / 100
-                </Text>
-              </span>
-            </Tooltip>
+                {scoreLabel}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: token.fontFamilyCode,
+                  fontSize: 10,
+                  color: token.colorTextQuaternary,
+                  marginLeft: 2,
+                  lineHeight: 1,
+                }}
+              >
+                {scoreSuffix}
+              </Text>
+            </span>
           )}
         </Flex>
 
         {item.company_name && item.company_name !== item.ticker_symbol && (
           <Text
-            ellipsis={{ tooltip: item.company_name }}
+            ellipsis
             style={{
               display: 'block',
               fontSize: 11,

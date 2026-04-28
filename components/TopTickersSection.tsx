@@ -57,7 +57,7 @@ export function TopTickersSection() {
       <Col xs={24} md={12} style={{ display: 'flex' }}>
         <Card
           size="small"
-          className="nshock-card-hover"
+          hoverable
           title={<SectionTitle>{t('top_tickers.thematic_title')}</SectionTitle>}
           extra={thematicExtra}
           style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
@@ -104,7 +104,7 @@ export function TopTickersSection() {
       <Col xs={24} md={12} style={{ display: 'flex' }}>
         <Card
           size="small"
-          className="nshock-card-hover"
+          hoverable
           title={<SectionTitle>{t('top_tickers.potential_title')}</SectionTitle>}
           style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column' } }}

@@ -54,10 +54,10 @@
     "exposure_mapping": "Exposure Mapping",
     "tier1": "Direct Beneficiaries",
     "tier2": "Indirect Beneficiaries",
-    "tier3": "Peripheral",
+    "tier3": "Potential",
     "tier1_desc": "Direct revenue exposure to the core driver",
     "tier2_desc": "Benefit via supply chain & demand transmission",
-    "tier3_desc": "Indirect exposure, higher beta",
+    "tier3_desc": "Emerging angle · high beta, unproven",
     "confidence_strong": "Strong",
     "confidence_moderate": "Moderate",
     "confidence_medium": "Medium",
@@ -219,7 +219,13 @@
     "duration_tag_short": "Short-term",
     "duration_tag_mid": "Mid-term",
     "duration_tag_long": "Long-term",
-    "tile_score_tooltip": "Theme momentum {score} · Classification confidence {conf}%"
+    "tile_score_tooltip": "Theme momentum {score} · Classification confidence {conf}%",
+    "score_explainer_t12_title": "T1 · T2 composite / 10",
+    "score_explainer_t12_formula": "Duration 40% + Exposure 30% + Pure-play 20% + Confidence 10%",
+    "score_explainer_t12_body": "Ticker's relative importance within this theme",
+    "score_explainer_t3_title": "T3 potential / 100",
+    "score_explainer_t3_body": "New-angle hit · candidate confidence · low coverage · P1 revival",
+    "score_explainer_t3_caveat": "Ticker-level signal · coarse granularity, tickers may share values"
   },
   "hot_tickers": {
     "subtitle": "Tickers appearing across multiple themes",

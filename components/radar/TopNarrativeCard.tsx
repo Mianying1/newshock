@@ -129,7 +129,6 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           style={{
             background: token.colorBgContainer,
             borderColor: token.colorBorder,
-            boxShadow: token.boxShadowTertiary,
           }}
         >
           {/* 1 · Top badges row */}

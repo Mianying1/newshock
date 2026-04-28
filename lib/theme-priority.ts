@@ -41,12 +41,25 @@ export function getFocusRank(theme: ThemeRadarItem): number {
   return 1
 }
 
+function getOngoingStagePenalty(stage: string): number {
+  const map: Record<string, number> = {
+    early: 0,
+    mid: -1,
+    late: -3,
+    beyond: -4,
+    beyond_typical: -4,
+    unknown: 0,
+  }
+  return map[stage] ?? 0
+}
+
 export function getOngoingTop3(themes: ThemeRadarItem[]): ThemeRadarItem[] {
   return themes
     .filter((th) => th.status === 'active')
     .sort((a, b) => {
-      const focusDiff = getFocusRank(b) - getFocusRank(a)
-      if (focusDiff !== 0) return focusDiff
+      const aRank = getFocusRank(a) + getOngoingStagePenalty(a.playbook_stage)
+      const bRank = getFocusRank(b) + getOngoingStagePenalty(b.playbook_stage)
+      if (aRank !== bRank) return bRank - aRank
       return (b.days_active ?? 0) - (a.days_active ?? 0)
     })
     .slice(0, 3)

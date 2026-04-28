@@ -284,7 +284,7 @@ OUTPUT (valid JSON only, no markdown):
   "new_tickers_added": ["TICKER1"]
 }
 
-Target: 15-20 total recommendations (strict — max_tokens=6000).
+Target: 15-20 total recommendations (strict — max_tokens=8000).
 Quality > Quantity. If only 12 make sense, return 12.
 
 Length budget (HARD limits):
@@ -513,7 +513,7 @@ export async function callDeepReasoning(input: {
   try {
     const stream = anthropic.messages.stream({
       model: MODEL_SONNET,
-      max_tokens: 6000,
+      max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }],
     })
     stream.on('text', (delta) => {

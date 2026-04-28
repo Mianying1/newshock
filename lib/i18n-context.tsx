@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import en from '@/locales/en.json'
 import zh from '@/locales/zh.json'
 
@@ -19,10 +19,15 @@ const I18nContext = createContext<I18nContextValue>({
 })
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === 'undefined') return 'en'
-    return (localStorage.getItem('locale') as Locale) || 'en'
-  })
+  // Always init with 'en' so SSR and first client render match. Sync from
+  // localStorage after mount; if the stored locale differs, React re-renders
+  // with the user's preference. Avoids hydration mismatch.
+  const [locale, setLocale] = useState<Locale>('en')
+
+  useEffect(() => {
+    const stored = localStorage.getItem('locale') as Locale | null
+    if (stored === 'zh' || stored === 'en') setLocale(stored)
+  }, [])
 
   const setLocaleAndStore = (l: Locale) => {
     setLocale(l)
