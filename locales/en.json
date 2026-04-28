@@ -369,9 +369,9 @@
     "short_score": "Short",
     "long_score": "Long",
     "potential_score": "Potential",
-    "short_score_tooltip": "Short-term momentum · 0-100 · recent 7-day events, hot themes, short-cycle archetype exposure",
-    "long_score_tooltip": "Long-horizon hold · 0-100 · umbrella breadth, sustained 90-day flow, multi-year archetype exposure",
-    "potential_score_tooltip": "Hidden picks · 0-100 · new-angle themes, mapping confidence, niche themes, AI-revived signals",
+    "short_score_tooltip": "Short-term (weeks) momentum plays. Score 0-100 from three things: how many events in the past 7 days, how hot the matched themes are, how much weight the ticker carries inside short-cycle themes. High = event-driven moment, good for swing trading.",
+    "long_score_tooltip": "Buy on dips when the trend is favorable (not blind buy-and-hold). Score 0-100 from three things: how broad the umbrella theme is, event density over the last 90 days, the ticker's weight in long-cycle themes. High = sustained tailwind from a core narrative — staged entries on pullbacks, not all-in long-term.",
+    "potential_score_tooltip": "Emergent sub-theme under a long-term umbrella — possibly the next hot trend. Score 0-100 from four things: new angles spotted by the LLM, candidate confidence, presence in low-coverage niche branches, AI-revived signals from old data. High = early opportunity, but with lower certainty and higher risk.",
     "no_themes": "No related themes yet",
     "no_events": "No recent events",
     "no_exit_signals": "No cooling signals",
@@ -522,7 +522,7 @@
   },
   "topbar": {
     "search_placeholder": "Search themes, tickers, events…",
-    "search_soon": "SOON",
+    "search_soon": "Soon",
     "switch_dark": "Switch to dark mode",
     "switch_light": "Switch to light mode",
     "toggle_locale": "Toggle language"

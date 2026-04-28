@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { theme } from 'antd'
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { useI18n } from '@/lib/i18n-context'
 import { formatMinutesAgo } from '@/lib/utils'
 import { RadarIcon, LayersIcon, TrendingUpIcon, ClockIcon } from '@/components/shared/NavIcons'
@@ -43,6 +43,27 @@ export function Sidebar() {
   const targetIndex = Math.max(0, items.findIndex((it, i) => isActive(it.href, i)))
   const [renderedIndex, setRenderedIndex] = useState(targetIndex)
 
+  const navRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([])
+  const hasMountedRef = useRef(false)
+  const [indicator, setIndicator] = useState<{ top: number; height: number; ready: boolean; animate: boolean }>({
+    top: 0,
+    height: 0,
+    ready: false,
+    animate: false,
+  })
+
+  useLayoutEffect(() => {
+    const el = itemRefs.current[targetIndex]
+    const container = navRef.current
+    if (!el || !container) return
+    const top = el.offsetTop
+    const height = el.offsetHeight
+    const animate = hasMountedRef.current
+    hasMountedRef.current = true
+    setIndicator({ top, height, ready: true, animate })
+  }, [targetIndex])
+
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? window.sessionStorage.getItem(TABBAR_INDEX_KEY) : null
     const prev = stored !== null ? Number(stored) : targetIndex
@@ -70,19 +91,32 @@ export function Sidebar() {
           />
         </Link>
 
-        {items.map(({ href, labelKey, Icon }, i) => {
-          const active = isActive(href, i)
-          return (
-            <Link
-              key={`${labelKey}-${i}`}
-              href={href}
-              className={`nav-item${active ? ' active' : ''}`}
-            >
-              <Icon />
-              <span>{t(labelKey)}</span>
-            </Link>
-          )
-        })}
+        <div className="sidebar-nav" ref={navRef}>
+          <span
+            aria-hidden
+            className={`sidebar-nav-indicator${indicator.ready ? ' is-ready' : ''}${indicator.animate ? '' : ' is-instant'}`}
+            style={{
+              height: indicator.height,
+              transform: `translateY(${indicator.top}px)`,
+            } as CSSProperties}
+          />
+          {items.map(({ href, labelKey, Icon }, i) => {
+            const active = isActive(href, i)
+            return (
+              <Link
+                key={`${labelKey}-${i}`}
+                href={href}
+                ref={(el) => {
+                  itemRefs.current[i] = el
+                }}
+                className={`nav-item${active ? ' active' : ''}`}
+              >
+                <Icon />
+                <span>{t(labelKey)}</span>
+              </Link>
+            )
+          })}
+        </div>
 
         <div className="sidebar-foot">
           <div className="line">
@@ -90,12 +124,6 @@ export function Sidebar() {
               <span className="pulse" aria-hidden />
               <span className="k">{t('sidebar.last_sync')}</span>
               {lastSync}
-            </span>
-          </div>
-          <div className="line">
-            <span>
-              <span className="k">{t('sidebar.license_expires')}</span>
-              15d
             </span>
           </div>
         </div>

@@ -82,6 +82,32 @@ export default function TickersPage() {
   const [potentialData, setPotentialData] = useState<PotentialResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [counts, setCounts] = useState<{ long: number | null; short: number | null; potential: number | null }>({
+    long: null,
+    short: null,
+    potential: null,
+  })
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([
+      fetch('/api/tickers/long-short?tab=long&limit=200').then((r) => (r.ok ? r.json() : null)),
+      fetch('/api/tickers/long-short?tab=short&limit=200').then((r) => (r.ok ? r.json() : null)),
+      fetch('/api/tickers/potential?limit=200').then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([l, s, p]) => {
+        if (cancelled) return
+        setCounts({
+          long: l?.tickers?.length ?? null,
+          short: s?.tickers?.length ?? null,
+          potential: p?.tickers?.length ?? null,
+        })
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (topTab !== 'thematic') return
@@ -200,12 +226,22 @@ export default function TickersPage() {
   )
 
   const totalCount = allRows.length
-  const headerDescription =
-    topTab === 'thematic'
-      ? mode === 'long'
-        ? t('tickers_ranked.score_tagline_long')
-        : t('tickers_ranked.score_tagline_short')
-      : t('tickers_ranked.score_tagline_potential')
+  const headerDescription = (
+    <ScoreCountSummary
+      counts={counts}
+      labels={{
+        long: t('tickers_ranked.score_label_long'),
+        short: t('tickers_ranked.score_label_short'),
+        potential: t('tickers_ranked.score_label_potential'),
+      }}
+      tooltips={{
+        long: t('ticker_detail.long_score_tooltip'),
+        short: t('ticker_detail.short_score_tooltip'),
+        potential: t('ticker_detail.potential_score_tooltip'),
+      }}
+      tokenColor={token.colorTextTertiary}
+    />
+  )
 
   return (
     <div className="radar-page">
@@ -471,5 +507,41 @@ export default function TickersPage() {
         </Layout>
       </div>
     </div>
+  )
+}
+
+function ScoreCountSummary({
+  counts,
+  labels,
+  tooltips,
+  tokenColor,
+}: {
+  counts: { long: number | null; short: number | null; potential: number | null }
+  labels: { long: string; short: string; potential: string }
+  tooltips: { long: string; short: string; potential: string }
+  tokenColor: string
+}) {
+  const segments: Array<{ key: 'long' | 'short' | 'potential'; count: number | null; label: string; tip: string }> = [
+    { key: 'long', count: counts.long, label: labels.long, tip: tooltips.long },
+    { key: 'short', count: counts.short, label: labels.short, tip: tooltips.short },
+    { key: 'potential', count: counts.potential, label: labels.potential, tip: tooltips.potential },
+  ]
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', rowGap: 4 }}>
+      {segments.map((s, i) => (
+        <span key={s.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          {i > 0 && <span style={{ margin: '0 8px', color: tokenColor }}>·</span>}
+          <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
+            {s.count ?? '—'}
+          </span>
+          <span>{s.label}</span>
+          <Tooltip title={s.tip} placement="top" overlayStyle={{ maxWidth: 320 }}>
+            <InfoCircleOutlined
+              style={{ fontSize: 12, color: tokenColor, cursor: 'pointer' }}
+            />
+          </Tooltip>
+        </span>
+      ))}
+    </span>
   )
 }

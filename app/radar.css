@@ -21,6 +21,14 @@
   --tabbar-glass-border: rgba(255, 246, 224, 0.06);
   --tabbar-glass-highlight: rgba(255, 246, 224, 0.06);
   --tabbar-glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --sidebar-glass-bg: rgba(36, 33, 30, 0.42);
+  --sidebar-glass-border: rgba(255, 246, 224, 0.08);
+  --topbar-search-bg: rgba(255, 246, 224, 0.06);
+  --topbar-search-bg-hover: rgba(255, 246, 224, 0.09);
+  --sidebar-active-bg: rgba(237, 230, 216, 0.07);
+  --sidebar-active-border: rgba(237, 230, 216, 0.12);
+  --sidebar-active-highlight: rgba(255, 246, 224, 0.18);
+  --sidebar-active-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
   --tabbar-indicator-bg: rgba(237, 230, 216, 0.14);
   --tabbar-indicator-border: rgba(237, 230, 216, 0.14);
   --tabbar-indicator-shadow: none;
@@ -51,6 +59,14 @@
   --tabbar-glass-border: rgba(21, 24, 28, 0.05);
   --tabbar-glass-highlight: rgba(255, 255, 255, 0.18);
   --tabbar-glass-shadow: 0 8px 24px rgba(30, 41, 59, 0.10);
+  --sidebar-glass-bg: rgba(255, 255, 255, 0.46);
+  --sidebar-glass-border: rgba(21, 24, 28, 0.06);
+  --topbar-search-bg: rgba(15, 18, 22, 0.04);
+  --topbar-search-bg-hover: rgba(15, 18, 22, 0.06);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.62);
+  --sidebar-active-border: rgba(21, 24, 28, 0.08);
+  --sidebar-active-highlight: rgba(255, 255, 255, 0.45);
+  --sidebar-active-shadow: 0 6px 18px rgba(15, 18, 22, 0.07);
   --tabbar-indicator-bg: rgba(255, 255, 255, 0.42);
   --tabbar-indicator-border: rgba(21, 24, 28, 0.06);
   --tabbar-indicator-shadow: none;
@@ -97,26 +113,32 @@
 /* ===== Layout ===== */
 .radar-page .app {
   display: grid;
-  grid-template-columns: 216px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   min-height: 100vh;
 }
 
 /* ===== Sidebar ===== */
 .radar-page .sidebar {
-  padding: 14px 12px 18px 16px;
-  border-right: 1px solid var(--line);
+  padding: 22px 18px 22px 22px;
+  margin: 14px 0 14px 14px;
+  background: var(--sidebar-glass-bg);
+  border: 1px solid var(--sidebar-glass-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 18, 22, 0.06);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+  backdrop-filter: saturate(160%) blur(20px);
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 14px;
+  height: calc(100vh - 28px);
 }
 .radar-page .brand-logo {
   display: flex;
   justify-content: flex-start;
-  padding: 18px 8px 8px;
+  padding: 14px 6px 8px;
   line-height: 0;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
   position: relative;
   isolation: isolate;
 }
@@ -186,34 +208,59 @@
   padding: 18px 12px 10px;
   font-weight: 500;
 }
-.radar-page .nav-item {
+.radar-page .sidebar-nav {
   position: relative;
   display: flex;
+  flex-direction: column;
+}
+.radar-page .sidebar-nav-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  border-radius: 10px;
+  background: var(--sidebar-active-bg);
+  border: 1px solid var(--sidebar-active-border);
+  box-shadow:
+    inset 0 1px 0 var(--sidebar-active-highlight),
+    var(--sidebar-active-shadow);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transform: translateY(var(--indicator-top, 0));
+  transition:
+    transform 540ms cubic-bezier(0.32, 1.4, 0.46, 1),
+    height 360ms cubic-bezier(0.32, 1.4, 0.46, 1),
+    opacity 240ms ease;
+}
+.radar-page .sidebar-nav-indicator.is-ready {
+  opacity: 1;
+}
+.radar-page .sidebar-nav-indicator.is-instant {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar-page .sidebar-nav-indicator {
+    transition: opacity 200ms ease;
+  }
+}
+.radar-page .nav-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 8px 12px;
-  margin: 1px 0;
-  border-radius: 8px;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 3px 0;
+  border-radius: 10px;
   color: var(--ink-2);
   cursor: pointer;
   font-size: 12.5px;
   text-decoration: none;
-  transition:
-    background-color 240ms ease,
-    color 240ms ease;
-}
-.radar-page .nav-item::before {
-  content: '';
-  position: absolute;
-  left: -16px;
-  top: 50%;
-  width: 3px;
-  height: 14px;
-  background: var(--ink);
-  border-radius: 0 3px 3px 0;
-  transform: translateY(-50%) scaleY(0);
-  transform-origin: center;
-  transition: transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 240ms ease;
 }
 .radar-page .nav-item svg {
   width: 14px;
@@ -240,23 +287,18 @@
     transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .radar-page .nav-item:hover {
-  background: var(--bg-sunk);
   color: var(--ink);
 }
 .radar-page .nav-item:hover svg {
   color: var(--ink);
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 .radar-page .nav-item:hover .count {
   color: var(--ink-3);
 }
 .radar-page .nav-item.active {
-  background: var(--bg-sunk);
   color: var(--ink);
   font-weight: 500;
-}
-.radar-page .nav-item.active::before {
-  transform: translateY(-50%) scaleY(1);
 }
 .radar-page .nav-item.active svg {
   color: var(--ink);
@@ -266,12 +308,14 @@
 }
 
 .radar-page .sidebar-foot {
-  margin-top: auto;
-  padding: 14px 12px 4px;
+  margin: auto 4px 4px;
+  padding: 14px 14px 12px;
   font-size: 10.5px;
   color: var(--ink-3);
   line-height: 1.5;
-  border-top: 1px solid var(--line-2);
+  background: var(--bg-sunk);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
 }
 .radar-page .sidebar-foot .k {
   color: var(--ink-4);
@@ -282,7 +326,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .radar-page .sidebar-foot .line:first-child {
   margin-top: 0;
@@ -360,15 +404,17 @@
   align-items: center;
   gap: 12px;
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 30;
   height: 52px;
-  margin: 0 -28px;
-  padding: 10px 28px;
-  background: rgba(244, 241, 236, 0.78);
-  -webkit-backdrop-filter: saturate(160%) blur(16px);
-  backdrop-filter: saturate(160%) blur(16px);
-  border-bottom: 1px solid var(--line);
+  margin: 14px -14px 0 -14px;
+  padding: 10px 18px;
+  background: var(--sidebar-glass-bg);
+  border: 1px solid var(--sidebar-glass-border);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(15, 18, 22, 0.06);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+  backdrop-filter: saturate(160%) blur(20px);
 }
 .radar-page .search {
   flex: 1;

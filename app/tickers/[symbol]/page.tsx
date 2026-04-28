@@ -268,7 +268,6 @@ export default function TickerDetailPage() {
         topThemes={detail?.topThemes ?? []}
         allActive={detail?.allActive ?? []}
         labels={{
-          viewFullTheme: t('ticker_detail.view_full_theme'),
           exposure: t('ticker_detail.exposure_zh'),
           events: t('ticker_detail.events_count'),
           expected: t('ticker_detail.expected_zh'),
@@ -397,7 +396,6 @@ function ThemesSection({
   topThemes: ThemeCardItem[]
   allActive: AllThemesItem[]
   labels: {
-    viewFullTheme: string
     exposure: string
     events: string
     expected: string
@@ -430,7 +428,6 @@ function ThemesSection({
       <ThemeCards
         items={topThemes}
         labels={{
-          viewFullTheme: labels.viewFullTheme,
           exposure: labels.exposure,
           events: labels.events,
           expected: labels.expected,

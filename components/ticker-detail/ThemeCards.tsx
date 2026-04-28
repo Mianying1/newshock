@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { Card, Col, Flex, Row, Tag, Typography, theme } from 'antd'
-import { ArrowRightOutlined } from '@ant-design/icons'
 import { DirectionTag } from './DirectionTag'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
+import { useI18n } from '@/lib/i18n-context'
 
 const { Text, Paragraph, Title } = Typography
 const { useToken } = theme
@@ -27,7 +27,6 @@ export interface ThemeCardItem {
 }
 
 interface Labels {
-  viewFullTheme: string
   exposure: string
   events: string
   expected: string
@@ -88,6 +87,13 @@ function StatDot() {
 
 function ThemeDetailCard({ item, labels }: { item: ThemeCardItem; labels: Labels }) {
   const { token } = useToken()
+  const { t } = useI18n()
+  const categoryLabel = item.category
+    ? (() => {
+        const translated = t(`categories.${item.category}`)
+        return translated === `categories.${item.category}` ? item.category : translated
+      })()
+    : null
 
   const statTier = tierLabel(item.tier, labels)
   const statExposure =
@@ -152,7 +158,7 @@ function ThemeDetailCard({ item, labels }: { item: ThemeCardItem; labels: Labels
         )}
 
         <Flex align="center" gap={10} wrap style={{ marginTop: 12 }}>
-          {item.category && <PillTag>{item.category}</PillTag>}
+          {categoryLabel && <PillTag>{categoryLabel}</PillTag>}
           {item.horizonLabel && <PillTag>{item.horizonLabel}</PillTag>}
           {item.eventCount != null && (
             <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
@@ -223,22 +229,6 @@ function ThemeDetailCard({ item, labels }: { item: ThemeCardItem; labels: Labels
             fontSize={12}
           />
         </span>
-        {item.fullThemeId && (
-          <Text
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: 12,
-              color: token.colorPrimary,
-              marginLeft: 8,
-              flexShrink: 0,
-            }}
-          >
-            {labels.viewFullTheme}
-            <ArrowRightOutlined style={{ fontSize: 10 }} />
-          </Text>
-        )}
       </Flex>
     </Card>
   )
