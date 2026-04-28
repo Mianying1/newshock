@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import { Card, Flex, Progress, Tag, Typography, theme } from 'antd'
-import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
+import type { ThemeRadarItem, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { useField, useJsonField } from '@/lib/useField'
 import { stageColor } from '@/lib/design-tokens'
-import { arrowColor } from '@/lib/category-colors'
 import { formatRelativeTime } from '@/lib/utils'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { HorizonBadge } from '@/components/shared/HorizonBadge'
@@ -17,12 +16,6 @@ const { useToken } = theme
 interface ThemeCardProps {
   theme: ThemeRadarItem
   variant: 'core' | 'secondary'
-}
-
-function directionArrow(dir: ExposureDirection): { glyph: string; color: string } | null {
-  if (dir === 'benefits') return { glyph: '▲', color: arrowColor.benefits }
-  if (dir === 'headwind') return { glyph: '▼', color: arrowColor.headwind }
-  return null
 }
 
 const STAGE_LABEL_KEY: Record<string, string> = {
@@ -163,33 +156,26 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
               flexWrap: 'nowrap',
             }}
           >
-            {visibleTickers.map((r) => {
-              const arrow = directionArrow(r.exposure_direction)
-              return (
-                <span
-                  key={r.ticker_symbol}
-                  style={{
-                    backgroundColor: token.colorFillAlter,
-                    color: token.colorText,
-                    border: `1px solid ${token.colorBorder}`,
-                    fontSize: 11,
-                    fontWeight: 500,
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    lineHeight: 1.4,
-                    flexShrink: 0,
-                  }}
-                >
-                  ${r.ticker_symbol}
-                  {arrow && (
-                    <span style={{ color: arrow.color, fontSize: 9 }}>{arrow.glyph}</span>
-                  )}
-                </span>
-              )
-            })}
+            {visibleTickers.map((r) => (
+              <span
+                key={r.ticker_symbol}
+                style={{
+                  backgroundColor: token.colorFillAlter,
+                  color: token.colorText,
+                  border: `1px solid ${token.colorBorder}`,
+                  fontSize: 11,
+                  fontWeight: 500,
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  lineHeight: 1.4,
+                  flexShrink: 0,
+                }}
+              >
+                ${r.ticker_symbol}
+              </span>
+            ))}
             {overflow > 0 && (
               <Text style={{ fontSize: 11, color: token.colorTextTertiary, flexShrink: 0 }}>
                 +{overflow}

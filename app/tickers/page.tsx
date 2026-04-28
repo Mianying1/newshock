@@ -269,7 +269,7 @@ export default function TickersPage() {
               }
             />
 
-            <Flex vertical gap={10} style={{ marginTop: 18, marginBottom: 18 }}>
+            <Flex vertical gap={10} className="filters-bar" style={{ marginTop: 18, marginBottom: 18 }}>
               <Flex gap={8} wrap align="center">
                 <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 60}>{t('tickers_ranked.filter_type')}</FilterLabel>
                 <FilterPill

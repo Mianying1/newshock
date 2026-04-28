@@ -134,22 +134,18 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           {/* 1 · Top badges row */}
           <Flex justify="space-between" align="center" wrap gap={12}>
             <Space size={8} wrap>
-              <Tag
+              <Text
                 style={{
-                  background: tone.accent,
-                  color: token.colorTextLightSolid,
-                  border: 'none',
+                  background: 'transparent',
+                  color: token.colorText,
                   fontSize: 12,
                   fontWeight: 600,
                   lineHeight: 1.5,
-                  padding: '3px 10px',
-                  margin: 0,
-                  borderRadius: 4,
                   letterSpacing: '0.08em',
                 }}
               >
                 {rankGlyph} {t('narratives.narrative_prefix')} #{rank + 1}
-              </Tag>
+              </Text>
               <Tag
                 style={{
                   background: tone.accentBg,
@@ -496,11 +492,12 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           <Flex justify="space-between" align="center" gap={8} style={{ marginBottom: 8 }}>
             <Text
               style={{
-                fontSize: 11,
+                background: 'transparent',
+                color: token.colorText,
+                fontSize: 10,
                 fontWeight: 600,
-                color: tone.accent,
-                letterSpacing: '0.1em',
-                textTransform: 'none',
+                lineHeight: 1.5,
+                letterSpacing: '0.08em',
               }}
             >
               {rankGlyph} {t('narratives.narrative_prefix')} #{rank + 1}

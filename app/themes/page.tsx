@@ -335,6 +335,7 @@ export default function ThemeMapPage() {
               <Flex
                 vertical
                 gap={10}
+                className="filters-bar"
                 style={{
                   marginTop: 18,
                   marginBottom: 22,
@@ -374,7 +375,7 @@ export default function ThemeMapPage() {
 
                 <Flex gap={8} wrap align="center">
                   <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 52}>{t('themes_page.filter_stage')}</FilterLabel>
-                  {(['all', 'early', 'mid', 'late', 'beyond', 'unknown'] as StageFilter[]).map(
+                  {(['all', 'early', 'mid', 'late', 'beyond'] as StageFilter[]).map(
                     (s) => (
                       <FilterPill
                         key={s}

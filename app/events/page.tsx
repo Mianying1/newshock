@@ -496,6 +496,7 @@ export default function EventsPage() {
             <Flex
               vertical
               gap={10}
+              className="filters-bar"
               style={{
                 marginTop: 18,
                 marginBottom: 22,
@@ -504,7 +505,7 @@ export default function EventsPage() {
               }}
             >
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_time')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_time')}</FilterLabel>
                 {(['latest', 'week', 'older'] as TimeRange[]).map((tr) => (
                   <FilterPill
                     key={tr}
@@ -516,7 +517,7 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_importance')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_importance')}</FilterLabel>
                 {(['all', 'high', 'medium', 'low'] as Importance[]).map((imp) => (
                   <FilterPill
                     key={imp}
@@ -528,7 +529,7 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_source')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_source')}</FilterLabel>
                 <Select
                   mode="multiple"
                   allowClear
@@ -545,7 +546,7 @@ export default function EventsPage() {
               </Flex>
 
               <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 52 : 80}>{t('events_page.filter_theme')}</FilterLabel>
+                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 96}>{t('events_page.filter_theme')}</FilterLabel>
                 <Select
                   variant="filled"
                   className="filter-select"

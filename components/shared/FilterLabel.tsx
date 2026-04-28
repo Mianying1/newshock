@@ -22,7 +22,7 @@ export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
         letterSpacing: locale === 'zh' ? '0.08em' : '0.18em',
         textTransform: 'none',
         color: token.colorTextQuaternary,
-        marginRight: 12,
+        marginRight: 4,
         minWidth,
         textAlign: 'left',
         whiteSpace: 'nowrap',
