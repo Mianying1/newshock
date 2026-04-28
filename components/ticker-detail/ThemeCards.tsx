@@ -99,9 +99,9 @@ function ThemeDetailCard({ item, labels }: { item: ThemeCardItem; labels: Labels
     ? labels.expected.replace('{label}', item.expectedDuration)
     : null
 
-  return (
+  const cardInner = (
     <Card
-      hoverable
+      hoverable={!!item.fullThemeId}
       styles={{
         body: {
           display: 'flex',
@@ -224,25 +224,39 @@ function ThemeDetailCard({ item, labels }: { item: ThemeCardItem; labels: Labels
           />
         </span>
         {item.fullThemeId && (
-          <Link
-            href={`/themes/${item.fullThemeId}`}
+          <Text
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
               fontSize: 12,
               color: token.colorPrimary,
-              textDecoration: 'none',
               marginLeft: 8,
               flexShrink: 0,
             }}
           >
             {labels.viewFullTheme}
             <ArrowRightOutlined style={{ fontSize: 10 }} />
-          </Link>
+          </Text>
         )}
       </Flex>
     </Card>
+  )
+
+  if (!item.fullThemeId) return cardInner
+
+  return (
+    <Link
+      href={`/themes/${item.fullThemeId}`}
+      style={{
+        display: 'block',
+        height: '100%',
+        color: 'inherit',
+        textDecoration: 'none',
+      }}
+    >
+      {cardInner}
+    </Link>
   )
 }
 

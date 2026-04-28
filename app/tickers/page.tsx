@@ -66,13 +66,6 @@ interface NormalizedRow {
   score: number | null         // 0-100
 }
 
-function tierFromScore(s: number | null): 'strong' | 'medium' | 'weak' {
-  if (s === null) return 'weak'
-  if (s >= 80) return 'strong'
-  if (s >= 60) return 'medium'
-  return 'weak'
-}
-
 export default function TickersPage() {
   const { t, locale, setLocale } = useI18n()
   const { token } = useToken()
@@ -207,7 +200,6 @@ export default function TickersPage() {
   )
 
   const totalCount = allRows.length
-  const visibilityTagText = topTab === 'thematic' ? t('tickers_ranked.tag_mature') : t('tickers_ranked.tag_emerging')
   const headerDescription =
     topTab === 'thematic'
       ? mode === 'long'
@@ -316,14 +308,6 @@ export default function TickersPage() {
             {!loading && !error && filteredRows.length > 0 && (
               <Flex vertical gap={10}>
                 {filteredRows.map((row, i) => {
-                  const tier = tierFromScore(row.score)
-                  const tierLabel = t(`tickers_ranked.visibility_${tier}`)
-                  const tierColor =
-                    tier === 'strong'
-                      ? token.colorSuccess
-                      : tier === 'medium'
-                      ? token.colorTextSecondary
-                      : token.colorTextQuaternary
                   const scoreTooltip =
                     topTab === 'thematic'
                       ? mode === 'long'
@@ -372,18 +356,6 @@ export default function TickersPage() {
                             >
                               {String(i + 1).padStart(2, '0')}
                             </span>
-                            <span style={{ color: token.colorTextQuaternary }}>·</span>
-                            <span
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 600,
-                                letterSpacing: '0.16em',
-                                textTransform: 'none',
-                                color: token.colorTextQuaternary,
-                              }}
-                            >
-                              {visibilityTagText}
-                            </span>
                             {row.category_label && (
                               <>
                                 <span style={{ color: token.colorTextQuaternary }}>·</span>
@@ -392,18 +364,6 @@ export default function TickersPage() {
                                 </span>
                               </>
                             )}
-                            <span style={{ color: token.colorTextQuaternary }}>·</span>
-                            <span
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 600,
-                                letterSpacing: '0.16em',
-                                textTransform: 'none',
-                                color: tierColor,
-                              }}
-                            >
-                              {tierLabel}
-                            </span>
                           </Flex>
                           <Flex align="baseline" gap={10} style={{ minWidth: 0 }}>
                             <Text
