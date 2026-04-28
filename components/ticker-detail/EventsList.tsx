@@ -39,9 +39,9 @@ interface Props {
 
 // Warm / neutral importance palette · disjoint from Direction (green/red)
 const IMPORTANCE_PALETTE_LIGHT = {
-  high: { color: '#8B5A00', background: '#FFF1D6' },
-  medium: { color: '#7B6A4E', background: '#F2EAD8' },
-  low: { color: '#8F8A7E', background: '#F2EEE5' },
+  high: { color: '#2A4488', background: '#DCE4F2' },
+  medium: { color: '#5E646D', background: '#EBEEF2' },
+  low: { color: '#8C939C', background: '#F2F4F7' },
 } as const
 
 const IMPORTANCE_PALETTE_DARK = {

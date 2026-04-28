@@ -5,9 +5,12 @@ import { Tag } from 'antd'
 import { FireFilled } from '@ant-design/icons'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
+import type { PlaybookStage } from '@/types/recommendations'
 
 interface FocusLevelBadgeProps {
   strength: number | null | undefined
+  stage?: PlaybookStage | null
+  typicalDurationDaysUpper?: number | null
 }
 
 interface FocusLevel {
@@ -17,11 +20,29 @@ interface FocusLevel {
   icon: 'fire' | 'circle-filled' | 'circle-outlined'
 }
 
+type StageKey = 'early' | 'mid' | 'late' | 'beyond' | 'unknown'
+type DurationTier = 'short' | 'medium' | 'long'
+
+// Stage penalty tiered by typical duration. Short-term themes that have moved
+// past early stage decay much faster — a 90-day archetype at mid stage is
+// effectively half-done, while a 5-year archetype at mid stage is barely warm.
+const STAGE_MULT: Record<DurationTier, Record<StageKey, number>> = {
+  short:  { early: 1.0, mid: 0.65, late: 0.40, beyond: 0.25, unknown: 1.0 },
+  medium: { early: 1.0, mid: 0.78, late: 0.55, beyond: 0.40, unknown: 1.0 },
+  long:   { early: 1.0, mid: 0.85, late: 0.65, beyond: 0.50, unknown: 1.0 },
+}
+
+function durationTier(maxDays: number | null | undefined): DurationTier {
+  if (maxDays && maxDays > 0 && maxDays <= 90) return 'short'
+  if (maxDays && maxDays <= 365) return 'medium'
+  return 'long'
+}
+
 const FOCUS_PALETTE_LIGHT = {
-  critical: { color: '#FFFFFF', background: '#7A2A1E' },
-  high: { color: '#8B5A00', background: '#FFEFC9' },
-  medium: { color: '#5C6A1E', background: '#F0F2D8' },
-  low: { color: '#6D6A63', background: '#EFEAE0' },
+  critical: { color: '#FFFFFF', background: '#9C463B' },
+  high: { color: '#2A4488', background: '#DCE4F2' },
+  medium: { color: '#155C3B', background: '#D6E9DA' },
+  low: { color: '#5E646D', background: '#EBEEF2' },
 } as const
 
 const FOCUS_PALETTE_DARK = {
@@ -39,12 +60,16 @@ function getFocusLevel(strength: number, isDark: boolean): FocusLevel {
   return { labelKey: 'focus.low', ...palette.low, icon: 'circle-outlined' }
 }
 
-export function FocusLevelBadge({ strength }: FocusLevelBadgeProps) {
+export function FocusLevelBadge({ strength, stage, typicalDurationDaysUpper }: FocusLevelBadgeProps) {
   const { t } = useI18n()
   const { mode } = useThemeMode()
   if (strength == null) return null
 
-  const level = getFocusLevel(strength, mode === 'dark')
+  const tier = durationTier(typicalDurationDaysUpper)
+  const stageKey: StageKey = (stage as StageKey) ?? 'unknown'
+  const mult = STAGE_MULT[tier][stageKey] ?? 1
+  const adjusted = Math.round(strength * mult)
+  const level = getFocusLevel(adjusted, mode === 'dark')
 
   let iconNode: React.ReactNode = null
   if (level.icon === 'fire') {

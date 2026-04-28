@@ -83,9 +83,9 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 const PAGE_SIZE = 50
 
 const IMPORTANCE_PALETTE_LIGHT = {
-  high: { color: '#5C6A1E', background: '#F0F2D8' },
-  medium: { color: '#6D6A63', background: '#EFEAE0' },
-  low: { color: '#8F8A7E', background: '#F2EEE5' },
+  high: { color: '#155C3B', background: '#D6E9DA' },
+  medium: { color: '#5E646D', background: '#EBEEF2' },
+  low: { color: '#8C939C', background: '#F2F4F7' },
 } as const
 
 const IMPORTANCE_PALETTE_DARK = {

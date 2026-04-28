@@ -45,50 +45,50 @@ const sharedComponents = {
 export const newshockLightTheme: ThemeConfig = {
   token: {
     ...sharedToken,
-    colorPrimary: '#1F1C19',
-    colorLink: '#1F1C19',
-    colorLinkHover: '#5C4A1E',
-    colorLinkActive: '#3D2E12',
+    colorPrimary: '#15181C',
+    colorLink: '#0F6F66',
+    colorLinkHover: '#0B574F',
+    colorLinkActive: '#084740',
 
-    colorBgLayout: '#F4F1EC',
+    colorBgLayout: '#F2F4F7',
     colorBgContainer: '#FFFFFF',
     colorBgElevated: '#FFFFFF',
 
-    colorBorder: '#E8E2D5',
-    colorBorderSecondary: '#EFEAE0',
+    colorBorder: '#E1E5EA',
+    colorBorderSecondary: '#EBEEF2',
 
-    colorText: '#1F1C19',
-    colorTextSecondary: '#5C4A1E',
-    colorTextTertiary: '#6D6A63',
-    colorTextQuaternary: '#767168',
+    colorText: '#15181C',
+    colorTextSecondary: '#454B53',
+    colorTextTertiary: '#6B727B',
+    colorTextQuaternary: '#8C939C',
 
-    colorSuccess: '#5C6A1E',
-    colorError: '#8B3A2E',
-    colorWarning: '#A86C00',
-    colorInfo: '#1F1C19',
+    colorSuccess: '#1B7A4F',
+    colorError: '#9C463B',
+    colorWarning: '#A8590F',
+    colorInfo: '#0F6F66',
   },
   components: {
     ...sharedComponents,
     Layout: {
-      bodyBg: '#F4F1EC',
-      headerBg: '#F4F1EC',
-      siderBg: '#F4F1EC',
+      bodyBg: '#F2F4F7',
+      headerBg: '#F2F4F7',
+      siderBg: '#F2F4F7',
     },
     Card: {
       ...sharedComponents.Card,
       headerBg: '#FFFFFF',
     },
     Descriptions: {
-      labelBg: '#F4F1EC',
+      labelBg: '#F2F4F7',
       titleMarginBottom: 16,
     },
     Tabs: {
       ...sharedComponents.Tabs,
-      itemSelectedColor: '#1F1C19',
-      inkBarColor: '#1F1C19',
+      itemSelectedColor: '#15181C',
+      inkBarColor: '#15181C',
     },
     Progress: {
-      defaultColor: '#1F1C19',
+      defaultColor: '#15181C',
     },
   },
 }
@@ -149,10 +149,10 @@ export const newshockDarkTheme: ThemeConfig = {
 export const newshockTheme = newshockLightTheme
 
 export const stageColors = {
-  early: '#5C6A1E',
-  mid: '#A86C00',
-  late: '#8B3A2E',
-  unknown: '#8C8A85',
+  early: '#1B7A4F',
+  mid: '#3D5BA9',
+  late: '#9C463B',
+  unknown: '#8C939C',
 } as const
 
 export function stageColor(stage: string | null | undefined): string {

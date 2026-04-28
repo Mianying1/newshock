@@ -39,10 +39,10 @@ const { useBreakpoint } = Grid
 const SUBTHEME_LIMIT = 4
 
 const HEAT_PALETTE_LIGHT = {
-  critical: { color: '#8B3A2E', background: '#F5E8E3' },
-  high: { color: '#8B5A00', background: '#FFF5E0' },
-  medium: { color: '#5C6A1E', background: '#F0F2D8' },
-  low: { color: '#6D6A63', background: '#EFEAE0' },
+  critical: { color: '#9C463B', background: '#F0D9D2' },
+  high: { color: '#2A4488', background: '#DCE4F2' },
+  medium: { color: '#155C3B', background: '#D6E9DA' },
+  low: { color: '#5E646D', background: '#EBEEF2' },
 } as const
 
 const HEAT_PALETTE_DARK = {

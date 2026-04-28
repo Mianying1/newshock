@@ -102,7 +102,7 @@ export function ThemeCard({ theme: th }: ThemeCardProps) {
               {themeName}
             </Title>
             <span style={{ flexShrink: 0 }}>
-              <FocusLevelBadge strength={th.theme_strength_score} />
+              <FocusLevelBadge strength={th.theme_strength_score} stage={th.playbook_stage} typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
             </span>
           </Flex>
 

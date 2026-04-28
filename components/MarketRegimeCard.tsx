@@ -17,9 +17,9 @@ const { useToken } = theme
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-const SAGE = '#7E8C3F'
-const AMBER = '#B8893A'
-const CRIMSON = '#B8453A'
+const SAGE = '#1B7A4F'
+const AMBER = '#A8590F'
+const CRIMSON = '#9C463B'
 
 interface RegimeSnapshot {
   snapshot_date: string

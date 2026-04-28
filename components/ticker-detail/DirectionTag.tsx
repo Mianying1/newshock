@@ -12,10 +12,10 @@ interface Props {
 }
 
 const PALETTE_LIGHT = {
-  benefits: { color: '#5C6A1E', background: '#F0F2D8' },
-  headwind: { color: '#8B3A2E', background: '#F5E8E3' },
-  mixed: { color: '#6D6A63', background: '#EFEAE0' },
-  uncertain: { color: '#8F8A7E', background: '#F2EEE5' },
+  benefits: { color: '#155C3B', background: '#D6E9DA' },
+  headwind: { color: '#9C463B', background: '#F0D9D2' },
+  mixed: { color: '#5E646D', background: '#EBEEF2' },
+  uncertain: { color: '#8C939C', background: '#F2F4F7' },
 } as const
 
 const PALETTE_DARK = {

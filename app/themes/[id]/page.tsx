@@ -420,7 +420,11 @@ export default function ThemeDetailPage() {
                         </Tag>
                       )
                     })()}
-                    <FocusLevelBadge strength={theme.theme_strength_score} />
+                    <FocusLevelBadge
+                      strength={theme.theme_strength_score}
+                      stage={theme.playbook_stage}
+                      typicalDurationDaysUpper={theme.archetype_playbook?.typical_duration_days_approx?.[1]}
+                    />
                     {theme.parent_theme && (
                       <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
                         {t('theme_detail.parent_theme')}{' '}

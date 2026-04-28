@@ -34,41 +34,41 @@
 }
 
 .radar-page {
-  --bg: #F4F1EC;
+  --bg: #F2F4F7;
   --bg-elev: #FFFFFF;
-  --bg-sunk: #EDE9E2;
-  --ink: #1F1C19;
-  --ink-2: #4A463F;
-  --ink-3: #7A7468;
-  --ink-4: #A8A196;
-  --line: #E4DFD6;
-  --line-2: #EFEAE1;
-  --line-card: #EAE4D8;
+  --bg-sunk: #E8ECF0;
+  --ink: #15181C;
+  --ink-2: #454B53;
+  --ink-3: #6B727B;
+  --ink-4: #8C939C;
+  --line: #E1E5EA;
+  --line-2: #EBEEF2;
+  --line-card: #E1E5EA;
 
-  --topbar-bg: rgba(244, 241, 236, 0.78);
+  --topbar-bg: rgba(242, 244, 247, 0.78);
 
-  --tabbar-glass-bg: rgba(255, 252, 246, 0.32);
-  --tabbar-glass-border: rgba(31, 28, 25, 0.05);
+  --tabbar-glass-bg: rgba(255, 255, 255, 0.32);
+  --tabbar-glass-border: rgba(21, 24, 28, 0.05);
   --tabbar-glass-highlight: rgba(255, 255, 255, 0.18);
-  --tabbar-glass-shadow: 0 8px 24px rgba(58, 48, 32, 0.10);
+  --tabbar-glass-shadow: 0 8px 24px rgba(30, 41, 59, 0.10);
   --tabbar-indicator-bg: rgba(255, 255, 255, 0.42);
-  --tabbar-indicator-border: rgba(31, 28, 25, 0.06);
+  --tabbar-indicator-border: rgba(21, 24, 28, 0.06);
   --tabbar-indicator-shadow: none;
-  --tabbar-active-ink: #A86C00;
+  --tabbar-active-ink: #0F6F66;
 
-  --accent: #1F1C19;
-  --link: #1F1C19;
-  --up: #5C6A1E;
-  --down: #8B3A2E;
-  --warn: #A86C00;
+  --accent: #0F6F66;
+  --link: #0F6F66;
+  --up: #1B7A4F;
+  --down: #9C463B;
+  --warn: #A8590F;
 
-  --c-geo: #A86C00;
-  --c-ai: #8B5A00;
-  --c-supp: #7A5E2E;
-  --c-pha: #5C6A1E;
-  --c-def: #5C5040;
-  --c-ene: #8B4513;
-  --c-mat: #6B5A30;
+  --c-geo: #2A4488;
+  --c-ai: #0F6F66;
+  --c-supp: #52606D;
+  --c-pha: #1B7A4F;
+  --c-def: #3D434B;
+  --c-ene: #7C3F4F;
+  --c-mat: #6B6F77;
 
   --radius: 8px;
   --radius-sm: 4px;
@@ -375,7 +375,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #EDE9E2;
+  background: #E8ECF0;
   border: 1px solid transparent;
   height: 32px;
   padding: 0 12px;
@@ -416,10 +416,10 @@
   letter-spacing: 0.1em;
   text-transform: none;
   color: var(--ink-4);
-  background: #E8E2D5;
+  background: #E1E5EA;
   padding: 2px 7px;
   border-radius: 3px;
-  border: 1px solid #DCD5C4;
+  border: 1px solid #D0D5DB;
   margin-left: auto;
 }
 
@@ -687,7 +687,7 @@
 .radar-page .tag.ene { background:#F3E1D2; color:#8A4E28; border-color:#E5CFB8; }
 .radar-page .tag.mat { background:#ECE4D0; color:#6A5636; border-color:#DCD1B4; }
 .radar-page .tag.mun { background:#E6DFD0; color:#5C5030; border-color:#D6CDB5; }
-.radar-page .tag.low { background:#EDE9E2; color:#6A6355; border-color:#DDD6C6; }
+.radar-page .tag.low { background:#E8ECF0; color:#5E646D; border-color:#D5DAE0; }
 
 /* ===== Ticker chip ===== */
 .radar-page .tkr {
@@ -748,10 +748,10 @@
   background: var(--ink-4);
   display: inline-block;
 }
-.radar-page .stage-dot.early { background:#5C6A1E; }
-.radar-page .stage-dot.mid { background:#A86C00; }
-.radar-page .stage-dot.late { background:#8B3A2E; }
-.radar-page .stage-dot.cool { background:#8B3A2E; }
+.radar-page .stage-dot.early { background:#1B7A4F; }
+.radar-page .stage-dot.mid { background:#3D5BA9; }
+.radar-page .stage-dot.late { background:#9C463B; }
+.radar-page .stage-dot.cool { background:#9C463B; }
 
 .radar-page .stage-bar {
   width: 100%;

@@ -13,7 +13,7 @@ import {
   Typography,
   theme,
 } from 'antd'
-import { WarningFilled } from '@ant-design/icons'
+import { EyeFilled } from '@ant-design/icons'
 import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
@@ -66,12 +66,12 @@ function rankTone(rank: number, isDark: boolean): RankTone {
     return { accent: '#B5C272', accentBg: 'rgba(143, 160, 88, 0.14)', accentBorder: 'rgba(143, 160, 88, 0.32)' }
   }
   if (rank === 0) {
-    return { accent: '#8B3A2E', accentBg: '#FAF1ED', accentBorder: '#E8D5CC' }
+    return { accent: '#0F6F66', accentBg: '#DBEDEB', accentBorder: '#C2DDD9' }
   }
   if (rank === 1) {
-    return { accent: '#8B5A00', accentBg: '#FFF5E0', accentBorder: '#F0E4C8' }
+    return { accent: '#2A4488', accentBg: '#DCE4F2', accentBorder: '#C5D0E5' }
   }
-  return { accent: '#5C6A1E', accentBg: '#F0F2D8', accentBorder: '#DDE0C0' }
+  return { accent: '#7A5C12', accentBg: '#F0E8D2', accentBorder: '#DDD3B5' }
 }
 
 export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardProps) {
@@ -166,7 +166,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 {t('narratives.top_priority')}
               </Tag>
             </Space>
-            <FocusLevelBadge strength={th.theme_strength_score} />
+            <FocusLevelBadge strength={th.theme_strength_score} stage={th.playbook_stage} typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
           </Flex>
 
           {/* 2 · Title */}
@@ -233,27 +233,27 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
             </Paragraph>
           )}
 
-          {/* 3 · Stage Alert (dark-rust left border) */}
+          {/* 3 · Attention callout (neutral, no warning color) */}
           <div
             style={{
-              background: tone.accentBg,
-              border: `1px solid ${tone.accentBorder}`,
-              borderLeft: `4px solid ${tone.accent}`,
+              background: token.colorFillAlter,
+              border: `1px solid ${token.colorBorderSecondary}`,
+              borderLeft: `3px solid ${token.colorText}`,
               borderRadius: 4,
               padding: '12px 14px',
               marginBottom: 14,
             }}
           >
             <Flex gap={10} align="flex-start">
-              <WarningFilled
-                style={{ color: tone.accent, fontSize: 14, marginTop: 3, flexShrink: 0 }}
+              <EyeFilled
+                style={{ color: token.colorTextSecondary, fontSize: 13, marginTop: 4, flexShrink: 0 }}
               />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <Text
                   style={{
                     fontSize: 13,
                     fontWeight: 500,
-                    color: tone.accent,
+                    color: token.colorText,
                     display: 'block',
                     lineHeight: 1.5,
                   }}
@@ -506,7 +506,7 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               {rankGlyph} {t('narratives.narrative_prefix')} #{rank + 1}
             </Text>
             <span style={{ flexShrink: 0 }}>
-              <FocusLevelBadge strength={th.theme_strength_score} />
+              <FocusLevelBadge strength={th.theme_strength_score} stage={th.playbook_stage} typicalDurationDaysUpper={pb?.typical_duration_days_approx?.[1]} />
             </span>
           </Flex>
 

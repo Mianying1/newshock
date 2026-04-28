@@ -43,32 +43,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 interface Overview {
   active_count: number
   cooling_count: number
-  narratives_count: number
   events_7d: number
-}
-
-function useHeaderDate(locale: 'en' | 'zh') {
-  const [label, setLabel] = useState('')
-  useEffect(() => {
-    const tick = () => {
-      const d = new Date()
-      const hh = String(d.getHours()).padStart(2, '0')
-      const mm = String(d.getMinutes()).padStart(2, '0')
-      const ss = String(d.getSeconds()).padStart(2, '0')
-      if (locale === 'zh') {
-        const weekday = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()]
-        setLabel(`${weekday} · ${d.getMonth() + 1}月${d.getDate()}日 · ${hh}:${mm}:${ss}`)
-      } else {
-        const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]
-        const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]
-        setLabel(`${weekday} · ${month} ${d.getDate()} · ${hh}:${mm}:${ss}`)
-      }
-    }
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
-  }, [locale])
-  return label
 }
 
 export default function HomePage() {
@@ -107,9 +82,7 @@ export default function HomePage() {
 
   const top3Ids = new Set(getOngoingTop3(activeThemes).map((th) => th.id))
 
-  const narrativesCount = overview?.narratives_count ?? 0
   const eventsWeek = overview?.events_7d ?? 0
-  const headerDate = useHeaderDate(locale)
 
   return (
     <div className="radar-page">
@@ -123,11 +96,9 @@ export default function HomePage() {
               title={t('sidebar.radar')}
               icon={<RadarIcon />}
               stats={[
-                { value: narrativesCount, label: locale === 'zh' ? '叙事' : 'Narratives' },
                 { value: totalThemes, label: locale === 'zh' ? '主题' : 'Themes' },
-                { value: eventsWeek, label: locale === 'zh' ? '事件 / 7天' : 'Events / 7d' },
+                { value: eventsWeek, label: locale === 'zh' ? '事件 / 一周' : 'Events / 1w' },
               ]}
-              meta={headerDate}
             />
 
             <Row gutter={[24, 24]} style={{ marginTop: 8 }}>
