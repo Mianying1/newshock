@@ -18,21 +18,28 @@ const I18nContext = createContext<I18nContextValue>({
   t: (key) => key,
 })
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  // Always init with 'en' so SSR and first client render match. Sync from
-  // localStorage after mount; if the stored locale differs, React re-renders
-  // with the user's preference. Avoids hydration mismatch.
-  const [locale, setLocale] = useState<Locale>('en')
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode
+  initialLocale?: Locale
+}) {
+  const [locale, setLocale] = useState<Locale>(initialLocale ?? 'en')
 
   useEffect(() => {
+    if (initialLocale) return
     const stored = localStorage.getItem('locale') as Locale | null
     if (stored === 'zh' || stored === 'en') setLocale(stored)
-  }, [])
+  }, [initialLocale])
 
   const setLocaleAndStore = (l: Locale) => {
     setLocale(l)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', l)
+      try {
+        localStorage.setItem('locale', l)
+      } catch {}
+      document.cookie = `locale=${l};path=/;max-age=31536000;samesite=lax`
     }
   }
 

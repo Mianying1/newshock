@@ -30,9 +30,11 @@ export const useThemeMode = () => useContext(ThemeModeContext)
 export function Providers({
   children,
   initialMode = 'light',
+  initialLocale,
 }: {
   children: ReactNode
   initialMode?: Mode
+  initialLocale?: 'en' | 'zh'
 }) {
   const [mode, setModeState] = useState<Mode>(initialMode)
 
@@ -69,7 +71,7 @@ export function Providers({
   return (
     <ThemeModeContext.Provider value={{ mode, setMode, toggle }}>
       <ConfigProvider theme={mode === 'dark' ? newshockDarkTheme : newshockLightTheme}>
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider initialLocale={initialLocale}>{children}</I18nProvider>
       </ConfigProvider>
     </ThemeModeContext.Provider>
   )
