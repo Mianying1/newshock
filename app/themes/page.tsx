@@ -333,9 +333,7 @@ export default function ThemeMapPage() {
             />
 
             {!loading && !error && sorted.length > 0 && (
-              <Flex
-                vertical
-                gap={10}
+              <div
                 className="filters-bar"
                 style={{
                   marginTop: 18,
@@ -346,7 +344,7 @@ export default function ThemeMapPage() {
               >
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                    <FilterLabel locale={locale}>
                       {t('themes_page.filter_status')}
                     </FilterLabel>
                   }
@@ -363,7 +361,7 @@ export default function ThemeMapPage() {
 
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                    <FilterLabel locale={locale}>
                       {t('themes_page.filter_category')}
                     </FilterLabel>
                   }
@@ -386,7 +384,7 @@ export default function ThemeMapPage() {
 
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                    <FilterLabel locale={locale}>
                       {t('themes_page.filter_stage')}
                     </FilterLabel>
                   }
@@ -401,7 +399,7 @@ export default function ThemeMapPage() {
                   ))}
                 </FilterPillRow>
 
-              </Flex>
+              </div>
             )}
 
             {loading && <ThemeMapGridSkeleton count={6} />}

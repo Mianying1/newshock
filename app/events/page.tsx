@@ -494,9 +494,7 @@ export default function EventsPage() {
               meta={t('events_page.refresh_frequency')}
             />
 
-            <Flex
-              vertical
-              gap={10}
+            <div
               className="filters-bar"
               style={{
                 marginTop: 18,
@@ -507,7 +505,7 @@ export default function EventsPage() {
             >
               <FilterPillRow
                 label={
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>
+                  <FilterLabel locale={locale}>
                     {t('events_page.filter_time')}
                   </FilterLabel>
                 }
@@ -524,7 +522,7 @@ export default function EventsPage() {
 
               <FilterPillRow
                 label={
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>
+                  <FilterLabel locale={locale}>
                     {t('events_page.filter_importance')}
                   </FilterLabel>
                 }
@@ -539,39 +537,35 @@ export default function EventsPage() {
                 ))}
               </FilterPillRow>
 
-              <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>{t('events_page.filter_source')}</FilterLabel>
-                <Select
-                  mode="multiple"
-                  allowClear
-                  variant="filled"
-                  className="filter-select"
-                  suffixIcon={<ChevronDownIcon />}
-                  placeholder={t('events_page.all_sources')}
-                  value={selectedSources}
-                  onChange={setSelectedSources}
-                  options={sourceOptions}
-                  style={{ width: 240 }}
-                  maxTagCount="responsive"
-                />
-              </Flex>
+              <FilterLabel locale={locale}>{t('events_page.filter_source')}</FilterLabel>
+              <Select
+                mode="multiple"
+                allowClear
+                variant="filled"
+                className="filter-select"
+                suffixIcon={<ChevronDownIcon />}
+                placeholder={t('events_page.all_sources')}
+                value={selectedSources}
+                onChange={setSelectedSources}
+                options={sourceOptions}
+                style={{ width: 240, justifySelf: 'start' }}
+                maxTagCount="responsive"
+              />
 
-              <Flex gap={8} wrap align="center">
-                <FilterLabel locale={locale} minWidth={locale === 'zh' ? 64 : 80}>{t('events_page.filter_theme')}</FilterLabel>
-                <Select
-                  variant="filled"
-                  className="filter-select"
-                  suffixIcon={<ChevronDownIcon />}
-                  value={themeId}
-                  onChange={setThemeId}
-                  options={themeOptions}
-                  style={{ width: 240 }}
-                  showSearch
-                  optionFilterProp="label"
-                  placeholder={t('events_page.all_themes')}
-                />
-              </Flex>
-            </Flex>
+              <FilterLabel locale={locale}>{t('events_page.filter_theme')}</FilterLabel>
+              <Select
+                variant="filled"
+                className="filter-select"
+                suffixIcon={<ChevronDownIcon />}
+                value={themeId}
+                onChange={setThemeId}
+                options={themeOptions}
+                style={{ width: 240, justifySelf: 'start' }}
+                showSearch
+                optionFilterProp="label"
+                placeholder={t('events_page.all_themes')}
+              />
+            </div>
 
             {loading && (
               <Flex vertical gap={10}>

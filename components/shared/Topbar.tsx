@@ -94,20 +94,20 @@ export function Topbar({ sidePad }: TopbarProps) {
 
   return (
     <Header
+      className="topbar-glass"
       style={{
         position: 'sticky',
         top: 14,
         zIndex: 30,
-        height: 60,
+        height: 66,
         margin: '14px 14px 0 14px',
         padding: '12px 14px',
-        background: 'var(--bg)',
+        background: 'var(--sidebar-glass-bg)',
         border: '1px solid var(--sidebar-glass-border, transparent)',
         borderRadius: 14,
-        boxShadow:
-          '0 0 0 14px var(--bg), 0 8px 24px rgba(15, 18, 22, 0.06)',
-        backdropFilter: 'none',
-        WebkitBackdropFilter: 'none',
+        boxShadow: '0 8px 24px rgba(15, 18, 22, 0.06)',
+        backdropFilter: 'saturate(160%) blur(20px)',
+        WebkitBackdropFilter: 'saturate(160%) blur(20px)',
         display: 'flex',
         alignItems: 'center',
         gap: 8,

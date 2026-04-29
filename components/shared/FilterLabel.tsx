@@ -8,15 +8,15 @@ const { useToken } = theme
 
 interface FilterLabelProps {
   locale: 'en' | 'zh'
-  minWidth?: number
   children: ReactNode
 }
 
-export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
+export function FilterLabel({ locale, children }: FilterLabelProps) {
   const { token } = useToken()
   const isEn = locale === 'en'
   return (
     <Text
+      className="filter-label"
       style={{
         fontFamily: token.fontFamily,
         fontSize: 11,
@@ -24,11 +24,10 @@ export function FilterLabel({ locale, minWidth, children }: FilterLabelProps) {
         letterSpacing: isEn ? '0.01em' : '0.04em',
         textTransform: 'none',
         color: token.colorTextQuaternary,
-        marginRight: 4,
-        minWidth,
         textAlign: 'left',
         whiteSpace: 'nowrap',
         display: 'inline-block',
+        alignSelf: 'center',
       }}
     >
       {children}

@@ -270,10 +270,10 @@ export default function TickersPage() {
               }
             />
 
-            <Flex vertical gap={10} className="filters-bar" style={{ marginTop: 18, marginBottom: 18 }}>
+            <div className="filters-bar" style={{ marginTop: 18, marginBottom: 18 }}>
               <FilterPillRow
                 label={
-                  <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                  <FilterLabel locale={locale}>
                     {t('tickers_ranked.filter_type')}
                   </FilterLabel>
                 }
@@ -293,7 +293,7 @@ export default function TickersPage() {
               {topTab === 'thematic' && (
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                    <FilterLabel locale={locale}>
                       {t('tickers_ranked.filter_horizon')}
                     </FilterLabel>
                   }
@@ -314,7 +314,7 @@ export default function TickersPage() {
               {groups.length > 0 && (
                 <FilterPillRow
                   label={
-                    <FilterLabel locale={locale} minWidth={locale === 'zh' ? 24 : 44}>
+                    <FilterLabel locale={locale}>
                       {t('tickers_ranked.filter_sector')}
                     </FilterLabel>
                   }
@@ -336,7 +336,7 @@ export default function TickersPage() {
                   ))}
                 </FilterPillRow>
               )}
-            </Flex>
+            </div>
 
             {loading && <TickerRowSkeletonList count={10} />}
 

@@ -1364,16 +1364,33 @@
 .radar-page .crumbs .sep { color: var(--ink-4); }
 .radar-page .crumbs .cur { color: var(--ink); }
 
+/* ===== Topbar upper mask · bg fill above topbar (covers page-top leak) ===== */
+.topbar-glass::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: 100%;
+  height: 32px;
+  background: var(--bg);
+  pointer-events: none;
+  box-shadow: none;
+  z-index: 1;
+}
+
+/* ===== Filters bar · per-page grid (label column auto-sized to longest label) ===== */
+.radar-page .filters-bar {
+  --filter-col-gap: 24px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: var(--filter-col-gap);
+  row-gap: 10px;
+  align-items: center;
+}
+
 /* ===== Filter pill row · horizontal scroll ===== */
 .radar-page .filter-pill-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-}
-.radar-page .filter-pill-row > :first-child {
-  flex: 0 0 auto;
+  display: contents;
 }
 .radar-page .filter-pill-scroll {
   position: relative;
