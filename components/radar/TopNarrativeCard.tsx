@@ -298,14 +298,9 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
                 </Text>
               </Col>
               <Col xs={24} sm={16}>
-                <Flex justify="space-between" align="baseline">
-                  <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none' }}>
-                    {t('narratives.current_progress')}
-                  </Text>
-                  <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>
-                    {t('narratives.day_of_expected', { days: th.days_hot, total: expectedDays })}
-                  </Text>
-                </Flex>
+                <Text style={{ fontSize: 10, color: token.colorTextTertiary, letterSpacing: '0.05em', textTransform: 'none' }}>
+                  {t('narratives.current_progress')}
+                </Text>
                 <Flex align="baseline" gap={6} style={{ marginTop: 4 }}>
                   <Text style={{ fontSize: 22, fontWeight: 600, color: token.colorText, lineHeight: 1 }}>
                     {t('narratives.day_short', { days: th.days_hot })}

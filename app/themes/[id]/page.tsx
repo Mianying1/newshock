@@ -1001,8 +1001,7 @@ export default function ThemeDetailPage() {
                     <div
                       className="scroll-x-faint"
                       style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${pb.historical_cases.length + 1}, minmax(240px, 1fr))`,
+                        display: 'flex',
                         gap: 12,
                         alignItems: 'stretch',
                         overflowX: 'auto',
@@ -1027,7 +1026,7 @@ export default function ThemeDetailPage() {
                                 minWidth: 0,
                               },
                             }}
-                            style={{ height: '100%', overflow: 'hidden', minWidth: 0 }}
+                            style={{ flex: '1 0 240px', height: 'auto', overflow: 'hidden', minWidth: 0 }}
                           >
                             <Text
                               strong
@@ -1070,11 +1069,11 @@ export default function ThemeDetailPage() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                               <Text
                                 style={{
+                                  fontFamily: token.fontFamilyCode,
                                   fontSize: 10,
-                                  fontWeight: 600,
                                   letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
                                   textTransform: 'none',
-                                  color: token.colorTextQuaternary,
+                                  color: token.colorTextTertiary,
                                 }}
                               >
                                 {t('theme_detail.peak_move_label')}
@@ -1111,11 +1110,11 @@ export default function ThemeDetailPage() {
                               >
                                 <Text
                                   style={{
+                                    fontFamily: token.fontFamilyCode,
                                     fontSize: 10,
-                                    fontWeight: 600,
                                     letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
                                     textTransform: 'none',
-                                    color: token.colorTextQuaternary,
+                                    color: token.colorTextTertiary,
                                   }}
                                 >
                                   {t('theme_detail.exit_reason_label')}
@@ -1160,40 +1159,58 @@ export default function ThemeDetailPage() {
                             size="small"
                             styles={{
                               body: {
-                                padding: '12px 14px 12px 16px',
+                                padding: '14px 16px',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: 8,
+                                gap: 12,
+                                overflow: 'hidden',
+                                minWidth: 0,
                               },
                             }}
                             style={{
-                              height: '100%',
-                              borderColor: token.colorBorder,
-                              borderLeft: `3px solid ${stageColor}`,
+                              flex: '1 0 240px',
+                              height: 'auto',
+                              overflow: 'hidden',
+                              minWidth: 0,
                               background: token.colorBgContainer,
                               position: 'relative',
                             }}
                           >
-                            <div
-                              style={{
-                                position: 'absolute',
-                                top: -1,
-                                right: -1,
-                                padding: '2px 8px',
-                                fontSize: 9.5,
-                                letterSpacing: '0.12em',
-                                textTransform: 'none',
-                                fontFamily: token.fontFamilyCode,
-                                fontWeight: 700,
-                                color: token.colorBgContainer,
-                                background: token.colorText,
-                                borderTopRightRadius: token.borderRadiusLG,
-                                borderBottomLeftRadius: token.borderRadiusLG,
-                              }}
-                            >
-                              {t('theme_detail.current_badge')}
-                            </div>
+                            <Flex align="center" gap={10} wrap style={{ rowGap: 6 }}>
+                              <span
+                                style={{
+                                  fontFamily: token.fontFamilyCode,
+                                  fontSize: 10,
+                                  fontWeight: 600,
+                                  letterSpacing: '0.12em',
+                                  color: token.colorTextSecondary,
+                                  background: token.colorFillSecondary,
+                                  padding: '2px 8px',
+                                  borderRadius: 4,
+                                  lineHeight: 1.4,
+                                }}
+                              >
+                                {t('theme_detail.current_badge')}
+                              </span>
+                              {stageLabel && (
+                                <span
+                                  style={{
+                                    fontFamily: token.fontFamilyCode,
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    letterSpacing: '0.06em',
+                                    color: stageColor,
+                                    background: `${stageColor}1A`,
+                                    padding: '2px 9px',
+                                    borderRadius: 4,
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  {stageLabel}
+                                </span>
+                              )}
+                            </Flex>
                             <Text
                               strong
                               style={{
@@ -1201,10 +1218,9 @@ export default function ThemeDetailPage() {
                                 WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
                                 overflow: 'hidden',
-                                fontSize: 13,
+                                fontSize: 14,
                                 color: token.colorText,
-                                lineHeight: 1.4,
-                                paddingRight: 48,
+                                lineHeight: 1.35,
                                 wordBreak: 'break-word',
                               }}
                               title={locale === 'zh' ? (theme.name_zh || theme.name) : theme.name}
@@ -1231,69 +1247,26 @@ export default function ThemeDetailPage() {
                               <ClockCircleOutlined style={{ fontSize: 10, color: token.colorTextTertiary }} />
                               Day {theme.days_hot}{range ? ` / ${range[1]}${dayUnit}` : ''}
                             </span>
-                            {stageLabel && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                <Text
-                                  style={{
-                                    fontSize: 10,
-                                    fontWeight: 600,
-                                    letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                    textTransform: 'none',
-                                    color: token.colorTextQuaternary,
-                                  }}
-                                >
-                                  {t('theme_detail.current_stage')}
-                                </Text>
-                                <span
-                                  style={{
-                                    alignSelf: 'flex-start',
-                                    fontFamily: token.fontFamilyCode,
-                                    fontSize: 11,
-                                    fontWeight: 600,
-                                    letterSpacing: '0.06em',
-                                    color: stageColor,
-                                    background: `${stageColor}1A`,
-                                    padding: '2px 9px',
-                                    borderRadius: 4,
-                                  }}
-                                >
-                                  {stageLabel}
-                                </span>
-                              </div>
-                            )}
                             {(() => {
                               const summary = pickField(locale, theme.summary, theme.summary_zh)
                               if (!summary) return null
                               return (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                  <Text
-                                    style={{
-                                      fontSize: 10,
-                                      fontWeight: 600,
-                                      letterSpacing: locale === 'zh' ? '0.08em' : '0.16em',
-                                      textTransform: 'none',
-                                      color: token.colorTextQuaternary,
-                                    }}
-                                  >
-                                    {t('theme_detail.current_summary')}
-                                  </Text>
-                                  <Text
-                                    style={{
-                                      display: '-webkit-box',
-                                      WebkitLineClamp: 6,
-                                      WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden',
-                                      fontSize: 12,
-                                      color: token.colorTextSecondary,
-                                      lineHeight: 1.55,
-                                      wordBreak: 'break-word',
-                                      overflowWrap: 'anywhere',
-                                    }}
-                                    title={summary}
-                                  >
-                                    {summary}
-                                  </Text>
-                                </div>
+                                <Text
+                                  style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 6,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    fontSize: 12,
+                                    color: token.colorTextSecondary,
+                                    lineHeight: 1.6,
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'anywhere',
+                                  }}
+                                  title={summary}
+                                >
+                                  {summary}
+                                </Text>
                               )
                             })()}
                             {positionPct !== null && (
@@ -1308,7 +1281,7 @@ export default function ThemeDetailPage() {
                                   <Text
                                     style={{
                                       fontFamily: token.fontFamilyCode,
-                                      fontSize: 9.5,
+                                      fontSize: 10,
                                       letterSpacing: '0.1em',
                                       textTransform: 'none',
                                       color: token.colorTextQuaternary,
@@ -1316,7 +1289,7 @@ export default function ThemeDetailPage() {
                                   >
                                     {t('theme_detail.position_label')}
                                   </Text>
-                                  <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 11.5, color: stageColor }}>
+                                  <Text strong style={{ fontFamily: token.fontFamilyCode, fontSize: 12, color: stageColor }}>
                                     {Math.round(positionPct)}%
                                   </Text>
                                 </Flex>
@@ -1526,7 +1499,7 @@ export default function ThemeDetailPage() {
                                 display: 'flex',
                                 alignItems: 'flex-start',
                                 gap: 10,
-                                fontSize: 12.5,
+                                fontSize: 13,
                                 color: token.colorTextSecondary,
                                 padding: '7px 0',
                                 borderBottom: i === signals.length - 1 ? 'none' : `1px solid ${token.colorSplit}`,
@@ -1535,16 +1508,16 @@ export default function ThemeDetailPage() {
                               <span style={{ color: markerColor, lineHeight: 1.5, flexShrink: 0, fontWeight: isTriggered ? 600 : 400 }}>{marker}</span>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                                  <span style={{ fontSize: 10.5, color: markerColor, fontWeight: 500, textTransform: 'none', letterSpacing: 0.4 }}>
+                                  <span style={{ fontSize: 11, color: markerColor, fontWeight: 500, textTransform: 'none', letterSpacing: 0.4 }}>
                                     {t(labelKey)}{triggeredAt ? ` · ${triggeredAt}` : ''}
                                   </span>
                                 </div>
                                 <span style={{ lineHeight: 1.5 }}>{signalText}</span>
                                 {signalDesc && (
-                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>{signalDesc}</span>
+                                  <span style={{ lineHeight: 1.45, fontSize: 12, color: token.colorTextTertiary }}>{signalDesc}</span>
                                 )}
                                 {evidenceLine && (
-                                  <span style={{ lineHeight: 1.45, fontSize: 11.5, color: token.colorTextTertiary }}>
+                                  <span style={{ lineHeight: 1.45, fontSize: 12, color: token.colorTextTertiary }}>
                                     {evidenceLine}
                                   </span>
                                 )}
@@ -1707,7 +1680,7 @@ function TimelineDayCard({
   return (
     <div
       style={{
-        flex: '0 0 240px',
+        flex: '1 0 240px',
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
@@ -1747,7 +1720,7 @@ function TimelineDayCard({
         <Text
           style={{
             fontFamily: token.fontFamilyCode,
-            fontSize: 10.5,
+            fontSize: 11,
             color: token.colorTextQuaternary,
             letterSpacing: '0.04em',
           }}
@@ -1758,7 +1731,7 @@ function TimelineDayCard({
         {events.length > 1 && (
           <Text
             style={{
-              fontSize: 10.5,
+              fontSize: 11,
               color: token.colorTextQuaternary,
               fontFamily: token.fontFamilyCode,
             }}
@@ -1782,7 +1755,7 @@ function TimelineDayCard({
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                fontSize: 12.5,
+                fontSize: 13,
                 color: isUntranslated ? token.colorTextSecondary : token.colorText,
                 lineHeight: 1.45,
               }}
@@ -1791,7 +1764,7 @@ function TimelineDayCard({
                 <span
                   style={{
                     display: 'inline-block',
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: 600,
                     letterSpacing: '0.1em',
                     color: token.colorTextQuaternary,
@@ -1834,7 +1807,7 @@ function TimelineDayCard({
                   <span title={e.headline}>{headlineNode}</span>
                 )}
                 {e.source_name && (
-                  <Text style={{ fontSize: 10.5, color: token.colorTextQuaternary }}>
+                  <Text style={{ fontSize: 11, color: token.colorTextQuaternary }}>
                     {getDisplayPublisher(e.source_name, e.source_url)}
                   </Text>
                 )}
@@ -1873,7 +1846,7 @@ function TimelineDayCard({
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
-                      fontSize: 12.5,
+                      fontSize: 13,
                       color: isUntranslated ? token.colorTextSecondary : token.colorText,
                       lineHeight: 1.45,
                     }}
@@ -1882,7 +1855,7 @@ function TimelineDayCard({
                       <span
                         style={{
                           display: 'inline-block',
-                          fontSize: 9,
+                          fontSize: 10,
                           fontWeight: 600,
                           letterSpacing: '0.1em',
                           color: token.colorTextQuaternary,
@@ -1925,7 +1898,7 @@ function TimelineDayCard({
                         <span title={e.headline}>{headlineNode}</span>
                       )}
                       {e.source_name && (
-                        <Text style={{ fontSize: 10.5, color: token.colorTextQuaternary }}>
+                        <Text style={{ fontSize: 11, color: token.colorTextQuaternary }}>
                           {getDisplayPublisher(e.source_name, e.source_url)}
                         </Text>
                       )}
@@ -2177,7 +2150,7 @@ function ThemeEventSidebar({
                       <Text
                         style={{
                           fontFamily: token.fontFamilyCode,
-                          fontSize: 10.5,
+                          fontSize: 11,
                           color: token.colorTextTertiary,
                         }}
                       >
@@ -2186,7 +2159,7 @@ function ThemeEventSidebar({
                       <Tag
                         style={{
                           fontFamily: token.fontFamilyCode,
-                          fontSize: 9.5,
+                          fontSize: 10,
                           fontWeight: 600,
                           letterSpacing: '0.08em',
                           textTransform: 'none',
@@ -2206,7 +2179,7 @@ function ThemeEventSidebar({
                           href={c.source_url}
                           style={{
                             color: token.colorText,
-                            fontSize: 12.5,
+                            fontSize: 13,
                             lineHeight: 1.4,
                             textDecoration: 'none',
                           }}
@@ -2214,7 +2187,7 @@ function ThemeEventSidebar({
                           {headline}
                         </a>
                       ) : (
-                        <Text style={{ color: token.colorText, fontSize: 12.5, lineHeight: 1.4 }}>
+                        <Text style={{ color: token.colorText, fontSize: 13, lineHeight: 1.4 }}>
                           {headline}
                         </Text>
                       )
@@ -2239,7 +2212,7 @@ function ThemeEventSidebar({
                     {isExp && reasoning && (
                       <div
                         style={{
-                          fontSize: 11.5,
+                          fontSize: 12,
                           color: token.colorTextSecondary,
                           paddingLeft: 10,
                           borderLeft: `2px solid ${token.colorBorderSecondary}`,
@@ -2368,7 +2341,7 @@ function TierColumn({
           >
             Tier {tier}
           </span>
-          <Text strong style={{ fontSize: 13.5, color: token.colorText }}>
+          <Text strong style={{ fontSize: 14, color: token.colorText }}>
             {title}
           </Text>
           <Tooltip
@@ -2376,7 +2349,7 @@ function TierColumn({
             overlayInnerStyle={{ padding: '12px 14px' }}
             title={
               tier === 3 ? (
-                <div style={{ fontSize: 11.5, lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, lineHeight: 1.6 }}>
                   <div
                     style={{
                       fontSize: 12,
@@ -2401,7 +2374,7 @@ function TierColumn({
                   </div>
                 </div>
               ) : (
-                <div style={{ fontSize: 11.5, lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, lineHeight: 1.6 }}>
                   <div
                     style={{
                       fontSize: 12,
@@ -2460,7 +2433,7 @@ function TierColumn({
                 padding: '3px 9px',
                 cursor: 'pointer',
                 fontFamily: token.fontFamilyCode,
-                fontSize: 10.5,
+                fontSize: 11,
                 lineHeight: 1,
                 letterSpacing: '0.04em',
                 color: token.colorTextSecondary,
@@ -2471,7 +2444,7 @@ function TierColumn({
               <span>{expanded ? t('theme_detail.collapse') : `+${items.length - collapsedLimit}`}</span>
               <DownOutlined
                 style={{
-                  fontSize: 9,
+                  fontSize: 10,
                   transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 240ms cubic-bezier(0.22, 0.9, 0.32, 1)',
                 }}
@@ -2479,7 +2452,7 @@ function TierColumn({
             </button>
           )}
         </Flex>
-        <Text style={{ display: 'block', fontSize: 11.5, color: token.colorTextTertiary, lineHeight: 1.5 }}>
+        <Text style={{ display: 'block', fontSize: 12, color: token.colorTextTertiary, lineHeight: 1.5 }}>
           {subtitle}
         </Text>
       </div>
@@ -2627,7 +2600,7 @@ function TickerTile({
                   color="warning"
                   style={{
                     margin: 0,
-                    fontSize: 9.5,
+                    fontSize: 10,
                     lineHeight: 1.3,
                     padding: '0 5px',
                     borderRadius: 3,
