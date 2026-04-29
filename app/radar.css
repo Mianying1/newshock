@@ -1364,18 +1364,19 @@
 .radar-page .crumbs .sep { color: var(--ink-4); }
 .radar-page .crumbs .cur { color: var(--ink); }
 
-/* ===== Topbar upper mask · bg fill above topbar (covers page-top leak) ===== */
-.topbar-glass::before {
-  content: '';
-  position: absolute;
-  left: -1px;
-  right: -1px;
-  bottom: 100%;
-  height: 32px;
+/* ===== Topbar upper mask · sibling div rendered before topbar so topbar paints on top.
+   Sticky top:0 keeps it pinned at viewport top. margin-bottom:-20px cancels its layout
+   contribution so the topbar still starts at margin-top:14. height 20 = 14px gap above
+   topbar (top:14) + 6px overlap into topbar's top edge. ===== */
+.radar-page .topbar-upper-mask {
+  position: sticky;
+  top: 0;
+  z-index: 28;
+  height: 20px;
+  margin: 0 0 -20px 0;
   background: var(--bg);
   pointer-events: none;
-  box-shadow: none;
-  z-index: 1;
+  will-change: transform;
 }
 
 /* ===== Filters bar · per-page grid (label column auto-sized to longest label) ===== */
