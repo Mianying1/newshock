@@ -101,7 +101,7 @@ export function Topbar({ sidePad }: TopbarProps) {
           transform: hidden
             ? 'translate3d(0, -100%, 0)'
             : 'translate3d(0, 0, 0)',
-          transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
+          transition: 'transform 560ms cubic-bezier(0.32, 0.72, 0.24, 1)',
         }}
       />
     <Header

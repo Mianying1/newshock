@@ -1661,8 +1661,8 @@
   }
   body[data-scroll-hidden="true"] .radar-page .filters-bar {
     transform: translate3d(0, calc(-100% - 88px), 0);
-    /* Hide is smooth — consistent with the topbar's 320ms slide. */
-    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    /* Hide is smooth — consistent with the topbar's 560ms slide. */
+    transition: transform 560ms cubic-bezier(0.32, 0.72, 0.24, 1);
     pointer-events: none;
   }
   /* Solid bg strip behind the y=0..88 slot when scrolled. Covers cards from showing

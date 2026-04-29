@@ -1000,6 +1000,14 @@ export default function ThemeDetailPage() {
                     <div style={sublabelStyle}>{t('theme_detail.historical_cases')}</div>
                     <div
                       className="scroll-x-faint"
+                      ref={(el) => {
+                        if (el && el.dataset.initialized !== 'true') {
+                          el.dataset.initialized = 'true'
+                          requestAnimationFrame(() => {
+                            el.scrollLeft = el.scrollWidth
+                          })
+                        }
+                      }}
                       style={{
                         display: 'flex',
                         gap: 12,
