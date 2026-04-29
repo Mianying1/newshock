@@ -14,11 +14,10 @@ import {
   theme,
 } from 'antd'
 import { EyeFilled } from '@ant-design/icons'
-import type { ThemeRadarItem, ExposureDirection, ArchetypePlaybook } from '@/types/recommendations'
+import type { ThemeRadarItem, ArchetypePlaybook } from '@/types/recommendations'
 import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { useField, useJsonField } from '@/lib/useField'
-import { arrowColor } from '@/lib/category-colors'
 import { formatRelativeTime } from '@/lib/utils'
 import { FocusLevelBadge } from '@/components/shared/FocusLevelBadge'
 import { HorizonBadge } from '@/components/shared/HorizonBadge'
@@ -39,12 +38,6 @@ interface TopNarrativeCardProps {
   theme: ThemeRadarItem
   rank: number
   variant: 'hero' | 'compact'
-}
-
-function directionArrow(dir: ExposureDirection): { glyph: string; color: string } | null {
-  if (dir === 'benefits') return { glyph: '▲', color: arrowColor.benefits }
-  if (dir === 'headwind') return { glyph: '▼', color: arrowColor.headwind }
-  return null
 }
 
 const RANK_GLYPH = ['①', '②', '③']
@@ -408,28 +401,23 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               }}
             >
               <Space wrap size={[6, 6]}>
-                {heroTickers.map((r) => {
-                  const arrow = directionArrow(r.exposure_direction)
-                  return (
-                    <Tag
-                      key={r.ticker_symbol}
-                      style={{
-                        borderColor: token.colorBorder,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        padding: '3px 10px',
-                        margin: 0,
-                        borderRadius: 4,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 5,
-                      }}
-                    >
-                      ${r.ticker_symbol}
-                      {arrow && <span style={{ color: arrow.color, fontSize: 10 }}>{arrow.glyph}</span>}
-                    </Tag>
-                  )
-                })}
+                {heroTickers.map((r) => (
+                  <Tag
+                    key={r.ticker_symbol}
+                    style={{
+                      borderColor: token.colorBorder,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      padding: '3px 10px',
+                      margin: 0,
+                      borderRadius: 4,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    ${r.ticker_symbol}
+                  </Tag>
+                ))}
                 {heroOverflow > 0 && (
                   <Text style={{ fontSize: 12, color: token.colorTextTertiary }}>+{heroOverflow} {t('narratives.more_suffix')}</Text>
                 )}
@@ -568,32 +556,25 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
         <div style={{ marginTop: 16 }}>
           {visibleTickers.length > 0 && (
             <Flex wrap gap={6} align="center" style={{ marginBottom: 10 }}>
-              {visibleTickers.map((r) => {
-                const arrow = directionArrow(r.exposure_direction)
-                return (
-                  <span
-                    key={r.ticker_symbol}
-                    style={{
-                      backgroundColor: token.colorFillAlter,
-                      color: token.colorText,
-                      border: `1px solid ${token.colorBorder}`,
-                      fontSize: 11,
-                      fontWeight: 500,
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    ${r.ticker_symbol}
-                    {arrow && (
-                      <span style={{ color: arrow.color, fontSize: 9 }}>{arrow.glyph}</span>
-                    )}
-                  </span>
-                )
-              })}
+              {visibleTickers.map((r) => (
+                <span
+                  key={r.ticker_symbol}
+                  style={{
+                    backgroundColor: token.colorFillAlter,
+                    color: token.colorText,
+                    border: `1px solid ${token.colorBorder}`,
+                    fontSize: 11,
+                    fontWeight: 500,
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  ${r.ticker_symbol}
+                </span>
+              ))}
               {overflow > 0 && (
                 <Text style={{ fontSize: 11, color: token.colorTextTertiary }}>+{overflow} {t('narratives.more_suffix')}</Text>
               )}

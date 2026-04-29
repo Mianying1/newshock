@@ -180,7 +180,7 @@ export function Topbar({ sidePad }: TopbarProps) {
           </span>
         </Button>
         <Button
-          className="topbar-iconbtn"
+          className="topbar-iconbtn topbar-themebtn"
           type="text"
           aria-label={t(
             mode === 'dark' ? 'topbar.switch_light' : 'topbar.switch_dark',
