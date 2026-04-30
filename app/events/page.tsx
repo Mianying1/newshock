@@ -27,6 +27,7 @@ import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
 import { FilterLabel } from '@/components/shared/FilterLabel'
 import { FilterPillRow } from '@/components/shared/FilterPillRow'
+import { FilterSheetSelect } from '@/components/shared/FilterSheetSelect'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ClockIcon } from '@/components/shared/NavIcons'
 import { useI18n } from '@/lib/i18n-context'
@@ -538,32 +539,35 @@ export default function EventsPage() {
               </FilterPillRow>
 
               <FilterLabel locale={locale}>{t('events_page.filter_source')}</FilterLabel>
-              <Select
+              <FilterSheetSelect
                 mode="multiple"
                 allowClear
                 variant="filled"
                 className="filter-select"
                 suffixIcon={<ChevronDownIcon />}
                 placeholder={t('events_page.all_sources')}
+                title={t('events_page.filter_source')}
                 value={selectedSources}
                 onChange={setSelectedSources}
                 options={sourceOptions}
-                style={{ width: 240, justifySelf: 'start' }}
+                style={{ justifySelf: 'start' }}
+                width={240}
                 maxTagCount="responsive"
               />
 
               <FilterLabel locale={locale}>{t('events_page.filter_theme')}</FilterLabel>
-              <Select
+              <FilterSheetSelect
                 variant="filled"
                 className="filter-select"
                 suffixIcon={<ChevronDownIcon />}
                 value={themeId}
                 onChange={setThemeId}
                 options={themeOptions}
-                style={{ width: 240, justifySelf: 'start' }}
+                style={{ justifySelf: 'start' }}
+                width={240}
                 showSearch
-                optionFilterProp="label"
                 placeholder={t('events_page.all_themes')}
+                title={t('events_page.filter_theme')}
               />
             </div>
 

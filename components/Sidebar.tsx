@@ -2,33 +2,17 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import useSWR from 'swr'
 import { theme } from 'antd'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { useI18n } from '@/lib/i18n-context'
-import { formatMinutesAgo } from '@/lib/utils'
 import { RadarIcon, LayersIcon, TrendingUpIcon, ClockIcon } from '@/components/shared/NavIcons'
 
 const TABBAR_INDEX_KEY = 'newshock:mobile-tab-index'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
-
-interface Overview {
-  updated_minutes: number | null
-}
 
 export function Sidebar() {
   const { t } = useI18n()
   const pathname = usePathname() ?? '/'
   const { token } = theme.useToken()
-  const { data } = useSWR<Overview>('/api/meta/overview', fetcher, {
-    refreshInterval: 60_000,
-  })
-
-  const lastSync =
-    data?.updated_minutes !== null && data?.updated_minutes !== undefined
-      ? formatMinutesAgo(data.updated_minutes, t)
-      : '—'
 
   const items: { href: string; labelKey: string; Icon: () => JSX.Element }[] = [
     { href: '/', labelKey: 'sidebar.radar', Icon: RadarIcon },
@@ -136,15 +120,6 @@ export function Sidebar() {
           })}
         </div>
 
-        <div className="sidebar-foot">
-          <div className="line">
-            <span>
-              <span className="pulse" aria-hidden />
-              <span className="k">{t('sidebar.last_sync')}</span>
-              {lastSync}
-            </span>
-          </div>
-        </div>
       </aside>
 
       <nav className="mobile-tabbar" aria-label="Primary">

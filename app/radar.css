@@ -308,28 +308,29 @@
 }
 
 .radar-page .sidebar-foot {
-  margin: auto 4px 4px;
-  padding: 14px 14px 12px;
-  font-size: 10.5px;
+  margin: auto 0 6px;
+  padding: 12px 14px 10px;
+  font-size: 11px;
   color: var(--ink-3);
-  line-height: 1.5;
-  background: var(--bg-sunk);
-  border: 1px solid var(--line-2);
-  border-radius: 12px;
-}
-.radar-page .sidebar-foot .k {
-  color: var(--ink-4);
-  margin-right: 4px;
-  letter-spacing: 0.04em;
+  line-height: 1.4;
 }
 .radar-page .sidebar-foot .line {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 6px;
+  gap: 8px;
 }
-.radar-page .sidebar-foot .line:first-child {
-  margin-top: 0;
+.radar-page .sidebar-foot .lhs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.radar-page .sidebar-foot .k {
+  color: var(--ink-4);
+}
+.radar-page .sidebar-foot .v {
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 .radar-page .sidebar-foot .pulse {
   display: inline-block;
@@ -337,7 +338,6 @@
   height: 6px;
   border-radius: 50%;
   background: var(--up);
-  margin-right: 6px;
   vertical-align: middle;
   position: relative;
   animation: sidebar-pulse 2.4s ease-in-out infinite;
