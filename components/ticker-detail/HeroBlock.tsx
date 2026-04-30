@@ -55,12 +55,12 @@ function MetaTag({
     <Tag
       style={{
         margin: 0,
-        background: token.colorFillAlter,
-        color: token.colorTextSecondary,
-        border: `1px solid ${token.colorBorder}`,
+        background: token.colorFillSecondary,
+        color: token.colorText,
+        border: href ? `1px solid ${token.colorBorderSecondary}` : 'none',
         fontSize: 12,
         fontWeight: 500,
-        padding: '2px 10px',
+        padding: '3px 10px',
         borderRadius: 4,
         lineHeight: 1.5,
         display: 'inline-flex',

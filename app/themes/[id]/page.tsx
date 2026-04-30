@@ -35,7 +35,6 @@ import { useI18n } from '@/lib/i18n-context'
 import { useThemeMode } from '@/lib/providers'
 import { pickField } from '@/lib/useField'
 import { formatRelativeTime } from '@/lib/utils'
-import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { getDisplayPublisher } from '@/lib/source-display'
 import type {
   CatalystEvent,
@@ -333,30 +332,32 @@ export default function ThemeDetailPage() {
                     <Tag
                       style={{
                         margin: 0,
-                        background: token.colorFillAlter,
-                        color: token.colorTextSecondary,
-                        border: `1px solid ${token.colorBorder}`,
+                        background: token.colorFillSecondary,
+                        color: token.colorText,
+                        border: 'none',
                         fontSize: 12,
                         fontWeight: 500,
-                        padding: '2px 10px',
+                        padding: '3px 10px',
                         borderRadius: 4,
                         lineHeight: 1.5,
+                        cursor: 'default',
                       }}
                     >
-                      {formatCategoryLabel(theme.category)}
+                      {theme.category ? t(`categories.${theme.category}`) : ''}
                     </Tag>
                     {theme.theme_tier === 'umbrella' && (
                       <Tag
                         style={{
                           margin: 0,
-                          background: token.colorFillAlter,
-                          color: token.colorTextSecondary,
-                          border: `1px solid ${token.colorBorder}`,
+                          background: token.colorFillSecondary,
+                          color: token.colorText,
+                          border: 'none',
                           fontSize: 12,
                           fontWeight: 500,
-                          padding: '2px 10px',
+                          padding: '3px 10px',
                           borderRadius: 4,
                           lineHeight: 1.5,
+                          cursor: 'default',
                         }}
                       >
                         {t('theme_detail.badge_umbrella')}

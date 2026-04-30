@@ -31,15 +31,16 @@ export function HorizonBadge({ typicalDurationDaysUpper }: HorizonBadgeProps) {
   return (
     <Tag
       style={{
-        background: token.colorFillAlter,
-        color: token.colorTextSecondary,
-        border: `1px solid ${token.colorBorder}`,
+        background: token.colorFillSecondary,
+        color: token.colorText,
+        border: 'none',
         borderRadius: 4,
-        padding: '2px 10px',
+        padding: '3px 10px',
         fontSize: 12,
         fontWeight: 500,
         margin: 0,
         lineHeight: 1.5,
+        cursor: 'default',
       }}
     >
       {t(LABEL_KEY[horizon])}

@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
 import type { ThemeRadarItem } from '@/types/recommendations'
-import { formatCategoryLabel } from '@/lib/theme-formatter'
 import { formatRelativeTime } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n-context'
 import { useField } from '@/lib/useField'
@@ -61,8 +60,8 @@ export default function ThemeCard({ theme }: { theme: ThemeRadarItem }) {
 
       {/* Row 2: Category + Status badges */}
       <div className="flex items-center gap-1.5 mb-1.5">
-        <span className="inline-flex items-center px-2 py-0.5 text-xs rounded border bg-zinc-50 text-zinc-600 border-zinc-200">
-          {formatCategoryLabel(theme.category)}
+        <span className="inline-flex items-center px-2 py-0.5 text-xs rounded bg-zinc-100 text-zinc-800">
+          {theme.category ? t(`categories.${theme.category}`) : ''}
         </span>
         <span className={`inline-flex items-center px-2 py-0.5 text-xs rounded border ${statusClass}`}>
           {t(`theme_card.${statusKey}`)}

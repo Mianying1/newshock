@@ -73,7 +73,6 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
   const { mode } = useThemeMode()
   const isDark = mode === 'dark'
   const themeName = useField(th, 'name')
-  const altName = locale === 'zh' ? th.name : th.name_zh
   const summary = useField(th, 'summary')
   const pb = useJsonField<ThemeRadarItem, ArchetypePlaybook>(th, 'archetype_playbook')
 
@@ -172,9 +171,6 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
           >
             {themeName}
           </Title>
-          {altName && (
-            <Text style={{ fontSize: 14, color: token.colorTextTertiary, display: 'block' }}>{altName}</Text>
-          )}
 
           {/* Category + meta */}
           <Space size={12} wrap style={{ marginTop: 10, marginBottom: 14 }}>
@@ -182,13 +178,14 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               <Tag
                 style={{
                   margin: 0,
-                  background: token.colorFillAlter,
-                  color: token.colorTextSecondary,
-                  border: `1px solid ${token.colorBorder}`,
+                  background: token.colorFillSecondary,
+                  color: token.colorText,
+                  border: 'none',
                   fontSize: 12,
-                  padding: '2px 10px',
+                  padding: '3px 10px',
                   borderRadius: 4,
                   lineHeight: 1.5,
+                  cursor: 'default',
                 }}
               >
                 {categoryLabel}
@@ -523,13 +520,14 @@ export function TopNarrativeCard({ theme: th, rank, variant }: TopNarrativeCardP
               <Tag
                 style={{
                   margin: 0,
-                  background: token.colorFillAlter,
-                  color: token.colorTextSecondary,
-                  border: `1px solid ${token.colorBorder}`,
+                  background: token.colorFillSecondary,
+                  color: token.colorText,
+                  border: 'none',
                   fontSize: 12,
-                  padding: '2px 10px',
+                  padding: '3px 10px',
                   borderRadius: 4,
                   lineHeight: 1.5,
+                  cursor: 'default',
                 }}
               >
                 {categoryLabel}
