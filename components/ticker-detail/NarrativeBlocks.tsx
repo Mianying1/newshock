@@ -1,6 +1,8 @@
 'use client'
 
 import { Card, Col, Flex, Row, Typography, theme } from 'antd'
+import { useI18n } from '@/lib/i18n-context'
+import { fontFamilySystem } from '@/lib/design-tokens'
 
 const { Text, Paragraph } = Typography
 const { useToken } = theme
@@ -28,6 +30,7 @@ function Block({
   body: string
 }) {
   const { token } = useToken()
+  const { t } = useI18n()
   const accent =
     variant === 'tension'
       ? token.colorTextTertiary
@@ -65,7 +68,7 @@ function Block({
         </span>
         <Text
           style={{
-            fontFamily: token.fontFamilyCode,
+            fontFamily: fontFamilySystem,
             fontSize: 10.5,
             fontWeight: 600,
             letterSpacing: '0.16em',
@@ -82,6 +85,11 @@ function Block({
           fontSize: 13,
           lineHeight: 1.65,
           color: token.colorText,
+        }}
+        ellipsis={{
+          rows: 3,
+          expandable: 'collapsible',
+          symbol: (expanded) => (expanded ? t('common.collapse') : t('common.expand')),
         }}
       >
         {body}

@@ -4,6 +4,7 @@ import { Fragment } from 'react'
 import Link from 'next/link'
 import { Flex, Tag, Tooltip, Typography, theme } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
+import { StructuredTooltipContent } from '@/components/shared/StructuredTooltip'
 
 const { Title, Text } = Typography
 const { useToken } = theme
@@ -155,7 +156,10 @@ function ScoreStat({
       >
         {label}
         {tooltip && (
-          <Tooltip title={tooltip}>
+          <Tooltip
+            title={<StructuredTooltipContent description={tooltip} />}
+            overlayStyle={{ maxWidth: 340 }}
+          >
             <InfoCircleOutlined
               style={{
                 fontSize: 10,

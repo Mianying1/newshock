@@ -12,6 +12,7 @@ import {
 } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { useI18n } from '@/lib/i18n-context'
+import { StructuredTooltipContent } from '@/components/shared/StructuredTooltip'
 
 const { Text, Paragraph } = Typography
 const { useToken } = theme
@@ -77,6 +78,7 @@ function scoreColor(score: number): string {
   return AMBER
 }
 
+
 export function MarketRegimeCard() {
   const { t } = useI18n()
   const { token } = useToken()
@@ -138,9 +140,9 @@ export function MarketRegimeCard() {
               / {TOTAL_MAX}
             </Text>
             <Tooltip
-              title={t('market_regime.description')}
+              title={<StructuredTooltipContent description={t('market_regime.description')} />}
               placement="top"
-              overlayStyle={{ maxWidth: 320 }}
+              overlayStyle={{ maxWidth: 340 }}
             >
               <InfoCircleOutlined
                 style={{
@@ -190,6 +192,11 @@ export function MarketRegimeCard() {
         style={{
           margin: '14px 0 0',
           fontSize: token.fontSize,
+        }}
+        ellipsis={{
+          rows: 2,
+          expandable: 'collapsible',
+          symbol: (expanded) => (expanded ? t('common.collapse') : t('common.expand')),
         }}
       >
         {note}
@@ -286,9 +293,9 @@ function DimensionCell({
               {label}
             </Text>
             <Tooltip
-              title={description}
+              title={<StructuredTooltipContent description={description} />}
               placement="top"
-              overlayStyle={{ maxWidth: 300 }}
+              overlayStyle={{ maxWidth: 340 }}
             >
               <InfoCircleOutlined
                 style={{

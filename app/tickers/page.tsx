@@ -25,6 +25,7 @@ import {
 import { Sidebar } from '@/components/Sidebar'
 import { Topbar } from '@/components/shared/Topbar'
 import { FilterPill } from '@/components/shared/FilterPill'
+import { StructuredTooltipContent } from '@/components/shared/StructuredTooltip'
 import { FilterLabel } from '@/components/shared/FilterLabel'
 import { FilterPillRow } from '@/components/shared/FilterPillRow'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -500,7 +501,10 @@ export default function TickersPage() {
                             }}
                           >
                             {scoreLabel}
-                            <Tooltip title={scoreTooltip}>
+                            <Tooltip
+                              title={<StructuredTooltipContent description={scoreTooltip} />}
+                              overlayStyle={{ maxWidth: 340 }}
+                            >
                               <InfoCircleOutlined
                                 style={{
                                   fontSize: 10,
@@ -551,7 +555,11 @@ function ScoreCountSummary({
             {s.count ?? '—'}
           </span>
           <span>{s.label}</span>
-          <Tooltip title={s.tip} placement="top" overlayStyle={{ maxWidth: 320 }}>
+          <Tooltip
+            title={<StructuredTooltipContent description={s.tip} />}
+            placement="top"
+            overlayStyle={{ maxWidth: 340 }}
+          >
             <InfoCircleOutlined
               style={{ fontSize: 12, color: tokenColor, cursor: 'pointer' }}
             />
