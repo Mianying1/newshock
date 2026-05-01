@@ -122,15 +122,19 @@ async function main() {
   const candidateByTicker = new Map(candidates.map(c => [c.ticker.toUpperCase(), c]))
   const scoredByTicker = new Map(scores.map(s => [s.ticker.toUpperCase(), s]))
 
-  const upsertRows = scores.map(s => {
+  const PCT_THRESHOLD = 25
+  const kept = scores.filter(s => (s.exposure_pct ?? 0) >= PCT_THRESHOLD)
+  const upsertRows = kept.map(s => {
     const sym = s.ticker.toUpperCase()
+    const pct = s.exposure_pct ?? 0
     return {
       theme_id: theme.id,
       ticker_symbol: sym,
       tier: s.tier,
-      exposure_pct: s.exposure_pct,
+      exposure_pct: pct,
       exposure_direction: s.exposure_direction,
-      reasoning: s.reasoning,
+      role_reasoning: s.reasoning,
+      confidence_band: pct >= 75 ? 'high' : 'medium',
       source: 'industry_retrieval' as const,
       last_confirmed_at: new Date().toISOString(),
     }

@@ -63,6 +63,7 @@ interface ThemeOutcome {
   inserted?: number
   updated?: number
   legacy_kept?: number
+  dropped_low_pct?: number
   t1?: number
   t2?: number
   t3?: number
@@ -181,25 +182,40 @@ async function processTheme(theme: ThemeRow): Promise<ThemeOutcome> {
     .eq('theme_id', theme.id)
   const existingSet = new Set((existingData ?? []).map((r: { ticker_symbol: string }) => r.ticker_symbol.toUpperCase()))
 
-  const upsertRows = scores.map(s => ({
-    theme_id: theme.id,
-    ticker_symbol: s.ticker.toUpperCase(),
-    tier: s.tier,
-    exposure_pct: s.exposure_pct,
-    exposure_direction: s.exposure_direction,
-    reasoning: s.reasoning,
-    source: 'industry_retrieval' as const,
-    last_confirmed_at: new Date().toISOString(),
-  }))
+  // LLM-judged below the threshold means "not really exposed to this theme" —
+  // drop instead of writing as a low-confidence row, since the theme detail
+  // page filters by tier 1/2/3 (no UI for low-confidence). Threshold of 25
+  // chosen empirically from sample (pct<15 are clearly off-topic, 15-24 are
+  // weak excuses); see scripts/_backfill-reasoning-and-threshold.ts.
+  const PCT_THRESHOLD = 25
+  const kept = scores.filter(s => (s.exposure_pct ?? 0) >= PCT_THRESHOLD)
+  const droppedLowPct = scores.length - kept.length
+
+  const upsertRows = kept.map(s => {
+    const pct = s.exposure_pct ?? 0
+    const band = pct >= 75 ? 'high' : pct >= 50 ? 'medium' : 'medium'
+    return {
+      theme_id: theme.id,
+      ticker_symbol: s.ticker.toUpperCase(),
+      tier: s.tier,
+      exposure_pct: pct,
+      exposure_direction: s.exposure_direction,
+      role_reasoning: s.reasoning,
+      confidence_band: band,
+      source: 'industry_retrieval' as const,
+      last_confirmed_at: new Date().toISOString(),
+    }
+  })
 
   const inserts = upsertRows.filter(r => !existingSet.has(r.ticker_symbol))
   const updates = upsertRows.length - inserts.length
   out.inserted = inserts.length
   out.updated = updates
   out.legacy_kept = existingSet.size - updates
-  out.t1 = scores.filter(s => s.tier === 1).length
-  out.t2 = scores.filter(s => s.tier === 2).length
-  out.t3 = scores.filter(s => s.tier === 3).length
+  out.dropped_low_pct = droppedLowPct
+  out.t1 = kept.filter(s => s.tier === 1).length
+  out.t2 = kept.filter(s => s.tier === 2).length
+  out.t3 = kept.filter(s => s.tier === 3).length
 
   await ensureTickersExist(
     inserts.map(r => r.ticker_symbol),

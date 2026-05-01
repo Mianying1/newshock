@@ -122,16 +122,22 @@ async function main() {
   const candidateByTicker = new Map(candidates.map(c => [c.ticker.toUpperCase(), c]))
   const scoredByTicker = new Map(scores.map(s => [s.ticker.toUpperCase(), s]))
 
-  const upsertRows = scores.map(s => ({
-    theme_id: theme.id,
-    ticker_symbol: s.ticker.toUpperCase(),
-    tier: s.tier,
-    exposure_pct: s.exposure_pct,
-    exposure_direction: s.exposure_direction,
-    reasoning: s.reasoning,
-    source: 'industry_retrieval' as const,
-    last_confirmed_at: new Date().toISOString(),
-  }))
+  const PCT_THRESHOLD = 25
+  const kept = scores.filter(s => (s.exposure_pct ?? 0) >= PCT_THRESHOLD)
+  const upsertRows = kept.map(s => {
+    const pct = s.exposure_pct ?? 0
+    return {
+      theme_id: theme.id,
+      ticker_symbol: s.ticker.toUpperCase(),
+      tier: s.tier,
+      exposure_pct: pct,
+      exposure_direction: s.exposure_direction,
+      role_reasoning: s.reasoning,
+      confidence_band: pct >= 75 ? 'high' : 'medium',
+      source: 'industry_retrieval' as const,
+      last_confirmed_at: new Date().toISOString(),
+    }
+  })
 
   const inserts = upsertRows.filter(r => !existingByTicker.has(r.ticker_symbol))
   const updates = upsertRows.length - inserts.length
