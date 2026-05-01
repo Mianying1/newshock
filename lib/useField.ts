@@ -1,6 +1,18 @@
 'use client'
 import { useI18n } from './i18n-context'
 
+const CJK_RE = /[\u4e00-\u9fff\u3040-\u30ff\u3400-\u4dbf\uac00-\ud7af]/g
+
+// Some EN columns contain CJK content (data mis-storage). For EN locale we
+// suppress those so the consumer's `{value && ...}` falls through to nothing
+// rather than rendering Chinese in the English UI.
+function looksLikeCjk(s: string): boolean {
+  if (!s) return false
+  const matches = s.match(CJK_RE)
+  if (!matches) return false
+  return matches.length / s.length > 0.3
+}
+
 export function useField<T extends object>(
   item: T | null | undefined,
   field: keyof T & string
@@ -13,6 +25,7 @@ export function useField<T extends object>(
   const enStr = typeof en === 'string' ? en : ''
   const zhStr = typeof zh === 'string' ? zh : ''
   if (locale === 'zh') return zhStr || enStr
+  if (enStr && looksLikeCjk(enStr)) return ''
   return enStr
 }
 
@@ -35,5 +48,7 @@ export function pickField(
   zh: string | null | undefined
 ): string {
   if (locale === 'zh') return zh || en || ''
-  return en || ''
+  const enStr = en || ''
+  if (enStr && looksLikeCjk(enStr)) return ''
+  return enStr
 }
