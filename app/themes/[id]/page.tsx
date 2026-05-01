@@ -47,7 +47,7 @@ import { FilterPill } from '@/components/shared/FilterPill'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { ThemeCard } from '@/components/radar/ThemeCard'
 import { TickerTileColumnSkeleton } from '@/components/skeleton'
-import { stageColor as getStageColor } from '@/lib/design-tokens'
+import { stageColor as getStageColor, fontFamilySystem } from '@/lib/design-tokens'
 import '../../radar.css'
 
 const { Title, Text } = Typography
@@ -73,6 +73,29 @@ function groupKey(daysAgo: number): EventGroup {
   if (daysAgo < 7) return 'this_week'
   if (daysAgo < 14) return 'last_week'
   return 'older'
+}
+
+const HEADLINE_FALLBACK_MAX = 90
+
+function truncateHeadline(text: string | null | undefined): string {
+  if (!text) return ''
+  const trimmed = text.trim()
+  if (trimmed.length <= HEADLINE_FALLBACK_MAX) return trimmed
+  const sentenceEnd = trimmed.slice(0, HEADLINE_FALLBACK_MAX).search(/[.!?。！？](\s|$)/)
+  if (sentenceEnd > 30) return trimmed.slice(0, sentenceEnd + 1)
+  const lastSpace = trimmed.lastIndexOf(' ', HEADLINE_FALLBACK_MAX)
+  const cut = lastSpace > 40 ? lastSpace : HEADLINE_FALLBACK_MAX
+  return trimmed.slice(0, cut).trimEnd() + '…'
+}
+
+function pickHeadline(
+  e: { headline: string; short_headline?: string | null; short_headline_zh?: string | null },
+  locale: string,
+): { text: string; isUntranslated: boolean } {
+  const zh = locale === 'zh' ? e.short_headline_zh : null
+  if (zh) return { text: zh, isUntranslated: false }
+  const en = e.short_headline || truncateHeadline(e.headline)
+  return { text: en, isUntranslated: locale === 'zh' }
 }
 
 function convictionBand(score: number): 'high' | 'medium' | 'low' {
@@ -1752,10 +1775,7 @@ function TimelineDayCard({
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {events.slice(0, COLLAPSED_LIMIT).map((e) => {
-          const zhHeadline = locale === 'zh' ? e.short_headline_zh : null
-          const enHeadline = e.short_headline || e.headline
-          const shortHeadline = zhHeadline || enHeadline
-          const isUntranslated = locale === 'zh' && !zhHeadline
+          const { text: shortHeadline, isUntranslated } = pickHeadline(e, locale)
           const headlineNode = (
             <Text
               strong
@@ -1843,10 +1863,7 @@ function TimelineDayCard({
               }}
             >
               {events.slice(COLLAPSED_LIMIT).map((e) => {
-                const zhHeadline = locale === 'zh' ? e.short_headline_zh : null
-                const enHeadline = e.short_headline || e.headline
-                const shortHeadline = zhHeadline || enHeadline
-                const isUntranslated = locale === 'zh' && !zhHeadline
+                const { text: shortHeadline, isUntranslated } = pickHeadline(e, locale)
                 const headlineNode = (
                   <Text
                     strong
@@ -2340,7 +2357,7 @@ function TierColumn({
         <Flex align="center" gap={8} style={{ marginBottom: 4 }}>
           <span
             style={{
-              fontFamily: token.fontFamilyCode,
+              fontFamily: fontFamilySystem,
               fontSize: 10,
               fontWeight: 600,
               letterSpacing: '0.16em',
