@@ -1660,7 +1660,7 @@ function KeyEventsTimeline({ catalysts }: { catalysts: CatalystEvent[] }) {
           padding: '4px 2px 10px',
           scrollPaddingLeft: 2,
           scrollPaddingRight: 2,
-          alignItems: 'flex-start',
+          alignItems: 'stretch',
         }}
       >
         {days.map(([key, dayEvents]) => (
@@ -1722,7 +1722,6 @@ function TimelineDayCard({
         background: token.colorBgContainer,
         scrollSnapAlign: 'start',
         position: 'relative',
-        alignSelf: 'flex-start',
         minHeight: 220,
       }}
     >
