@@ -2,7 +2,13 @@ import type { ThemeConfig } from 'antd'
 import { theme } from 'antd'
 
 const fontFamily =
-  'var(--font-inter), "PingFang SC", "Source Han Sans CN", "Noto Sans SC", system-ui, -apple-system, sans-serif'
+  'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Source Han Sans CN", "Noto Sans SC", system-ui, sans-serif'
+
+// System-font cascade for tiny UI labels (fontSize ≤ 11 + wide letter-spacing).
+// Inter is optimized for ≥14px; at small sizes its hinting on macOS is uneven.
+// SF Pro / Segoe UI are hand-tuned for tiny UI by the OS vendor — much crisper.
+export const fontFamilySystem =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Source Han Sans CN", system-ui, sans-serif'
 
 const sharedToken = {
   borderRadius: 8,

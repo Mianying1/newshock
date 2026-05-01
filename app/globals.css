@@ -69,6 +69,23 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-variant-numeric: tabular-nums;
+  /* Cascade: Inter (loaded via next/font) → Latin system sans → CJK fonts.
+     Latin sans MUST come before PingFang SC; otherwise English chars render in
+     PingFang's Latin glyphs (a stylized serif look) during Inter's swap window. */
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'PingFang SC', 'Source Han Sans CN', 'Noto Sans SC', system-ui,
+    sans-serif;
+}
+
+/* English reading-flow tuning. CJK glyphs read fine with default metrics, so scope to lang=en. */
+html[lang="en"] body {
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}
+
+html[lang="en"] p {
+  line-height: 1.65;
+  font-variant-numeric: proportional-nums;
+  text-rendering: optimizeLegibility;
 }
 
 @layer utilities {
