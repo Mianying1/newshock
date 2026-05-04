@@ -17,14 +17,14 @@ async function main() {
   const { snapshot_date, scores } = await updateRegimeSnapshot(manual)
 
   console.log(`\n=== Market Regime ${snapshot_date} ===`)
-  console.log(`Total: ${scores.total}/12 · ${scores.label} · ${scores.guidance}`)
+  console.log(`Total: ${scores.total}/60 · ${scores.label} · ${scores.guidance}`)
   console.log('')
-  console.log(`  Earnings   ${scores.earnings.score}/2  · ${scores.earnings.reasoning}`)
-  console.log(`  Valuation  ${scores.valuation.score}/2  · ${scores.valuation.reasoning}`)
-  console.log(`  Fed        ${scores.fed.score}/2  · ${scores.fed.reasoning}`)
-  console.log(`  Economic   ${scores.economic.score}/2  · ${scores.economic.reasoning}`)
-  console.log(`  Credit     ${scores.credit.score}/2  · ${scores.credit.reasoning}`)
-  console.log(`  Sentiment  ${scores.sentiment.score}/2  · ${scores.sentiment.reasoning}`)
+  console.log(`  Earnings   ${scores.earnings.score}/10  · ${scores.earnings.reasoning}`)
+  console.log(`  Valuation  ${scores.valuation.score}/10  · ${scores.valuation.reasoning}`)
+  console.log(`  Fed        ${scores.fed.score}/10  · ${scores.fed.reasoning}`)
+  console.log(`  Economic   ${scores.economic.score}/10  · ${scores.economic.reasoning}`)
+  console.log(`  Credit     ${scores.credit.score}/10  · ${scores.credit.reasoning}`)
+  console.log(`  Sentiment  ${scores.sentiment.score}/10  · ${scores.sentiment.reasoning}`)
 }
 
 main().catch((err) => {

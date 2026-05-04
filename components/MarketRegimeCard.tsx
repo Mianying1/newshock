@@ -23,9 +23,8 @@ const SAGE = '#1B7A4F'
 const AMBER = '#A8590F'
 const CRIMSON = '#9C463B'
 
-const MULT = 5
-const DIM_MAX = 2 * MULT
-const TOTAL_MAX = 12 * MULT
+const DIM_MAX = 10
+const TOTAL_MAX = 60
 
 interface RegimeSnapshot {
   snapshot_date: string
@@ -73,8 +72,8 @@ function verdictDot(vk: VerdictKey): string {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 2) return SAGE
-  if (score <= 0) return CRIMSON
+  if (score >= 7) return SAGE
+  if (score <= 3) return CRIMSON
   return AMBER
 }
 
@@ -89,8 +88,8 @@ export function MarketRegimeCard() {
   const snap = data?.snapshot
   if (!snap) return null
 
-  const totalDisplay = snap.total_score * MULT
-  const pct = (snap.total_score / 12) * 100
+  const totalDisplay = snap.total_score
+  const pct = (snap.total_score / TOTAL_MAX) * 100
   const vk = verdictKey(snap.regime_label)
   const note = t(`market_regime.guidance_text.${snap.configuration_guidance}`)
   const regimeLabel = t(`market_regime.regime_label.${snap.regime_label}`)
@@ -245,10 +244,10 @@ function DimensionCell({
 }) {
   const { token } = useToken()
   const color = scoreColor(score)
-  const display = score * MULT
-  const pct = (score / 2) * 100
+  const display = score
+  const pct = (score / DIM_MAX) * 100
   const numberColor =
-    score === 2 ? token.colorText : score === 0 ? CRIMSON : token.colorTextSecondary
+    score >= 7 ? token.colorText : score <= 3 ? CRIMSON : token.colorTextSecondary
 
   return (
     <div

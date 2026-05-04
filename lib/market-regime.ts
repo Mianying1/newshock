@@ -22,11 +22,15 @@ export interface ManualInputs {
 }
 
 export interface DimensionScore {
-  score: 0 | 1 | 2
+  score: number // 0-10, integer
   reasoning: string
   reasoning_zh: string
   value: string
 }
+
+const clamp10 = (n: number) => Math.max(0, Math.min(10, Math.round(n)))
+
+export type InflationTrend = 'cooling' | 'stable' | 'reaccelerating'
 
 export interface EconomicDimensionScore extends DimensionScore {
   sub_indicators: {
@@ -34,7 +38,10 @@ export interface EconomicDimensionScore extends DimensionScore {
     payems_3mo_avg: number | null
     core_pce_yoy: number | null
     core_cpi_yoy: number | null
+    headline_cpi_yoy: number | null
+    ppi_yoy: number | null
     wage_growth_yoy: number | null
+    inflation_trend: InflationTrend | null
   }
 }
 
@@ -57,6 +64,8 @@ export const FRED_SERIES = {
   PAYEMS: 'PAYEMS',
   PCEPILFE: 'PCEPILFE',
   CPILFESL: 'CPILFESL',
+  CPIAUCSL: 'CPIAUCSL',
+  PPIFIS: 'PPIFIS',
   WAGES: 'CES0500000003',
   FEDFUNDS: 'FEDFUNDS',
   HY_OAS: 'BAMLH0A0HYM2',
@@ -130,6 +139,42 @@ function payrollsMonthOverMonth(obs: FREDObservation[]): number[] {
   return changes
 }
 
+// YoY of latest minus YoY of `monthsAgo` months earlier (in pp).
+// Positive ⇒ inflation reaccelerating; negative ⇒ cooling.
+function yoyDelta(obs: FREDObservation[], monthsAgo = 3): number | null {
+  const valid = obs.filter((o) => o.value !== null) as Array<{ date: string; value: number }>
+  if (valid.length < 12 + monthsAgo + 1) return null
+  const last = valid[valid.length - 1]
+  const lastYearAgo = valid[valid.length - 1 - 12]
+  const past = valid[valid.length - 1 - monthsAgo]
+  const pastYearAgo = valid[valid.length - 1 - monthsAgo - 12]
+  if (!last || !lastYearAgo || !past || !pastYearAgo) return null
+  if (lastYearAgo.value === 0 || pastYearAgo.value === 0) return null
+  const latestYoy = ((last.value - lastYearAgo.value) / lastYearAgo.value) * 100
+  const pastYoy = ((past.value - pastYearAgo.value) / pastYearAgo.value) * 100
+  return latestYoy - pastYoy
+}
+
+function classifyInflationTrend(corePce: FREDObservation[], ppi: FREDObservation[]): InflationTrend {
+  const pceDelta = yoyDelta(corePce, 3)
+  const ppiDelta = yoyDelta(ppi, 3)
+  // Reaccelerating: either gauge up ≥0.2pp over 3 months
+  if ((pceDelta !== null && pceDelta >= 0.2) || (ppiDelta !== null && ppiDelta >= 0.4)) {
+    return 'reaccelerating'
+  }
+  // Cooling: both gauges (where available) declining ≥0.2pp
+  const both = [pceDelta, ppiDelta].filter((d): d is number => d !== null)
+  if (both.length > 0 && both.every((d) => d <= -0.2)) return 'cooling'
+  return 'stable'
+}
+
+function trendArrow(delta: number | null): string {
+  if (delta === null) return ''
+  if (delta >= 0.2) return '↑'
+  if (delta <= -0.2) return '↓'
+  return '→'
+}
+
 const TREND_ZH: Record<ManualInputs['spx_eps_revision_trend'], string> = {
   up: '上调',
   stable: '持稳',
@@ -147,9 +192,10 @@ const STANCE_ZH: Record<ManualInputs['fed_cycle_stance'], string> = {
 function scoreEarnings(manual: ManualInputs): DimensionScore {
   const yoy = manual.spx_eps_yoy
   const trend = manual.spx_eps_revision_trend
-  let score: 0 | 1 | 2 = 0
-  if (yoy > 10 && trend !== 'down') score = 2
-  else if (yoy >= 5 || trend === 'stable') score = 1
+  // Base 0-7 from YoY, modifier from revision trend.
+  const yoyComp = clamp10(yoy * 0.5) // 14% YoY → 7, 20%+ → 10
+  const revisionMod = trend === 'up' ? 2 : trend === 'stable' ? 0 : -3
+  const score = clamp10(yoyComp + revisionMod)
   const reasoning = `SPX EPS YoY ${yoy.toFixed(1)}% · revisions ${trend}`
   const reasoning_zh = `标普500 EPS 同比 ${yoy.toFixed(1)}% · 盈利预期${TREND_ZH[trend]}`
   return { score, reasoning, reasoning_zh, value: `${yoy.toFixed(1)}% YoY` }
@@ -158,9 +204,12 @@ function scoreEarnings(manual: ManualInputs): DimensionScore {
 function scoreValuation(manual: ManualInputs): DimensionScore {
   const pe = manual.spx_fwd_pe
   const cape = manual.spx_cape
-  let score: 0 | 1 | 2 = 0
-  if (pe < 17 || cape < 25) score = 2
-  else if (pe <= 20 || cape <= 30) score = 1
+  // Each gauge contributes 0-5; sum = 0-10.
+  const peScore =
+    pe < 15 ? 5 : pe < 17 ? 4 : pe < 19 ? 3 : pe < 21 ? 2 : pe < 23 ? 1 : 0
+  const capeScore =
+    cape < 22 ? 5 : cape < 26 ? 4 : cape < 30 ? 3 : cape < 33 ? 2 : cape < 36 ? 1 : 0
+  const score = clamp10(peScore + capeScore)
   const reasoning = `Fwd P/E ${pe.toFixed(2)} · CAPE ${cape.toFixed(1)}`
   const reasoning_zh = `前瞻 P/E ${pe.toFixed(2)} · CAPE ${cape.toFixed(1)}`
   return { score, reasoning, reasoning_zh, value: `Fwd P/E ${pe.toFixed(2)}` }
@@ -170,10 +219,15 @@ function scoreFed(manual: ManualInputs, fedFunds: FREDObservation[]): DimensionS
   const last = latest(fedFunds)
   const rate = last?.value ?? null
   const stance = manual.fed_cycle_stance
-  let score: 0 | 1 | 2 = 0
-  if (stance === 'cutting') score = 2
-  else if (stance === 'on_hold_with_cuts_ahead' || stance === 'on_hold') score = 1
-  else score = 0
+  // Stance is the dominant factor (0-8); rate level adds 0-2.
+  const stanceScore =
+    stance === 'cutting' ? 8
+    : stance === 'on_hold_with_cuts_ahead' ? 6
+    : stance === 'on_hold' ? 4
+    : stance === 'hawkish_pivot' ? 2
+    : 0 // hiking
+  const rateMod = rate === null ? 1 : rate < 3 ? 2 : rate < 4.5 ? 1 : rate < 5.5 ? 0 : -1
+  const score = clamp10(stanceScore + rateMod)
   const rateStr = rate !== null ? `${rate.toFixed(2)}%` : 'n/a'
   const reasoning = `Fed Funds ${rateStr} · ${stance.replace(/_/g, ' ')}`
   const reasoning_zh = `联邦基金利率 ${rateStr} · ${STANCE_ZH[stance]}`
@@ -185,6 +239,8 @@ function scoreEconomic(series: {
   payems: FREDObservation[]
   corePCE: FREDObservation[]
   coreCPI: FREDObservation[]
+  headlineCPI: FREDObservation[]
+  ppi: FREDObservation[]
   wages: FREDObservation[]
 }): EconomicDimensionScore {
   const unrate = latest(series.unrate)?.value ?? null
@@ -195,16 +251,45 @@ function scoreEconomic(series: {
       : null
   const corePceYoy = yoyChange(series.corePCE)
   const coreCpiYoy = yoyChange(series.coreCPI)
+  const headlineCpiYoy = yoyChange(series.headlineCPI)
+  const ppiYoy = yoyChange(series.ppi)
   const wageYoy = yoyChange(series.wages)
 
-  const jobsStable = unrate !== null && unrate < 4.5 && (payems3moAvg === null || payems3moAvg > 50_000)
-  const inflationCooling = corePceYoy !== null && corePceYoy < 3.0
-  const inflationRising = corePceYoy !== null && corePceYoy > 4.0
-  const jobsBad = unrate !== null && (unrate >= 4.5 || (payems3moAvg !== null && payems3moAvg < 50_000))
+  const inflationTrend = classifyInflationTrend(series.corePCE, series.ppi)
+  const pceDelta = yoyDelta(series.corePCE, 3)
+  const ppiDelta = yoyDelta(series.ppi, 3)
 
-  let score: 0 | 1 | 2 = 1
-  if (jobsBad || inflationRising) score = 0
-  else if (jobsStable && inflationCooling) score = 2
+  // Jobs sub-score (0-5)
+  let jobsScore = 3 // baseline
+  if (unrate !== null) {
+    if (unrate < 4.0) jobsScore = 5
+    else if (unrate < 4.5) jobsScore = 4
+    else if (unrate < 5.0) jobsScore = 3
+    else if (unrate < 5.5) jobsScore = 2
+    else jobsScore = 0
+  }
+  if (payems3moAvg !== null) {
+    if (payems3moAvg < 0) jobsScore -= 2
+    else if (payems3moAvg < 50_000) jobsScore -= 1
+    else if (payems3moAvg > 150_000) jobsScore += 1
+  }
+  jobsScore = Math.max(0, Math.min(5, jobsScore))
+
+  // Inflation sub-score (0-5)
+  let inflationScore = 3
+  if (corePceYoy !== null) {
+    if (corePceYoy < 2.5) inflationScore = 5
+    else if (corePceYoy < 3.0) inflationScore = 4
+    else if (corePceYoy < 3.5) inflationScore = 3
+    else if (corePceYoy < 4.0) inflationScore = 2
+    else inflationScore = 0
+  }
+  if (inflationTrend === 'reaccelerating') inflationScore -= 2
+  else if (inflationTrend === 'cooling') inflationScore += 1
+  if (ppiYoy !== null && ppiYoy > 4.5) inflationScore -= 1
+  inflationScore = Math.max(0, Math.min(5, inflationScore))
+
+  const score = clamp10(jobsScore + inflationScore)
 
   const pieces: string[] = []
   const piecesZh: string[] = []
@@ -213,13 +298,25 @@ function scoreEconomic(series: {
     piecesZh.push(`失业率 ${unrate.toFixed(1)}%`)
   }
   if (corePceYoy !== null) {
-    pieces.push(`Core PCE ${corePceYoy.toFixed(1)}%`)
-    piecesZh.push(`核心 PCE ${corePceYoy.toFixed(1)}%`)
+    pieces.push(`Core PCE ${corePceYoy.toFixed(1)}%${trendArrow(pceDelta)}`)
+    piecesZh.push(`核心 PCE ${corePceYoy.toFixed(1)}%${trendArrow(pceDelta)}`)
   }
-  if (wageYoy !== null) {
-    pieces.push(`Wage ${wageYoy.toFixed(1)}%`)
-    piecesZh.push(`工资同比 ${wageYoy.toFixed(1)}%`)
+  if (headlineCpiYoy !== null) {
+    pieces.push(`CPI ${headlineCpiYoy.toFixed(1)}%`)
+    piecesZh.push(`CPI ${headlineCpiYoy.toFixed(1)}%`)
   }
+  if (ppiYoy !== null) {
+    pieces.push(`PPI ${ppiYoy.toFixed(1)}%${trendArrow(ppiDelta)}`)
+    piecesZh.push(`PPI ${ppiYoy.toFixed(1)}%${trendArrow(ppiDelta)}`)
+  }
+  const trendLabel: Record<InflationTrend, { en: string; zh: string }> = {
+    cooling: { en: 'cooling', zh: '降温' },
+    stable: { en: 'stable', zh: '持稳' },
+    reaccelerating: { en: 'reaccelerating', zh: '重新加速' },
+  }
+  pieces.push(`inflation ${trendLabel[inflationTrend].en}`)
+  piecesZh.push(`通胀${trendLabel[inflationTrend].zh}`)
+
   const reasoning = pieces.join(' · ') || 'insufficient data'
   const reasoning_zh = piecesZh.join(' · ') || '数据不足'
 
@@ -233,21 +330,36 @@ function scoreEconomic(series: {
       payems_3mo_avg: payems3moAvg,
       core_pce_yoy: corePceYoy,
       core_cpi_yoy: coreCpiYoy,
+      headline_cpi_yoy: headlineCpiYoy,
+      ppi_yoy: ppiYoy,
       wage_growth_yoy: wageYoy,
+      inflation_trend: inflationTrend,
     },
   }
 }
 
 function scoreCredit(hyOas: FREDObservation[], t10y2y: FREDObservation[]): DimensionScore {
-  const lastHy = latest(hyOas)
-  const hy = lastHy?.value ?? null
+  const hy = latest(hyOas)?.value ?? null
   const spread = latest(t10y2y)?.value ?? null
-  let score: 0 | 1 | 2 = 1
+  // HY OAS contributes 0-8, curve contributes 0-2.
+  let hyScore = 4
   if (hy !== null) {
-    if (hy < 3.5) score = 2
-    else if (hy <= 5) score = 1
-    else score = 0
+    if (hy < 3.0) hyScore = 8
+    else if (hy < 3.5) hyScore = 7
+    else if (hy < 4.0) hyScore = 6
+    else if (hy < 4.5) hyScore = 5
+    else if (hy < 5.0) hyScore = 3
+    else if (hy < 6.0) hyScore = 1
+    else hyScore = 0
   }
+  let curveMod = 1
+  if (spread !== null) {
+    if (spread > 0.5) curveMod = 2
+    else if (spread > 0) curveMod = 1
+    else if (spread > -0.5) curveMod = 0
+    else curveMod = -1
+  }
+  const score = clamp10(hyScore + curveMod)
   const hyStr = hy !== null ? `${hy.toFixed(2)}%` : 'n/a'
   const spreadStr = spread !== null ? `${spread.toFixed(2)}%` : 'n/a'
   return {
@@ -262,13 +374,22 @@ function scoreSentiment(vix: FREDObservation[], manual: ManualInputs): Dimension
   const vLast = latest(vix)?.value ?? null
   const bull = manual.aaii_bullish
   const bear = manual.aaii_bearish
-  const aaiiExtreme = bull > 50 || bear > 50
-  let score: 0 | 1 | 2 = 1
+  // VIX 0-9, AAII modifier ±1 (read contrarian).
+  let vixScore = 5
   if (vLast !== null) {
-    if (vLast > 25 || aaiiExtreme) score = 0
-    else if (vLast < 15 && !aaiiExtreme) score = 2
-    else score = 1
+    if (vLast < 13) vixScore = 9
+    else if (vLast < 15) vixScore = 8
+    else if (vLast < 18) vixScore = 7
+    else if (vLast < 22) vixScore = 5
+    else if (vLast < 28) vixScore = 3
+    else if (vLast < 35) vixScore = 1
+    else vixScore = 0
   }
+  let aaiiMod = 0
+  if (bull > 55) aaiiMod = -2 // extreme bullish — contrarian negative
+  else if (bull > 50) aaiiMod = -1
+  else if (bear > 50) aaiiMod = 1 // extreme bearish — contrarian positive
+  const score = clamp10(vixScore + aaiiMod)
   const vStr = vLast !== null ? vLast.toFixed(1) : 'n/a'
   return {
     score,
@@ -294,15 +415,16 @@ const GUIDANCE_ZH: Record<string, string> = {
   defensive: '防御性配置',
 }
 
+// Total is sum of 6 dimensions × 0-10 = 0-60.
 export function labelFor(total: number): { label: string; label_zh: string; guidance: string; guidance_zh: string } {
   const pair =
-    total >= 9
+    total >= 45
       ? { label: 'expansion', guidance: 'maintain_equity' }
-      : total >= 7
+      : total >= 35
       ? { label: 'neutral_expansion', guidance: 'hold_no_leverage' }
-      : total >= 5
+      : total >= 25
       ? { label: 'watch', guidance: 'reduce_beta' }
-      : total >= 3
+      : total >= 15
       ? { label: 'stress', guidance: 'heavy_reduce' }
       : { label: 'bear', guidance: 'defensive' }
   return {
@@ -319,6 +441,8 @@ export interface RegimeInputs {
   payems: FREDObservation[]
   corePCE: FREDObservation[]
   coreCPI: FREDObservation[]
+  headlineCPI: FREDObservation[]
+  ppi: FREDObservation[]
   wages: FREDObservation[]
   hyOas: FREDObservation[]
   t10y2y: FREDObservation[]
@@ -334,6 +458,8 @@ export function computeRegimeScores(inputs: RegimeInputs): RegimeScores {
     payems: inputs.payems,
     corePCE: inputs.corePCE,
     coreCPI: inputs.coreCPI,
+    headlineCPI: inputs.headlineCPI,
+    ppi: inputs.ppi,
     wages: inputs.wages,
   })
   const credit = scoreCredit(inputs.hyOas, inputs.t10y2y)
@@ -368,6 +494,8 @@ export async function updateRegimeSnapshot(
     payems,
     corePCE,
     coreCPI,
+    headlineCPI,
+    ppi,
     wages,
     hyOas,
     t10y2y,
@@ -378,6 +506,8 @@ export async function updateRegimeSnapshot(
     fetchFREDIndicator(FRED_SERIES.PAYEMS),
     fetchFREDIndicator(FRED_SERIES.PCEPILFE),
     fetchFREDIndicator(FRED_SERIES.CPILFESL),
+    fetchFREDIndicator(FRED_SERIES.CPIAUCSL),
+    fetchFREDIndicator(FRED_SERIES.PPIFIS),
     fetchFREDIndicator(FRED_SERIES.WAGES),
     fetchFREDIndicator(FRED_SERIES.HY_OAS),
     fetchFREDIndicator(FRED_SERIES.T10Y2Y),
@@ -390,6 +520,8 @@ export async function updateRegimeSnapshot(
     upsertSeries('PAYEMS', payems),
     upsertSeries('CORE_PCE', corePCE),
     upsertSeries('CORE_CPI', coreCPI),
+    upsertSeries('HEADLINE_CPI', headlineCPI),
+    upsertSeries('PPI', ppi),
     upsertSeries('WAGES', wages),
     upsertSeries('HY_OAS', hyOas),
     upsertSeries('T10Y2Y', t10y2y),
@@ -403,6 +535,8 @@ export async function updateRegimeSnapshot(
     payems,
     corePCE,
     coreCPI,
+    headlineCPI,
+    ppi,
     wages,
     hyOas,
     t10y2y,
@@ -419,6 +553,8 @@ export async function updateRegimeSnapshot(
       payems: latest(payems),
       core_pce_yoy: yoyChange(corePCE),
       core_cpi_yoy: yoyChange(coreCPI),
+      headline_cpi_yoy: yoyChange(headlineCPI),
+      ppi_yoy: yoyChange(ppi),
       wages_yoy: yoyChange(wages),
       hy_oas: latest(hyOas),
       t10y2y: latest(t10y2y),

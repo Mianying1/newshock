@@ -1,18 +1,18 @@
--- Market Regime V1 · 6 dimension × 0-2 score = 0-12 total
+-- Market Regime V2 · 6 dimensions × 0-10 score = 0-60 total
 -- Run in Supabase SQL editor
 
 CREATE TABLE IF NOT EXISTS market_regime_snapshots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   snapshot_date DATE UNIQUE NOT NULL,
 
-  earnings_score INT NOT NULL CHECK (earnings_score >= 0 AND earnings_score <= 2),
-  valuation_score INT NOT NULL CHECK (valuation_score >= 0 AND valuation_score <= 2),
-  fed_score INT NOT NULL CHECK (fed_score >= 0 AND fed_score <= 2),
-  economic_score INT NOT NULL CHECK (economic_score >= 0 AND economic_score <= 2),
-  credit_score INT NOT NULL CHECK (credit_score >= 0 AND credit_score <= 2),
-  sentiment_score INT NOT NULL CHECK (sentiment_score >= 0 AND sentiment_score <= 2),
+  earnings_score INT NOT NULL CHECK (earnings_score BETWEEN 0 AND 10),
+  valuation_score INT NOT NULL CHECK (valuation_score BETWEEN 0 AND 10),
+  fed_score INT NOT NULL CHECK (fed_score BETWEEN 0 AND 10),
+  economic_score INT NOT NULL CHECK (economic_score BETWEEN 0 AND 10),
+  credit_score INT NOT NULL CHECK (credit_score BETWEEN 0 AND 10),
+  sentiment_score INT NOT NULL CHECK (sentiment_score BETWEEN 0 AND 10),
 
-  total_score INT NOT NULL CHECK (total_score >= 0 AND total_score <= 12),
+  total_score INT NOT NULL CHECK (total_score BETWEEN 0 AND 60),
   regime_label TEXT NOT NULL,
   configuration_guidance TEXT,
 
