@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabase-admin'
+import { narrateRegime } from './narrate-regime'
 
 const FRED_BASE = 'https://api.stlouisfed.org/fred/series/observations'
 
@@ -564,9 +565,19 @@ export async function updateRegimeSnapshot(
     sub_indicators: scores.economic.sub_indicators,
   }
 
+  // AI narrative per dimension. Soft-fail: if Claude returns malformed JSON
+  // we keep the snapshot writable (frontend falls back to static description).
+  let dimensionNarratives = null
+  try {
+    dimensionNarratives = await narrateRegime(scores, rawData)
+  } catch (e) {
+    console.warn(`narrateRegime failed: ${(e as Error).message}`)
+  }
+
   await supabaseAdmin.from('market_regime_snapshots').upsert(
     {
       snapshot_date,
+      dimension_narratives: dimensionNarratives,
       earnings_score: scores.earnings.score,
       valuation_score: scores.valuation.score,
       fed_score: scores.fed.score,

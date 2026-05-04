@@ -26,6 +26,12 @@ const CRIMSON = '#9C463B'
 const DIM_MAX = 10
 const TOTAL_MAX = 60
 
+type DimensionNarrative = { en: string; zh: string }
+type DimensionNarrativeMap = Partial<Record<
+  'earnings' | 'valuation' | 'fed' | 'economic' | 'credit' | 'sentiment',
+  DimensionNarrative
+>>
+
 interface RegimeSnapshot {
   snapshot_date: string
   earnings_score: number
@@ -39,6 +45,7 @@ interface RegimeSnapshot {
   regime_label_zh: string | null
   configuration_guidance: string
   configuration_guidance_zh: string | null
+  dimension_narratives: DimensionNarrativeMap | null
 }
 
 const DIMS: {
@@ -79,7 +86,7 @@ function scoreColor(score: number): string {
 
 
 export function MarketRegimeCard() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { token } = useToken()
   const { data } = useSWR<{ snapshot: RegimeSnapshot | null }>(
     '/api/regime/current',
@@ -206,11 +213,15 @@ export function MarketRegimeCard() {
       <Row gutter={[16, 16]}>
         {DIMS.map((d) => {
           const score = snap[d.scoreField] as number
+          const narrative = snap.dimension_narratives?.[d.key as keyof DimensionNarrativeMap]
+          const tooltip = narrative
+            ? (locale === 'zh' ? narrative.zh : narrative.en)
+            : t(d.descKey)
           return (
             <Col key={d.key} xs={12} sm={12}>
               <DimensionCell
                 label={t(d.labelKey)}
-                description={t(d.descKey)}
+                description={tooltip}
                 score={score}
               />
             </Col>
