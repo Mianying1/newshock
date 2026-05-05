@@ -78,6 +78,8 @@
     "parent_theme": "属于",
     "child_themes": "子主题 ({count})",
     "badge_umbrella": "核心",
+    "badge_new": "新主题",
+    "badge_new_tooltip": "近 3 天内首次出现",
     "catalyst": "催化事件",
     "risk": "风险",
     "exposure_label": "敞口",

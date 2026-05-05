@@ -338,6 +338,44 @@ export default function ThemeDetailPage() {
 
                 <div style={{ padding: '20px 2px 24px', borderBottom: `1px solid ${token.colorSplit}` }}>
                   <Flex align="center" gap={10} wrap style={{ marginBottom: 14 }}>
+                    {(() => {
+                      if (!theme.first_seen_at) return null
+                      const ageMs = Date.now() - new Date(theme.first_seen_at).getTime()
+                      if (ageMs < 0 || ageMs > 3 * 86400000) return null
+                      return (
+                        <Tooltip title={t('theme_detail.badge_new_tooltip')}>
+                          <Tag
+                            style={{
+                              margin: 0,
+                              background: `${token.colorSuccess}14`,
+                              color: token.colorSuccess,
+                              border: `1px solid ${token.colorSuccess}40`,
+                              fontSize: 12,
+                              fontWeight: 600,
+                              padding: '2px 10px',
+                              borderRadius: 4,
+                              lineHeight: 1.5,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'default',
+                            }}
+                          >
+                            <span
+                              aria-hidden
+                              style={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: '50%',
+                                background: token.colorSuccess,
+                                flexShrink: 0,
+                              }}
+                            />
+                            {t('theme_detail.badge_new')}
+                          </Tag>
+                        </Tooltip>
+                      )
+                    })()}
                     <Tag
                       style={{
                         margin: 0,

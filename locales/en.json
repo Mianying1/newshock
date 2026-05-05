@@ -78,6 +78,8 @@
     "parent_theme": "Part of",
     "child_themes": "Subthemes ({count})",
     "badge_umbrella": "Core",
+    "badge_new": "New",
+    "badge_new_tooltip": "First detected within the last 3 days",
     "catalyst": "Catalyst",
     "risk": "Risk",
     "exposure_label": "Exposure",
