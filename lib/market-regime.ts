@@ -43,6 +43,7 @@ export interface EconomicDimensionScore extends DimensionScore {
     ppi_yoy: number | null
     wage_growth_yoy: number | null
     inflation_trend: InflationTrend | null
+    indpro_yoy: number | null
   }
 }
 
@@ -74,6 +75,7 @@ export const FRED_SERIES = {
   VIX: 'VIXCLS',
   CORP_PROFITS: 'CP',
   DGS10: 'DGS10',
+  INDPRO: 'INDPRO',
 } as const
 
 export type FREDSeriesId = (typeof FRED_SERIES)[keyof typeof FRED_SERIES]
@@ -243,6 +245,7 @@ function scoreEconomic(series: {
   headlineCPI: FREDObservation[]
   ppi: FREDObservation[]
   wages: FREDObservation[]
+  indpro: FREDObservation[]
 }): EconomicDimensionScore {
   const unrate = latest(series.unrate)?.value ?? null
   const payemsChanges = payrollsMonthOverMonth(series.payems)
@@ -255,6 +258,8 @@ function scoreEconomic(series: {
   const headlineCpiYoy = yoyChange(series.headlineCPI)
   const ppiYoy = yoyChange(series.ppi)
   const wageYoy = yoyChange(series.wages)
+  const indproYoy = yoyChange(series.indpro)
+  const indproDelta = yoyDelta(series.indpro, 3)
 
   const inflationTrend = classifyInflationTrend(series.corePCE, series.ppi)
   const pceDelta = yoyDelta(series.corePCE, 3)
@@ -290,7 +295,22 @@ function scoreEconomic(series: {
   if (ppiYoy !== null && ppiYoy > 4.5) inflationScore -= 1
   inflationScore = Math.max(0, Math.min(5, inflationScore))
 
-  const score = clamp10(jobsScore + inflationScore)
+  // Manufacturing modifier (-2 to +2): industrial production YoY + 3-mo trend.
+  // Contraction is a strong recession signal; reaccelerating expansion is a tailwind.
+  let mfgMod = 0
+  if (indproYoy !== null) {
+    if (indproYoy < -1.5) mfgMod = -2
+    else if (indproYoy < 0) mfgMod = -1
+    else if (indproYoy > 3) mfgMod = 2
+    else if (indproYoy > 1) mfgMod = 1
+  }
+  if (indproDelta !== null) {
+    if (indproDelta <= -0.5) mfgMod -= 1
+    else if (indproDelta >= 0.5) mfgMod += 1
+  }
+  mfgMod = Math.max(-2, Math.min(2, mfgMod))
+
+  const score = clamp10(jobsScore + inflationScore + mfgMod)
 
   const pieces: string[] = []
   const piecesZh: string[] = []
@@ -317,6 +337,10 @@ function scoreEconomic(series: {
   }
   pieces.push(`inflation ${trendLabel[inflationTrend].en}`)
   piecesZh.push(`通胀${trendLabel[inflationTrend].zh}`)
+  if (indproYoy !== null) {
+    pieces.push(`IP ${indproYoy.toFixed(1)}%${trendArrow(indproDelta)}`)
+    piecesZh.push(`工业产出 ${indproYoy.toFixed(1)}%${trendArrow(indproDelta)}`)
+  }
 
   const reasoning = pieces.join(' · ') || 'insufficient data'
   const reasoning_zh = piecesZh.join(' · ') || '数据不足'
@@ -335,6 +359,7 @@ function scoreEconomic(series: {
       ppi_yoy: ppiYoy,
       wage_growth_yoy: wageYoy,
       inflation_trend: inflationTrend,
+      indpro_yoy: indproYoy,
     },
   }
 }
@@ -448,6 +473,7 @@ export interface RegimeInputs {
   hyOas: FREDObservation[]
   t10y2y: FREDObservation[]
   vix: FREDObservation[]
+  indpro: FREDObservation[]
 }
 
 export function computeRegimeScores(inputs: RegimeInputs): RegimeScores {
@@ -462,6 +488,7 @@ export function computeRegimeScores(inputs: RegimeInputs): RegimeScores {
     headlineCPI: inputs.headlineCPI,
     ppi: inputs.ppi,
     wages: inputs.wages,
+    indpro: inputs.indpro,
   })
   const credit = scoreCredit(inputs.hyOas, inputs.t10y2y)
   const sentiment = scoreSentiment(inputs.vix, inputs.manual)
@@ -501,6 +528,7 @@ export async function updateRegimeSnapshot(
     hyOas,
     t10y2y,
     vix,
+    indpro,
   ] = await Promise.all([
     fetchFREDIndicator(FRED_SERIES.FEDFUNDS),
     fetchFREDIndicator(FRED_SERIES.UNRATE),
@@ -513,6 +541,7 @@ export async function updateRegimeSnapshot(
     fetchFREDIndicator(FRED_SERIES.HY_OAS),
     fetchFREDIndicator(FRED_SERIES.T10Y2Y),
     fetchFREDIndicator(FRED_SERIES.VIX),
+    fetchFREDIndicator(FRED_SERIES.INDPRO),
   ])
 
   await Promise.all([
@@ -527,6 +556,7 @@ export async function updateRegimeSnapshot(
     upsertSeries('HY_OAS', hyOas),
     upsertSeries('T10Y2Y', t10y2y),
     upsertSeries('VIX', vix),
+    upsertSeries('INDPRO', indpro),
   ])
 
   const scores = computeRegimeScores({
@@ -542,6 +572,7 @@ export async function updateRegimeSnapshot(
     hyOas,
     t10y2y,
     vix,
+    indpro,
   })
 
   const snapshot_date = new Date().toISOString().slice(0, 10)
@@ -560,6 +591,7 @@ export async function updateRegimeSnapshot(
       hy_oas: latest(hyOas),
       t10y2y: latest(t10y2y),
       vix: latest(vix),
+      indpro_yoy: yoyChange(indpro),
       payems_3mo_avg_jobs: threeMonthAverage(payems),
     },
     sub_indicators: scores.economic.sub_indicators,
