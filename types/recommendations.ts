@@ -169,6 +169,7 @@ export interface ThemeRadarItem {
   parent_theme_id: string | null
   parent_theme: ThemeParentRef | null
   child_themes: ThemeChildRef[]
+  child_themes_full?: ThemeRadarItem[]
   conviction_score: number | null
   conviction_breakdown: ConvictionBreakdown | null
   conviction_reasoning: string | null

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import useSWR from 'swr'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -225,20 +224,7 @@ export default function ThemeDetailPage() {
   const [eventTab, setEventTab] = useState<EventTab>('all')
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
-  const { data: allThemesResp } = useSWR<{ themes: ThemeRadarItem[] }>(
-    theme?.child_themes && theme.child_themes.length > 0 ? '/api/themes' : null,
-    (url: string) => fetch(url).then((r) => r.json()),
-  )
-  const childThemeItems = useMemo(() => {
-    if (!theme?.child_themes?.length || !allThemesResp?.themes) return []
-    const ids = new Set(theme.child_themes.map((c) => c.id))
-    const byId = new Map(allThemesResp.themes.map((th) => [th.id, th]))
-    return theme.child_themes
-      .map((c) => byId.get(c.id))
-      .filter((th): th is ThemeRadarItem => Boolean(th))
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      .slice(0, ids.size)
-  }, [theme?.child_themes, allThemesResp?.themes])
+  const childThemeItems = theme?.child_themes_full ?? []
 
   useEffect(() => {
     if (!id) return
@@ -881,13 +867,9 @@ export default function ThemeDetailPage() {
                           <Link
                             key={c.id}
                             href={`/themes/${c.id}`}
-                            style={{ display: 'block', textDecoration: 'none', color: 'inherit', height: 320 }}
+                            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
                           >
-                            <Card
-                              hoverable
-                              styles={{ body: { padding: 20, height: '100%' } }}
-                              style={{ height: '100%' }}
-                            >
+                            <Card hoverable styles={{ body: { padding: 20 } }}>
                               <Text strong style={{ display: 'block', fontSize: 16, color: token.colorText, marginBottom: 6 }}>
                                 {pickField(locale, c.name, c.name_zh)}
                               </Text>

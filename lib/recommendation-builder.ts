@@ -581,6 +581,7 @@ export async function buildThemeRadar(options: {
   statuses?: string[]
   tier?: ThemeTier
   include_children?: boolean
+  theme_ids?: string[]
 } = {}): Promise<{ themes: ThemeRadarItem[]; summary: ThemeRadarSummary }> {
   const {
     include_exploratory = false,
@@ -590,9 +591,14 @@ export async function buildThemeRadar(options: {
     statuses,
     tier,
     include_children = false,
+    theme_ids,
   } = options
 
-  // Build status filter
+  // ID-list mode bypasses status/confidence/awareness/tier filters — caller
+  // already knows which themes it wants (e.g. embedding rich child_themes
+  // on a parent detail response).
+  const idMode = Array.isArray(theme_ids) && theme_ids.length > 0
+
   const statusValues = statuses && statuses.length > 0
     ? statuses
     : include_exploratory
@@ -611,24 +617,23 @@ export async function buildThemeRadar(options: {
       'specific_playbook, specific_playbook_zh, ' +
       'theme_archetypes(category, playbook, playbook_zh, typical_duration_days_max)'
     )
-    .in('status', statusValues)
     .order('theme_strength_score', { ascending: false })
     .order('last_active_at', { ascending: false })
-    .limit(limit)
+    .limit(idMode ? theme_ids.length : limit)
 
-  // Confidence floor
-  if (include_exploratory) {
-    // active >= 60, exploratory >= 40 — fetch all then filter in JS
+  if (idMode) {
+    query = query.in('id', theme_ids)
   } else {
-    query = query.gte('classification_confidence', 60)
-  }
-
-  if (awareness_filter?.length) {
-    query = query.in('institutional_awareness', awareness_filter)
-  }
-
-  if (tier) {
-    query = query.eq('theme_tier', tier)
+    query = query.in('status', statusValues)
+    if (!include_exploratory) {
+      query = query.gte('classification_confidence', 60)
+    }
+    if (awareness_filter?.length) {
+      query = query.in('institutional_awareness', awareness_filter)
+    }
+    if (tier) {
+      query = query.eq('theme_tier', tier)
+    }
   }
 
   const { data: rows, error } = await query
@@ -636,22 +641,24 @@ export async function buildThemeRadar(options: {
 
   let themeRows = (rows ?? []) as unknown as ThemeRow[]
 
-  // Apply confidence floor for mixed-status case
-  if (include_exploratory) {
-    themeRows = themeRows.filter((r) =>
-      r.status === 'active'
-        ? (r.classification_confidence ?? 0) >= 60
-        : (r.classification_confidence ?? 0) >= 40
-    )
-  }
+  if (!idMode) {
+    // Apply confidence floor for mixed-status case
+    if (include_exploratory) {
+      themeRows = themeRows.filter((r) =>
+        r.status === 'active'
+          ? (r.classification_confidence ?? 0) >= 60
+          : (r.classification_confidence ?? 0) >= 40
+      )
+    }
 
-  // Apply category filter after join (archetype category)
-  if (category_filter?.length) {
-    themeRows = themeRows.filter((r) =>
-      r.theme_archetypes?.category
-        ? category_filter.includes(r.theme_archetypes.category)
-        : category_filter.includes('exploratory')
-    )
+    // Apply category filter after join (archetype category)
+    if (category_filter?.length) {
+      themeRows = themeRows.filter((r) =>
+        r.theme_archetypes?.category
+          ? category_filter.includes(r.theme_archetypes.category)
+          : category_filter.includes('exploratory')
+      )
+    }
   }
 
   // Batch fan-out: 4 queries with `IN (themeIds)` instead of N×4 per-theme fetches.
@@ -744,6 +751,18 @@ export async function buildSingleTheme(themeId: string): Promise<ThemeRadarItem>
 
   const item = buildItem(themeRow, recs, catalysts, earliestEventDate, parent, children, emerging)
   item.exit_signal_triggers = exitTriggers
+
+  // Embed rich child theme data so the detail page can render full
+  // <ThemeCard variant="secondary"> without a second /api/themes round-trip.
+  if (children.length > 0) {
+    const childIds = children.map((c) => c.id)
+    const { themes: childItems } = await buildThemeRadar({ theme_ids: childIds })
+    const byId = new Map(childItems.map((c) => [c.id, c]))
+    item.child_themes_full = children
+      .map((c) => byId.get(c.id))
+      .filter((c): c is ThemeRadarItem => Boolean(c))
+  }
+
   return item
 }
 
